@@ -24,24 +24,6 @@ what matters to you: serving information to your visitors as quickly as
 possible.
 
 
-=== What we (don't) keep in our servers ===
-
-The information we keep includes:
-
-* Meta-information about the experiments (i.e. name, description, original and
-goal page ids, name and page id of the alternatives, status...)
-* Relevant visitor navigations (i.e. user X navigated from page A to page B)
-* Information about your account (i.e. the e-mail you provided and the site
-url in which the plugin is running)
-
-We do not keep any information about the content or titles of your pages,
-your installed plugins, nor the users, accounts, passwords, etc. available in
-your WordPress site.
-
-The communications between our servers and the plugin are via HTTPS and only
-include data (i.e. no additional code is loaded dynamically ever).
-
-
 = Features =
 
 * A/B test of WordPress pages (title, content, page style, page theme...)
@@ -188,5 +170,23 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 = 1.0.4 =
 This version fixes the SPAN-tag bug, which was related to page titles.
+
+
+== What we (don't) keep in our servers ==
+
+The information we keep includes:
+
+* Meta-information about the experiments (i.e. name, description, original and
+goal page ids, name and page id of the alternatives, status...)
+* Relevant visitor navigations (i.e. user X navigated from page A to page B)
+* Information about your account (i.e. the e-mail you provided and the site
+url in which the plugin is running)
+
+We do not keep any information about the content or titles of your pages,
+your installed plugins, nor the users, accounts, passwords, etc. available in
+your WordPress site.
+
+The communications between our servers and the plugin are via HTTPS and only
+include data (i.e. no additional code is loaded dynamically ever).
 
 
