@@ -8,7 +8,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Nelio A/B Testing is a WordPress service that helps you optimize your site
-based on data, not opinions. http://wp-abtesting.com
+based on data, not opinions.
 
 == Description ==
 
