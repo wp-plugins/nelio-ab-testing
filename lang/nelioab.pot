@@ -1,0 +1,398 @@
+# Copyright (C) 2013 {package-name}
+# This file is distributed under the same license as the {package-name} package.
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wppolyglots.wordpress.com\n"
+"POT-Creation-Date: 2013-08-25 10:36:50+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: includes/admin/admin-controller.php:97
+#: includes/admin/dashboard-page-controller.php:11
+#: includes/admin/dashboard-page-controller.php:27
+msgid "Nelio A/B Testing &mdash; Dashboard"
+msgstr ""
+
+#: includes/admin/admin-controller.php:98
+msgid "Nelio A/B Testing"
+msgstr ""
+
+#: includes/admin/admin-controller.php:121
+#: includes/admin/admin-controller.php:122
+#: includes/admin/experiments-page-controller.php:11
+#: includes/admin/experiments-page-controller.php:81
+msgid "Experiments"
+msgstr ""
+
+#: includes/admin/admin-controller.php:130
+#: includes/admin/admin-controller.php:131
+#: includes/admin/new-experiment-page-controller.php:15
+msgid "Add Experiment"
+msgstr ""
+
+#: includes/admin/admin-controller.php:138
+#: includes/admin/admin-controller.php:139
+#: includes/admin/settings-page-controller.php:12
+msgid "Settings"
+msgstr ""
+
+#: includes/admin/admin-controller.php:177
+#: includes/admin/views/edit-experiment-page.php:97
+msgctxt "action"
+msgid "Update"
+msgstr ""
+
+#: includes/admin/admin-controller.php:191
+#: includes/admin/views/edit-experiment-page.php:249
+msgid "Update"
+msgstr ""
+
+#: includes/admin/conversion-experiment-progress-page-controller.php:11
+#: includes/admin/conversion-experiment-progress-page-controller.php:23
+msgid "Progress of the Experiment"
+msgstr ""
+
+#: includes/admin/edit-experiment-page-controller.php:13
+#: includes/admin/edit-experiment-page-controller.php:54
+msgid "Edit Experiment"
+msgstr ""
+
+#: includes/admin/settings-page-controller.php:26
+msgid "Invalid customer ID"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:23
+msgid "Experiment Information"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:27
+#: includes/admin/views/conversion-experiment-progress-page.php:78
+msgid "Evolution of the Experiment"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:36
+msgid "Results"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:79
+msgid "Click and drag in the plot area to zoom in"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:80
+msgid "Pinch the chart to zoom in"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:81
+#: includes/admin/views/conversion-experiment-progress-page.php:265
+msgid "Visitors and Conversions"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:82
+#: includes/admin/views/conversion-experiment-progress-page.php:269
+msgid "Visitors"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:83
+#: includes/admin/views/conversion-experiment-progress-page.php:270
+msgid "Conversions"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:148
+#: includes/admin/views/conversion-experiment-progress-page.php:308
+msgid "Conversion Rate"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:149
+msgid "original and alternative pages"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:150
+#: includes/admin/views/conversion-experiment-progress-page.php:223
+#: includes/admin/views/conversion-experiment-progress-page.php:267
+#: includes/admin/views/edit-experiment-page.php:71
+msgid "Alternatives"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:151
+msgid "Conversion Rate (%)"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:152
+#: includes/admin/views/conversion-experiment-progress-page.php:225
+msgid "{0}%"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:153
+#: includes/admin/views/conversion-experiment-progress-page.php:226
+msgid "<b>{0}</b><br />{1}% improvement"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:221
+#: includes/admin/views/conversion-experiment-progress-page.php:309
+msgid "Improvement Factor"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:222
+#: includes/admin/views/conversion-experiment-progress-page.php:266
+msgid "with respect to the original page"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:224
+msgid "Improvement (%)"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:268
+msgid "Number of {series.name}: <b>{point.y}</b>"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:296
+msgid "result"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:297
+msgid "results"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:305
+#: includes/admin/views/edit-experiment-page.php:183
+#: includes/admin/views/edit-experiment-page.php:238
+#: includes/admin/views/edit-experiment-page.php:287
+#: includes/admin/views/experiments-page.php:107
+msgid "Name"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:306
+msgid "Number of Visits"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:307
+msgid "Number of Conversions"
+msgstr ""
+
+#: includes/admin/views/conversion-experiment-progress-page.php:325
+msgid "TODO"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:60
+msgid "Basic Information"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:64
+#: includes/models/conversion-experiment.php:201
+msgid "Original Page"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:65
+msgid "Goal Page"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:73
+msgid "New Empty Alternative"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:77
+msgid "New Alternative with Content"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:102
+#: includes/admin/views/edit-experiment-page.php:309
+#: includes/admin/views/new-experiment-page.php:20
+#: includes/utils/admin-table.php:210
+msgid "Cancel"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:166
+msgid "alternative"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:167
+msgid "alternatives"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:189
+msgid "Please, add the alternatives that should be used in this experiment:"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:198
+msgid "Rename"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:209
+msgid "Edit Content"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:220
+msgid "Delete"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:236
+msgid "Rename Alternative"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:285
+msgid "New Alternative Creation"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:292
+msgid "Content"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:299
+msgid "(The selected page's content will be duplicated and used by this alternative.)"
+msgstr ""
+
+#: includes/admin/views/edit-experiment-page.php:316
+#: includes/admin/views/new-experiment-page.php:15
+msgid "Create"
+msgstr ""
+
+#: includes/admin/views/errors/error-page.php:13
+msgid "Error"
+msgstr ""
+
+#: includes/admin/views/errors/error-page.php:30
+msgid "Reload"
+msgstr ""
+
+#: includes/admin/views/errors/invalid-config-page.php:11
+#: includes/admin/views/errors/invalid-config-page.php:16
+msgid "Invalid Configuration"
+msgstr ""
+
+#: includes/admin/views/errors/invalid-config-page.php:19
+msgid "Nelio A/B Testing is not properly configured. Please, check your settings."
+msgstr ""
+
+#: includes/admin/views/errors/invalid-config-page.php:24
+msgid "Configure now"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:16
+msgid "Add New"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:46
+msgid "All"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:98
+msgid "experiment"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:99
+msgid "experiments"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:108
+msgid "Description"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:109
+msgid "Status"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:110
+msgid "Creation Date"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:138
+#: includes/admin/views/experiments-page.php:144
+msgid "Edit"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:139
+#: includes/admin/views/experiments-page.php:146
+#: includes/models/experiment.php:122
+msgid "Trash"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:145
+msgid "Start"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:151
+#: includes/admin/views/experiments-page.php:157
+msgid "View"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:152
+msgid "Stop"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:158
+#: includes/admin/views/experiments-page.php:165
+msgid "Delete Permanently"
+msgstr ""
+
+#: includes/admin/views/experiments-page.php:164
+msgid "Restore"
+msgstr ""
+
+#: includes/admin/views/settings-page.php:31
+msgid "Account Information"
+msgstr ""
+
+#: includes/admin/views/settings-page.php:41
+msgid "Save"
+msgstr ""
+
+#: includes/admin/views/settings-page.php:50
+msgid "OK"
+msgstr ""
+
+#: includes/admin/views/settings-page.php:53
+msgid "NON-VALID USER ID"
+msgstr ""
+
+#: includes/models/experiment.php:112
+msgid "Draft"
+msgstr ""
+
+#: includes/models/experiment.php:114
+msgid "Paused"
+msgstr ""
+
+#: includes/models/experiment.php:116
+msgid "Ready"
+msgstr ""
+
+#: includes/models/experiment.php:118
+msgid "Finished"
+msgstr ""
+
+#: includes/models/experiment.php:120
+msgid "Running"
+msgstr ""
+
+#: includes/models/experiment.php:124
+msgid "Unknown Status"
+msgstr ""
+
+#: includes/utils/admin-ajax-page.php:55
+msgid "Loading data... Please, wait."
+msgstr ""
+
+#: includes/utils/admin-page.php:44
+msgid "The following errors have been encountered:"
+msgstr ""
+
+#: includes/utils/admin-table.php:49
+msgid "Error displaying column `%s'."
+msgstr ""
+
+#: includes/utils/backend.php:34
+msgid "Backend is not available."
+msgstr ""
+
+#: includes/utils/backend.php:36
+msgid "No site has been configured."
+msgstr ""
+
+#: includes/utils/backend.php:38
+msgid "An unknown error occurred while accessing the backend."
+msgstr ""

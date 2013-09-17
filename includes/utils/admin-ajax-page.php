@@ -1,0 +1,181 @@
+<?php
+/**
+ * Copyright 2013 Nelio Software S.L.
+ * This script is distributed under the terms of the GNU General Public License.
+ *
+ * This script is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License.
+ * This script is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+if ( !class_exists( NelioABAdminAjaxPage ) ) {
+
+	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
+
+	abstract class NelioABAdminAjaxPage extends NelioABAdminPage {
+
+		private $is_data_pending;
+		private $controller_file;
+		private $controller_class;
+		private $post_params;
+
+		public function __construct( $title ) {
+			parent::__construct( $title );
+			$this->is_data_pending = false;
+			$this->post_params = array();
+		}
+
+		public function keep_request_param( $name, $val ) {
+			array_push( $this->post_params, array( $name, $val ) );
+		}
+
+		public function get_content_with_ajax_and_render( $controller_file, $controller_class ) {
+			$this->is_data_pending  = true;
+
+			$escaped_basedir = str_replace( '//', '/', NELIOAB_DIR );
+			$escaped_basedir = '/' . str_replace( '/', '\\/', $escaped_basedir ) . '/';
+			$controller_file = preg_replace( $escaped_basedir, '', $controller_file, 1);
+
+			$this->controller_file  = $controller_file;
+			$this->controller_class = $controller_class;
+
+			$this->render();
+		}
+
+		public function render() {
+			$is_data_pending_loader = 'display:none;';
+			$is_data_pending_data = 'display:visible;';
+			if ( $this->is_data_pending) {
+				$is_data_pending_loader = 'display:visible;';
+				$is_data_pending_data = 'display:none;';
+			}
+			?>
+			<script type="text/javascript">
+			function smoothTransitions() {
+				jQuery("#ajax-loader-label2").hide().delay(10000).fadeIn('fast');
+				jQuery("#poststuff").delay(100).fadeOut(150);
+				jQuery("#errors-div").delay(100).fadeOut(150);
+				jQuery("#message-div").delay(100).fadeOut(150);
+				jQuery("#ajax-loader").delay(260).fadeIn(150);
+			}
+			function smoothTransitionsDontLeave(errors, message) {
+				jQuery("#ajax-loader").delay(500).fadeOut(150);
+				try {
+				}
+				catch (e) {
+				}
+				jQuery("#poststuff").delay(550).fadeIn(150);
+			}
+			</script>
+			<div class="wrap">
+				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
+				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>
+				<?php 
+					global $nelioab_admin_controller;
+					if ( $this->is_data_pending ) {
+						$this->print_message( 'none' );
+						$this->print_errors( 'none' );
+					}
+					else {
+						$this->print_message();
+						$this->print_errors();
+					}
+				?>
+				<br />
+				<div id="ajax-loader" style="text-align:center;<?php echo $is_data_pending_loader; ?>">
+					<br /><br />
+					<img src="<?php echo NELIOAB_ASSETS_URL . '/images/loading.gif?' . NELIOAB_PLUGIN_VERSION; ?>" alt="<?php _e( 'Loading animation', 'nelioab' ); ?>" />
+					<h2 style="color:grey;margin:0px;padding:0px;"><?php _e( 'Loading...', 'nelioab' ); ?></h2>
+					<p id="ajax-loader-label1" style="color:grey;margin:0px;padding:0px;"><?php _e( 'Please, wait a moment.', 'nelioab' ); ?></p>
+					<p id="ajax-loader-label2" style="color:grey;margin:0px;padding:0px;display:none;"><?php _e( 'Keep waiting...', 'nelioab' ); ?></p>
+					<p id="ajax-loader-label3" style="color:grey;margin:0px;padding:0px;display:none;"><?php _e( 'Internet connection seems very slow.', 'nelioab' ); ?></p>
+				</div>
+				<div id="poststuff" class="metabox-hold" style="<?php echo $is_data_pending_data; ?>">
+					<div id="ajax-data"><?php
+						if ( !$this->is_data_pending )
+							$this->do_render();
+						?>
+					</div>
+					<br />
+					<div class="actions"><?php
+						$this->print_page_buttons();?>
+					</div>
+				</div>
+			</div><?php
+
+			if ( $this->is_data_pending ) {?>
+			<script>
+				jQuery(document).ready(function() {
+				
+					var data = {
+						"action"	 : "get_html_content",<?php
+						foreach ( $this->post_params as $param )
+							echo "\n\t\t\t\t\t\t\"$param[0]\" : \"$param[1]\",";
+						?>
+
+						"filename"  : "<?php echo $this->controller_file; ?>",
+						"classname" : "<?php echo $this->controller_class; ?>"
+					};
+				
+					// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+					jQuery.post(ajaxurl, data, function(response) {
+						jQuery("#poststuff > #ajax-data").html(response);
+						jQuery("#ajax-loader").fadeOut(200, function() {
+							jQuery("#poststuff").fadeIn(200);
+							if ( jQuery("#message-div").hasClass("to-be-shown") ) {
+								jQuery("#message-div").css('display','block');
+								jQuery("#message-div").hide();
+								jQuery("#message-div").fadeIn(200);
+							}
+							if ( jQuery("#errors-div").hasClass("to-be-shown") ) {
+								jQuery("#errors-div").css('display','block');
+								jQuery("#errors-div").hide();
+								jQuery("#errors-div").fadeIn(200);
+							}
+						});
+					});
+
+					jQuery("#ajax-loader-label2").hide().delay(10000).fadeIn('fast');
+					//jQuery("#ajax-loader-label3").hide().delay(15000).fadeIn('fast');
+				});
+			</script>
+			<?php
+			}
+		}
+
+		public function render_content() {
+			$this->do_render();
+		}
+
+		protected function make_submit_button( $name, $form_name, $hidden_action = 'none' ) {
+			return sprintf(
+				'<input type="submit" class="button-primary" ' .
+				'value="%1$s" %2$s></input>&nbsp;',
+				$name,
+				$this->make_form_javascript( $form_name, $hidden_action )
+			);
+		}
+
+		protected function make_form_javascript( $form_name, $hidden_action ) {
+			return sprintf(
+				' onclick="javascript:' .
+				'smoothTransitions();' .
+				'jQuery(\'#%1$s > #action\').attr(\'value\', \'%2$s\');' .
+				'jQuery(\'#%1$s\').submit();" ',
+				$form_name, $hidden_action
+			);
+		}
+
+	}//NelioABAdminAjaxPage
+
+}
+
+?>
+

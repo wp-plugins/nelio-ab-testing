@@ -1,0 +1,151 @@
+<?php
+/**
+ * Copyright 2013 Nelio Software S.L.
+ * This script is distributed under the terms of the GNU General Public License.
+ *
+ * This script is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License.
+ * This script is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+if ( !class_exists( NelioABSettingsPageController ) ) {
+
+	require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+
+	class NelioABSettingsPageController {
+
+		public static function build() {
+			require_once( NELIOAB_ADMIN_DIR . '/views/settings-page.php' );
+
+			$title = __( 'Settings', 'nelioab' );
+
+			$view = new NelioABSettingsPage( $title );
+			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
+		}
+
+		public static function generate_html_content() {
+			require_once( NELIOAB_ADMIN_DIR . '/views/settings-page.php' );
+
+			// Check data against APPENGINE
+			$email   = NelioABSettings::get_email();
+			$reg_num = NelioABSettings::get_reg_num();
+
+			$sites = array();
+			$max_sites = 1;
+			try {
+				NelioABSettings::validate_email_and_reg_num( $email, $reg_num );
+			}
+			catch ( Exception $e ) {}
+
+			$current_site_status = NelioABSite::NOT_REGISTERED;
+			try {
+				$sites_info = NelioABSettings::get_registered_sites_information();
+				$max_sites  = $sites_info->get_max_sites();
+				$sites      = $sites_info->get_registered_sites();
+
+				if ( NelioABSettings::has_a_configured_site() ) {
+					$site_id = NelioABSettings::get_site_id();
+					$current_site_status = NelioABSite::INVALID_ID;
+					foreach( $sites as $site ) {
+						if ( $site->get_id() == $site_id ) {
+							if ( $site->get_url() == get_option( 'siteurl' ) )
+								$current_site_status = NelioABSite::ACTIVE;
+							else
+								$current_site_status = NelioABSite::NON_MATCHING_URLS;
+						}
+					}
+				}
+
+			}
+			catch ( Exception $e ) {}
+
+			// Render content
+			$title = __( 'Settings', 'nelioab' );
+			$view = new NelioABSettingsPage( $title );
+			$view->set_email( $email );
+			$view->set_email_validity( NelioABSettings::is_email_valid() );
+			$view->set_reg_num( $reg_num );
+			$view->set_reg_num_validity( NelioABSettings::is_reg_num_valid() );
+			$view->set_tac_checked( NelioABSettings::are_terms_and_conditions_accepted() );
+			$view->set_registered_sites( $sites );
+			$view->set_max_sites( $max_sites );
+			$view->set_current_site_status( $current_site_status );
+			$view->render_content();
+			die();
+		}
+
+		public static function validate_account() {
+			global $nelioab_admin_controller;
+
+			$email   = $_POST['settings_email'];
+			$reg_num = $_POST['settings_reg_num'];
+
+			$errors = array();
+			try {
+				NelioABSettings::validate_email_and_reg_num( $email, $reg_num );
+				$nelioab_admin_controller->message =
+					__( 'Account information was successfully updated.', 'nelioab' );
+			}
+			catch ( Exception $e ) {
+				require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+				$errCode = $e->getCode();
+
+				if ( $errCode == NelioABErrCodes::INVALID_PRODUCT_REG_NUM )
+					array_push( $errors, array ( 'settings_reg_num',
+						__( 'Invalid Registration Number', 'nelioab' )
+					)	);
+
+				if ( $errCode == NelioABErrCodes::INVALID_MAIL )
+					array_push( $errors, array ( 'settings_email',
+						__( 'E-Mail is not registered in our service', 'nelioab' )
+					)	);
+
+			}
+
+			NelioABSettings::check_terms_and_conditions( $_POST['settings_tac'] );
+
+			$nelioab_admin_controller->validation_errors = $errors;
+			return count( $nelioab_admin_controller->validation_errors ) == 0;
+		}
+
+		public static function manage_site_registration() {
+			global $nelioab_admin_controller;
+			$action = $_POST['nelioab_registration_action'];
+
+			try {
+				if ( $action == 'register' ) {
+					NelioABSettings::register_this_site();
+					$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
+				}
+				else {
+					NelioABSettings::deregister_this_site();
+					$nelioab_admin_controller->message = __( 'This site is no longer registered to your account.', 'nelioab' );
+				}
+			}
+			catch ( Exception $e ) {
+				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+				NelioABErrorController::build( $e );
+			}
+
+		}
+
+	}//NelioABSettingsPageController
+
+}
+
+if ( isset( $_POST['nelioab_account_form'] ) ) {
+	NelioABSettingsPageController::validate_account();
+}
+
+if ( isset( $_POST['nelioab_registration_form'] ) ) {
+	NelioABSettingsPageController::manage_site_registration();
+}
+
+?>
