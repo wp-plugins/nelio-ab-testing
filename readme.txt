@@ -23,6 +23,9 @@ result, the load in your WordPress server does not increase and can focus on
 what matters to you: serving information to your visitors as quickly as
 possible.
 
+**Note:** Please keep in mind that [you will need an
+account](http://wp-abtesting.com) to use our plugin.
+
 
 = Features =
 
@@ -35,6 +38,13 @@ performed in Nelio's backend servers.
 
 
 == Installation ==
+
+**Before installing the plugin...**
+
+Sign up at our [Nelio A/B Testing service](http://wp-abtesting.com). Once you
+are registered, you will be sent an e-mail with your account information, which
+is necessary for activating the plugin.
+
 
 **Installation through WordPress admin from plugin repository:**
 
