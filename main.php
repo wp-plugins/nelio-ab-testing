@@ -27,7 +27,7 @@
 
 // Plugin dir name...
 define( 'NELIOAB_PLUGIN_NAME', 'Nelio A/B Testing' );
-define( 'NELIOAB_PLUGIN_DIR_NAME', dirname( __FILE__ ) );
+define( 'NELIOAB_PLUGIN_DIR_NAME', basename( dirname( __FILE__ ) ) );
 
 // Defining a few important directories
 define( 'NELIOAB_ROOT_DIR', plugin_dir_path( __FILE__ ) );
