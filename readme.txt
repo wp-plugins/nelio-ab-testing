@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.0.1
 Tested up to: 3.6
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,7 +44,7 @@ performed in Nelio's backend servers.
 
 Sign up at our [Nelio A/B Testing service](http://wp-abtesting.com). Once you
 are registered, you will be sent an e-mail with your account information, which
-is necessary for activating the plugin.
+is necessary for using the plugin.
 
 
 **Installation through WordPress admin from plugin repository:**
@@ -56,6 +56,7 @@ is necessary for activating the plugin.
 5. Click "Install Now", then Activate, then head to the new menu item on the
 left labeled "Nelio A/B Testing".
 
+
 **Alternative installation methods:**
 
 1. Download this plugin.
@@ -65,6 +66,7 @@ left labeled "Nelio A/B Testing".
 5. Click the Upload button.
 6. Click "Install Now", then Activate, then head to the new menu item on the
 left labeled "Nelio A/B Testing".
+
 
 == Frequently Asked Questions ==
 
@@ -90,6 +92,7 @@ Or users with a certain role? This kind of control on the testing process can
 only be done when the AB Testing tool has access to the internals of your
 WordPress installation.
 
+
 = What are the features implemented so far? =
 
 You can create A/B and multivariate tests for pages, setting the visit to
@@ -99,14 +102,17 @@ that we can change the frequency during the test). Apart from the raw numbers
 (number of visits, conversions,…), we have included some easy-to-understand
 information about the statistical significance of the results.
 
+
 = And the rest? =
 
 We'll keep adding more features in the following weeks.
+
 
 = Can I use this service in different domains? =
 
 Yes. For this version, we permit up to three different simultaneous
 domains/websites.
+
 
 = Any limitation on the number of visitors that can be part of a test? =
 
@@ -114,12 +120,14 @@ There’s no limitation for this version. Note that, this is one of the values
 that we will be closely monitoring and we may decide to cap the number of
 visits per day.
 
+
 = How does the service work? =
 
 In short, the service requires you to install a plug-in on your WP site. This
 plug-in will monitor the visitors of your site and send anonymous information
-(e.g. navigations, conversions, …) to our backend servers where the processing
+(e.g. navigations, conversions, ...) to our backend servers where the processing
 of all the data takes place.
+
 
 = How does the plug-in work (in case you care about technical stuff)? =
 
@@ -143,6 +151,7 @@ details to our cloud service asynchronously.
 results page, the plug-in will request the processed data from the cloud
 back-end and display using nice graphics.
 
+
 == Screenshots ==
 
 1. **Relevant info with a quick glance**. When you have an experiment running,
@@ -157,7 +166,11 @@ Just set a name, a description, and the page you want to test!
 alternatives quickly and easily, from scratch or from already-existing pages!
 6. **Multisite support**. You can use our service in multiple sites.
 
+
 == Changelog ==
+
+= 1.0.6 =
+* Bug fix: the warning "headers already sent by" does no longer appear
 
 = 1.0.5 =
 * Bug fix: assets are properly loaded from the plugin.
@@ -180,9 +193,10 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 * Permits the creation of Alternative Experiments for WordPress pages
 * Includes a feedback form
 
+
 == Upgrade Notice ==
 
-= 1.0.5 =
-This version fixes how assets are loaded.
+= 1.0.6 =
+The warning "headers already sent by" does no longer appear in the Dashboard.
 
 
