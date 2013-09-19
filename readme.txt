@@ -8,21 +8,25 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Nelio A/B Testing is a WordPress service that helps you optimize your site
-based on data, not opinions. You may find more information in
-http://wp-abtesting.com
+based on data, not opinions.
+
 
 == Description ==
 
-Nelio A/B Testing is an optimization service for your WordPres site. It helps
-you define, manage, and keep track of A/B-testing experiments from within your
-WordPress' dashboard, creating a lovely, integrated, and well-known user
-experience.
+[Nelio A/B Testing](http://wp-abtesting.com) is an optimization service for
+your WordPres site. It helps you define, manage, and keep track of A/B-testing
+experiments from within your WordPress' dashboard, creating a lovely,
+integrated, and well-known user experience.
 
-On the technical side, any gathered information about experiments and
-statistical calculus is performed and stored in Nelio's backend servers. As a
+On the technical side, **any gathered information about experiments and
+statistical calculus is performed and stored in Nelio's backend servers**. As a
 result, the load in your WordPress server does not increase and can focus on
 what matters to you: serving information to your visitors as quickly as
 possible.
+
+**Note:** Please keep in mind that [you will need an
+account](http://wp-abtesting.com) to use our plugin.
+
 
 = Features =
 
@@ -35,6 +39,13 @@ performed in Nelio's backend servers.
 
 
 == Installation ==
+
+**Before installing the plugin...**
+
+Sign up at our [Nelio A/B Testing service](http://wp-abtesting.com). Once you
+are registered, you will be sent an e-mail with your account information, which
+is necessary for activating the plugin.
+
 
 **Installation through WordPress admin from plugin repository:**
 
