@@ -28,4 +28,3 @@ if ( !class_exists( SinglePostHtmlView ) ) {
 }
 
 ?>
-
