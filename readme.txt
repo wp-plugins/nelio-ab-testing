@@ -182,7 +182,7 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Upgrade Notice ==
 
-= 1.0.4 =
-This version fixes the SPAN-tag bug, which was related to page titles.
+= 1.0.5 =
+This version fixes how assets are loaded.
 
 
