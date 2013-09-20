@@ -1,7 +1,7 @@
 === Nelio A/B Testing ===
 Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
-Requires at least: 3.0.1
+Requires at least: 3.3
 Tested up to: 3.6
 Stable tag: 1.0.5
 License: GPLv2 or later
