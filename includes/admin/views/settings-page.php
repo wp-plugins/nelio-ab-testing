@@ -281,43 +281,6 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 
 	}//NelioABSettingsPage
 
-	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
-	class NelioABSitesTable extends NelioABAdminTable {
-
-		function __construct( $sites ){
-   	   parent::__construct( array(
-				'singular'  => __( 'experiment', 'nelioab' ),
-				'plural'    => __( 'experiments', 'nelioab' ),
-				'ajax'      => false
-			)	);
-			$this->set_items( $sites );
-		}
-		
-		function get_columns(){
-			return array(
-				'url'         => __( 'URL', 'nelioab' ),
-			//	'status'      => __( 'Status', 'nelioab' ),
-			);
-		}
-
-		function column_url( $site ){
-			return sprintf(
-				'<span class="row-title">%s</span>&nbsp;',
-				$site->get_url()
-			);
-		}
-
-		public function column_creation( $exp ) {
-			return date_i18n( get_option( 'date_format' ) . ' - ' . get_option('time_format'), $exp->get_creation_date() );
-		}
-
-		public function column_status( $exp ){
-			return NelioABExperimentStatus::to_string( $exp->get_status() );
-		}
-
-	}// NelioABExperimentsTable
-
-
 }
 
 

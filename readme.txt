@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -168,6 +168,11 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.0.7 =
+* New feature: creation of A/B tests for posts too (originally, only for
+pages).
+* Some minor bug fixes
 
 = 1.0.6 =
 * Bug fix: the warning "headers already sent by" does no longer appear

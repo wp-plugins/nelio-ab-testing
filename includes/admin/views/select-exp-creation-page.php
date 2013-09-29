@@ -15,30 +15,29 @@
  */
 
 
-if ( !class_exists( NelioABNewExperimentPage ) ) {
+if ( !class_exists( NelioABSelectExpCreationPage ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/edit-experiment-page.php' );
-	class NelioABNewExperimentPage extends NelioABEditExperimentPage {
+	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
+	class NelioABSelectExpCreationPage extends NelioABAdminPage {
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
-			$this->set_form_name( 'nelioab_new_exp_form' );
 		}
 
-		public function print_page_buttons() {
-			echo $this->make_js_button(
-					_x( 'Create', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\')',
-					false, true
-				);
-			echo $this->make_js_button(
-					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\')'
-				);
+		public function do_render() {
+			$url = admin_url() . 'admin.php?page=nelioab-add-experiment&experiment-type=';
+			?>
+			<h2><a href="<?php
+				echo $url . 'alt-exp-page';
+				?>"><?php _e( 'Create one or more alternatives of a Page', 'nelioab' ); ?></a></h2>
+			<h2><a href="<?php
+				echo $url . 'alt-exp-post';
+				?>"><?php _e( 'Create one or more alternatives of a Post', 'nelioab' ); ?></a></h2>
+			<?php
 		}
 
-	}//NelioABNewExperimentPage
+	}//NelioABAltExpCreationPage
 
 }
 

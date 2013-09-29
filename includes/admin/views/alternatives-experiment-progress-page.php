@@ -15,12 +15,12 @@
  */
 
 
-if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
+if ( !class_exists( NelioABAlternativesExperimentProgressPage ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 
-	class NelioABConversionExperimentProgressPage extends NelioABAdminAjaxPage {
+	class NelioABAlternativesExperimentProgressPage extends NelioABAdminAjaxPage {
 
 		private $exp;
 		private $results;
@@ -52,7 +52,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 
 			// Goal title
 			$goal = __( 'Page not found.', 'nelioab' );
-			$aux  = get_post( $exp->get_conversion_page() );
+			$aux  = get_post( $exp->get_conversion_post() );
 			if ( $aux )
 				$goal = trim( $aux->post_title );
 			if ( strlen( $goal ) == 0 )
@@ -154,7 +154,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 								</tr>
 								<tr>
 									<td style="vertical-align:top;"><b><?php _e( 'Goal Page', 'nelioab' ); ?>&nbsp;&nbsp;</b>
-									<?php $link = get_permalink( $exp->get_conversion_page() ); ?>
+									<?php $link = get_permalink( $exp->get_conversion_post() ); ?>
 									<td><?php echo sprintf( '<a href="%s" target="_blank">%s</a>', $link, $goal ); ?></td>
 								</tr>
 
@@ -216,12 +216,12 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 
 								<?php
 								foreach ( $exp->get_alternatives() as $alt ) {
-									$link      = get_permalink( $alt->get_page_id() );
+									$link      = get_permalink( $alt->get_post_id() );
 									$edit_link = '';
 									
 									if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 										$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-											admin_url() . '/post.php?post=' . $alt->get_page_id() . '&action=edit',
+											admin_url() . '/post.php?post=' . $alt->get_post_id() . '&action=edit',
 											__( 'Edit' ) );
 									}
 
@@ -232,7 +232,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 											'<small class="apply-link">(<a href="javascript:nelioab_confirm_overriding_original(%3$s);">%4$s</a>)</small></li>',
 											__( 'Done!', 'nelioab' ),
 											NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
-											$alt->get_page_id(), __( 'Apply', 'nelioab' ) );
+											$alt->get_post_id(), __( 'Apply', 'nelioab' ) );
 									}
 
 									echo sprintf( '<li><a href="%s" target="_blank">%s</a>%s',
@@ -298,7 +298,12 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 				</div>
 	
 				<!-- Statistical Info -->
-				<h2><small><?php _e( 'Statistical Information', 'nelioab' ) ?></small></h2>
+				<?php require_once( NELIOAB_UTILS_DIR . '/formatter.php' ); ?>
+				<p><?php
+					printf( __( 'Results computed at: %s', 'nelioab' ),
+						NelioABFormatter::format_date( $res->get_last_update() )
+					); ?></p>
+				<h2><small><?php _e( 'Statistical Information', 'nelioab' ); ?></small></h2>
 				<ul style="list-style-type:circle; margin-left:2em;">
 				<?php
 					foreach( $res->get_gstats() as $g_stat ) {
@@ -308,7 +313,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 				</ul>
 
 				<!-- Timline graphic -->
-				<h2><?php _e( 'Evolution of the Experiment', 'nelioab' ) ?></h2>
+				<h2><?php _e( 'Evolution of the Experiment', 'nelioab' ); ?></h2>
 				<center>
 				<div id="nelioab-timeline" class="nelioab-timeline-graphic">
 				</div>
@@ -316,7 +321,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 				</center>
 	
 				<!-- Summary graphics -->
-				<h2><?php _e( 'Results', 'nelioab' ) ?></h2>
+				<h2><?php _e( 'Results', 'nelioab' ); ?></h2>
 				<center>
 
 				<div id="nelioab-conversion-rate" class="nelioab-summary-graphic">
@@ -332,7 +337,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 				</center>
 	
 				<?php
-				$wp_list_table = new NelioABConversionResultsTable( $res->get_alternative_results() );
+				$wp_list_table = new NelioABAltExpResultsTable( $res->get_alternative_results() );
 				$wp_list_table->prepare_items();
 				$wp_list_table->display();
 
@@ -358,7 +363,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 
 			// Start date
 			// -------------------------------------------
-			$first_update = strtotime( $res->get_first_update() );
+			$first_update = strtotime( $res->get_first_update() ); // This has to be a unixtimestamp...
 			$timestamp    = mktime( 0, 0, 0,
 					date( 'n', $first_update ),
 					date( 'j', $first_update ),
@@ -596,10 +601,10 @@ if ( !class_exists( NelioABConversionExperimentProgressPage ) ) {
 		<?php
 		}
 
-	}//NelioABConversionExperimentProgressPage
+	}//NelioABAlternativesExperimentProgressPage
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
-	class NelioABConversionResultsTable extends NelioABAdminTable {
+	class NelioABAltExpResultsTable extends NelioABAdminTable {
 
 		private $form_name;
 		private $show_new_form;

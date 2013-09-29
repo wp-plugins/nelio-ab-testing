@@ -72,11 +72,11 @@ if( !class_exists( NelioABExperiment ) ) {
 		}
 
 		public function get_creation_date() {
-			return substr( $this->creation_date, 0, 10 );
+			return $this->creation_date;
 		}
 
 		public function set_creation_date( $creation_date ) {
-			$this->creation_date = $creation_date;
+			$this->creation_date = intval( substr( $creation_date, 0, 10 ) );
 		}
 
 		public function clear() {

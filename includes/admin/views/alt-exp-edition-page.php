@@ -15,24 +15,28 @@
  */
 
 
-if ( !class_exists( NelioABEditExperimentPage ) ) {
+if ( !class_exists( NelioABAltExpEditionPage ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
-	class NelioABEditExperimentPage extends NelioABAdminAjaxPage {
+	class NelioABAltExpEditionPage extends NelioABAdminAjaxPage {
+
+		protected $alt_type;
 
 		protected $exp;
 		protected $wp_pages;
+		protected $wp_posts;
 
 		private $form_name;
 		private $show_new_form;
 		private $copying_content;
 
-		public function __construct( $title ) {
+		public function __construct( $title, $alt_type='page' ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
 			$this->set_form_name( 'nelioab_edit_exp_form' );
 			$this->show_new_form   = false;
 			$this->copying_content = false;
+			$this->alt_type        = $alt_type;
 		}
 
 		public function show_empty_quickedit_box() {
@@ -60,6 +64,7 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 		protected function do_render() {?>
 			<form id="<?php echo $this->get_form_name(); ?>" method="post">
 				<input type="hidden" name="nelioab_edit_exp_form" value="true" />
+				<input type="hidden" name="nelioab_edit_exp_type" value="alt-exp-<?php echo $this->alt_type; ?>" />
 				<input type="hidden" name="action" id="action" value="none" />
 				<input type="hidden" name="appspot_alternatives" id="appspot_alternatives" value="<?php
 					echo $this->exp->encode_appspot_alternatives();
@@ -71,6 +76,10 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 				<input type="hidden" name="alt_to_remove" id="alt_to_remove" value="" />
 				<input type="hidden" name="content_to_edit" id="content_to_edit" value="" />
 				<?php
+
+				$ori_label = __( 'Original Page', 'nelioab' );
+				if ( $this->alt_type == 'post' )
+					$ori_label = __( 'Original Post', 'nelioab' );
 
 				$this->make_section(
 					__( 'Basic Information', 'nelioab' ),
@@ -85,7 +94,7 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 							'id'        => 'exp_descr',
 							'callback'  => array( &$this, 'print_descr_field' ) ),
 						array (
-							'label'     => __( 'Original Page', 'nelioab' ),
+							'label'     => $ori_label,
 							'id'        => 'exp_original',
 							'callback'  => array ( &$this, 'print_ori_field' ),
 							'mandatory' => true ),
@@ -99,24 +108,35 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 				?>
 
 				<h2 style="padding-top:2em;"><?php
+
+					$explanation = __( 'based on an existing page', 'nelioab' );
+					if ( $this->alt_type == 'post' )
+						$explanation = __( 'based on an existing post', 'nelioab' );
+
 					_e( 'Alternatives', 'nelioab' );
 					echo ' ' . $this->make_form_action_link(
 						__( 'New Alternative <small>(empty)</small>', 'nelioab' ),
 						$this->form_name, 'show_empty_quickedit_box'
 					);
 					echo ' ' . $this->make_form_action_link(
-						__( 'New Alternative <small>(based on an existing page)</small>', 'nelioab' ),
+						sprintf( __( 'New Alternative <small>(%s)</small>', 'nelioab' ), $explanation),
 						$this->form_name, 'show_copying_content_quickedit_box'
 					);
+
 				?></h2><?php
 
 			$wp_list_table = new NelioABAlternativesTable(
 				$this->exp->get_alternatives(),
 				$this->get_form_name(),
+				$this->alt_type,
 				$this->show_new_form,
 				$this->copying_content );
-			if ( $this->copying_content )
-				$wp_list_table->set_wp_pages( $this->wp_pages );
+			if ( $this->copying_content ) {
+				if ( $this->alt_type == 'post' )
+					$wp_list_table->set_wp_posts_or_pages( $this->wp_posts );
+				else
+					$wp_list_table->set_wp_posts_or_pages( $this->wp_pages );
+			}
 			$wp_list_table->prepare_items();
 			$wp_list_table->display();
 			?>
@@ -137,7 +157,7 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 
 				// Alternatives
 				if ($("#exp_original").attr("value") != -1)
-					$("#new_alt_pageid").attr("value", $("#exp_original").attr("value"));
+					$("#new_alt_postid").attr("value", $("#exp_original").attr("value"));
 				$("#new_alt_name").bind( "change paste keyup", function() { checkNewAlt(jQuery); } );
 			});
 
@@ -287,9 +307,11 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 
 
 		public function print_ori_field() {?>
-			<select id="exp_original" name="exp_original" class="required" value="<?php echo $this->exp->get_conversion_page(); ?>">
-				<option value="-1">-- Select --</option><?php
-			foreach ($this->wp_pages as $p) {?>
+			<select id="exp_original" name="exp_original" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>"><?php
+			$aux = $this->wp_pages;
+			if ( $this->alt_type == 'post' )
+				$aux = $this->wp_posts;
+			foreach ( $aux as $p ) {?>
 				<option
 					value="<?php echo $p->ID; ?>" <?php
 						if ( $this->exp->get_original() == $p->ID )
@@ -298,25 +320,29 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 			}
 			?>
 			</select>
-			<span class="description"><?php
-				_e( '(the page for which alternatives will be created)', 'nelioab' );
+			<br /><span class="description"><?php
+				if ( $this->alt_type == 'post' )
+					_e( '(the post for which alternatives will be created)', 'nelioab' );
+				else
+					_e( '(the page for which alternatives will be created)', 'nelioab' );
 			?></span><?php
 		}
 
 
 		public function print_goal_field() {?>
-			<select id="exp_goal" name="exp_goal" class="required" value="<?php echo $this->exp->get_conversion_page(); ?>">
+			<select id="exp_goal" name="exp_goal" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>">
 				<option value="-1">-- Select --</option><?php
-			foreach ($this->wp_pages as $p) {?>
+			// TODO: make goal field easy
+			foreach ( $this->wp_pages as $p ) {?>
 				<option
 					value="<?php echo $p->ID; ?>" <?php
-						if ( $this->exp->get_conversion_page() == $p->ID )
+						if ( $this->exp->get_conversion_post() == $p->ID )
 							echo 'selected="selected"';
 					?>"><?php echo $p->post_title; ?></option><?php
 			}
 			?>
 			</select>
-			<span class="description"><?php
+			<br /><span class="description"><?php
 				_e( '(the page you want your users to end up visiting).', 'nelioab' );
 			?></span><?php
 		}
@@ -325,7 +351,11 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 			$this->wp_pages = $wp_pages;
 		}
 
-	}//NelioABEditExperimentPage
+		public function set_wp_posts( $wp_posts ) {
+			$this->wp_posts = $wp_posts;
+		}
+
+	}//NelioABAltExpEditionPage
 
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
@@ -334,23 +364,25 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 		private $form_name;
 		private $show_new_form;
 		private $copying_content;
-		private $wp_pages;
+		private $wp_posts_or_pages;
+		private $alt_type;
 
-		function __construct( $items, $form_name, $show_new_form = false, $copying_content = false ){
+		function __construct( $items, $form_name, $alt_type, $show_new_form = false, $copying_content = false ){
    	   parent::__construct( array(
 				'singular'  => __( 'alternative', 'nelioab' ),
 				'plural'    => __( 'alternatives', 'nelioab' ),
 				'ajax'      => false
 			)	);
 			$this->set_items( $items );
-			$this->form_name       = $form_name;
-			$this->show_new_form   = $show_new_form;
-			$this->copying_content = $copying_content;
-			$this->wp_pages        = array();
+			$this->form_name         = $form_name;
+			$this->alt_type          = $alt_type;
+			$this->show_new_form     = $show_new_form;
+			$this->copying_content   = $copying_content;
+			$this->wp_posts_or_pages = array();
 		}
 
-		public function set_wp_pages( $wp_pages ) {
-			$this->wp_pages = $wp_pages;
+		public function set_wp_posts_or_pages( $wp_posts_or_pages ) {
+			$this->wp_posts_or_pages = $wp_posts_or_pages;
 		}
 		
 		public function get_columns(){
@@ -384,7 +416,7 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 							'jQuery(\'#content_to_edit\').attr(\'value\', %s);' .
 							'submitAndRedirect(\'%s\')' .
 							'">%s</a>',
-						$alt->get_page_id(),
+						$alt->get_post_id(),
 						'edit_alt_content',
 						__( 'Edit Content', 'nelioab' ) ),
 	
@@ -452,7 +484,21 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 		public function display_rows_or_placeholder() {
 			if ( $this->show_new_form )
 				$this->print_new_alt_form();
-			parent::display_rows_or_placeholder();
+
+			$title = __( 'Original Page', 'nelioab' );
+			if ( $this->alt_type == 'post' )
+				$title = __( 'Original Post', 'nelioab' );
+
+			$expl = __( 'The original page can be considered an alternative that has to be tested.', 'nelioab' );
+			if ( $this->alt_type == 'post' )
+				$expl = __( 'The original post can be considered an alternative that has to be tested.', 'nelioab' );
+			?>
+			<tr><td>
+				<span class="row-title"><?php echo $title; ?></span>
+				<div class="row-actions"><?php echo $expl; ?></div>
+			</td></tr>
+			<?php
+			parent::display_rows();
 		}
 
 		// TODO document this operation
@@ -470,9 +516,9 @@ if ( !class_exists( NelioABEditExperimentPage ) ) {
 							<?php if ( $this->copying_content ) {?>
 								<label>
 									<span class="title"><?php _e( 'Source', 'nelioab' ); ?> </span>
-									<select id="new_alt_pageid" name="new_alt_pageid">
+									<select id="new_alt_postid" name="new_alt_postid">
 									<?php
-									foreach ($this->wp_pages as $p) {?>
+									foreach ($this->wp_posts_or_pages as $p) {?>
 										<option value="<?php echo $p->ID; ?>"><?php echo $p->post_title; ?></option><?php
 									}?>
 									</select>

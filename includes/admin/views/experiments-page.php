@@ -208,7 +208,8 @@ if ( !class_exists( NelioABExperimentsPage ) ) {
 		}
 
 		public function column_creation( $exp ) {
-			return date_i18n( get_option( 'date_format' ) . ' - ' . get_option('time_format'), $exp->get_creation_date() );
+			include_once( NELIOAB_UTILS_DIR . '/formatter.php' );
+			return NelioABFormatter::format_date( $exp->get_creation_date() );
 		}
 
 		public function column_status( $exp ){
