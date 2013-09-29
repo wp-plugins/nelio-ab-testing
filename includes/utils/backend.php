@@ -149,7 +149,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );
 			}
 		}
-	}
+	}//NelioABBackend
 
 }
 ?>

@@ -56,12 +56,12 @@ if( !class_exists( NelioABUser ) ) {
 				$expiration_date = time() + (86400*28);
 				$num_of_options = count( $exp_data->alternatives );
 				$option         = mt_rand( 0, $num_of_options );
-				$alt_page       = $exp_data->original;
+				$alt_post       = $exp_data->original;
 				if ( $option != $num_of_options )
-					$alt_page = $exp_data->alternatives[$option];
-				nelioab_setcookie( $cookie_name, $alt_page, $expiration_date );
+					$alt_post = $exp_data->alternatives[$option];
+				nelioab_setcookie( $cookie_name, $alt_post, $expiration_date );
 			}
-			$alt_page = $NELIOAB_COOKIES[$cookie_name];
+			$alt_post = $NELIOAB_COOKIES[$cookie_name];
 	
 			$cookie_name =  NelioABSettings::cookie_prefix() . 'title_' . $post_id;
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
@@ -69,14 +69,14 @@ if( !class_exists( NelioABUser ) ) {
 				$post      = get_post( $post_id );
 				$ori_title = rawurlencode( $post->post_title );
 
-				$post = get_post( $alt_page );
+				$post = get_post( $alt_post );
 				if ( $post ) {
 					$alt_title = rawurlencode( $post->post_title );
 					nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title" );
 				}
 			}
 	
-			return $alt_page;
+			return $alt_post;
 		}
 	
 	}//NelioABUser

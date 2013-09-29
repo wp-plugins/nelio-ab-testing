@@ -99,13 +99,15 @@ if ( !class_exists( NelioABAdminAjaxPage ) ) {
 				</div>
 				<div id="poststuff" class="metabox-hold" style="<?php echo $is_data_pending_data; ?>">
 					<div id="ajax-data"><?php
-						if ( !$this->is_data_pending )
-							$this->do_render();
-						?>
-					</div>
-					<br />
-					<div class="actions"><?php
-						$this->print_page_buttons();?>
+					if ( !$this->is_data_pending ) {
+						$this->do_render();
+					?>
+						<br />
+						<div class="actions"><?php
+							$this->print_page_buttons();?>
+						</div><?php
+					}
+					?>
 					</div>
 				</div>
 			</div><?php
@@ -152,6 +154,11 @@ if ( !class_exists( NelioABAdminAjaxPage ) ) {
 
 		public function render_content() {
 			$this->do_render();
+			?>
+			<br />
+			<div class="actions"><?php
+				$this->print_page_buttons();?>
+			</div><?php
 		}
 
 		protected function make_submit_button( $name, $form_name, $hidden_action = 'none' ) {

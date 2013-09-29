@@ -52,8 +52,8 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: includes/admin/conversion-experiment-progress-page-controller.php:11
-#: includes/admin/conversion-experiment-progress-page-controller.php:23
+#: includes/admin/alternatives-experiment-progress-page-controller.php:11
+#: includes/admin/alternatives-experiment-progress-page-controller.php:23
 msgid "Progress of the Experiment"
 msgstr ""
 
@@ -66,99 +66,99 @@ msgstr ""
 msgid "Invalid customer ID"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:23
+#: includes/admin/views/alternatives-experiment-progress-page.php:23
 msgid "Experiment Information"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:27
-#: includes/admin/views/conversion-experiment-progress-page.php:78
+#: includes/admin/views/alternatives-experiment-progress-page.php:27
+#: includes/admin/views/alternatives-experiment-progress-page.php:78
 msgid "Evolution of the Experiment"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:36
+#: includes/admin/views/alternatives-experiment-progress-page.php:36
 msgid "Results"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:79
+#: includes/admin/views/alternatives-experiment-progress-page.php:79
 msgid "Click and drag in the plot area to zoom in"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:80
+#: includes/admin/views/alternatives-experiment-progress-page.php:80
 msgid "Pinch the chart to zoom in"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:81
-#: includes/admin/views/conversion-experiment-progress-page.php:265
+#: includes/admin/views/alternatives-experiment-progress-page.php:81
+#: includes/admin/views/alternatives-experiment-progress-page.php:265
 msgid "Visitors and Conversions"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:82
-#: includes/admin/views/conversion-experiment-progress-page.php:269
+#: includes/admin/views/alternatives-experiment-progress-page.php:82
+#: includes/admin/views/alternatives-experiment-progress-page.php:269
 msgid "Visitors"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:83
-#: includes/admin/views/conversion-experiment-progress-page.php:270
+#: includes/admin/views/alternatives-experiment-progress-page.php:83
+#: includes/admin/views/alternatives-experiment-progress-page.php:270
 msgid "Conversions"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:148
-#: includes/admin/views/conversion-experiment-progress-page.php:308
+#: includes/admin/views/alternatives-experiment-progress-page.php:148
+#: includes/admin/views/alternatives-experiment-progress-page.php:308
 msgid "Conversion Rate"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:149
+#: includes/admin/views/alternatives-experiment-progress-page.php:149
 msgid "original and alternative pages"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:150
-#: includes/admin/views/conversion-experiment-progress-page.php:223
-#: includes/admin/views/conversion-experiment-progress-page.php:267
+#: includes/admin/views/alternatives-experiment-progress-page.php:150
+#: includes/admin/views/alternatives-experiment-progress-page.php:223
+#: includes/admin/views/alternatives-experiment-progress-page.php:267
 #: includes/admin/views/edit-experiment-page.php:71
 msgid "Alternatives"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:151
+#: includes/admin/views/alternatives-experiment-progress-page.php:151
 msgid "Conversion Rate (%)"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:152
-#: includes/admin/views/conversion-experiment-progress-page.php:225
+#: includes/admin/views/alternatives-experiment-progress-page.php:152
+#: includes/admin/views/alternatives-experiment-progress-page.php:225
 msgid "{0}%"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:153
-#: includes/admin/views/conversion-experiment-progress-page.php:226
+#: includes/admin/views/alternatives-experiment-progress-page.php:153
+#: includes/admin/views/alternatives-experiment-progress-page.php:226
 msgid "<b>{0}</b><br />{1}% improvement"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:221
-#: includes/admin/views/conversion-experiment-progress-page.php:309
+#: includes/admin/views/alternatives-experiment-progress-page.php:221
+#: includes/admin/views/alternatives-experiment-progress-page.php:309
 msgid "Improvement Factor"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:222
-#: includes/admin/views/conversion-experiment-progress-page.php:266
+#: includes/admin/views/alternatives-experiment-progress-page.php:222
+#: includes/admin/views/alternatives-experiment-progress-page.php:266
 msgid "with respect to the original page"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:224
+#: includes/admin/views/alternatives-experiment-progress-page.php:224
 msgid "Improvement (%)"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:268
+#: includes/admin/views/alternatives-experiment-progress-page.php:268
 msgid "Number of {series.name}: <b>{point.y}</b>"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:296
+#: includes/admin/views/alternatives-experiment-progress-page.php:296
 msgid "result"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:297
+#: includes/admin/views/alternatives-experiment-progress-page.php:297
 msgid "results"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:305
+#: includes/admin/views/alternatives-experiment-progress-page.php:305
 #: includes/admin/views/edit-experiment-page.php:183
 #: includes/admin/views/edit-experiment-page.php:238
 #: includes/admin/views/edit-experiment-page.php:287
@@ -166,15 +166,15 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:306
+#: includes/admin/views/alternatives-experiment-progress-page.php:306
 msgid "Number of Visits"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:307
+#: includes/admin/views/alternatives-experiment-progress-page.php:307
 msgid "Number of Conversions"
 msgstr ""
 
-#: includes/admin/views/conversion-experiment-progress-page.php:325
+#: includes/admin/views/alternatives-experiment-progress-page.php:325
 msgid "TODO"
 msgstr ""
 
@@ -183,7 +183,7 @@ msgid "Basic Information"
 msgstr ""
 
 #: includes/admin/views/edit-experiment-page.php:64
-#: includes/models/conversion-experiment.php:201
+#: includes/models/alternatives-experiment.php:201
 msgid "Original Page"
 msgstr ""
 
