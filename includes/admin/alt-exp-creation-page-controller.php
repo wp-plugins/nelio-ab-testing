@@ -15,16 +15,16 @@
  */
 
 
-if ( !class_exists( NelioABNewExperimentPageController ) ) {
+if ( !class_exists( NelioABAltExpCreationPageController ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-	require_once( NELIOAB_MODELS_DIR . '/conversion-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives-experiment.php' );
 
-	require_once( NELIOAB_ADMIN_DIR . '/edit-experiment-page-controller.php' );
-	require_once( NELIOAB_ADMIN_DIR . '/views/new-experiment-page.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/alt-exp-edition-page-controller.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-creation-page.php' );
 
-	class NelioABNewExperimentPageController extends 
-			NelioABEditExperimentPageController {
+	class NelioABAltExpCreationPageController extends 
+			NelioABAltExpEditionPageController {
 
 		public static function build() {
 			$title = __( 'Add Experiment', 'nelioab' );
@@ -38,19 +38,24 @@ if ( !class_exists( NelioABNewExperimentPageController ) ) {
 				return;
 			}
 
-			$view  = new NelioABNewExperimentPage( $title );
+			// Preparing labels for PAGE vs POST alternatives
+			$alt_type = 'page';
+			if ( $_GET['experiment-type'] === 'alt-exp-post' )
+				$alt_type = 'post';
+			$view  = new NelioABAltExpCreationPage( $title, $alt_type );
 
 			global $nelioab_admin_controller;
 			if ( !empty( $nelioab_admin_controller->data ) ) {
 				$experiment = $nelioab_admin_controller->data;
 			}
 			else {
-				$experiment = new NelioABConversionExperiment( -1 );
+				$experiment = new NelioABAlternativesExperiment( -1 );
 				$experiment->clear();
 			}
 
 			$view->set_experiment( $experiment );
 			$view->set_wp_pages( get_pages() );
+			$view->set_wp_posts( get_posts() );
 			if ( $_POST['action'] == 'show_empty_quickedit_box' )
 				$view->show_empty_quickedit_box();
 			if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
@@ -58,42 +63,42 @@ if ( !class_exists( NelioABNewExperimentPageController ) ) {
 			$view->render();
 		}
 
-	}//NelioABNewExperimentPageController
+	}//NelioABAltExpCreationPageController
 
 }
 
 if ( isset( $_POST['nelioab_new_exp_form'] ) && isset( $_POST['action'] ) ) {
 
 	if ( $_POST['action'] == 'validate' )
-		if ( NelioABNewExperimentPageController::validate() ) 
-			NelioABNewExperimentPageController::on_valid_submit();
+		if ( NelioABAltExpCreationPageController::validate() ) 
+			NelioABAltExpCreationPageController::on_valid_submit();
 
 	if ( $_POST['action'] == 'cancel' )
-		NelioABNewExperimentPageController::cancel_changes();
+		NelioABAltExpCreationPageController::cancel_changes();
 
 	if ( $_POST['action'] == 'remove_alternative' )
-		NelioABNewExperimentPageController::remove_alternative();
+		NelioABAltExpCreationPageController::remove_alternative();
 
 	if ( $_POST['action'] == 'add_empty_alt' )
-		NelioABNewExperimentPageController::add_empty_alternative();
+		NelioABAltExpCreationPageController::add_empty_alternative();
 
 	if ( $_POST['action'] == 'add_alt_copying_content' )
-		NelioABNewExperimentPageController::add_alternative_copying_content();
+		NelioABAltExpCreationPageController::add_alternative_copying_content();
 
 	if ( $_POST['action'] == 'update_alternative_name' )
-		NelioABNewExperimentPageController::update_alternative_name();
+		NelioABAltExpCreationPageController::update_alternative_name();
 
 	if ( $_POST['action'] == 'show_empty_quickedit_box' )
-		NelioABNewExperimentPageController::build_experiment_from_post_data();
+		NelioABAltExpCreationPageController::build_experiment_from_post_data();
 
 	if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-		NelioABNewExperimentPageController::build_experiment_from_post_data();
+		NelioABAltExpCreationPageController::build_experiment_from_post_data();
 
 	if ( $_POST['action'] == 'edit_alt_content' )
-		NelioABNewExperimentPageController::edit_alternative_content();
+		NelioABAltExpCreationPageController::edit_alternative_content();
 
 	if ( $_POST['action'] == 'hide_new_alt_box' )
-		NelioABNewExperimentPageController::build_experiment_from_post_data();
+		NelioABAltExpCreationPageController::build_experiment_from_post_data();
 
 }
 

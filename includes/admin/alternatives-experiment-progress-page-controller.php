@@ -15,16 +15,16 @@
  */
 
 
-if ( !class_exists( NelioABConversionExperimentProgressPageController ) ) {
+if ( !class_exists( NelioABAlternativesExperimentProgressPageController ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/conversion-experiment-progress-page.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives-experiment-progress-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 
-	class NelioABConversionExperimentProgressPageController {
+	class NelioABAlternativesExperimentProgressPageController {
 
 		public static function build() {
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view = new NelioABConversionExperimentProgressPage( $title );
+			$view = new NelioABAlternativesExperimentProgressPage( $title );
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies
@@ -37,7 +37,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPageController ) ) {
 
 			$exp_id = $_REQUEST['exp_id'];
 			$title  = __( 'Results of the Experiment', 'nelioab' );
-			$view   = new NelioABConversionExperimentProgressPage( $title );
+			$view   = new NelioABAlternativesExperimentProgressPage( $title );
 
 			$mgr = new NelioABExperimentsManager();
 			$exp = null;
@@ -85,7 +85,7 @@ if ( !class_exists( NelioABConversionExperimentProgressPageController ) ) {
 			}
 		}
 
-	}//NelioABConversionExperimentProgressPageController
+	}//NelioABAlternativesExperimentProgressPageController
 
 }
 
@@ -99,7 +99,7 @@ if ( isset( $_GET['forcestop'] ) ) {
 }
 
 if ( isset( $_GET['apply-alternative'] ) ) {
-	NelioABConversionExperimentProgressPageController::apply_alternative();
+	NelioABAlternativesExperimentProgressPageController::apply_alternative();
 }
 
 ?>

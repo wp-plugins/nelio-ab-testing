@@ -75,29 +75,29 @@ class NelioABAlternativesExperimentController {
 	}
 
 	private function send_navigation() {
-		$page_id = url_to_postid( $_SERVER['HTTP_REFERER'] );
+		$post_id = url_to_postid( $_SERVER['HTTP_REFERER'] );
 
 		// Checking if the source page was the Landing Page
 		$front_page_url = rtrim( get_bloginfo('url'), '/' );
 		$http_referer   = rtrim( $_SERVER['HTTP_REFERER'], '/' );
 		if ( $http_referer == $front_page_url )
-			$page_id = get_option( 'page_on_front' );
+			$post_id = get_option( 'page_on_front' );
 
-		if ( $page_id )
-			$this->send_navigation_if_required( $page_id, $_POST['referer'] );
+		if ( $post_id )
+			$this->send_navigation_if_required( $post_id, $_POST['referer'] );
 		die();
 	}
 
 	private function check_requires_an_alternative() {
-		$page_id = url_to_postid( $_SERVER['HTTP_REFERER'] );
+		$post_id = url_to_postid( $_SERVER['HTTP_REFERER'] );
 
 		// Checking if the source page was the Landing Page
 		$front_page_url = rtrim( get_bloginfo('url'), '/' );
 		$http_referer   = rtrim( $_SERVER['HTTP_REFERER'], '/' );
 		if ( $http_referer == $front_page_url )
-			$page_id = get_option( 'page_on_front' );
+			$post_id = get_option( 'page_on_front' );
 
-		if ( $this->has_post_alternative( $page_id ) )
+		if ( $this->has_post_alternative( $post_id ) )
 			echo "true";
 		else
 			echo "false";
@@ -150,16 +150,15 @@ class NelioABAlternativesExperimentController {
 			return $comments;
 
 		// Load the original comments
-		$id = $this->get_original_related_to( $id );
-		$comments = get_comments( array( 'post_id' => $copy_from ) );
+		$copy_from = $this->get_original_related_to( $id );
+		$comments  = get_comments( array( 'post_id' => $copy_from ) );
 
 		// And prepare the form to save comments to the original
 		?>
-
 		<script type="text/javascript">
 		(function($) {
 			$(document).ready(function(){
-				$("#comment_post_ID").attr( 'value', <?php echo $id; ?> );
+				$("#comment_post_ID").attr( 'value', <?php echo $copy_from; ?> );
 			});
 		})(jQuery);
 		</script><?php

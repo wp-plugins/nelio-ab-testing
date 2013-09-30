@@ -42,6 +42,11 @@ if ( !class_exists( NelioABAdminController ) ) {
 			if ( !current_user_can( 'level_8' ) )
 				return;
 
+			// Fix $_POST quotes
+			foreach( $_POST as $key => $value )
+				if ( is_string( $value ) )
+					$_POST[$key] = stripslashes( $value );
+
 			// Iconography
 			add_action( 'admin_head', array( $this, 'add_custom_styles' ) );
 
@@ -194,18 +199,28 @@ if ( !class_exists( NelioABAdminController ) ) {
 			// Experiments pages (depending on the action, we show one or another)
 			// ----------------------------------------------------------------------
 			switch ( $_GET['action'] ) {
-				case 'edit':
-					require_once( NELIOAB_ADMIN_DIR . '/edit-experiment-page-controller.php' );
-					$page_to_build = array( NelioABEditExperimentPageController, 'build' );
+			case 'edit':
+				// When editing an experiment, we have to load the proper controller and view:
+				switch ( $_POST['nelioab_edit_exp_type'] ) {
+				case 'alt-exp-post':
+				case 'alt-exp-page':
+					require_once( NELIOAB_ADMIN_DIR . '/alt-exp-edition-page-controller.php' );
+					$page_to_build = array( NelioABAltExpEditionPageController, 'build' );
 					break;
-				case 'progress':
-					require_once( NELIOAB_ADMIN_DIR . '/conversion-experiment-progress-page-controller.php' );
-					$page_to_build = array( NelioABConversionExperimentProgressPageController, 'build' );
-					break;
+
 				default:
-					require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
-					$page_to_build = array( NelioABExperimentsPageController, 'build' );
-					break;
+					require_once( NELIOAB_ADMIN_DIR . '/select-exp-edition-page-controller.php' );
+					$page_to_build = array( NelioABSelectExpEditionPageController, 'build' );
+				}
+				break;
+			case 'progress':
+				require_once( NELIOAB_ADMIN_DIR . '/alternatives-experiment-progress-page-controller.php' );
+				$page_to_build = array( NelioABAlternativesExperimentProgressPageController, 'build' );
+				break;
+			default:
+				require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
+				$page_to_build = array( NelioABExperimentsPageController, 'build' );
+				break;
 			}
 			add_submenu_page( $nelioab_menu,
 				__( 'Experiments', 'nelioab' ),
@@ -215,13 +230,26 @@ if ( !class_exists( NelioABAdminController ) ) {
 				$page_to_build );
 
 
-			require_once( NELIOAB_ADMIN_DIR . '/new-experiment-page-controller.php' );
+			// Creating Experiment; (depending on the type, we show one form or another)
+			// ----------------------------------------------------------------------
+			switch ( $_GET['experiment-type'] ) {
+			case 'alt-exp-page':
+			case 'alt-exp-post':
+				require_once( NELIOAB_ADMIN_DIR . '/alt-exp-creation-page-controller.php' );
+				$page_to_build = array( NelioABAltExpCreationPageController, 'build' );
+				break;
+			default:
+				require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
+				$page_to_build = array( NelioABSelectExpCreationPageController, 'build' );
+			}
+			require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
 				__( 'Add Experiment', 'nelioab' ),
 				__( 'Add Experiment', 'nelioab' ),
 				'manage_options',
 				'nelioab-add-experiment',
-				array( NelioABNewExperimentPageController, 'build' ) );
+				$page_to_build );
+				
 
 			require_once( NELIOAB_ADMIN_DIR . '/settings-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
@@ -269,9 +297,13 @@ if ( !class_exists( NelioABAdminController ) ) {
 			// </style>
 
 			// b) Hide some metaboxes whose contents are managed by the plugin
-			remove_meta_box( 'submitdiv', 'page', 'side' ); // Publish options
+			remove_meta_box( 'submitdiv', 'page', 'side' );        // Publish options
 			remove_meta_box( 'commentstatusdiv', 'page', 'side' ); // Comments
-			remove_meta_box( 'slugdiv', 'page', 'normal' ); // Comments
+			remove_meta_box( 'slugdiv', 'page', 'normal' );        // Comments
+
+			remove_meta_box( 'submitdiv', 'post', 'side' );        // Publish options
+			remove_meta_box( 'commentstatusdiv', 'post', 'side' ); // Comments
+			remove_meta_box( 'slugdiv', 'post', 'normal' );        // Comments
 
 			// c) Create a custom box for saving the alternative page
 			add_meta_box(
@@ -281,6 +313,15 @@ if ( !class_exists( NelioABAdminController ) ) {
 				'page',
 				'side',
 				'high' );
+
+			add_meta_box(
+				'save_nelioab_alternative_box',      // HTML identifier
+				__( 'Edition of Alternative\'s Content', 'nelioab' ), // Box title
+				array( $this, 'print_alternative_box' ),
+				'post',
+				'side',
+				'high' );
+
 		}
 
 		public function print_alternative_box() {?>

@@ -17,7 +17,7 @@
 
 if( !class_exists( NelioABExperimentsManager ) ) {
 
-	require_once( NELIOAB_MODELS_DIR . '/conversion-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives-experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
 
 	class NelioABExperimentsManager implements iNelioABDataManager {
@@ -46,7 +46,7 @@ if( !class_exists( NelioABExperimentsManager ) ) {
 			$json_data = json_decode( $json_data['body'] );
 			if ( $json_data->items ) {
 				foreach ( $json_data->items as $json_exp ) {
-					$exp = new NelioABConversionExperiment( $json_exp->id );
+					$exp = new NelioABAlternativesExperiment( $json_exp->id );
 					$exp->set_name( $json_exp->name );
 					$exp->set_description( $json_exp->description );
 					$exp->set_status( $json_exp->status );
@@ -64,19 +64,19 @@ if( !class_exists( NelioABExperimentsManager ) ) {
 			$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/wp/altexp/' . $id );
 			$json_data = json_decode( $json_data['body'] );
 
-			$exp = new NelioABConversionExperiment( $json_data->id );
+			$exp = new NelioABAlternativesExperiment( $json_data->id );
 			$exp->set_name( $json_data->name );
 			$exp->set_description( $json_data->description );
 			$exp->set_original( $json_data->originalPage );
 			$exp->set_status( $json_data->status );
-			$exp->set_conversion_page( $json_data->conversionPage );
+			$exp->set_conversion_post( $json_data->conversionPage );
 
 			$alternatives = array();
 			if ( isset( $json_data->alternatives ) ) {
 				foreach ( $json_data->alternatives as $json_alt ) {
 					$alt = new NelioABAlternative( $json_alt->id );
 					$alt->set_name( $json_alt->name );
-					$alt->set_page_id( $json_alt->page );
+					$alt->set_post_id( $json_alt->page );
 					array_push ( $alternatives, $alt );
 				}
 			}
@@ -135,13 +135,13 @@ if( !class_exists( NelioABExperimentsManager ) ) {
 				$exp_info = array(
 					'id'           => $exp->get_id(),
 					'original'     => $exp->get_original(),
-					'goal'         => $exp->get_conversion_page(),
+					'goal'         => $exp->get_conversion_post(),
 					'alternatives' => array()
 				);
 
 				$alts = array();
 				foreach ( $exp->get_alternatives() as $alt )
-					array_push( $alts, $alt->get_page_id() );
+					array_push( $alts, $alt->get_post_id() );
 				$exp_info['alternatives'] = $alts;
 
 				array_push( $result, $exp_info );

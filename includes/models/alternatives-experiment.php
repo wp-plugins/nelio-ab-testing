@@ -15,12 +15,12 @@
  */
 
 
-if( !class_exists( NelioABConversionExperiment ) ) {
+if( !class_exists( NelioABAlternativesExperiment ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
-	class NelioABConversionExperiment extends NelioABExperiment {
+	class NelioABAlternativesExperiment extends NelioABExperiment {
 
 		private $ori;
 		private $goal;
@@ -40,6 +40,13 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 			$this->local_alternatives = array();
 		}
 
+		public function get_alt_type() {
+			$post = get_post( $this->ori, ARRAY_A );
+			if ( !isset( $post ) )
+				return 'page';
+			return $post['post_type'];
+		}
+
 		public function get_original() {
 			return $this->ori;
 		}
@@ -48,12 +55,12 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 			$this->ori = $ori;
 		}
 
-		public function get_conversion_page() {
+		public function get_conversion_post() {
 			return $this->goal;
 		}
 
-		public function set_conversion_page( $conversion_page ) {
-			$this->goal = $conversion_page;
+		public function set_conversion_post( $conversion_post ) {
+			$this->goal = $conversion_post;
 		}
 
 		public function get_appspot_alternatives() {
@@ -117,43 +124,43 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 				'post_name'    => 'nelioab_' . rand(1, 10),
 			);
 
-			$page_id = wp_insert_post( $post, true );
-			$aux = get_post( $page_id, ARRAY_A );
-			$aux['post_name'] = 'nelioab_' . $page_id;
+			$post_id = wp_insert_post( $post, true );
+			$aux = get_post( $post_id, ARRAY_A );
+			$aux['post_name'] = 'nelioab_' . $post_id;
 			wp_update_post( $aux );
 
-			add_post_meta( $page_id, '_is_nelioab_alternative', 'true' );
+			add_post_meta( $post_id, '_is_nelioab_alternative', 'true' );
 
 			$alt = new NelioABAlternative();
 			$alt->set_name( $name );
-			$alt->set_page_id( $page_id );
+			$alt->set_post_id( $post_id );
 
 			$this->add_local_alternative( $alt );
 		}
 
-		public function create_alternative_copying_content( $name, $post_id, $copy_metadata ) {
+		public function create_alternative_copying_content( $name, $src_post_id, $copy_metadata ) {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
-			$src_page = get_post( $post_id, ARRAY_A );
+			$src_post = get_post( $src_post_id, ARRAY_A );
 
-			$src_page['ID']          = null;
-			$src_page['post_status'] = 'draft';
-			$src_page['post_name']   = 'nelioab_' . rand(1, 10);
+			$src_post['ID']          = null;
+			$src_post['post_status'] = 'draft';
+			$src_post['post_name']   = 'nelioab_' . rand(1, 10);
 
-			$page_id = wp_insert_post( $src_page, true );
-			$aux = get_post( $page_id, ARRAY_A );
-			$aux['post_name'] = 'nelioab_' . $page_id;
+			$new_post_id = wp_insert_post( $src_post, true );
+			$aux = get_post( $new_post_id, ARRAY_A );
+			$aux['post_name'] = 'nelioab_' . $new_post_id;
 			wp_update_post( $aux );
 
-			add_post_meta( $page_id, '_is_nelioab_alternative', 'true' );
-			add_post_meta( $page_id, '_is_nelioab_metadata_duplicated', $copy_metadata );
+			add_post_meta( $new_post_id, '_is_nelioab_alternative', 'true' );
+			add_post_meta( $new_post_id, '_is_nelioab_metadata_duplicated', $copy_metadata );
 			if ( $copy_metadata )
-				NelioABWpHelper::copy_meta_info( $post_id, $page_id );
+				NelioABWpHelper::copy_meta_info( $src_post_id, $new_post_id );
 
 			$alt = new NelioABAlternative();
 			$alt->set_name( $name );
-			$alt->set_page_id( $page_id );
+			$alt->set_post_id( $new_post_id );
 
 			$this->add_local_alternative( $alt );
 		}
@@ -210,7 +217,7 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 		}
 
 		public function get_results() {
-			$results = new NelioABConversionResults();
+			$results = new NelioABAltExpResults();
 			
 			$url = sprintf(
 				NELIOAB_BACKEND_URL . '/altexp/%s/result',
@@ -227,10 +234,11 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 			$results->set_visitors_history( $json_data['historyVisitors'] );
 			$results->set_conversions_history( $json_data['historyConversions'] );
 			$results->set_first_update( $json_data['firstUpdate'] );
+			$results->set_last_update( $json_data['lastUpdate'] );
 
 			$alt_res = new NelioABAlternativeResults( true ); // Original
 			$alt_res->set_name( __( 'Original Page', 'nelioab' ) );
-			$alt_res->set_page_id( $this->get_original() );
+			$alt_res->set_post_id( $this->get_original() );
 			$alt_res->set_num_of_visitors( $json_data['original']['visits'] );
 			$alt_res->set_num_of_conversions( $json_data['original']['conversions'] );
 			$alt_res->set_conversion_rate( $json_data['original']['conversionRate'] );
@@ -246,14 +254,14 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 
 					$alternative = null;
 					foreach ( $this->get_alternatives() as $alt )
-						if ( $alt->get_page_id() == $json_alt['name'] )
+						if ( $alt->get_post_id() == $json_alt['name'] )
 							$alternative = $alt;
 
 					if ( $alternative == null )
 						continue;
 	
 					$alt_res->set_name( $alternative->get_name() );
-					$alt_res->set_page_id( $json_alt['name'] );
+					$alt_res->set_post_id( $json_alt['name'] );
 					$alt_res->set_num_of_visitors( $json_alt['visits'] );
 					$alt_res->set_num_of_conversions( $json_alt['conversions'] );
 					$alt_res->set_conversion_rate( $json_alt['conversionRate'] );
@@ -275,9 +283,9 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 					$g->set_min_name( __( 'Unknown', 'nelioab' ) );
 					$g->set_max_name( __( 'Unknown', 'nelioab' ) );
 					foreach( $this->get_alternatives() as $alt ) {
-						if ( $alt->get_page_id() == $stats['minVersion'] )
+						if ( $alt->get_post_id() == $stats['minVersion'] )
 							$g->set_min_name( $alt->get_name() );
-						if ( $alt->get_page_id() == $stats['maxVersion'] )
+						if ( $alt->get_post_id() == $stats['maxVersion'] )
 							$g->set_max_name( $alt->get_name() );
 					}
 					if ( $this->get_original() == $stats['minVersion'] )
@@ -319,7 +327,7 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 				'name'           => $this->get_name(),
 				'description'    => $this->get_description(),
 				'originalPage'   => $this->get_original(),
-				'conversionPage' => $this->get_conversion_page(),
+				'conversionPage' => $this->get_conversion_post(),
 				'status'         => $this->get_status(),
 			);
 
@@ -370,7 +378,7 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 
 				$body = array(
 					'name' => $alt->get_name(),
-					'page' => $alt->get_page_id(),
+					'page' => $alt->get_post_id(),
 				);
 
 				try {
@@ -380,7 +388,7 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 				}
 				catch ( Exception $e ) {
 					// If I could not add an alternative... remove the associated page
-					wp_delete_post( $alt->get_page_id() );
+					wp_delete_post( $alt->get_post_id() );
 				}
 
 			}
@@ -394,21 +402,21 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 			foreach ( $all_alternatives as $alt ) {
 				if ( $alt->was_removed() ) {
 					// Delete permanently (skipping Trash)
-					wp_delete_post( $alt->get_page_id(), true );
+					wp_delete_post( $alt->get_post_id(), true );
 				}
 			}
 
 			// 2.4 SET META "_is_nelioab_alternative" WITH THE ID OF THE EXPERIMENT
 			foreach ( $this->get_alternatives() as $alt ) {
 				$value = $this->get_id() . ',' . $this->get_status();
-				update_post_meta( $alt->get_page_id(), "_is_nelioab_alternative", $value );
+				update_post_meta( $alt->get_post_id(), "_is_nelioab_alternative", $value );
 			}
 		}
 
 		public function remove() {
 			// 1. For each alternative, we first remove its associated page
 			foreach ( $this->get_alternatives() as $alt )
-				wp_delete_post( $alt->get_page_id(), true );
+				wp_delete_post( $alt->get_post_id(), true );
 
 			// 2. We remove the experiment itself
 			$url = sprintf(
@@ -422,7 +430,7 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 		public function discard_changes() {
 			foreach ( $this->get_local_alternatives() as $alt ) {
 				// Delete permanently (skipping Trash)
-				wp_delete_post( $alt->get_page_id(), true );
+				wp_delete_post( $alt->get_post_id(), true );
 			} 
 		}
 
@@ -430,7 +438,7 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 			$ori = get_post( $this->get_original() );
 			if ( $ori ) {
 				foreach ( $this->get_alternatives() as $alt ) {
-					$alt_post = get_post( $alt->get_page_id() );
+					$alt_post = get_post( $alt->get_post_id() );
 					if ( $alt_post ) {
 						$alt_post->comment_status = $ori->comment_status;
 						wp_update_post( $alt_post );
@@ -444,11 +452,11 @@ if( !class_exists( NelioABConversionExperiment ) ) {
 			parent::set_status( $status );
 			foreach ( $this->get_alternatives() as $alt ) {
 				$value = $this->get_id() . ',' . $this->get_status();
-				update_post_meta( $alt->get_page_id(), "_is_nelioab_alternative", $value );
+				update_post_meta( $alt->get_post_id(), "_is_nelioab_alternative", $value );
 			}
 		}
 
-	}//NelioABConversionExperiment
+	}//NelioABAlternativesExperiment
 
 }
 
@@ -457,14 +465,14 @@ if( !class_exists( NelioABAlternative ) ) {
 	class NelioABAlternative {
 		private $id;
 		private $name;
-		private $page_id;
+		private $post_id;
 		private $was_removed;
 		private $is_dirty;
 
 		public function __construct( $id = -1 ) {
 			$this->id          = $id;
 			$this->name        = '';
-			$this->page_id     = -1;
+			$this->post_id     = -1;
 			$this->was_removed = false;
 			$this->is_dirty    = false;
 		}
@@ -485,12 +493,12 @@ if( !class_exists( NelioABAlternative ) ) {
 			return $this->name;
 		}
 
-		public function set_page_id( $page_id ) {
-			$this->page_id = $page_id;
+		public function set_post_id( $post_id ) {
+			$this->post_id = $post_id;
 		}
 
-		public function get_page_id() {
-			return $this->page_id;
+		public function get_post_id() {
+			return $this->post_id;
 		}
 
 		public function mark_as_removed() {
@@ -513,7 +521,7 @@ if( !class_exists( NelioABAlternative ) ) {
 			return array(
 				'id'            => $this->id,
 				'name'          => $this->name,
-				'page_id'       => $this->page_id,
+				'post_id'       => $this->post_id,
 				'was_removed'   => $this->was_removed,
 				'is_dirty'      => $this->is_dirty,
 				'creation_date' => $this->creation_date,
@@ -522,7 +530,7 @@ if( !class_exists( NelioABAlternative ) ) {
 
 		public function load_json( $json ) {
 			$this->name          = $json->name;
-			$this->page_id       = $json->page_id;
+			$this->post_id       = $json->post_id;
 			$this->id            = $json->id;
 			$this->was_removed   = $json->was_removed;
 			$this->is_dirty      = $json->is_dirty;
@@ -533,9 +541,9 @@ if( !class_exists( NelioABAlternative ) ) {
 
 }
 
-if( !class_exists( NelioABConversionResults ) ) {
+if( !class_exists( NelioABAltExpResults ) ) {
 
-	class NelioABConversionResults {
+	class NelioABAltExpResults {
 
 		private $total_visitors;
 		private $total_conversions;
@@ -545,6 +553,7 @@ if( !class_exists( NelioABConversionResults ) ) {
 		private $visitors_history;
 		private $conversions_history;
 		private $first_update;
+		private $last_update;
 
 		public function __construct() {
 			$this->total_visitors        = 0;
@@ -618,7 +627,15 @@ if( !class_exists( NelioABConversionResults ) ) {
 			return $this->first_update;
 		}
 
-	}//NelioABConversionResults 
+		public function set_last_update( $last_update ) {
+			$this->last_update = $last_update;
+		}
+
+		public function get_last_update() {
+			return $this->last_update;
+		}
+
+	}//NelioABAltExpResults 
 
 }
 
@@ -627,7 +644,7 @@ if( !class_exists( NelioABAlternativeResults ) ) {
 	class NelioABAlternativeResults {
 
 		private $name;
-		private $page_id;
+		private $post_id;
 		private $num_of_visitors;
 		private $num_of_conversions;
 		private $conversion_rate;
@@ -646,12 +663,12 @@ if( !class_exists( NelioABAlternativeResults ) ) {
 			return $this->name;
 		}
 
-		public function set_page_id( $page_id ) {
-			$this->page_id = $page_id;;
+		public function set_post_id( $post_id ) {
+			$this->post_id = $post_id;;
 		}
 
-		public function get_page_id() {
-			return $this->page_id;
+		public function get_post_id() {
+			return $this->post_id;
 		}
 
 		public function set_num_of_visitors( $num_of_visitors ) {

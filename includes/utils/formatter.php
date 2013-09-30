@@ -15,30 +15,30 @@
  */
 
 
-if ( !class_exists( NelioABNewExperimentPage ) ) {
+if ( !class_exists( 'NelioABFormatter' ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/edit-experiment-page.php' );
-	class NelioABNewExperimentPage extends NelioABEditExperimentPage {
+	abstract class NelioABFormatter {
 
-		public function __construct( $title ) {
-			parent::__construct( $title );
-			$this->set_icon( 'icon-nelioab' );
-			$this->set_form_name( 'nelioab_new_exp_form' );
+		public static function format_date( $timestamp, $tz=false ) {
+			if ( !is_int( $timestamp ) )
+				return $timestamp;
+
+			if ( $tz === false )
+				$tz = date_default_timezone_get();
+
+			$format = get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );
+			try {
+				$aux = new DateTime();
+				$aux->setTimestamp( $timestamp );
+				$aux->setTimezone( new DateTimeZone( $tz ) );
+				return $aux->format( $format );
+			} catch ( Exception $e ) {
+				$date = date_i18n( $format, $timestamp );
+			}
+
 		}
 
-		public function print_page_buttons() {
-			echo $this->make_js_button(
-					_x( 'Create', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\')',
-					false, true
-				);
-			echo $this->make_js_button(
-					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\')'
-				);
-		}
-
-	}//NelioABNewExperimentPage
+	}//NelioABFormatter
 
 }
 
