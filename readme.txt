@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,7 +30,10 @@ account](http://wp-abtesting.com) to use our plugin.
 
 = Features =
 
-* A/B test of WordPress pages (title, content, page style, page theme...)
+* A/B and multivariate test of WordPress pages (title, content, page style,
+page theme options...)
+* A/B and multivariate test of WordPress posts (title, content, page style,
+post theme options...)
 * Fresh information about the evolution of the experiment every day
 * Nice graphics about visitors, conversions, improvements, ...
 * Definition, management, and tracking of experiments integrated in WordPress
@@ -168,6 +171,10 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.0.8 =
+* Bug fix: add media is working again
+* Bug fix: renaming an alternative does no longer remove it
 
 = 1.0.7 =
 * New feature: creation of A/B tests for posts too (originally, only for

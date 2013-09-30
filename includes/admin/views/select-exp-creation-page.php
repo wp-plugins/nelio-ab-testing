@@ -30,10 +30,10 @@ if ( !class_exists( NelioABSelectExpCreationPage ) ) {
 			?>
 			<h2><a href="<?php
 				echo $url . 'alt-exp-page';
-				?>"><?php _e( 'Create one or more alternatives of a Page', 'nelioab' ); ?></a></h2>
+				?>"><?php _e( 'New A/B or Multivariate Test for Pages', 'nelioab' ); ?></a></h2>
 			<h2><a href="<?php
 				echo $url . 'alt-exp-post';
-				?>"><?php _e( 'Create one or more alternatives of a Post', 'nelioab' ); ?></a></h2>
+				?>"><?php _e( 'New A/B or Multivariate Test for Posts', 'nelioab' ); ?></a></h2>
 			<?php
 		}
 

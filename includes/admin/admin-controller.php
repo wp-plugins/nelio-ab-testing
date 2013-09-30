@@ -44,7 +44,8 @@ if ( !class_exists( NelioABAdminController ) ) {
 
 			// Fix $_POST quotes
 			foreach( $_POST as $key => $value )
-				$_POST[$key] = stripslashes( $value );
+				if ( is_string( $value ) )
+					$_POST[$key] = stripslashes( $value );
 
 			// Iconography
 			add_action( 'admin_head', array( $this, 'add_custom_styles' ) );

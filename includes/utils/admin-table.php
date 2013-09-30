@@ -158,8 +158,12 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			$this->prepare_pagination();
 		}
 
-		public function display_rows_or_placeholder() {
+		public function display_rows() {
 			$this->print_inline_edit_form();
+			parent::display_rows();
+		}
+
+		public function display_rows_or_placeholder() {
 			parent::display_rows_or_placeholder();
 		}
 
