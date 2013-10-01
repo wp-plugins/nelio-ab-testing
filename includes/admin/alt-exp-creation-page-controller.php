@@ -53,9 +53,14 @@ if ( !class_exists( NelioABAltExpCreationPageController ) ) {
 				$experiment->clear();
 			}
 
+			$options_for_posts = array(
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'asc' );
+
 			$view->set_experiment( $experiment );
 			$view->set_wp_pages( get_pages() );
-			$view->set_wp_posts( get_posts() );
+			$view->set_wp_posts( get_posts( $options_for_posts ) );
 			if ( $_POST['action'] == 'show_empty_quickedit_box' )
 				$view->show_empty_quickedit_box();
 			if ( $_POST['action'] == 'show_copying_content_quickedit_box' )

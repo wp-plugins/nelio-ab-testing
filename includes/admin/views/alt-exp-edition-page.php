@@ -99,7 +99,7 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 							'callback'  => array ( &$this, 'print_ori_field' ),
 							'mandatory' => true ),
 						array (
-							'label'     => __( 'Goal Page', 'nelioab' ),
+							'label'     => __( 'Goal Page / Post', 'nelioab' ),
 							'id'        => 'exp_goal',
 							'callback'  => array ( &$this, 'print_goal_field' ),
 							'mandatory' => true ),
@@ -293,21 +293,25 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 		public function print_name_field() {?>
 			<input name="exp_name" type="text" id="exp_name" 
 				class="regular-text" value="<?php echo $this->exp->get_name(); ?>"/>
-			<span class="description"><?php
-				_e( '(a meaningful, descriptive name for the test)', 'nelioab' );
+			<span class="description" style="display:block;"><?php
+				_e( 'Set a meaningful, descriptive name for the experiment.', 'nelioab' );
 			?></span><?php
 		}
 
 
 
 		public function print_descr_field() {?>
-			<textarea id="exp_descr"
-				name="exp_descr" cols="80" rows="5"><?php echo $this->exp->get_description(); ?></textarea><?php
+			<textarea id="exp_descr" style="width:300px;"
+				name="exp_descr" cols="45" rows="3"><?php echo $this->exp->get_description(); ?></textarea>
+			<span class="description" style="display:block;"><?php
+					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
+			?></span><?php
 		}
 
 
 		public function print_ori_field() {?>
-			<select id="exp_original" name="exp_original" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>"><?php
+			<select id="exp_original" style="width:300px;"
+				name="exp_original" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>"><?php
 			$aux = $this->wp_pages;
 			if ( $this->alt_type == 'post' )
 				$aux = $this->wp_posts;
@@ -320,30 +324,42 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 			}
 			?>
 			</select>
-			<br /><span class="description"><?php
+			<span class="description" style="display:block;"><?php
 				if ( $this->alt_type == 'post' )
-					_e( '(the post for which alternatives will be created)', 'nelioab' );
+					_e( 'This is the post for which alternatives will be created.', 'nelioab' );
 				else
-					_e( '(the page for which alternatives will be created)', 'nelioab' );
+					_e( 'This is the page for which alternatives will be created.', 'nelioab' );
 			?></span><?php
 		}
 
 
 		public function print_goal_field() {?>
-			<select id="exp_goal" name="exp_goal" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>">
-				<option value="-1">-- Select --</option><?php
-			// TODO: make goal field easy
-			foreach ( $this->wp_pages as $p ) {?>
-				<option
-					value="<?php echo $p->ID; ?>" <?php
-						if ( $this->exp->get_conversion_post() == $p->ID )
-							echo 'selected="selected"';
-					?>"><?php echo $p->post_title; ?></option><?php
-			}
-			?>
+			<select id="exp_goal" style="width:300px;"
+				name="exp_goal" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>">
+				<option value="-1">-- <?php _e( 'Select one', 'nelioab' ); ?> --</option>
+				<optgroup label="<?php _e( 'Pages' ); ?>"><?php
+				foreach ( $this->wp_pages as $p ) {?>
+					<option
+						value="<?php echo $p->ID; ?>" <?php
+							if ( $this->exp->get_conversion_post() == $p->ID )
+								echo 'selected="selected"';
+						?>"><?php echo $p->post_title; ?></option><?php
+				}
+				?>
+				</optgroup>
+				<optgroup label="<?php _e( 'Posts' ); ?>"><?php
+				foreach ( $this->wp_posts as $p ) {?>
+					<option
+						value="<?php echo $p->ID; ?>" <?php
+							if ( $this->exp->get_conversion_post() == $p->ID )
+								echo 'selected="selected"';
+						?>"><?php echo $p->post_title; ?></option><?php
+				}
+				?>
+				</optgroup>
 			</select>
-			<br /><span class="description"><?php
-				_e( '(the page you want your users to end up visiting).', 'nelioab' );
+			<span class="description" style="display:block;"><?php
+				_e( 'This is the page (or post) you want your users to end up visiting.', 'nelioab' );
 			?></span><?php
 		}
 
@@ -393,10 +409,14 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 
 		public function extra_tablenav( $which ) {
 			if ( $which == 'top' ){
-				echo __( 'Please, <b>add one or more</b> alternatives to the Original Page ' .
+				$text = __( 'Please, <b>add one or more</b> alternatives to the Original Page ' .
 					'using the buttons above.',
 					'nelioab' );
-				echo __( '', 'nelioab' );
+				if ( $this->alt_type == 'post' )
+					$text = __( 'Please, <b>add one or more</b> alternatives to the Original Post ' .
+						'using the buttons above.',
+						'nelioab' );
+				echo $text;
 			}
 		}
 
@@ -511,18 +531,18 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 							<h4><?php _e( 'New Alternative Creation', 'nelioab' ); ?></h4>
 							<label>
 								<span class="title"><?php _e( 'Name', 'nelioab' ); ?> </span>
-								<span class="input-text-wrap"><input type="text" id="new_alt_name" name="new_alt_name" class="ptitle" value="" /></span>
+								<span class="input-text-wrap"><input type="text" id="new_alt_name" name="new_alt_name" class="ptitle" value="" style="width:300px;" /></span>
 							</label>
 							<?php if ( $this->copying_content ) {?>
 								<label>
 									<span class="title"><?php _e( 'Source', 'nelioab' ); ?> </span>
-									<select id="new_alt_postid" name="new_alt_postid">
+									<select id="new_alt_postid" name="new_alt_postid" style="width:300px;">
 									<?php
 									foreach ($this->wp_posts_or_pages as $p) {?>
 										<option value="<?php echo $p->ID; ?>"><?php echo $p->post_title; ?></option><?php
 									}?>
 									</select>
-									<span class="description"><?php _e( '(The selected page\'s content will be duplicated and used by this alternative.)', 'nelioab' ); ?></span>
+									<span class="description" style="display:block;"><?php _e( 'The selected page\'s content will be duplicated and used by this alternative.', 'nelioab' ); ?></span>
 								</label>
 								<label>
 									<span class="title"></span>
