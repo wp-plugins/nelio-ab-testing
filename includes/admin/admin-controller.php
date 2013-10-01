@@ -42,11 +42,6 @@ if ( !class_exists( NelioABAdminController ) ) {
 			if ( !current_user_can( 'level_8' ) )
 				return;
 
-			// Fix $_POST quotes
-			foreach( $_POST as $key => $value )
-				if ( is_string( $value ) )
-					$_POST[$key] = stripslashes( $value );
-
 			// Iconography
 			add_action( 'admin_head', array( $this, 'add_custom_styles' ) );
 
