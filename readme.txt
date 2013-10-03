@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0.9
+Stable tag: 1.0.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -171,6 +171,13 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.0.10 =
+* "Progress of the Experiment" page has been redesigned and improved.
+* Bug fix: alternative posts do no longer appear in the list of posts
+* Bug fix: when creating an a/b or multivariate test for posts, we can now
+select any post (not only the last five)
+* Bug fix: distributing users to different alternatives does no longer fail
 
 = 1.0.9 =
 * New feature: experiments can now set either a Page or a Post as its goal

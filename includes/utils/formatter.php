@@ -20,23 +20,34 @@ if ( !class_exists( 'NelioABFormatter' ) ) {
 	abstract class NelioABFormatter {
 
 		public static function format_date( $timestamp, $tz=false ) {
-			if ( !is_int( $timestamp ) )
-				return $timestamp;
+			$aux = $timestamp;
+			if ( !is_int( $aux ) )
+				$aux = strtotime( $timestamp );
+			
+			return NelioABFormatter::format_unix_timestamp( $aux, $tz );
+		}
 
+
+		public static function format_unix_timestamp( $timestamp, $tz=false ) {
 			if ( $tz === false )
 				$tz = date_default_timezone_get();
+
+			$tz_text = '';
+			if ( $tz === 'UTC' )
+				$tz_text = ' (UTC)';
 
 			$format = get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );
 			try {
 				$aux = new DateTime();
 				$aux->setTimestamp( $timestamp );
 				$aux->setTimezone( new DateTimeZone( $tz ) );
-				return $aux->format( $format );
+				return $aux->format( $format ) . $tz_text;
 			} catch ( Exception $e ) {
-				$date = date_i18n( $format, $timestamp );
+				$date = date_i18n( $format, $timestamp ) . $tz_text;
 			}
 
 		}
+
 
 	}//NelioABFormatter
 

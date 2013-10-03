@@ -17,14 +17,14 @@
 
 if ( !class_exists( NelioABAlternativesExperimentProgressPageController ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives-experiment-progress-page.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-progress-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 
 	class NelioABAlternativesExperimentProgressPageController {
 
 		public static function build() {
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view = new NelioABAlternativesExperimentProgressPage( $title );
+			$view = new NelioABAltExpProgressPage( $title );
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies
@@ -37,7 +37,7 @@ if ( !class_exists( NelioABAlternativesExperimentProgressPageController ) ) {
 
 			$exp_id = $_REQUEST['exp_id'];
 			$title  = __( 'Results of the Experiment', 'nelioab' );
-			$view   = new NelioABAlternativesExperimentProgressPage( $title );
+			$view   = new NelioABAltExpProgressPage( $title );
 
 			$mgr = new NelioABExperimentsManager();
 			$exp = null;
