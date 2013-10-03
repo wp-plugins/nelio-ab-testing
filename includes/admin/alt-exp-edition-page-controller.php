@@ -36,12 +36,17 @@ if ( !class_exists( NelioABAltExpEditionPageController ) ) {
 				return;
 			}
 
+			$options_for_posts = array(
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'asc' );
+
 			global $nelioab_admin_controller;
 			$experiment = $nelioab_admin_controller->data;
 			$view = new NelioABAltExpEditionPage( $title, $experiment->get_alt_type() );
 			$view->set_experiment( $experiment );
 			$view->set_wp_pages( get_pages() );
-			$view->set_wp_posts( get_posts() );
+			$view->set_wp_posts( get_posts( $options_for_posts ) );
 			if ( $_POST['action'] == 'show_empty_quickedit_box' )
 				$view->show_empty_quickedit_box();
 			if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
@@ -73,7 +78,7 @@ if ( !class_exists( NelioABAltExpEditionPageController ) ) {
 		public static function add_empty_alternative() {
 			global $nelioab_admin_controller;
 			NelioABAltExpEditionPageController::build_experiment_from_post_data();
-			$alt_name = $_POST['new_alt_name'];
+			$alt_name = stripslashes( $_POST['new_alt_name'] );
 
 			$exp = $nelioab_admin_controller->data;
 			$exp->create_empty_alternative( $alt_name );
@@ -84,7 +89,7 @@ if ( !class_exists( NelioABAltExpEditionPageController ) ) {
 
 			global $nelioab_admin_controller;
 			NelioABAltExpEditionPageController::build_experiment_from_post_data();
-			$alt_name = $_POST['new_alt_name'];
+			$alt_name = stripslashes( $_POST['new_alt_name'] );
 			$alt_post_id = $_POST['new_alt_postid'];
 
 			$exp = $nelioab_admin_controller->data;
@@ -203,8 +208,8 @@ if ( !class_exists( NelioABAltExpEditionPageController ) ) {
 
 		public static function build_experiment_from_post_data() {
 			$exp = new NelioABAlternativesExperiment( $_POST['exp_id'] );
-			$exp->set_name( $_POST['exp_name'] );
-			$exp->set_description( $_POST['exp_descr'] );
+			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
+			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
 			$exp->set_original( $_POST['exp_original'] );
 			$exp->set_conversion_post( $_POST['exp_goal'] );
 			$exp->load_encoded_appspot_alternatives( $_POST['appspot_alternatives'] );

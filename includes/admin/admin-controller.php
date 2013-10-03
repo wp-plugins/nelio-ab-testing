@@ -42,16 +42,11 @@ if ( !class_exists( NelioABAdminController ) ) {
 			if ( !current_user_can( 'level_8' ) )
 				return;
 
-			// Fix $_POST quotes
-			foreach( $_POST as $key => $value )
-				if ( is_string( $value ) )
-					$_POST[$key] = stripslashes( $value );
-
 			// Iconography
 			add_action( 'admin_head', array( $this, 'add_custom_styles' ) );
 
 			// Some hooks
-			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_pages' ) );
+			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 			add_action( 'admin_menu', array( $this, 'create_nelioab_settings_pages' ) );
 			add_action( 'admin_menu', array( $this, 'configure_edit_nelioab_alternative' ) );
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
@@ -115,10 +110,10 @@ if ( !class_exists( NelioABAdminController ) ) {
 			// We make sure jQuery is loaded:
 			wp_enqueue_style( 'jquery' );
 
-			// Custom CSS for GRAPHICS (conversion experiment progress)
-			wp_register_style( 'nelioab_graphics_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/graphics.css', false, NELIOAB_PLUGIN_VERSION );
-			wp_enqueue_style( 'nelioab_graphics_css' );
+			// Custom CSS for GRAPHICS and RESULTS (experiment progress)
+			wp_register_style( 'nelioab_progress_css',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/progress.css', false, NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_progress_css' );
 
 			// Custom JS for GRAPHICS (conversion experiment progress)
 			wp_enqueue_script( 'nelioab_highcharts',
@@ -129,24 +124,36 @@ if ( !class_exists( NelioABAdminController ) ) {
 				NELIOAB_ADMIN_ASSETS_URL . '/js/graphic-functions.js?' . NELIOAB_PLUGIN_VERSION );
 		}
 
-		public function exclude_alternative_pages( $query ) {
+		public function exclude_alternative_posts_and_pages( $query ) {
 	
 			if ( $query->is_main_query() ) {
 				$alt_ids = array();
 
-				remove_action( 'pre_get_posts', array( $this, 'exclude_alternative_pages' ) );
+				remove_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 
+				// Hiding alternative pages
 				$args = array(
-					'meta_key'    => '_is_nelioab_alternative',
-					'post_status' => 'draft',
+					'meta_key'       => '_is_nelioab_alternative',
+					'post_status'    => 'draft',
 				);
 				$alternative_pages = get_pages( $args );
 				foreach ( $alternative_pages as $page )
 					array_push( $alt_ids, $page->ID );
-				add_action( 'pre_get_posts', array( $this, 'exclude_alternative_pages' ) );
+
+				// Hiding alternative posts
+				$args = array(
+					'meta_key'       => '_is_nelioab_alternative',
+					'post_status'    => 'draft',
+					'posts_per_page' => -1,
+				);
+				$alternative_pages = get_posts( $args );
+				foreach ( $alternative_pages as $page )
+					array_push( $alt_ids, $page->ID );
+
+				add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 
 				// WordPress 3.0
-				if( get_query_var('post_type') && 'page' == get_query_var('post_type') ) {
+				if ( 'page' === get_query_var('post_type') || 'post' === get_query_var('post_type') ) {
 					$query->set( 'post__not_in', $alt_ids );
 				}
 			}

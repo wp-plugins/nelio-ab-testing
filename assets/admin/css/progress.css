@@ -1,0 +1,100 @@
+/*INFO GRAPHICS */
+.nelioab-timeline-graphic {
+	height:260px;
+	margin-top:10px;
+}
+
+.nelioab-summary-graphic {
+	margin: 10px;
+	height:320px;
+	display: inline-block;
+}
+
+@media( min-width:1200px ) {
+   .nelioab-summary-graphic { width:30%; }
+}
+
+@media( max-width:1200px ) {
+   .nelioab-summary-graphic { max-width:480px; display:block; }
+}
+
+
+
+/* EXPERIMENT SUMMARY */
+
+div#info-summary {
+	vertical-align:top;
+}
+
+	#summary-numbers {
+		margin-top:0px;
+		margin-left:10px;
+		margin-right:10px;
+		padding:10px;
+		float:left;
+	}
+
+	#summary-numbers > h3 {
+		font-size:12px;
+		padding-left:2px;
+		background:none !important;
+	}
+
+	#summary-numbers > .result {
+		font-size:17px;
+		text-align:right;
+		margin-top:0.3em;
+		margin-bottom:0.3em;
+		width:170px;
+	}
+
+/* EXPERIMENT INFORMATION */
+
+div#exp-info {
+}
+
+div#exp-info h3 {
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+}
+
+div#exp-info p {
+	margin-left: 2em;
+	padding-top: 0.5em;
+	margin-top: 0px;
+}
+
+div#exp-info ul {
+	margin-left: 1em;
+	padding-top: 0.5em;
+	margin-top: 0px;
+}
+
+div#exp-info ul > li {
+	vertical-align: middle;
+}
+
+div#exp-info-gen {
+	width:320px;
+	display:inline-block;
+	vertical-align:top;
+}
+
+div#exp-info-alts {
+	width:320px;
+	display:inline-block;
+	vertical-align:top;
+}
+
+div#exp-info-alts .alt-type {
+	font-size:90%;
+	width:7em;
+	margin-right:1em;
+	display:inline-block;
+	text-align:center;
+}
+
+div#exp-info-alts .alt-type-winner {
+	background-color: #2F7ED8;
+	color: white;
+}

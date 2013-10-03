@@ -237,7 +237,7 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 			$results->set_last_update( $json_data['lastUpdate'] );
 
 			$alt_res = new NelioABAlternativeResults( true ); // Original
-			$alt_res->set_name( __( 'Original Page', 'nelioab' ) );
+			$alt_res->set_name( __( 'Original', 'nelioab' ) );
 			$alt_res->set_post_id( $this->get_original() );
 			$alt_res->set_num_of_visitors( $json_data['original']['visits'] );
 			$alt_res->set_num_of_conversions( $json_data['original']['conversions'] );
@@ -289,9 +289,9 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 							$g->set_max_name( $alt->get_name() );
 					}
 					if ( $this->get_original() == $stats['minVersion'] )
-						$g->set_min_name( __( 'Original Page', 'nelioab' ) );
+						$g->set_min_name( __( 'Original', 'nelioab' ) );
 					if ( $this->get_original() == $stats['maxVersion'] )
-						$g->set_max_name( __( 'Original Page', 'nelioab' ) );
+						$g->set_max_name( __( 'Original', 'nelioab' ) );
 
 					$results->add_gstat( $g );
 				}
@@ -524,7 +524,6 @@ if( !class_exists( NelioABAlternative ) ) {
 				'post_id'       => $this->post_id,
 				'was_removed'   => $this->was_removed,
 				'is_dirty'      => $this->is_dirty,
-				'creation_date' => $this->creation_date,
 			);
 		}
 
@@ -534,7 +533,6 @@ if( !class_exists( NelioABAlternative ) ) {
 			$this->id            = $json->id;
 			$this->was_removed   = $json->was_removed;
 			$this->is_dirty      = $json->is_dirty;
-			$this->creation_date = $json->creation_date;
 		}
 
 	}//NelioABAlternative
@@ -743,21 +741,33 @@ if( !class_exists( NelioABGStats ) ) {
 		private $certainty;
 
 		public function __construct( $type, $original ) {
-			$this->type     = UNKNOWN;
+			$this->type     = NelioABGStats::UNKNOWN;
 			$this->original = $original;
 
 			if ( $type == 'NO_CLEAR_WINNER' )
-				$this->type = NO_CLEAR_WINNER;
+				$this->type = NelioABGStats::NO_CLEAR_WINNER;
 			else if ( $type == 'NOT_ENOUGH_VISITS' )
-				$this->type = NOT_ENOUGH_VISITS;
+				$this->type = NelioABGStats::NOT_ENOUGH_VISITS;
 			else if ( $type == 'DROP_VERSION' )
-				$this->type = DROP_VERSION;
+				$this->type = NelioABGStats::DROP_VERSION;
 			else if ( $type == 'WINNER' )
-				$this->type = WINNER;
+				$this->type = NelioABGStats::WINNER;
+		}
+
+		public function is_original_the_best() {
+			return $this->original == $this->max;
+		}
+
+		public function get_type() {
+			return $this->type;
 		}
 
 		public function set_min( $min ) {
 			$this->min = $min;
+		}
+
+		public function get_min() {
+			return $this->min;
 		}
 
 		public function set_min_name( $min_name ) {
@@ -766,6 +776,10 @@ if( !class_exists( NelioABGStats ) ) {
 
 		public function set_max( $max ) {
 			$this->max = $max;
+		}
+
+		public function get_max() {
+			return $this->max;
 		}
 
 		public function set_max_name( $max_name ) {
@@ -784,30 +798,31 @@ if( !class_exists( NelioABGStats ) ) {
 			$this->certainty = $certainty;
 		}
 
+		public function get_certainty() {
+			return $this->certainty;
+		}
+
 		public function to_string() {
 			switch( $this->type ) {
-			case NO_CLEAR_WINNER:
-				return __( 'Currently, no alternative is better than the rest.', 'nelioab' );
-			case NOT_ENOUGH_VISITS:
-				return __( 'More visits are required in order to calculate statistics.', 'nelioab' );
-			case DROP_VERSION:
+			case NelioABGStats::NO_CLEAR_WINNER:
+				return __( 'No alternative is better than the rest.', 'nelioab' );
+			case NelioABGStats::NOT_ENOUGH_VISITS:
+				return __( 'No statistic results available due to too few visits.', 'nelioab' );
+			case NelioABGStats::DROP_VERSION:
 				return sprintf(
-					__( 'Comparing «%1$s» and «%2$s» gives a G-Test statistic of %3$s. ' .
-						'Therefore, <b>«%1$s» can be dropped</b> with at least %4$s%% confidence.',
+					__( '«%1$s» beats «%2$s» with a %3$s%% confidence.',
 						'nelioab' ),
-						$this->min_name,
 						$this->max_name,
-						$this->gtest,
+						$this->min_name,
 						$this->certainty
 					);
-			case WINNER:
+			case NelioABGStats::WINNER:
 					return sprintf(
-					__( 'Comparing «%1$s» and «%2$s» gives a G-Test statistic of %3$s. ' .
-						'Therefore, <b>«%2$s» wins</b> with at least %4$s%% confidence.',
+					__( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, we can conclude ' .
+						'that «%1$s» is the best alternative.',
 						'nelioab' ),
-						$this->min_name,
 						$this->max_name,
-						$this->gtest,
+						$this->min_name,
 						$this->certainty
 					);
 		default:

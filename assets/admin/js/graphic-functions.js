@@ -29,32 +29,58 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 		chart: {
 			renderTo: divName,
 			type: 'column',
-			borderWidth: 1
+			borderWidth: 1,
+			borderColor: '#C0C0C0' 
 		},
 		title: {
-			text: labels['title']
+			text: labels['title'],
+			style: {
+				 color: '#464646',
+				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+			}
 		},
 		subtitle: {
-			text: labels['subtitle']
+			text: labels['subtitle'],
+			style: {
+				 color: '#808080',
+				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+			}
 		},
 		xAxis: {
 			categories: categories,
 			lineWidth: 2,
 			title: {
-				text: labels['xaxis']
+				text: null,
+				style: {
+					 color: '#464646',
+					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontWeight: "normal",
+				},
 			},
 			labels: {
 				style: {
-					fontWeight: 'bold',
-					color: 'black'
-				}
+					 color: '#464646',
+					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontWeight: "normal",
+				},
 			}
 		},
 		yAxis: {
 			title: {
-				text: labels['yaxis']
+				text: labels['yaxis'],
+				style: {
+					color: '#464646',
+					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontWeight: "normal",
+				}
 			},
-			lineWidth: 2
+			lineWidth: 2,
+			plotLines: [{
+				value: 0,
+				width: 4,
+				color: '#C0D0E0',
+				zIndex: 4
+			}]
 		},
 		plotOptions: {
 			column: {
@@ -62,7 +88,9 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 					enabled: true,
 					color: 'black',
 					style: {
-						fontWeight: 'bold'
+						 color: '#464646',
+						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontWeight: "normal",
 					},
 					formatter: function () {
 						return labels['column'].nelioabformat(this.y)
@@ -112,30 +140,45 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 		chart: {
 			renderTo: divName,
 			type: 'column',
-			borderWidth: 1
+			borderWidth: 1,
+			borderColor: '#C0C0C0' 
 		},
 		title: {
-			text: labels['title']
+			text: labels['title'],
+			style: {
+				 color: '#464646',
+				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+			}
 		},
 		subtitle: {
-			text: labels['subtitle']
+			text: labels['subtitle'],
+			style: {
+				 color: '#808080',
+				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+			}
 		},
 		xAxis: {
 			categories: categories,
 			lineWidth: 2,
 			title: {
-				text: labels['xaxis']
+				text: null,
 			},
 			labels: {
 				style: {
-					fontWeight: 'bold',
-					color: 'black'
-				}
+					 color: '#464646',
+					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontWeight: "normal",
+				},
 			}
 		},
 		yAxis: {
 			title: {
-				text: labels['yaxis']
+				text: labels['yaxis'],
+				style: {
+					color: '#464646',
+					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontWeight: "normal",
+				}
 			},
 			lineWidth: 2,
 			plotLines: [{
@@ -151,7 +194,9 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 					enabled: true,
 					color: 'black',
 					style: {
-						fontWeight: 'bold'
+						 color: '#464646',
+						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontWeight: "normal",
 					},
 					formatter: function () {
 						return labels['column'].nelioabformat(this.y)
@@ -202,7 +247,10 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 			renderTo: divName,
 			type: 'bar',
 			borderWidth: 1,
-			spacingRight: 30
+			spacingRight: 30,
+			borderColor: '#C0C0C0',
+			marginLeft: 2,
+			marginLeft: 40 
 		},
 		legend: {
 			navigation: {
@@ -228,18 +276,48 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 			}
 		},
 		title: {
-			text: labels['title']
+			text: labels['title'],
+			style: {
+				 color: '#464646',
+				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+			}
 		},
 		subtitle: {
-			text: labels['subtitle']
+			text: labels['subtitle'],
+			style: {
+				 color: '#808080',
+				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+			}
 		},
 		tooltip: {
 			pointFormat: labels['detail']
 		},
 		xAxis: {
 			categories: categories,
+			style: {
+				color: '#464646',
+				fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				fontWeight: "normal",
+			},
+			labels: {
+				style: {
+					color: '#464646',
+					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontWeight: "normal",
+					paddingLeft: 20,
+				},
+				rotation: -90,
+			}
 		},
 		yAxis: {
+			title: {
+				text: null,
+				style: {
+					color: '#464646',
+					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontWeight: "normal",
+				}
+			},
 			min: 0,
 			allowDecimals: false,
 		},
@@ -277,20 +355,23 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 				zoomType: 'x',
 				spacingRight: 20,
 				type: 'area',
-				borderWidth: 1,
+				borderWidth: 0,
+				backgroundColor: '#F7F7F7',
 		  },
 		  title: {
 				text: labels['title'],
-				//style: {
-				//	 color: '#585858'
-				//}
+				style: {
+					 color: '#464646',
+					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				}
 		  },
 		  subtitle: {
 				text: document.ontouchstart === undefined ?
 					 labels['subtitle1'] :
 					 labels['subtitle2'],
 				style: {
-					 color: '#848484'
+					 color: '#808080',
+					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
 				}
 		  },
 		  xAxis: {
@@ -303,11 +384,15 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 		  yAxis: {
 				title: {
 					 text: labels['yaxis'],
-					 //style: {
-					 //	 color: '#848484'
-					 //}
+					 align: 'low',
+					 style: {
+						 color: '#464646',
+						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontWeight: "normal",
+					 }
 				},
-				min: 0,
+				min: 0.1,
+				startOnTick: true,
 				allowDecimals: false,
 		  },
 		  tooltip: {
@@ -336,7 +421,7 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 								enabled: true
 						  }
 					 },
-					 threshold: null
+					 threshold: null,
 				}
 		  },
 		  credits: {

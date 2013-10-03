@@ -18,7 +18,7 @@ function nelioab_init() {
 }
 
 function nelioab_areCookiesEnabled() {
-	document.cookie = "__verify=1";
+	document.cookie = "__verify=1;path=/";
 	var supportsCookies = document.cookie.length > 1 && 
 		document.cookie.indexOf("__verify=1") > -1;
 	delete_cookie("__verify");
@@ -43,7 +43,7 @@ function nelioab_sync_cookies($) {
 				clean_cookies();
 			$.each(json, function(name, value) {
 				if (nelioab_get_cookie_by_name(name) == undefined)
-					document.cookie = name + "=" + value;
+					document.cookie = name + "=" + value + ";path=/";
 			});
 			delete_cookie("__nelioab_new_version");
 			cookies_sync = true;
@@ -103,7 +103,7 @@ function clean_cookies() {
 
 function delete_cookie( name ) {
 	var thePast = new Date(1985, 1, 1);
-	document.cookie = name + "=1;expires=" + thePast.toUTCString();
+	document.cookie = name + "=1;path=/;expires=" + thePast.toUTCString();
 }
 
 function nelioab_nav($) {
