@@ -741,17 +741,17 @@ if( !class_exists( NelioABGStats ) ) {
 		private $certainty;
 
 		public function __construct( $type, $original ) {
-			$this->type     = UNKNOWN;
+			$this->type     = NelioABGStats::UNKNOWN;
 			$this->original = $original;
 
 			if ( $type == 'NO_CLEAR_WINNER' )
-				$this->type = NO_CLEAR_WINNER;
+				$this->type = NelioABGStats::NO_CLEAR_WINNER;
 			else if ( $type == 'NOT_ENOUGH_VISITS' )
-				$this->type = NOT_ENOUGH_VISITS;
+				$this->type = NelioABGStats::NOT_ENOUGH_VISITS;
 			else if ( $type == 'DROP_VERSION' )
-				$this->type = DROP_VERSION;
+				$this->type = NelioABGStats::DROP_VERSION;
 			else if ( $type == 'WINNER' )
-				$this->type = WINNER;
+				$this->type = NelioABGStats::WINNER;
 		}
 
 		public function is_original_the_best() {
@@ -804,11 +804,11 @@ if( !class_exists( NelioABGStats ) ) {
 
 		public function to_string() {
 			switch( $this->type ) {
-			case NO_CLEAR_WINNER:
+			case NelioABGStats::NO_CLEAR_WINNER:
 				return __( 'No alternative is better than the rest.', 'nelioab' );
-			case NOT_ENOUGH_VISITS:
+			case NelioABGStats::NOT_ENOUGH_VISITS:
 				return __( 'No statistic results available due to too few visits.', 'nelioab' );
-			case DROP_VERSION:
+			case NelioABGStats::DROP_VERSION:
 				return sprintf(
 					__( '«%1$s» beats «%2$s» with a %3$s%% confidence.',
 						'nelioab' ),
@@ -816,7 +816,7 @@ if( !class_exists( NelioABGStats ) ) {
 						$this->min_name,
 						$this->certainty
 					);
-			case WINNER:
+			case NelioABGStats::WINNER:
 					return sprintf(
 					__( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, we can conclude ' .
 						'that «%1$s» is the best alternative.',

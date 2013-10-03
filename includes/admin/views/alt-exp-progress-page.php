@@ -157,7 +157,7 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 										printf ( '<p class="result">%s</p>', __( 'Original', 'nelioab' ) );
 									else
 										printf ( '<p class="result">%s</p>',
-											printf( __( 'Alternative %s', 'nelioab' ), $the_winner ) );
+											sprintf( __( 'Alternative %s', 'nelioab' ), $the_winner ) );
 								}
 								?>
 							</div>
@@ -457,7 +457,7 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 				return false;
 
 			$bestg = $gtests[count( $gtests ) - 1];
-			if ( $bestg->get_max == $id )
+			if ( $bestg->get_max() == $id )
 				if ( $bestg->get_type() == NelioABGStats::WINNER )
 					return true;
 
