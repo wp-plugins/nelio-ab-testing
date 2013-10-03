@@ -76,7 +76,7 @@ if( !class_exists( NelioABExperiment ) ) {
 		}
 
 		public function set_creation_date( $creation_date ) {
-			$this->creation_date = intval( substr( $creation_date, 0, 10 ) );
+			$this->creation_date = $creation_date;
 		}
 
 		public function clear() {
