@@ -62,6 +62,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		}
 
 		private static function throw_exceptions_if_any( $result ) {
+
 			if ( is_wp_error( $result ) ) {
 				$err = NelioABErrCodes::BACKEND_NOT_AVAILABLE;
 				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
@@ -78,6 +79,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				$err = intval( $aux->error->message );
 				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
 			}
+
 		}
 
 	}//NelioABBackend
@@ -98,12 +100,14 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const INVALID_EXPERIMENT               = 12;
 		const INVALID_ALTERNATIVE              = 13;
 		const RESULTS_NOT_AVAILABLE_YET        = 14;
+		const DEACTIVATED_USER                 = 15;
 
 		// These are "private" error codes
 		const BACKEND_NOT_AVAILABLE      = -1;
 		const BACKEND_NO_SITE_CONFIGURED = -2;
 		const BACKEND_UNKNOWN_ERROR      = -3;
 		const ERROR_404                  = -4;
+		const NON_ACCEPTED_TAC           = -5;
 
 		public static function to_string( $err ) {
 			switch( $err ) {
@@ -136,6 +140,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'Invalid alternative.', 'nelioab' );
 				case NelioABErrCodes::RESULTS_NOT_AVAILABLE_YET:
 					return __( 'Results for this experiment are not yet available.', 'nelioab' );
+				case NelioABErrCodes::DEACTIVATED_USER:
+					return __( 'User account has been deactivated.', 'nelioab' );
 
 				// Private errors
 				case NelioABErrCodes::BACKEND_NOT_AVAILABLE:
@@ -144,6 +150,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'No site has been configured.', 'nelioab' );
 				case NelioABErrCodes::ERROR_404:
 					return __( 'Error 404 when accessing an endpoint.', 'nelioab' );
+				case NelioABErrCodes::NON_ACCEPTED_TAC:
+					return __( 'Terms and conditions are not accepted.', 'nelioab' );
 				case NelioABErrCodes::BACKEND_UNKNOWN_ERROR:
 				default:
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );

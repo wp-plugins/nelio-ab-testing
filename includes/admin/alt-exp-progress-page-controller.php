@@ -15,12 +15,12 @@
  */
 
 
-if ( !class_exists( NelioABAlternativesExperimentProgressPageController ) ) {
+if ( !class_exists( NelioABAltExpProgressPageController ) ) {
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-progress-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 
-	class NelioABAlternativesExperimentProgressPageController {
+	class NelioABAltExpProgressPageController {
 
 		public static function build() {
 			$title = __( 'Results of the Experiment', 'nelioab' );
@@ -85,7 +85,7 @@ if ( !class_exists( NelioABAlternativesExperimentProgressPageController ) ) {
 			}
 		}
 
-	}//NelioABAlternativesExperimentProgressPageController
+	}//NelioABAltExpProgressPageController
 
 }
 
@@ -99,7 +99,7 @@ if ( isset( $_GET['forcestop'] ) ) {
 }
 
 if ( isset( $_GET['apply-alternative'] ) ) {
-	NelioABAlternativesExperimentProgressPageController::apply_alternative();
+	NelioABAltExpProgressPageController::apply_alternative();
 }
 
 ?>

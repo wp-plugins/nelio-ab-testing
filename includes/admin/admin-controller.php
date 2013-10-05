@@ -221,8 +221,8 @@ if ( !class_exists( NelioABAdminController ) ) {
 				}
 				break;
 			case 'progress':
-				require_once( NELIOAB_ADMIN_DIR . '/alternatives-experiment-progress-page-controller.php' );
-				$page_to_build = array( NelioABAlternativesExperimentProgressPageController, 'build' );
+				require_once( NELIOAB_ADMIN_DIR . '/alt-exp-progress-page-controller.php' );
+				$page_to_build = array( NelioABAltExpProgressPageController, 'build' );
 				break;
 			default:
 				require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
