@@ -17,6 +17,8 @@
 
 if( !class_exists( NelioABSettings ) ) {
 
+	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+
 	class NelioABSettings {
 
 		public static function cookie_prefix() {
@@ -29,7 +31,6 @@ if( !class_exists( NelioABSettings ) ) {
 
 			$json_data = null;
 			try {
-				require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 				$params = array(
 					'body' => array( 'mail' => $email, 'registrationNumber' => $reg_num )
 				);
@@ -41,7 +42,6 @@ if( !class_exists( NelioABSettings ) ) {
 				$json_data = json_decode( $json_data['body'] );
 			}
 			catch ( Exception $e ) {
-				require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 				$error = $e->getCode();
 
 				if ( $error == NelioABErrCodes::INVALID_PRODUCT_REG_NUM )
@@ -56,6 +56,17 @@ if( !class_exists( NelioABSettings ) ) {
 			NelioABSettings::set_reg_num_validity( true );
 			NelioABSettings::set_email_validity( true );
 			update_option( 'nelioab_customer_id', $json_data->key->id );
+
+			// Check if the current site is already registered for this account
+			$registered = false;
+			$this_url   = get_option( 'siteurl' );
+			$sites_info = NelioABSettings::get_registered_sites_information();
+			$sites      = $sites_info->get_registered_sites();
+			foreach( $sites as $s )
+				if ( $s->get_url() == $this_url )
+					$registered = true;
+			if ( $registered )
+				NelioABSettings::register_this_site();
 		}
 
 		public static function get_customer_id() {
@@ -120,28 +131,46 @@ if( !class_exists( NelioABSettings ) ) {
 
 		public static function check_user_settings() {
 
-			if ( !NelioABSettings::is_email_valid() )
-				return false;
+			if ( !NelioABSettings::is_email_valid() ) {
+				$err = NelioABErrCodes::INVALID_MAIL;
+				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+			}
 
-			if ( !NelioABSettings::is_reg_num_valid() )
-				return false;
+			if ( !NelioABSettings::is_reg_num_valid() ) {
+				$err = NelioABErrCodes::INVALID_PRODUCT_REG_NUM;
+				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+			}
 
-			if ( !NelioABSettings::are_terms_and_conditions_accepted() )
-				return false;
+			if ( !NelioABSettings::are_terms_and_conditions_accepted() ) {
+				$err = NelioABErrCodes::NON_ACCEPTED_TAC;
+				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+			}
 
-			$the_past   = mktime(0, 0, 0, 1, 1, 2000);
+			if ( !NelioABSettings::has_a_configured_site() ) {
+				$err = NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED;
+				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+			}
+
+			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
 			$last_check = get_option( 'nelioab_last_check_user_settings', $the_past);
 			$now        = time();
-			$offset     = 82800; // ~seg == 23h
-			if ( ( $last_check + $offset ) < $now ) {
-				// TODO: implement properly, using an AppEngine specific function
-				update_option( 'nelioab_last_check_user_settings', $now);
-			}
-			return NelioABSettings::has_a_configured_site();
+			$offset     = 1800; // seg == 30min
+			// if ( ( $the_past + $offset ) < $now ) {
+				try {
+					$url = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
+					$aux = NelioABBackend::remote_get( $url );
+					update_option( 'nelioab_last_check_user_settings', $now);
+				}
+				catch ( Exception $e ) {
+					if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER )
+						throw $e;
+				}
+			// }
+
+			return true;
 		}
 
 		public static function get_registered_sites_information() {
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$res = new NelioABSitesInfo();
 			$res->set_max_sites( 3 ); // TODO: recover data from json, when finally available
 
@@ -164,7 +193,6 @@ if( !class_exists( NelioABSettings ) ) {
 		}
 
 		public static function update_registered_sites_if_required( $url ) {
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 			while ( substr( $url, -1 ) === '/' )
 				$url = substr( $url, 0, strlen($url) - 1 );
@@ -187,7 +215,6 @@ if( !class_exists( NelioABSettings ) ) {
 		}
 
 		public static function register_this_site() {
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 			try {
 				$params = array( 'url' => get_option( 'siteurl' ) );
@@ -209,7 +236,6 @@ if( !class_exists( NelioABSettings ) ) {
 		}
 
 		public static function deregister_this_site() {
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			
 			try {
 				$json_data = NelioABBackend::remote_post( sprintf(

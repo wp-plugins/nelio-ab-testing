@@ -28,9 +28,10 @@ class NelioABAlternativesExperimentController {
 		if ( isset( $_POST['nelioab_load_alt'] ) ) {
 			// If we are accessing a page with the "nelioab_load_alt" POST param set,
 			// then we have to...TODO
-			add_filter( 'posts_results',  array( &$this, 'posts_results_intercept' ) );
-			add_filter( 'the_posts',      array( &$this, 'the_posts_intercept' ) );
-			add_filter( 'comments_array', array( &$this, 'load_comments_from_original' ) );
+			add_filter( 'posts_results',   array( &$this, 'posts_results_intercept' ) );
+			add_filter( 'the_posts',       array( &$this, 'the_posts_intercept' ) );
+			add_filter( 'comments_array',  array( &$this, 'load_comments_from_original' ) );
+			add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
 		}
 		else {
 			// If the "nelioab_load_alt" POST param is not set, we have to return the
@@ -164,6 +165,17 @@ class NelioABAlternativesExperimentController {
 		</script><?php
 
 		return $comments;
+	}
+
+	public function load_comments_number_from_original( $comments_number ) {
+		global $post;
+		$id = $post->ID;
+		if ( !$this->is_post_alternative( $id ) )
+			return $comments_number;
+
+		$ori_id = $this->get_original_related_to( $post->ID );
+		$aux    = get_post( $ori_id, ARRAY_A );
+		return $aux['comment_count'];
 	}
 
 	public function add_js_to_replace_titles() {

@@ -578,6 +578,16 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 
 		}
 
+		protected function prepare_pagination() {
+			$total_items = count( $this->items ) + 1;
+			$this->set_pagination_args( array(
+				'total_items' => $total_items, //WE have to calculate the total number of items
+				'per_page'	=> $total_items, //WE have to determine how many items to show on a page
+				'total_pages' => 1
+			) );
+		}
+		
+		
 
 	}// NelioABExperimentsTable
 }
