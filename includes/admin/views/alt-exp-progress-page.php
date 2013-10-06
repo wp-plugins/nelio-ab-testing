@@ -471,7 +471,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 		}
 
 		private function get_winning_confidence() {
-			$res    = $this->results;
+			$res = $this->results;
+			if ( $res == null )
+				return -1;
+
 			$exp    = $this->exp;
 			$gtests = $res->get_gstats();
 
@@ -498,7 +501,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 		}
 
 		private function is_winner( $id ) {
-			$res    = $this->results;
+			$res = $this->results;
+			if ( $res == null )
+				return false;
+
 			$gtests = $res->get_gstats();
 			if ( count( $gtests ) == 0 )
 				return false;
