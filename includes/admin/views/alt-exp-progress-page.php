@@ -25,11 +25,16 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 		private $exp;
 		private $results;
 
+		private $is_ori_page;
+		private $is_goal_page;
+
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
-			$this->exp     = null;
-			$this->results = null;
+			$this->exp          = null;
+			$this->results      = null;
+			$this->is_ori_page  = true;
+			$this->is_goal_page = true;
 		}
 
 		public function set_experiment( $exp ) {
@@ -53,16 +58,22 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 			// Goal title
 			$goal = __( 'Page not found.', 'nelioab' );
 			$aux  = get_post( $exp->get_conversion_post() );
-			if ( $aux )
+			if ( $aux ) {
 				$goal = trim( $aux->post_title );
+				if ( $aux->post_type == 'post' )
+					$this->is_goal_page = false;
+			}
 			if ( strlen( $goal ) == 0 )
 				$goal = sprintf( __( 'No title available (id is %s)', 'nelioab' ), $aux->ID );
 
 			// Original title
 			$aux  = get_post( $exp->get_original() );
 			$ori = sprintf( __( 'id is %s', 'nelioab' ), $aux->ID );
-			if ( $aux )
+			if ( $aux ) {
 				$ori = trim( $aux->post_title );
+				if ( $aux->post_type == 'post' )
+					$this->is_ori_page = false;
+			}
 
 			// Statistics
 			$total_visitors    = 0;
@@ -146,18 +157,28 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 								<p class="result"><?php echo $total_conversions; ?></p>
 								<h3><?php _e( 'Conversion Rate', 'nelioab' ); ?></h3>
 								<p class="result"><?php printf( '%s %%', $conversion_rate ); ?></p>
-								<h3><?php _e( 'Winner', 'nelioab' ); ?></h3>
+								<h3><?php
+									if ( $exp->get_status() == NelioABExperimentStatus::RUNNING )
+										_e( 'Current Winner', 'nelioab' );
+									else
+										_e( 'Winner', 'nelioab' );
+								?></h3>
 								<?php
 								$the_winner = $this->who_wins();
 								if ( $the_winner == -1 ) {
 									printf ( '<p class="result">%s</p>', __( 'None', 'nelioab' ) );
 								}
 								else {
-									if ( $the_winner == 0 )
-										printf ( '<p class="result">%s</p>', __( 'Original', 'nelioab' ) );
-									else
+									if ( $the_winner == 0 ) {
+										if ( $this->is_ori_page )
+											printf ( '<p class="result">%s</p>', __( 'Original Page', 'nelioab' ) );
+										else
+											printf ( '<p class="result">%s</p>', __( 'Original Post', 'nelioab' ) );
+									}
+									else {
 										printf ( '<p class="result">%s</p>',
 											sprintf( __( 'Alternative %s', 'nelioab' ), $the_winner ) );
+									}
 								}
 								?>
 							</div>
@@ -184,7 +205,12 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 							<p><?php echo $exp->get_name(); ?></p>
 						<h3><?php _e( 'Description', 'nelioab' ); ?></h3>
 							<p><?php echo $descr; ?></p>
-						<h3><?php _e( 'Goal Page', 'nelioab' ); ?></h3>
+						<h3><?php
+							if ( $this->is_goal_page )
+								_e( 'Goal Page', 'nelioab' );
+							else
+								_e( 'Goal Post', 'nelioab' );
+						?></h3>
 							<?php $link = get_permalink( $exp->get_conversion_post() ); ?>
 							<p><?php echo sprintf( '<a href="%s" target="_blank">%s</a>', $link, $goal ); ?></p>
 					</div>
@@ -212,9 +238,14 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 								<script>
 								function nelioab_confirm_overriding_original(id) {
 									if ( !confirm( "<?php
-											_e( 'You are about to override the original page ' .
-											'with the contents of an alternative. ' .
-											'Do you really want to continue?', 'nelioab' );
+											if ( $this->is_ori_page )
+												_e( 'You are about to override the original page ' .
+												'with the contents of an alternative. ' .
+												'Do you really want to continue?', 'nelioab' );
+											else
+												_e( 'You are about to override the original post ' .
+												'with the contents of an alternative. ' .
+												'Do you really want to continue?', 'nelioab' );
 										?>" ) )
 											return;
 		
@@ -383,16 +414,32 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 
 					<?php
 					if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-						if ( $the_winner == 0 )
-							echo '<p><b>' . __( 'Right now, no alternative is beating the original one.', 'nelioab' ) . '</b></p>';
-						if ( $the_winner > 0 )
-							echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original one.', 'nelioab' ), $the_winner ) . '</b></p>';
+						if ( $the_winner == 0 ) {
+							if ( $this->is_ori_page )
+								echo '<p><b>' . __( 'Right now, no alternative is beating the original page.', 'nelioab' ) . '</b></p>';
+							else
+								echo '<p><b>' . __( 'Right now, no alternative is beating the original post.', 'nelioab' ) . '</b></p>';
+						}
+						if ( $the_winner > 0 ) {
+							if ( $this->is_ori_page )
+								echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original page.', 'nelioab' ), $the_winner ) . '</b></p>';
+							else
+								echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original post.', 'nelioab' ), $the_winner ) . '</b></p>';
+						}
 					}
 					else {
-						if ( $the_winner == 0 )
-							echo '<p><b>' . __( 'No alternative was better the original one.', 'nelioab' ) . '</b></p>';
-						if ( $the_winner > 0 )
-							echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original one.', 'nelioab' ), $the_winner ) . '</b></p>';
+						if ( $the_winner == 0 ) {
+							if ( $this->is_ori_page )
+								echo '<p><b>' . __( 'No alternative was better the original page.', 'nelioab' ) . '</b></p>';
+							else
+								echo '<p><b>' . __( 'No alternative was better the original post.', 'nelioab' ) . '</b></p>';
+						}
+						if ( $the_winner > 0 ) {
+							if ( $this->is_ori_page )
+								echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original page.', 'nelioab' ), $the_winner ) . '</b></p>';
+							else
+								echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original post.', 'nelioab' ), $the_winner ) . '</b></p>';
+						}
 					}
 					?>
 	
@@ -424,7 +471,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 		}
 
 		private function get_winning_confidence() {
-			$res    = $this->results;
+			$res = $this->results;
+			if ( $res == null )
+				return -1;
+
 			$exp    = $this->exp;
 			$gtests = $res->get_gstats();
 
@@ -451,7 +501,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 		}
 
 		private function is_winner( $id ) {
-			$res    = $this->results;
+			$res = $this->results;
+			if ( $res == null )
+				return false;
+
 			$gtests = $res->get_gstats();
 			if ( count( $gtests ) == 0 )
 				return false;
@@ -602,7 +655,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 			// -------------------------------------------
 			$labels = array();
 			$labels['title']    = __( 'Conversion Rates', 'nelioab' );
-			$labels['subtitle'] = __( 'for the original and the alternative pages', 'nelioab' );
+			if ( $this->is_ori_page )
+				$labels['subtitle'] = __( 'for the original and the alternative pages', 'nelioab' );
+			else
+				$labels['subtitle'] = __( 'for the original and the alternative posts', 'nelioab' );
 			$labels['xaxis']    = __( 'Alternatives', 'nelioab' );
 			$labels['yaxis']    = __( 'Conversion Rate (%)', 'nelioab' );
 			$labels['column']   = __( '{0}%', 'nelioab' );
@@ -685,7 +741,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 			// -------------------------------------------
 			$labels = array();
 			$labels['title']    = __( 'Improvement Factors', 'nelioab' );
-			$labels['subtitle'] = __( 'with respect to the original page', 'nelioab' );
+			if ( $this->is_ori_page )
+				$labels['subtitle'] = __( 'with respect to the original page', 'nelioab' );
+			else
+				$labels['subtitle'] = __( 'with respect to the original post', 'nelioab' );
 			$labels['xaxis']    = __( 'Alternatives', 'nelioab' );
 			$labels['yaxis']    = __( 'Improvement (%)', 'nelioab' );
 			$labels['column']   = __( '{0}%', 'nelioab' );
@@ -740,7 +799,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 			// -------------------------------------------
 			$labels = array();
 			$labels['title']       = __( 'Visitors and Conversions', 'nelioab' );
-			$labels['subtitle']    = __( 'for the original and the alternative pages', 'nelioab' );
+			if ( $this->is_ori_page )
+				$labels['subtitle']    = __( 'for the original and the alternative pages', 'nelioab' );
+			else
+				$labels['subtitle']    = __( 'for the original and the alternative posts', 'nelioab' );
 			$labels['xaxis']       = __( 'Alternatives', 'nelioab' );
 			$labels['detail']      = __( 'Number of {series.name}: <b>{point.y}</b>', 'nelioab' );
 			$labels['visitors']    = __( 'Visitors', 'nelioab' );

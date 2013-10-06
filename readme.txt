@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0.11
+Stable tag: 1.0.13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -172,11 +172,18 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.0.13 =
+* Bug fix: view results page does not freeze when no results are available
+
+= 1.0.12 =
+* Stability improvements
+* Bug fix: comment count for alternatives is OK
+
 = 1.0.11 =
 * Bug fix: showing the winner of an experiment quickly
 
 = 1.0.10 =
-* "Progress of the Experiment" page has been redesigned and improved.
+* "Progress of the Experiment" page has been redesigned and improved
 * Bug fix: alternative posts do no longer appear in the list of posts
 * Bug fix: when creating an a/b or multivariate test for posts, we can now
 select any post (not only the last five)
@@ -221,7 +228,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.0.6 =
-The warning "headers already sent by" does no longer appear in the Dashboard.
-
+= 1.0.13
+Bug fix on results page.
 

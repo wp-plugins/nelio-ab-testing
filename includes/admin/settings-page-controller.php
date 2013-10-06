@@ -66,6 +66,23 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 			}
 			catch ( Exception $e ) {}
 
+			// Querying account information
+			$user_info = array();
+			$user_info['firstname']    = '&ndash;';
+			$user_info['lastname']     = '&ndash;';
+			try {
+				$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s', NelioABSettings::get_customer_id() );
+				$json = NelioABBackend::remote_get( $url );
+				$json = json_decode( $json['body'] );
+
+				$user_info['firstname']    = $json->firstname;
+				$user_info['lastname']     = $json->lastname;
+				$user_info['subscription'] = $json->subscriptionUrl;
+				$user_info['status']       = $json->status;
+			}
+			catch ( Exception $e ) {
+			}
+
 			// Render content
 			$title = __( 'Settings', 'nelioab' );
 			$view = new NelioABSettingsPage( $title );
@@ -77,6 +94,7 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 			$view->set_registered_sites( $sites );
 			$view->set_max_sites( $max_sites );
 			$view->set_current_site_status( $current_site_status );
+			$view->set_user_info( $user_info );
 			$view->render_content();
 			die();
 		}

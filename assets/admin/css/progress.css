@@ -81,7 +81,7 @@ div#exp-info-gen {
 }
 
 div#exp-info-alts {
-	width:320px;
+	min-width:320px;
 	display:inline-block;
 	vertical-align:top;
 }

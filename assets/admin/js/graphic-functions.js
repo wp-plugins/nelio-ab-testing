@@ -75,6 +75,7 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 				}
 			},
 			lineWidth: 2,
+			maxPadding: 0.1,
 			plotLines: [{
 				value: 0,
 				width: 4,
@@ -181,6 +182,7 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 				}
 			},
 			lineWidth: 2,
+			maxPadding: 0.1,
 			plotLines: [{
 				value: 0,
 				width: 4,
@@ -320,6 +322,7 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 			},
 			min: 0,
 			allowDecimals: false,
+			maxPadding: 0.1,
 		},
 		legend: {
 			backgroundColor: '#FFFFFF',
@@ -394,6 +397,7 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 				min: 0.1,
 				startOnTick: true,
 				allowDecimals: false,
+				maxPadding: 0.1,
 		  },
 		  tooltip: {
 				shared: true

@@ -17,10 +17,15 @@
 
 if ( !class_exists( NelioABErrorController ) ) {
 
+	include_once( NELIOAB_UTILS_DIR . '/backend.php' );
 	class NelioABErrorController {
 
 		public static function build( $exception ) {
 			switch ( $exception->getCode() ) {
+			case NelioABErrCodes::DEACTIVATED_USER:
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
+				$view = new NelioABDeactivatedUserPage();
+				break;
 			default:
 				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
 				$view = new NelioABErrorPage( $exception->getMessage() );
