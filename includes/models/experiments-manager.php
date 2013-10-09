@@ -107,9 +107,11 @@ if( !class_exists( NelioABExperimentsManager ) ) {
 			// If we are forcing the update, or the last update is too old, we
 			// perform a new update.
 			try {
-				$result = NelioABExperimentsManager::get_running_experiments();
+				$result        = NelioABExperimentsManager::get_running_experiments();
+				$exps_in_cache = NelioABExperimentsManager::get_running_experiments_from_cache();
 				update_option( 'nelioab_running_experiments', json_encode( $result ) );
-				update_option( 'nelioab_running_experiments_date', mktime() );
+				if ( count( $result ) == 0 && count( $exps_in_cache ) > 0 )
+					update_option( 'nelioab_running_experiments_date', mktime() );
 			}
 			catch ( Exception $e ) {
 				// If we could not retrieve the running experiments, we cannot update

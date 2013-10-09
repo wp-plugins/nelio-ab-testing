@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0.13
+Stable tag: 1.0.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -172,6 +172,11 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.0.14 =
+* Improved plugin stability
+* Bug fix: experiments without a goal or alternatives cannot be started
+* Bug fix: JS scripts are properly loaded in IE
+
 = 1.0.13 =
 * Bug fix: view results page does not freeze when no results are available
 
@@ -205,11 +210,11 @@ pages).
 * Bug fix: the warning "headers already sent by" does no longer appear
 
 = 1.0.5 =
-* Bug fix: assets are properly loaded from the plugin.
+* Bug fix: assets are properly loaded from the plugin
 
 = 1.0.4 =
 * Bug fix: titles are no longer wrapped using SPAN tags. We now use a jQuery
-  replaceText function.
+  replaceText function
 
 = 1.0.3 =
 * Bug fix: no more redirections using PHP's "header" function
@@ -228,6 +233,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.0.13
-Bug fix on results page.
+= 1.0.14
+Some small bug fixes and stability issues.
 

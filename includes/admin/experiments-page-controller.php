@@ -113,7 +113,7 @@ if ( !class_exists( NelioABExperimentsPageController ) ) {
 			$view->render_content();
 
 			// Update cache
-			NelioABExperimentsManager::update_running_experiments_cache();
+			NelioABExperimentsManager::update_running_experiments_cache( true );
 
 			die();
 		}
