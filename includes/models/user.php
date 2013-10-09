@@ -53,13 +53,12 @@ if( !class_exists( NelioABUser ) ) {
 	
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
 				// Creating the cookie for the experiment information
-				$expiration_date = time() + (86400*28);
 				$num_of_options = count( $exp_data->alternatives );
 				$option         = mt_rand( 0, $num_of_options );
 				$alt_post       = $exp_data->original;
 				if ( $option != $num_of_options )
 					$alt_post = $exp_data->alternatives[$option];
-				nelioab_setcookie( $cookie_name, $alt_post, $expiration_date );
+				nelioab_setcookie( $cookie_name, $alt_post );
 			}
 			$alt_post = $NELIOAB_COOKIES[$cookie_name];
 	

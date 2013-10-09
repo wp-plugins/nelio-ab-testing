@@ -86,10 +86,7 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 		}
 
 		public function untrash() {
-			$status = NelioABExperimentStatus::DRAFT;
-			if ( count( $this->get_alternatives() ) > 0 )
-				$status = NelioABExperimentStatus::READY;
-			$this->update_status_and_save( $status );
+			$this->update_status_and_save( $this->determine_proper_status() );
 		}
 
 		public function update_status_and_save( $status ) {
@@ -300,6 +297,19 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 			return $results;
 		}
 
+		protected function determine_proper_status() {
+			if ( count( $this->get_alternatives() ) <= 0 )
+				return NelioABExperimentStatus::DRAFT;
+
+			if ( $this->get_original() < 0 )
+				return NelioABExperimentStatus::DRAFT;
+
+			if ( $this->get_conversion_post() < 0 )
+				return NelioABExperimentStatus::DRAFT;
+
+			return NelioABExperimentStatus::READY;
+		}
+
 		public function save() {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
@@ -318,10 +328,7 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 				);
 			}
 
-			if ( count( $this->get_alternatives() ) > 0 )
-				$this->set_status( NelioABExperimentStatus::READY );
-			else
-				$this->set_status( NelioABExperimentStatus::DRAFT );
+			$this->set_status( $this->determine_proper_status() );
 
 			$body = array(
 				'name'           => $this->get_name(),

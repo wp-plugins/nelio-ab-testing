@@ -28,17 +28,20 @@ class NelioABAlternativesExperimentController {
 		if ( isset( $_POST['nelioab_load_alt'] ) ) {
 			// If we are accessing a page with the "nelioab_load_alt" POST param set,
 			// then we have to...TODO
-			add_filter( 'posts_results',   array( &$this, 'posts_results_intercept' ) );
-			add_filter( 'the_posts',       array( &$this, 'the_posts_intercept' ) );
-			add_filter( 'comments_array',  array( &$this, 'load_comments_from_original' ) );
+			add_filter( 'posts_results',       array( &$this, 'posts_results_intercept' ) );
+			add_filter( 'the_posts',           array( &$this, 'the_posts_intercept' ) );
+			add_filter( 'comments_array',      array( &$this, 'load_comments_from_original' ) );
 			add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
+			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
 		}
 		else {
 			// If the "nelioab_load_alt" POST param is not set, we have to return the
 			// page with the JS file that is able to load an alternative and do all
 			// the required stuff
-			add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_script' ) );
+			add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_scripts' ) );
 		}
+
+		// Make the script for managing alternatives available everywhere
 
 		// Make sure that the title is replaced everywhere
 		add_filter( 'the_title', array( &$this, 'change_title_on_abtesting' ),  10, 2 );
@@ -137,9 +140,20 @@ class NelioABAlternativesExperimentController {
 		wp_enqueue_script( 'jquery' );
 	}
 
-	public function load_nelioab_script() {
-		wp_enqueue_script( 'nelioab_alternatives_script',
-			NELIOAB_ASSETS_URL . '/js/nelioab.js?' . NELIOAB_PLUGIN_VERSION );
+	public function load_nelioab_scripts() {
+		wp_enqueue_script( 'nelioab_alternatives_script_generic',
+			NELIOAB_ASSETS_URL . '/js/nelioab-generic.js?' . NELIOAB_PLUGIN_VERSION );
+		wp_enqueue_script( 'nelioab_alternatives_script_check',
+			NELIOAB_ASSETS_URL . '/js/nelioab-check.js?' . NELIOAB_PLUGIN_VERSION );
+		wp_enqueue_script( 'tapas_script',
+			NELIOAB_ASSETS_URL . '/js/tapas.js?' . NELIOAB_PLUGIN_VERSION );
+	}
+
+	public function load_nelioab_scripts_for_alt() {
+		wp_enqueue_script( 'nelioab_alternatives_script_generic',
+			NELIOAB_ASSETS_URL . '/js/nelioab-generic.js?' . NELIOAB_PLUGIN_VERSION );
+		wp_enqueue_script( 'nelioab_alternatives_script_nav',
+			NELIOAB_ASSETS_URL . '/js/nelioab-nav.js?' . NELIOAB_PLUGIN_VERSION );
 		wp_enqueue_script( 'tapas_script',
 			NELIOAB_ASSETS_URL . '/js/tapas.js?' . NELIOAB_PLUGIN_VERSION );
 	}
@@ -254,6 +268,16 @@ class NelioABAlternativesExperimentController {
 		return $alt_id;
 	}
 
+	private function is_goal_in_some_experiment( $post_id ) {
+		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+		foreach ( $running_exps as $exp_data )
+			if ( $exp_data->goal == $post_id )
+				return true;
+		// If it is not the goal of any experiment, return false
+		return false;
+	}
+
 	private function get_post_alternative( $post_id ) {
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		return NelioABUser::get_alternative_for_conversion_experiment( $post_id );
@@ -270,39 +294,53 @@ class NelioABAlternativesExperimentController {
 		if ( $referer_url == $front_page_url )
 			$src_id = get_option( 'page_on_front' );
 
-		// Checking if the source page was an alternativ
+		// Checking if the source page was an alternative
 		if ( $this->has_post_alternative( $src_id ) )
 			$src_id = $this->get_post_alternative( $src_id );
 
-		// Checking if the destination page was an alternativ
+		// Checking if the destination page was an alternative
 		if ( $this->has_post_alternative( $dest_id ) )
 			$dest_id = $this->get_post_alternative( $dest_id );
 
-		// If SRC_ID or DEST_ID do not belong to any experiment, quit
-		if ( ! $this->has_post_alternative( $src_id ) &&
+		// If DEST_ID does not belong to any experiment, quit
+		if ( ! $this->is_goal_in_some_experiment( $dest_id ) &&
 		     ! $this->has_post_alternative( $dest_id ) &&
-		     ! $this->is_post_alternative( $src_id ) &&
 		     ! $this->is_post_alternative( $dest_id ) )
 			return;
 		
 		// SENDING DATA to the backend
 		// ---------------------------
+		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+
 		$url = sprintf(
 			NELIOAB_BACKEND_URL . '/site/%s/nav',
 			NelioABSettings::get_site_id()
 		);
-		$data = array(
+
+		$nav = array(
 			'user'              => '' . NelioABUser::get_id(),
 			'referer'           => '' . $referer_url,
 			'origin'            => '' . $src_id,
 			'destination'       => '' . $this->get_original_related_to( $dest_id ),
 			'actualDestination' => '' . $dest_id );
 
+		$wrapped_params = array();
+		$credential     = NelioABBackend::make_credential();
+
+		$wrapped_params['object']     = $nav;
+		$wrapped_params['credential'] = $credential;
+
+		$data = array(
+			'headers' => array( 'Content-Type' => 'application/json' ),
+			'body'    => json_encode( $wrapped_params ),
+			'timeout' => 50,
+		);
+
 		for ( $attemp=0; $attemp < 5; ++$attemp ) { 
 			try {
-				$result = NelioABBackend::remote_post( $url, $data );
+				$result = NelioABBackend::remote_post_raw( $url, $data );
 				break;
 			}
 			catch ( Exception $e ) {

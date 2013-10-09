@@ -40,8 +40,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			}
 
 			$json_params = array(
-            'headers' => array( 'Content-Type' => 'application/json' ),
-            'body'    => json_encode( $wrapped_params ),
+				'headers' => array( 'Content-Type' => 'application/json' ),
+				'body'    => json_encode( $wrapped_params ),
          );
 
 			return NelioABBackend::remote_post_raw( $url, $json_params );
@@ -70,6 +70,11 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 			if ( $result['response']['code'] == 404 ) {
 				$err = NelioABErrCodes::ERROR_404;
+				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+			}
+
+			if ( $result['response']['code'] == 204 ) {
+				$err = NelioABErrCodes::STATUS_204;
 				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
 			}
 
@@ -108,6 +113,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const BACKEND_UNKNOWN_ERROR      = -3;
 		const ERROR_404                  = -4;
 		const NON_ACCEPTED_TAC           = -5;
+		const STATUS_204                 = -6;
 
 		public static function to_string( $err ) {
 			switch( $err ) {
@@ -152,6 +158,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'Error 404 when accessing an endpoint.', 'nelioab' );
 				case NelioABErrCodes::NON_ACCEPTED_TAC:
 					return __( 'Terms and conditions are not accepted.', 'nelioab' );
+				case NelioABErrCodes::STATUS_204:
+					return __( 'Backend is not accessible.<br />Please, try again in just a few moments.', 'nelioab' );
 				case NelioABErrCodes::BACKEND_UNKNOWN_ERROR:
 				default:
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );
