@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0.14
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,8 @@ what matters to you: serving information to your visitors as quickly as
 possible.
 
 **Note:** Please keep in mind that [you will need an
-account](http://wp-abtesting.com) to use our plugin.
+account](http://wp-abtesting.com) to use our plugin (the service includes a
+15-day free trial period).
 
 
 = Features =
@@ -172,6 +173,12 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.0.15 =
+* Page for selecting new experiment has been redesigned
+* Settings page has been redesigned
+* Improved sites management
+* Some internal improvements
+
 = 1.0.14 =
 * Improved plugin stability
 * Bug fix: experiments without a goal or alternatives cannot be started
@@ -233,6 +240,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.0.14
-Some small bug fixes and stability issues.
+= 1.0.15
+A few pages have been redesigned. The overall plugin is more robust now.
 

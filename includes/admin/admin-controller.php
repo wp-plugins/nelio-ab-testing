@@ -19,6 +19,7 @@ if ( !class_exists( NelioABAdminController ) ) {
 	class NelioABAdminController {
 
 		public $message;
+		public $global_warnings;
 		public $validation_errors;
 		public $data;
 	
@@ -32,12 +33,27 @@ if ( !class_exists( NelioABAdminController ) ) {
 		 */
 		public function __construct() {
 			$this->message           = NULL;
+			$this->global_warnings   = array();
 			$this->validation_errors = array();
 			$this->data              = NULL;
 			add_filter( 'init', array( $this, 'init' ) );
 		}
 
 		public function init() {
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+
+			// Some relevant global warnings
+			// -----------------------------
+
+			// No more quota
+			if ( !NelioABSettings::has_quota_left() ) {
+				array_push( $this->global_warnings,
+					__( '<b>Warning!</b> There is no more quota available.', 'nelioab' ) );
+			}
+
+			// -----------------------------
+
+
 			// If the current user is NOT admin, do not show the plugin
 			if ( !current_user_can( 'level_8' ) )
 				return;
@@ -49,7 +65,6 @@ if ( !class_exists( NelioABAdminController ) ) {
 			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 			add_action( 'admin_menu', array( $this, 'create_nelioab_settings_pages' ) );
 			add_action( 'admin_menu', array( $this, 'configure_edit_nelioab_alternative' ) );
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			add_action( 'pre_update_option_siteurl', array( NelioABSettings, 'update_registered_sites_if_required' ) );
 
 			// AJAX functions
@@ -57,6 +72,12 @@ if ( !class_exists( NelioABAdminController ) ) {
 
 			// TODO: this hook has to be placed inside the proper controller (don't know how, yet)
 			add_action( 'admin_enqueue_scripts', array( &$this, 'load_custom_style_and_scripts' ) );
+		}
+
+		public function add_css_for_creation_page() {
+			wp_register_style( 'nelioab_new_exp_selection_css',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-exp-selection.css', false, NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_new_exp_selection_css' );
 		}
 
 		public function add_custom_styles() {?>
@@ -247,6 +268,7 @@ if ( !class_exists( NelioABAdminController ) ) {
 				break;
 			default:
 				require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
+				add_action( 'admin_head', array( $this, 'add_css_for_creation_page' ) );
 				$page_to_build = array( NelioABSelectExpCreationPageController, 'build' );
 			}
 			require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );

@@ -337,26 +337,32 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 			<select id="exp_goal" style="width:300px;"
 				name="exp_goal" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>">
 				<option value="-1">-- <?php _e( 'Select one', 'nelioab' ); ?> --</option>
-				<optgroup label="<?php _e( 'Pages' ); ?>"><?php
-				foreach ( $this->wp_pages as $p ) {?>
-					<option
-						value="<?php echo $p->ID; ?>" <?php
-							if ( $this->exp->get_conversion_post() == $p->ID )
-								echo 'selected="selected"';
-						?>"><?php echo $p->post_title; ?></option><?php
+				<?php
+				if ( count( $this->wp_pages ) > 0 ) {?>
+					<optgroup label="<?php _e( 'Pages' ); ?>">
+					<?php
+					foreach ( $this->wp_pages as $p ) {?>
+						<option
+							value="<?php echo $p->ID; ?>" <?php
+								if ( $this->exp->get_conversion_post() == $p->ID )
+									echo 'selected="selected"';
+							?>"><?php echo $p->post_title; ?></option><?php
+					}?>
+					</optgroup><?php
+				}
+
+				if ( count( $this->wp_posts ) > 0 ) {?>
+					<optgroup label="<?php _e( 'Posts' ); ?>"><?php
+					foreach ( $this->wp_posts as $p ) {?>
+						<option
+							value="<?php echo $p->ID; ?>" <?php
+								if ( $this->exp->get_conversion_post() == $p->ID )
+									echo 'selected="selected"';
+							?>"><?php echo $p->post_title; ?></option><?php
+					}?>
+					</optgroup><?php
 				}
 				?>
-				</optgroup>
-				<optgroup label="<?php _e( 'Posts' ); ?>"><?php
-				foreach ( $this->wp_posts as $p ) {?>
-					<option
-						value="<?php echo $p->ID; ?>" <?php
-							if ( $this->exp->get_conversion_post() == $p->ID )
-								echo 'selected="selected"';
-						?>"><?php echo $p->post_title; ?></option><?php
-				}
-				?>
-				</optgroup>
 			</select>
 			<span class="description" style="display:block;"><?php
 				_e( 'This is the page (or post) you want your users to end up visiting.', 'nelioab' );
@@ -438,7 +444,7 @@ if ( !class_exists( NelioABAltExpEditionPage ) ) {
 							'">%s</a>',
 						$alt->get_post_id(),
 						'edit_alt_content',
-						__( 'Edit Content', 'nelioab' ) ),
+						__( 'Save Experiment & Edit Content', 'nelioab' ) ),
 	
 					'delete'	=> sprintf(
 						'<a style="cursor:pointer;" onClick="javascript:' .

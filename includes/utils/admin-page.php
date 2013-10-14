@@ -44,6 +44,7 @@ if ( !class_exists( NelioABAdminPage ) ) {
 				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
 				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>
 				<?php 
+						$this->print_global_warnings();
 						$this->print_message();
 						$this->print_errors();
 				?>
@@ -55,6 +56,22 @@ if ( !class_exists( NelioABAdminPage ) ) {
 						$this->print_page_buttons();?>
 					</div>
 				</div>
+			</div><?php
+		}
+
+		protected function print_global_warnings() {
+			global $nelioab_admin_controller;
+			$warnings = $nelioab_admin_controller->global_warnings;
+			if ( !isset( $warnings ) || $warnings == NULL || count( $warnings ) == 0 )
+				return;
+			?>
+			<div id="global-warnings-div"
+				class="updated below-h2">
+				<ul style="padding-left:1em;"><?php
+					foreach ( $warnings as $warning )
+						echo "<li>&ndash; $warning</li>";
+				?>
+				</ul>
 			</div><?php
 		}
 
@@ -89,9 +106,9 @@ if ( !class_exists( NelioABAdminPage ) ) {
 				style="display:<?php echo $display; ?>"><?php
 			if ( count( $nelioab_admin_controller->validation_errors ) > 0 ) {?>
 				<p><?php echo _('The following errors have been encountered:'); ?></p>
-				<ul style="padding-left: 2em; list-style-type: circle;"><?php
+				<ul style="padding-left:2em;"><?php
 					foreach ( $nelioab_admin_controller->validation_errors as $err )
-						echo '<li>' . $err[1] . '</li>';?>
+						echo '<li>&ndash; ' . $err[1] . '</li>';?>
 				</ul>
 			<?php
 			}

@@ -33,11 +33,14 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			$ori['post_title']    = $overriding['post_title'];
 			$ori['post_content']  = $overriding['post_content'];
 			$ori['post_excerpt']  = $overriding['post_excerpt'];
+			$ori['post_parent']   = $overriding['post_parent'];
 			wp_update_post( $ori );
+
+			NelioABWpHelper::copy_terms( $overriding_id, $ori_id );
 
 			$copy_meta = get_post_meta( $overriding_id, '_is_nelioab_metadata_duplicated', true );
 			if ( $copy_meta )
-				NelioABWpHelper::copy_meta_info( $overriding_id, $ori_id, false );
+				NelioABWpHelper::copy_meta_info( $overriding_id, $ori_id );
 
 		}
 
@@ -45,8 +48,25 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		 * Copy all custom fields (post meta) from one object to another
 		 */
 		public static function copy_meta_info( $src_id, $dest_id, $copy_hidden = true ) {
-			$custom_fields = get_post_meta( $src_id );
 
+			// First of all, we remove all post meta from the destination
+			$custom_fields = get_post_meta( $dest_id );
+			if ( $custom_fields ) {
+				foreach ( $custom_fields as $key => $val) {
+
+					// If the metakey is ours (i.e. nelioab), we do not remove it
+					if ( strpos( $key, 'nelioab_' ) !== false )
+						continue;
+
+					if ( !$copy_hidden && substr( $key, 0, 1 ) == '_' )
+						continue;
+
+					delete_post_meta( $dest_id, $key );
+				}
+			}
+
+			// And then we transfer the new ones
+			$custom_fields = get_post_meta( $src_id );
 			if ( $custom_fields ) {
 				foreach ( $custom_fields as $key => $val) {
 
@@ -73,27 +93,22 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		 * Copy all terms (including categories and tags) from one object to another
 		 */
 		public static function copy_terms( $src_id, $dest_id ) {
-			$querystr = 'SELECT term_taxonomy_id, term_order ' .
-				'FROM ' . $wpdb->prefix . 'term_relationships ' .
-				'WHERE object_id=' . $src_id;
-
-			$the_terms = $wpdb->get_results( $querystr );
 			
-			foreach( $the_terms as $term ) {
-				$wpdb->insert(
-					$wpdb->prefix . "term_relationships",
-					array(
-						'object_id'        => $dest_id,
-						'term_taxonomy_id' => $term->term_taxonomy_id,
-						'term_order'       => $term->term_order,
-					),
-					array(
-						'%d',
-						'%d',
-						'%d',
-					)
-				);
-			}
+			// First of all, we remove all terms from the destination
+			wp_delete_object_term_relationships( $dest_id, get_taxonomies() );
+
+			// And then we transfer the new ones
+			$terms = wp_get_post_terms( $src_id );
+			$aux   = array();
+			if ( $terms )
+				foreach ( $terms as $term )
+					array_push( $aux, $term->name );
+			wp_set_post_terms( $dest_id, $aux );
+
+			$categories = wp_get_post_categories( $src_id );
+			if ( $categories )
+				wp_set_post_categories( $dest_id, $categories );
+
 		}
 
 		/**

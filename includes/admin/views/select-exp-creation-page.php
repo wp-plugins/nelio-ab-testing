@@ -27,13 +27,31 @@ if ( !class_exists( NelioABSelectExpCreationPage ) ) {
 
 		public function do_render() {
 			$url = admin_url() . 'admin.php?page=nelioab-add-experiment&experiment-type=';
-			?>
-			<h2><a href="<?php
-				echo $url . 'alt-exp-page';
-				?>"><?php _e( 'New A/B or Multivariate Test for Pages', 'nelioab' ); ?></a></h2>
-			<h2><a href="<?php
-				echo $url . 'alt-exp-post';
-				?>"><?php _e( 'New A/B or Multivariate Test for Posts', 'nelioab' ); ?></a></h2>
+
+			// Option 1
+			$this->do_box( $url . 'alt-exp-page',
+				__( 'New A/B or Multivariate<br />Test for Pages', 'nelioab' ),
+				'page' ); //NELIOAB_ADMIN_ASSETS_URL . '/images/new-exp-page.png' );
+
+			// Option 2
+			$this->do_box( $url . 'alt-exp-post',
+				__( 'New A/B or Multivariate<br />Test for Posts', 'nelioab' ),
+				'post' ); //NELIOAB_ADMIN_ASSETS_URL . '/images/new-exp-post.png' );
+		}
+
+
+		private function do_box( $url, $label, $icon ) {?>
+			<a href="<?php echo $url; ?>">
+				<div class="nelioab-option">
+					<div class="nelioab-option-image-holder">
+						&nbsp;
+						<div class="nelioab-option-image nelioab-image-<?php echo $icon; ?>">&nbsp;</div>
+						&nbsp;
+					</div>
+					<p style="line-height:1.2em;"><?php echo $label; ?></p>
+				</div>
+			</a>
+
 			<?php
 		}
 

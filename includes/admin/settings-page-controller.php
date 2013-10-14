@@ -45,6 +45,7 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 			catch ( Exception $e ) {}
 
 			$current_site_status = NelioABSite::NOT_REGISTERED;
+			$error_retrieving_registered_sites = false;
 			try {
 				$sites_info = NelioABSettings::get_registered_sites_information();
 				$max_sites  = $sites_info->get_max_sites();
@@ -64,7 +65,9 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 				}
 
 			}
-			catch ( Exception $e ) {}
+			catch ( Exception $e ) {
+				$error_retrieving_registered_sites = true;
+			}
 
 			// Querying account information
 			$user_info = array();
@@ -79,6 +82,8 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 				$user_info['lastname']     = $json->lastname;
 				$user_info['subscription'] = $json->subscriptionUrl;
 				$user_info['status']       = $json->status;
+				$user_info['total_quota']  = intval( $json->quotaPerMonth );
+				$user_info['quota']        = intval( $json->quota + $json->quotaExtra );
 			}
 			catch ( Exception $e ) {
 			}
@@ -95,6 +100,8 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 			$view->set_max_sites( $max_sites );
 			$view->set_current_site_status( $current_site_status );
 			$view->set_user_info( $user_info );
+			if ( $error_retrieving_registered_sites )
+				$view->set_error_retrieving_registered_sites();
 			$view->render_content();
 			die();
 		}

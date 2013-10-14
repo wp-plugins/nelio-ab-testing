@@ -33,6 +33,7 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 		private $user_info;
 
 		private $current_site_status;
+		private $error_retrieving_registered_sites;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -43,6 +44,8 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 			$this->tac              = false;
 			$this->sites            = array();
 			$this->max_sites        = 1;
+
+			$this->error_retrieving_registered_sites = false;
 		}
 
 		public function set_current_site_status( $site_status ) {
@@ -69,6 +72,10 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 			$this->is_reg_num_valid = $is_reg_num_valid;
 		}
 
+		public function set_error_retrieving_registered_sites() {
+			$this->error_retrieving_registered_sites = true;
+		}
+
 		public function set_tac_checked( $tac ) {
 			$this->tac = $tac;
 		}
@@ -83,6 +90,17 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 
 		protected function do_render() {?>
 			<form id="nelioab_account_form" method="post">
+
+				<?php
+					if ( !$this->is_email_valid ) {
+						_e( '<p>Don\'t you have an account yet? ' .
+							'<a href="http://wp-abtesting.com/subscription-plans/">' .
+							'Subscribe now!</a></p>',
+							'nelioab' );
+						echo '<br /><br />';
+					}
+				?>
+
 				<input type="hidden" name="nelioab_account_form" value="true" />
 	
 				<?php
@@ -144,10 +162,8 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 	
 			?></h2>
 
-			<h3><?php _e( 'First Name', 'nelioab' ); ?></h3>
-			<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['firstname']; ?></p>
-			<h3><?php _e( 'Last Name', 'nelioab' ); ?></h3>
-			<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname']; ?></p>
+			<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
+			<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
 			<h3><?php _e( 'Subscription Details', 'nelioab' ); ?></h3>
 			<p style="margin-top:0em;margin-left:3em;"><?php
 				if ( !isset( $this->user_info['subscription'] ) )
@@ -156,8 +172,25 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 					_e( 'You are using your BETA free-pass.', 'nelioab' );
 				else
 					printf( '<a href="%s">%s</a>', $this->user_info['subscription'],
-						__( 'Check your subscription details', 'nelioab' ) );
+						__( 'Check your subscription details.', 'nelioab' ) );
 			?></p>
+			<p style="margin-top:0em;margin-left:3em;"><?php
+				printf( __( 'This subscription plan permits up to %d page views per month.', 'nelioab' ),
+					$this->user_info['total_quota'] );
+			?></p>
+
+			<h3><?php _e( 'Available Quota', 'nelioab' ); ?></h3>
+			<?php
+				$the_quota   = $this->user_info['quota'];
+				$quota_color = '#00AA00';
+				if ( $the_quota < 1000 )
+					$quota_color = '#FF9532';
+				if ( $the_quota < 200 )
+					$quota_color = 'red';
+			?>
+			<p style="color:<?php echo $quota_color; ?>;margin-top:0em;margin-left:3em;font-size:120%;"><b><?php
+				echo $the_quota;
+			?></b></p>
 
 			<?php if ( $this->is_email_valid && $this->is_reg_num_valid && $this->tac ) { ?>
 
@@ -171,40 +204,62 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 				<h3><?php _e( 'Registered Sites', 'nelioab' ); ?></h3>
 
 				<?php
-				switch( $this->current_site_status ) {
-				case NelioABSite::NON_MATCHING_URLS:
-					$this->print_site_non_matching();
-					break;
-		
-				case NelioABSite::ACTIVE:
-					$this->print_site_ok();
-					break;
-				}?>
-		
-				<?php
-				if ( count( $other_sites ) > 0 ) {?>
-					<ul style="margin-left:3em;margin-top:0px;">
-					<?php 
-					foreach( $other_sites as $site ) 
-						echo sprintf( '<li> - <a href="%s" target="_blank">%s</a></li>',
-							$site->get_url(), $site->get_url() );
-					?>
-					</ul>
-				<?php
-				}?>
+				if ( $this->error_retrieving_registered_sites ) {
+
+					?><p style="margin-top:0em;margin-left:3em;"><?php
+						echo __( 'There was an error while retrieving the list of all ' .
+							'registered sites to this account. ',
+							'nelioab' );
+
+					if ( NelioABSettings::has_a_configured_site() ) {
+							echo __( 'Nonetheless, please note this site is registered to your ' .
+								'account, which means you can still use use all plugin\'s ' .
+								'functionalities.',
+								'nelioab' );
+					}
+
+					?></p><?php
+
+				}
+				else {
+					switch( $this->current_site_status ) {
+					case NelioABSite::NON_MATCHING_URLS:
+						$this->print_site_non_matching();
+						break;
+			
+					case NelioABSite::ACTIVE:
+						$this->print_site_ok();
+						break;
+					}?>
+			
+					<?php
+					if ( count( $other_sites ) > 0 ) {?>
+						<ul style="margin-left:3em;margin-top:0px;">
+						<?php 
+						foreach( $other_sites as $site ) 
+							echo sprintf( '<li> - <a href="%s" target="_blank">%s</a></li>',
+								$site->get_url(), $site->get_url() );
+						?>
+						</ul>
+					<?php
+					}?>
+	
+					<?php
+					switch( $this->current_site_status ) {
+					case NelioABSite::NOT_REGISTERED:
+					case NelioABSite::INVALID_ID:
+						$this->print_site_to_be_registered();
+						break;
+					}?>
+	
+					<form id="nelioab_registration_form" method="post">
+						<input type="hidden" name="nelioab_registration_form" value="true" />
+						<input type="hidden" id="nelioab_registration_action" name="nelioab_registration_action" value="" />
+					</form>
 
 				<?php
-				switch( $this->current_site_status ) {
-				case NelioABSite::NOT_REGISTERED:
-				case NelioABSite::INVALID_ID:
-					$this->print_site_to_be_registered();
-					break;
-				}?>
-
-				<form id="nelioab_registration_form" method="post">
-					<input type="hidden" name="nelioab_registration_form" value="true" />
-					<input type="hidden" id="nelioab_registration_action" name="nelioab_registration_action" value="" />
-				</form>
+				}
+				?>
 	
 			<?php
 			}

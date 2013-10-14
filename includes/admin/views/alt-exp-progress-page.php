@@ -78,15 +78,25 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 			// Statistics
 			$total_visitors    = 0;
 			$total_conversions = 0;
-			$conversion_rate   = '&ndash;';
+			$conversion_rate   = '&mdash;';
 			if ( $res ) {
 				$total_visitors    = number_format( $res->get_total_visitors(), 0, '', ' ' );
 				$total_conversions = number_format( $res->get_total_conversions(), 0, '', ' ' );
 				$conversion_rate   = number_format( $res->get_total_conversion_rate(), 2 );
 			}
 
+			// Winner (if any) details
+			$the_winner            = $this->who_wins();
+			$the_winner_confidence = $this->get_winning_confidence();
+
+			$the_winner_conversion_rate = $this->get_winning_conversion_rate();
+			if ( $the_winner_conversion_rate < 0 )
+				$the_winner_conversion_rate = '&mdash;';
+			else
+				$the_winner_conversion_rate = number_format( $the_winner_conversion_rate, 2 );
+
 			$winner_label = sprintf( ' alt-type-winner" title="%s"',
-				sprintf( __( 'Wins with a %s%% confidence', 'nelioab'), $this->get_winning_confidence() ) );
+				sprintf( __( 'Wins with a %s%% confidence', 'nelioab'), $the_winner_confidence ) );
 
 
 			// PRINTING RESULTS
@@ -146,41 +156,62 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 
 				<!-- EXPERIMENT SUMMARY -->
 				<div id="info-summary" class="postbox">
-					<h3><span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
+					<h3 style="cursor:auto;"><?php
+						$lights_img   = '';
+						$lights_label = '';
+						if ( $the_winner == -1 ) {
+							$lights_img = NELIOAB_ADMIN_ASSETS_URL . '/images/clock.png';
+							$lights_label = __( 'There is not enough data to determine any winner yet', 'nelioab' );
+						}
+						else if ( $the_winner_confidence < 90 ) {
+							$lights_img = NELIOAB_ADMIN_ASSETS_URL . '/images/star.png';
+							$lights_label = __( 'There is a possible winner, but keep in mind the confidence does not reach 90%', 'nelioab' );
+						}
+						else {
+							$lights_img = NELIOAB_ADMIN_ASSETS_URL . '/images/tick.png';
+							$lights_label = __( 'There is a clear winner, with a confidence greater than 90%', 'nelioab' );
+						}
+					?><img style="margin-bottom:-4px;"
+						src="<?php echo $lights_img; ?>"
+						title="<?php echo $lights_label; ?>"/> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
 					<div class="inside">
 
 						<div>
 							<div id="summary-numbers">
-								<h3><?php _e( 'Total Visitors', 'nelioab' ); ?></h3>
-								<p class="result"><?php echo $total_visitors; ?></p>
-								<h3><?php _e( 'Total Conversions', 'nelioab' ); ?></h3>
-								<p class="result"><?php echo $total_conversions; ?></p>
-								<h3><?php _e( 'Conversion Rate', 'nelioab' ); ?></h3>
+								<h3><?php _e( 'Conversions / Visitors', 'nelioab' ); ?></h3>
+								<p class="result"><?php echo $total_conversions . ' / ' . $total_visitors; ?></p>
+
+								<h3><?php _e( 'Average Conversion Rate', 'nelioab' ); ?></h3>
 								<p class="result"><?php printf( '%s %%', $conversion_rate ); ?></p>
+
 								<h3><?php
+									$conf_label = ' (' . __( 'Confidence', 'nelioab' ) . ')';
+									if ( $the_winner == -1 )
+										$conf_label = '';
 									if ( $exp->get_status() == NelioABExperimentStatus::RUNNING )
-										_e( 'Current Winner', 'nelioab' );
+										echo __( 'Current Winner', 'nelioab' ) . $conf_label;
 									else
-										_e( 'Winner', 'nelioab' );
+										echo __( 'Winner', 'nelioab' ) . $conf_label;
 								?></h3>
 								<?php
-								$the_winner = $this->who_wins();
 								if ( $the_winner == -1 ) {
 									printf ( '<p class="result">%s</p>', __( 'None', 'nelioab' ) );
 								}
 								else {
 									if ( $the_winner == 0 ) {
-										if ( $this->is_ori_page )
-											printf ( '<p class="result">%s</p>', __( 'Original Page', 'nelioab' ) );
-										else
-											printf ( '<p class="result">%s</p>', __( 'Original Post', 'nelioab' ) );
+										printf ( '<p class="result">%s <small>(%s %%)</small></p>',
+											__( 'Original', 'nelioab' ), $the_winner_confidence );
 									}
 									else {
 										printf ( '<p class="result">%s</p>',
-											sprintf( __( 'Alternative %s', 'nelioab' ), $the_winner ) );
+											sprintf( __( 'Alternative %s <small>(%s %%)</small>', 'nelioab' ),
+												$the_winner, $the_winner_confidence ) );
 									}
 								}
 								?>
+
+								<h3><?php _e( 'Winner\'s Conversion Rate', 'nelioab' ); ?></h3>
+								<p class="result"><?php printf( '%s %%', $the_winner_conversion_rate ); ?></p>
 							</div>
 	
 							<div id="nelioab-timeline" class="nelioab-timeline-graphic">
@@ -391,26 +422,16 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 				<h3><?php _e( 'Statistical Information', 'nelioab' ); ?></h3>
 				<div style="margin-left:2em;">
 
-					<p><u><?php _e(
-						'A few words on statistics...',
-						'nelioab' ); ?></u></p>
-
-					<p><?php _e(
-						'Given a certain experiment, the best alternative is the one that has a better conversion ' .
-						'rate. Statistics help us determine up to which extent the best alternative is ' .
-						'actually the best&ndash;i.e. how confident we are.',
-						'nelioab' ); ?></p>
-	
-					<p><?php _e(
-						'NelioAB uses the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for ' .
-						'computing the confidence. When there is enough data available, our algorithm compares the ' .
-						'best alternative with the other ones. Each comparison indicates up to which extent the ' .
-						'best alternative is better than the other one.',
-						'nelioab' ); ?></p>
-	
-					<br />
-
-					<p><u><?php _e( 'Details', 'nelioab' ); ?></u></p>
+					<p><?php
+					if ( $exp->get_status() == NelioABExperimentStatus::RUNNING )
+						_e( 'NelioAB is using the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for ' .
+							'computing the results of this experiment. In the following, you may see the details: ',
+							'nelioab' );
+					else
+						_e( 'NelioAB used the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for ' .
+							'computing the results of this experiment. In the following, you may see the details: ',
+							'nelioab' );
+					?></p>
 
 					<?php
 					if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
@@ -470,22 +491,41 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 			
 		}
 
-		private function get_winning_confidence() {
+		private function get_winning_conversion_rate() {
 			$res = $this->results;
 			if ( $res == null )
 				return -1;
+
+			foreach ( $res->get_alternative_results() as $alt_result ) {
+				if ( $this->is_winner( $alt_result->get_post_id() ) )
+					return $alt_result->get_conversion_rate();
+			}
+
+			return -1;
+		}
+
+		private function get_winning_confidence() {
+			$bestg = $this->get_winning_gtest();
+			if ( !$bestg )
+				return -1;
+			return number_format( $bestg->get_certainty(), 2 );
+		}
+
+		private function get_winning_gtest() {
+			$res = $this->results;
+			if ( $res == null )
+				return false;
 
 			$exp    = $this->exp;
 			$gtests = $res->get_gstats();
 
 			if ( count( $gtests ) == 0 )
-				return -1;
+				return false;
 
 			$bestg = $gtests[count( $gtests ) - 1];
-
 			if ( $bestg->is_original_the_best() ) {
 				if ( $bestg->get_type() == NelioABGStats::WINNER )
-					return number_format( $bestg->get_certainty(), 2 );
+					return $bestg;
 			}
 			else {
 				$aux = null;
@@ -494,10 +534,10 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 						$aux = $gtest;
 				if ( $aux )
 					if ( $aux->get_type() == NelioABGStats::WINNER )
-						return number_format( $aux->get_certainty(), 2 );
+						return $aux;
 			}
 			
-			return -1;
+			return false;
 		}
 
 		private function is_winner( $id ) {

@@ -20,6 +20,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 	abstract class NelioABBackend {
 
 		public static function remote_post_raw( $url, $params ) {
+			if ( !isset( $params['timeout'] ) )
+				$params['timeout'] = 30;
 			$result = wp_remote_post( $url, $params );
 			NelioABBackend::throw_exceptions_if_any( $result );
 			return $result;
@@ -95,7 +97,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const INVALID_SITE                     = 2;
 		const SITE_IS_NOT_ACTIVE               = 3;
 		const MAX_SITES                        = 4;
-		const MAX_VISITORS                     = 5;
+		const NO_MORE_QUOTA                    = 5;
 		const UNPAID_SUBSCRIPTION              = 6;
 		const INVALID_MAIL                     = 7;
 		const SEVERAL_CUSTOMERS_WITH_SAME_MAIL = 8;
@@ -126,8 +128,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'This site is not active.', 'nelioab' );
 				case NelioABErrCodes::MAX_SITES:
 					return __( 'This account has reached the maximum allowed number of registered sites.', 'nelioab' );
-				case NelioABErrCodes::MAX_VISITORS:
-					return __( 'Visitors quota is over; this account does not admit any more visitors.', 'nelioab' );
+				case NelioABErrCodes::NO_MORE_QUOTA:
+					return __( 'There is no more quota available.', 'nelioab' );
 				case NelioABErrCodes::UNPAID_SUBSCRIPTION:
 					return __( 'Subscription has not been paid yet.', 'nelioab' );
 				case NelioABErrCodes::INVALID_MAIL:
