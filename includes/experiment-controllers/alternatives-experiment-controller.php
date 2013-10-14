@@ -30,7 +30,8 @@ class NelioABAlternativesExperimentController {
 			// then we have to...TODO
 			add_filter( 'posts_results',       array( &$this, 'posts_results_intercept' ) );
 			add_filter( 'the_posts',           array( &$this, 'the_posts_intercept' ) );
-			add_filter( 'comments_array',      array( &$this, 'load_comments_from_original' ) );
+			add_filter( 'pre_get_comments',    array( &$this, 'load_comments_from_original' ) );
+			add_filter( 'comments_array',      array( &$this, 'prepare_comments_form' ) );
 			add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
 			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
 		}
@@ -158,18 +159,26 @@ class NelioABAlternativesExperimentController {
 			NELIOAB_ASSETS_URL . '/js/tapas.js?' . NELIOAB_PLUGIN_VERSION );
 	}
 
-	public function load_comments_from_original( $comments ) {
+	public function load_comments_from_original( $comments_query ) {
+		global $post;
+		$id = $post->ID;
+		if ( !$this->is_post_alternative( $id ) )
+			return $comments_query;
+
+		// Load the original comments
+		$copy_from = $this->get_original_related_to( $id );
+		$comments_query->query_vars['post_id'] = $copy_from;
+
+		return $comments_query;
+	}
+
+	public function prepare_comments_form( $comments ) {
 		global $post;
 		$id = $post->ID;
 		if ( !$this->is_post_alternative( $id ) )
 			return $comments;
-
-		// Load the original comments
-		$copy_from = $this->get_original_related_to( $id );
-		$comments  = get_comments( array( 'post_id' => $copy_from ) );
-
-		// And prepare the form to save comments to the original
 		?>
+
 		<script type="text/javascript">
 		(function($) {
 			$(document).ready(function(){
@@ -314,6 +323,9 @@ class NelioABAlternativesExperimentController {
 		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
+		if ( !NelioABSettings::has_quota_left() && !NelioABSettings::is_quota_check_required() )
+			return;
+
 		$url = sprintf(
 			NELIOAB_BACKEND_URL . '/site/%s/nav',
 			NelioABSettings::get_site_id()
@@ -341,10 +353,18 @@ class NelioABAlternativesExperimentController {
 		for ( $attemp=0; $attemp < 5; ++$attemp ) { 
 			try {
 				$result = NelioABBackend::remote_post_raw( $url, $data );
+				NelioABSettings::set_has_quota_left( true );
 				break;
 			}
 			catch ( Exception $e ) {
-				// If the navigation could not be sent, we have a "small" problem...
+				// If the navigation could not be sent, it may be the case because
+				// there is no more quota available
+				if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
+					NelioABSettings::set_has_quota_left( false );
+					break;
+				}
+				// If there was another error... we just keep trying (attemp) up to 5
+				// times.
 			}
 		}
 	}

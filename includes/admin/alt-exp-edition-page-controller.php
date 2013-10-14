@@ -95,9 +95,12 @@ if ( !class_exists( NelioABAltExpEditionPageController ) ) {
 			global $nelioab_admin_controller;
 			NelioABAltExpEditionPageController::build_experiment_from_post_data();
 			$alt_name = stripslashes( $_POST['new_alt_name'] );
+			$exp_type = 'page';
+			if ( $_POST['nelioab_edit_exp_type'] === 'alt-exp-post' )
+				$exp_type = 'post';
 
 			$exp = $nelioab_admin_controller->data;
-			$exp->create_empty_alternative( $alt_name );
+			$exp->create_empty_alternative( $alt_name, $exp_type );
 		}
 
 		public static function add_alternative_copying_content() {

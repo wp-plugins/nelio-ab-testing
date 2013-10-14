@@ -80,6 +80,7 @@ if ( !class_exists( NelioABAdminAjaxPage ) ) {
 				<?php 
 					global $nelioab_admin_controller;
 					if ( $this->is_data_pending ) {
+						$this->print_global_warnings();
 						$this->print_message( 'none' );
 						$this->print_errors( 'none' );
 					}

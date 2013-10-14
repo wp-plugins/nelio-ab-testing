@@ -1,0 +1,61 @@
+.nelioab-option {
+	float:left;
+	margin:2em;
+	width:220px;
+	height:220px;
+	background-color:#eeeeee;
+	color:black;
+	font-size:1.5em;
+	text-align:center;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	-khtml-border-radius: 15px;
+}
+
+.nelioab-option-image-holder {
+	width:220px;
+	height:140px;
+}
+
+.nelioab-option-image {
+	float:left;
+	width:120px;
+	height:120px;
+	margin-left:50px;
+	margin-top:10px;
+}
+
+.nelioab-image-post {
+	background-color:
+}
+
+.nelioab-image-page {
+	background: url( '../images/new-exp-page.png' );
+	background-image: url( '../images/new-exp-page.png' );
+}
+
+.nelioab-image-post {
+	background: url( '../images/new-exp-post.png' );
+	background-image: url( '../images/new-exp-post.png' );
+}
+
+
+
+/* HOVERING */
+
+.nelioab-option:hover {
+	color:white;
+	background-color: #3f67a8;
+}
+
+.nelioab-option:hover .nelioab-image-page {
+	background-position: -120px 0px;
+}
+
+.nelioab-option:hover .nelioab-image-post {
+	background-position: -120px 0px;
+}
+
+
+

@@ -152,14 +152,14 @@ if( !class_exists( NelioABSettings ) ) {
 			}
 
 			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
-			$last_check = get_option( 'nelioab_last_check_user_settings', $the_past);
+			$last_check = get_option( 'nelioab_last_check_user_settings', $the_past );
 			$now        = time();
 			$offset     = 1800; // seg == 30min
 			// if ( ( $the_past + $offset ) < $now ) {
 				try {
 					$url = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
 					$aux = NelioABBackend::remote_get( $url );
-					update_option( 'nelioab_last_check_user_settings', $now);
+					update_option( 'nelioab_last_check_user_settings', $now );
 				}
 				catch ( Exception $e ) {
 					if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER )
@@ -195,7 +195,7 @@ if( !class_exists( NelioABSettings ) ) {
 		public static function update_registered_sites_if_required( $url ) {
 
 			while ( substr( $url, -1 ) === '/' )
-				$url = substr( $url, 0, strlen($url) - 1 );
+				$url = substr( $url, 0, strlen( $url ) - 1 );
 
 			if ( NelioABSettings::has_a_configured_site() ) {
 				$id     = NelioABSettings::get_site_id();
@@ -249,6 +249,23 @@ if( !class_exists( NelioABSettings ) ) {
 			}
 
 			NelioABSettings::set_has_a_configured_site( false );
+		}
+
+		public static function has_quota_left() {
+			return get_option( 'nelioab_has_quota_left', true );
+		}
+
+		public static function set_has_quota_left( $has_quota_left ) {
+			update_option( 'nelioab_has_quota_left', $has_quota_left );
+			update_option( 'nelioab_last_quota_check', time() );
+		}
+
+		public static function is_quota_check_required() {
+			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
+			$last_check = get_option( 'nelioab_last_quota_check', $the_past );
+			$now        = time();
+			$offset     = 1800; // seg == 30min
+			return ( ( $the_past + $offset ) < $now );
 		}
 
 	}//NelioABSettings

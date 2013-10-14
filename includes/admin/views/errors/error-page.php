@@ -29,7 +29,13 @@ if ( !class_exists( NelioABErrorPage ) ) {
 		}
 
 		protected function do_render() {
-			echo "<p style='font-size:130%;color:grey;'>$this->message</p>";
+			echo '<center>';
+			echo sprintf( '<img src="%s" alt="%s" />',
+				NELIOAB_ASSETS_URL . '/admin/images/error-icon.png?' . NELIOAB_PLUGIN_VERSION,
+				__( 'Funny image to graphically notify of an error.', 'nelioab' )
+			);
+			echo "<h2>$this->message</h2>";
+			echo '</center>';
 		}
 
 		public function render_content() {
@@ -42,13 +48,6 @@ if ( !class_exists( NelioABErrorPage ) ) {
 			parent::render_content();
 			echo '</center>';
 		}
-
-//		public function print_page_buttons() {
-//			echo $this->make_submit_button(
-//					__( 'Reload', 'nelioab' ),
-//					'nelioab_TODO'
-//				);
-//		}
 
 	}//NelioABErrorPage
 

@@ -111,9 +111,9 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 			return $this->local_alternatives;
 		}
 
-		public function create_empty_alternative( $name ) {
+		public function create_empty_alternative( $name, $post_type ) {
 			$post = array(
-				'post_type'    => 'page',
+				'post_type'    => $post_type,
 				'post_title'   => $name,
 				'post_content' => '',
 				'post_excerpt' => '',
@@ -824,10 +824,21 @@ if( !class_exists( NelioABGStats ) ) {
 						$this->certainty
 					);
 			case NelioABGStats::WINNER:
-					return sprintf(
-					__( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, we can conclude ' .
-						'that «%1$s» is the best alternative.',
-						'nelioab' ),
+					$string = __( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, ' .
+						'we can conclude that «%1$s» is the best alternative, but with a low ' .
+						'confidence value <small>(<a href="http://wp-abtesting.com/faqs/what-' .
+						'is-the-meaning-of-the-confidence-value-you-provide-together-with-' .
+						'the-results/">why is this important?</a>)</small>.',
+						'nelioab' );
+					$aux = $this->certainty;
+					if ( is_string( $aux ) )
+						$aux = floatval( $aux );
+					if ( $aux >= 90 ) {
+						$string = __( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, ' .
+							'we can conclude that «%1$s» is the best alternative.',
+							'nelioab' );
+					}
+					return sprintf( $string,
 						$this->max_name,
 						$this->min_name,
 						$this->certainty

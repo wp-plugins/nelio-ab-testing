@@ -30,6 +30,8 @@ if ( !class_exists( NelioABAltExpCreationPageController ) ) {
 			$title = __( 'Add Experiment', 'nelioab' );
 
 			// Check settings
+			// ---------------------------------------------------
+
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			try {
 				$aux = NelioABSettings::check_user_settings();
@@ -54,10 +56,45 @@ if ( !class_exists( NelioABAltExpCreationPageController ) ) {
 				}
 			}
 
+
 			// Preparing labels for PAGE vs POST alternatives
 			$alt_type = 'page';
 			if ( $_GET['experiment-type'] === 'alt-exp-post' )
 				$alt_type = 'post';
+
+
+			// Checking whether there are pages or posts available
+			// ---------------------------------------------------
+
+			// ...pages...
+			$list_of_pages = get_pages();
+			if ( $alt_type == 'page' && count( $list_of_pages ) == 0 ) {
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
+				$view = new NelioABErrorPage(
+					__( 'There are no pages available.', 'nelioab' ) );
+				$view->render();
+				return;
+			}
+
+			// ...posts...
+			$options_for_posts = array(
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'asc' );
+			$list_of_posts = get_posts( $options_for_posts );
+			if ( $alt_type == 'post' && count( $list_of_posts ) == 0 ) {
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
+				$view = new NelioABErrorPage(
+					__( 'There are no posts available.', 'nelioab' ) );
+				$view->render();
+				return;
+			}
+
+
+			// If everything is OK, we keep going!
+			// ---------------------------------------------------
+
+			// Creating the view
 			$view  = new NelioABAltExpCreationPage( $title, $alt_type );
 
 			global $nelioab_admin_controller;
@@ -69,14 +106,9 @@ if ( !class_exists( NelioABAltExpCreationPageController ) ) {
 				$experiment->clear();
 			}
 
-			$options_for_posts = array(
-				'posts_per_page' => -1,
-				'orderby'        => 'title',
-				'order'          => 'asc' );
-
 			$view->set_experiment( $experiment );
-			$view->set_wp_pages( get_pages() );
-			$view->set_wp_posts( get_posts( $options_for_posts ) );
+			$view->set_wp_pages( $list_of_pages );
+			$view->set_wp_posts( $list_of_posts );
 			if ( $_POST['action'] == 'show_empty_quickedit_box' )
 				$view->show_empty_quickedit_box();
 			if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
