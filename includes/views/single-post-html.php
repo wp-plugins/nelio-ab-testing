@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( SinglePostHtmlView ) ) {
+if ( !class_exists( 'SinglePostHtmlView' ) ) {
 
 	class SinglePostHtmlView {
 

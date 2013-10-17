@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABFeedbackPage ) ) {
+if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 	class NelioABFeedbackPage extends NelioABAdminAjaxPage {

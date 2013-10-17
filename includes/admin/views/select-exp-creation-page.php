@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABSelectExpCreationPage ) ) {
+if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
 	class NelioABSelectExpCreationPage extends NelioABAdminPage {

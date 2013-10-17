@@ -22,7 +22,7 @@
  * @subpackage Experiment
  * @since 0.1
  */
-if( !class_exists( NelioABExperiment ) ) {
+if( !class_exists( 'NelioABExperiment' ) ) {
 
 	/**
 	 * the model for foo plugin
@@ -113,7 +113,7 @@ if( !class_exists( NelioABExperiment ) ) {
 	}//NelioABExperiment
 }
 
-if ( !class_exists( NelioABExperimentStatus ) ) {
+if ( !class_exists( 'NelioABExperimentStatus' ) ) {
 
 	class NelioABExperimentStatus {
 		const DRAFT    = 1;

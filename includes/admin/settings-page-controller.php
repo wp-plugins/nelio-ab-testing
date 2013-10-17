@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABSettingsPageController ) ) {
+if ( !class_exists( 'NelioABSettingsPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
@@ -109,8 +109,13 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 		public static function validate_account() {
 			global $nelioab_admin_controller;
 
-			$email   = $_POST['settings_email'];
-			$reg_num = $_POST['settings_reg_num'];
+			$email = '';
+			if ( isset( $_POST['settings_email'] ) )
+				$email = $_POST['settings_email'];
+
+			$reg_num = '';
+			if ( isset( $_POST['settings_reg_num'] ) )
+				$reg_num = $_POST['settings_reg_num'];
 
 			$errors = array();
 			try {
@@ -134,7 +139,10 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 
 			}
 
-			NelioABSettings::check_terms_and_conditions( $_POST['settings_tac'] );
+			$settings_tac = false;
+			if ( isset( $_POST['settings_tac'] ) )
+				$settings_tac = $_POST['settings_tac'];
+			NelioABSettings::check_terms_and_conditions( $settings_tac );
 
 			$nelioab_admin_controller->validation_errors = $errors;
 			return count( $nelioab_admin_controller->validation_errors ) == 0;
@@ -142,23 +150,26 @@ if ( !class_exists( NelioABSettingsPageController ) ) {
 
 		public static function manage_site_registration() {
 			global $nelioab_admin_controller;
-			$action = $_POST['nelioab_registration_action'];
 
-			try {
-				if ( $action == 'register' ) {
-					NelioABSettings::register_this_site();
-					$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
-				}
-				else {
-					NelioABSettings::deregister_this_site();
-					$nelioab_admin_controller->message = __( 'This site is no longer registered to your account.', 'nelioab' );
-				}
-			}
-			catch ( Exception $e ) {
-				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
-				NelioABErrorController::build( $e );
-			}
+			if ( isset( $_POST['nelioab_registration_action'] ) ) {
+				$action = $_POST['nelioab_registration_action'];
 
+				try {
+					if ( $action == 'register' ) {
+						NelioABSettings::register_this_site();
+						$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
+					}
+					else {
+						NelioABSettings::deregister_this_site();
+						$nelioab_admin_controller->message = __( 'This site is no longer registered to your account.', 'nelioab' );
+					}
+				}
+				catch ( Exception $e ) {
+					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+					NelioABErrorController::build( $e );
+				}
+
+			}
 		}
 
 	}//NelioABSettingsPageController

@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABErrorPage ) ) {
+if ( !class_exists( 'NelioABErrorPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 

@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABExperimentsPageController ) ) {
+if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/experiments-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
@@ -32,21 +32,21 @@ if ( !class_exists( NelioABExperimentsPageController ) ) {
 			}
 			catch ( Exception $e ) {
 				switch ( $e->getCode() ) {
-				case NelioABErrCodes::DEACTIVATED_USER:
-					require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
-					$view = new NelioABDeactivatedUserPage();
-					$view->render();
-					return;
-				case NelioABErrCodes::INVALID_MAIL:
-				case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
-				case NelioABErrCodes::NON_ACCEPTED_TAC:
-				case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
-					require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
-					$view = new NelioABInvalidConfigPage( $title );
-					$view->render();
-					return;
-				default:
-					break;
+					case NelioABErrCodes::DEACTIVATED_USER:
+						require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
+						$view = new NelioABDeactivatedUserPage();
+						$view->render();
+						return;
+					case NelioABErrCodes::INVALID_MAIL:
+					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
+					case NelioABErrCodes::NON_ACCEPTED_TAC:
+					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
+						require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
+						$view = new NelioABInvalidConfigPage( $title );
+						$view->render();
+						return;
+					default:
+						break;
 				}
 			}
 
@@ -58,39 +58,46 @@ if ( !class_exists( NelioABExperimentsPageController ) ) {
 
 			if ( isset( $_GET['status'] ) )
 				 // Used for sorting
-				$view->keep_request_param( 'status', $_REQUEST['status'] );
+				$view->keep_request_param( 'status', $_GET['status'] );
 
 			if ( isset( $_GET['action'] ) )
 				// Which GET action was requested
-				$view->keep_request_param( 'GET_action', $_REQUEST['action'] );
+				$view->keep_request_param( 'GET_action', $_GET['action'] );
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies
-				$view->keep_request_param( 'exp_id', $_REQUEST['id'] );
+				$view->keep_request_param( 'exp_id', $_GET['id'] );
 
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
 		}
 
 		public static function generate_html_content() {
 			// Before rendering content we check whether an action was required
-			switch ( $_REQUEST['GET_action'] ) {
-				case 'start':
-					NelioABExperimentsPageController::start_experiment( $_REQUEST['exp_id'] );
-					break;
-				case 'stop':
-					NelioABExperimentsPageController::stop_experiment( $_REQUEST['exp_id'] );
-					break;
-				case 'trash':
-					NelioABExperimentsPageController::trash_experiment( $_REQUEST['exp_id'] );
-					break;
-				case 'restore':
-					NelioABExperimentsPageController::untrash_experiment( $_REQUEST['exp_id'] );
-					break;
-				case 'delete':
-					NelioABExperimentsPageController::remove_experiment( $_REQUEST['exp_id'] );
-					break;
-				default:
-					// Nothing to be done by default
+			if ( isset( $_REQUEST['GET_action'] ) &&
+			     isset( $_REQUEST['exp_id'] ) ) {
+
+				switch ( $_REQUEST['GET_action'] ) {
+					case 'start':
+						NelioABExperimentsPageController::start_experiment( $_REQUEST['exp_id'] );
+						break;
+					case 'stop':
+						NelioABExperimentsPageController::stop_experiment( $_REQUEST['exp_id'] );
+						break;
+					case 'trash':
+						NelioABExperimentsPageController::trash_experiment( $_REQUEST['exp_id'] );
+						break;
+					case 'restore':
+						NelioABExperimentsPageController::untrash_experiment( $_REQUEST['exp_id'] );
+						break;
+					case 'delete':
+						NelioABExperimentsPageController::remove_experiment( $_REQUEST['exp_id'] );
+						break;
+					default:
+						// Nothing to be done by default
+
+						// REMEMBER: if something has to be done "by default", YOU must pay
+						// attention to the IF checking of ISSET variables... 
+				}
 			}
 
 			// Obtain DATA from APPSPOT

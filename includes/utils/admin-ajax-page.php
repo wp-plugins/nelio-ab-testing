@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABAdminAjaxPage ) ) {
+if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
 
@@ -115,6 +115,23 @@ if ( !class_exists( NelioABAdminAjaxPage ) ) {
 
 			if ( $this->is_data_pending ) {?>
 			<script>
+
+				function nelioabHideSpinnerAndShowContent() {
+					jQuery("#ajax-loader").fadeOut(200, function() {
+						jQuery("#poststuff").fadeIn(200);
+						if ( jQuery("#message-div").hasClass("to-be-shown") ) {
+							jQuery("#message-div").css('display','block');
+							jQuery("#message-div").hide();
+							jQuery("#message-div").fadeIn(200);
+						}
+						if ( jQuery("#errors-div").hasClass("to-be-shown") ) {
+							jQuery("#errors-div").css('display','block');
+							jQuery("#errors-div").hide();
+							jQuery("#errors-div").fadeIn(200);
+						}
+					});
+				}
+
 				jQuery(document).ready(function() {
 				
 					var data = {
@@ -130,19 +147,7 @@ if ( !class_exists( NelioABAdminAjaxPage ) ) {
 					// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 					jQuery.post(ajaxurl, data, function(response) {
 						jQuery("#poststuff > #ajax-data").html(response);
-						jQuery("#ajax-loader").fadeOut(200, function() {
-							jQuery("#poststuff").fadeIn(200);
-							if ( jQuery("#message-div").hasClass("to-be-shown") ) {
-								jQuery("#message-div").css('display','block');
-								jQuery("#message-div").hide();
-								jQuery("#message-div").fadeIn(200);
-							}
-							if ( jQuery("#errors-div").hasClass("to-be-shown") ) {
-								jQuery("#errors-div").css('display','block');
-								jQuery("#errors-div").hide();
-								jQuery("#errors-div").fadeIn(200);
-							}
-						});
+						nelioabHideSpinnerAndShowContent();
 					});
 
 					jQuery("#ajax-loader-label2").hide().delay(10000).fadeIn('fast');

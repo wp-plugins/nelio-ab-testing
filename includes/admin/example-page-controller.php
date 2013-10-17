@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABExamplePageController ) ) {
+if ( !class_exists( 'NelioABExamplePageController' ) ) {
 
 	class NelioABExamplePageController {
 	
@@ -25,7 +25,7 @@ if ( !class_exists( NelioABExamplePageController ) ) {
 			register_setting(
 				'nelioab_example_settings',
 				'nelioab_example_settings',
-				array( NelioABExamplePageController, 'validate' )
+				array( 'NelioABExamplePageController', 'validate' )
 			);
 
 			$view = new NelioABExamplePage();

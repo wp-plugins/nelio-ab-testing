@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABDashboardPageController ) ) {
+if ( !class_exists( 'NelioABDashboardPageController' ) ) {
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/dashboard-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
@@ -32,21 +32,21 @@ if ( !class_exists( NelioABDashboardPageController ) ) {
 			}
 			catch ( Exception $e ) {
 				switch ( $e->getCode() ) {
-				case NelioABErrCodes::DEACTIVATED_USER:
-					require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
-					$view = new NelioABDeactivatedUserPage();
-					$view->render();
-					return;
-				case NelioABErrCodes::INVALID_MAIL:
-				case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
-				case NelioABErrCodes::NON_ACCEPTED_TAC:
-				case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
-					require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
-					$view = new NelioABInvalidConfigPage( $title );
-					$view->render();
-					return;
-				default:
-					break;
+					case NelioABErrCodes::DEACTIVATED_USER:
+						require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
+						$view = new NelioABDeactivatedUserPage();
+						$view->render();
+						return;
+					case NelioABErrCodes::INVALID_MAIL:
+					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
+					case NelioABErrCodes::NON_ACCEPTED_TAC:
+					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
+						require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
+						$view = new NelioABInvalidConfigPage( $title );
+						$view->render();
+						return;
+					default:
+						break;
 				}
 			}
 

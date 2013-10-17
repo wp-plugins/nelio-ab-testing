@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABAltExpCreationPage ) ) {
+if ( !class_exists( 'NelioABAltExpCreationPage' ) ) {
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-edition-page.php' );
 	class NelioABAltExpCreationPage extends NelioABAltExpEditionPage {

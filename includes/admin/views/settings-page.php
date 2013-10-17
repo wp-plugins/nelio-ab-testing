@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABSettingsPage ) ) {
+if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/settings.php' );
@@ -223,13 +223,16 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 				}
 				else {
 					switch( $this->current_site_status ) {
-					case NelioABSite::NON_MATCHING_URLS:
-						$this->print_site_non_matching();
-						break;
+						case NelioABSite::NON_MATCHING_URLS:
+							$this->print_site_non_matching();
+							break;
 			
-					case NelioABSite::ACTIVE:
-						$this->print_site_ok();
-						break;
+						case NelioABSite::ACTIVE:
+							$this->print_site_ok();
+							break;
+
+						default:
+							// Nothing to be done
 					}?>
 			
 					<?php
@@ -246,10 +249,13 @@ if ( !class_exists( NelioABSettingsPage ) ) {
 	
 					<?php
 					switch( $this->current_site_status ) {
-					case NelioABSite::NOT_REGISTERED:
-					case NelioABSite::INVALID_ID:
-						$this->print_site_to_be_registered();
-						break;
+						case NelioABSite::NOT_REGISTERED:
+						case NelioABSite::INVALID_ID:
+							$this->print_site_to_be_registered();
+							break;
+
+						default:
+							// Nothing to be done
 					}?>
 	
 					<form id="nelioab_registration_form" method="post">

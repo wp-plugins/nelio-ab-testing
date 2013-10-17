@@ -15,7 +15,7 @@
  */
 
 
-if( !class_exists( NelioABExperimentsManager ) ) {
+if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives-experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
@@ -48,7 +48,8 @@ if( !class_exists( NelioABExperimentsManager ) ) {
 				foreach ( $json_data->items as $json_exp ) {
 					$exp = new NelioABAlternativesExperiment( $json_exp->id );
 					$exp->set_name( $json_exp->name );
-					$exp->set_description( $json_exp->description );
+					if ( isset( $json_exp->description ) )
+						$exp->set_description( $json_exp->description );
 					$exp->set_status( $json_exp->status );
 					try { $exp->set_creation_date( $json_exp->creation ); }
 					catch ( Exception $exception ) {}
@@ -66,7 +67,8 @@ if( !class_exists( NelioABExperimentsManager ) ) {
 
 			$exp = new NelioABAlternativesExperiment( $json_data->id );
 			$exp->set_name( $json_data->name );
-			$exp->set_description( $json_data->description );
+			if ( isset( $json_data->description ) )
+				$exp->set_description( $json_data->description );
 			$exp->set_original( $json_data->originalPage );
 			$exp->set_status( $json_data->status );
 			$exp->set_conversion_post( $json_data->conversionPage );
