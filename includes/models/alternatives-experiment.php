@@ -15,7 +15,7 @@
  */
 
 
-if( !class_exists( NelioABAlternativesExperiment ) ) {
+if( !class_exists( 'NelioABAlternativesExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -241,10 +241,22 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 			$alt_res->set_conversion_rate( $json_data['original']['conversionRate'] );
 			$results->add_alternative_results( $alt_res );
 
-			$visitors_alt           = $json_data['visitorsAlt'];
-			$conversions_alt        = $json_data['conversionsAlt'];
-			$conversion_rate_alt    = $json_data['conversionRateAlt'];
-			$improvement_factor_alt = $json_data['improvementAlt'];
+			$visitors_alt = 0;
+			if ( isset( $json_data['visitorsAlt'] ) )
+				$visitors_alt = $json_data['visitorsAlt'];
+
+			$conversions_alt = 0;
+			if ( isset(	$json_data['conversionsAlt'] ) )
+				$conversions_alt = $json_data['conversionsAlt'];
+
+			$conversion_rate_alt = 0;
+			if ( isset(	$json_data['conversionRateAlt'] ) )
+				$conversion_rate_alt = $json_data['conversionRateAlt'];
+
+			$improvement_factor_alt = 0;
+			if ( isset(	$json_data['improvementAlt'] ) )
+				$improvement_factor_alt = $json_data['improvementAlt'];
+
 			if ( is_array( $json_data['alternatives'] ) ) {
 				foreach ( $json_data['alternatives'] as $json_alt ) {
 					$alt_res = new NelioABAlternativeResults();
@@ -271,23 +283,36 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 			if ( is_array( $json_data['gtestStatistics'] ) ) {
 				foreach ( $json_data['gtestStatistics'] as $stats ) {
 					$g = new NelioABGStats( $stats['message'], $this->get_original() );
-					$g->set_min( $stats['minVersion'] );
-					$g->set_max( $stats['maxVersion'] );
-					$g->set_gtest( $stats['gtest'] );
-					$g->set_pvalue( $stats['pvalue'] );
-					$g->set_certainty( $stats['certainty'] );
+					$min_ver = NULL;
+					if ( isset( $stats['minVersion'] ) ) {
+						$min_ver = $stats['minVersion'];
+						$g->set_min( $min_ver );
+					}
+
+					$max_ver = NULL;
+					if ( isset( $stats['maxVersion'] ) ) {
+						$max_ver = $stats['maxVersion'];
+						$g->set_max( $max_ver );
+					}
+
+					if ( isset( $stats['gtest'] ) )
+						$g->set_gtest( $stats['gtest'] );
+					if ( isset( $stats['pvalue'] ) )
+						$g->set_pvalue( $stats['pvalue'] );
+					if ( isset( $stats['certainty'] ) )
+						$g->set_certainty( $stats['certainty'] );
 
 					$g->set_min_name( __( 'Unknown', 'nelioab' ) );
 					$g->set_max_name( __( 'Unknown', 'nelioab' ) );
 					foreach( $this->get_alternatives() as $alt ) {
-						if ( $alt->get_post_id() == $stats['minVersion'] )
+						if ( $alt->get_post_id() == $min_ver )
 							$g->set_min_name( $alt->get_name() );
-						if ( $alt->get_post_id() == $stats['maxVersion'] )
+						if ( $alt->get_post_id() == $max_ver )
 							$g->set_max_name( $alt->get_name() );
 					}
-					if ( $this->get_original() == $stats['minVersion'] )
+					if ( $this->get_original() == $min_ver )
 						$g->set_min_name( __( 'Original', 'nelioab' ) );
-					if ( $this->get_original() == $stats['maxVersion'] )
+					if ( $this->get_original() == $max_ver )
 						$g->set_max_name( __( 'Original', 'nelioab' ) );
 
 					$results->add_gstat( $g );
@@ -467,7 +492,7 @@ if( !class_exists( NelioABAlternativesExperiment ) ) {
 
 }
 
-if( !class_exists( NelioABAlternative ) ) {
+if( !class_exists( 'NelioABAlternative' ) ) {
 
 	class NelioABAlternative {
 		private $id;
@@ -546,7 +571,7 @@ if( !class_exists( NelioABAlternative ) ) {
 
 }
 
-if( !class_exists( NelioABAltExpResults ) ) {
+if( !class_exists( 'NelioABAltExpResults' ) ) {
 
 	class NelioABAltExpResults {
 
@@ -644,7 +669,7 @@ if( !class_exists( NelioABAltExpResults ) ) {
 
 }
 
-if( !class_exists( NelioABAlternativeResults ) ) {
+if( !class_exists( 'NelioABAlternativeResults' ) ) {
 
 	class NelioABAlternativeResults {
 
@@ -728,7 +753,7 @@ if( !class_exists( NelioABAlternativeResults ) ) {
 
 }
 
-if( !class_exists( NelioABGStats ) ) {
+if( !class_exists( 'NelioABGStats' ) ) {
 
 	class NelioABGStats {
 		const UNKNOWN           = 1;
@@ -811,19 +836,22 @@ if( !class_exists( NelioABGStats ) ) {
 
 		public function to_string() {
 			switch( $this->type ) {
-			case NelioABGStats::NO_CLEAR_WINNER:
-				return __( 'No alternative is better than the rest.', 'nelioab' );
-			case NelioABGStats::NOT_ENOUGH_VISITS:
-				return __( 'No statistic results available due to too few visits.', 'nelioab' );
-			case NelioABGStats::DROP_VERSION:
-				return sprintf(
-					__( '«%1$s» beats «%2$s» with a %3$s%% confidence.',
-						'nelioab' ),
-						$this->max_name,
-						$this->min_name,
-						$this->certainty
-					);
-			case NelioABGStats::WINNER:
+				case NelioABGStats::NO_CLEAR_WINNER:
+					return __( 'No alternative is better than the rest.', 'nelioab' );
+
+				case NelioABGStats::NOT_ENOUGH_VISITS:
+					return __( 'No statistic results available due to too few visits.', 'nelioab' );
+
+				case NelioABGStats::DROP_VERSION:
+					return sprintf(
+						__( '«%1$s» beats «%2$s» with a %3$s%% confidence.',
+							'nelioab' ),
+							$this->max_name,
+							$this->min_name,
+							$this->certainty
+						);
+
+				case NelioABGStats::WINNER:
 					$string = __( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, ' .
 						'we can conclude that «%1$s» is the best alternative, but with a low ' .
 						'confidence value <small>(<a href="http://wp-abtesting.com/faqs/what-' .
@@ -843,8 +871,9 @@ if( !class_exists( NelioABGStats ) ) {
 						$this->min_name,
 						$this->certainty
 					);
-		default:
-				return __( 'There was an error while processing the statistics.', 'nelioab' );
+
+				default:
+					return __( 'There was an error while processing the statistics.', 'nelioab' );
 			}
 		}
 

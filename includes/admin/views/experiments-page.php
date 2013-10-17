@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABExperimentsPage ) ) {
+if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );

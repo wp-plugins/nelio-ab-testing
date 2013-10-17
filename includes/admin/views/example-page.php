@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABExamplePage ) ) {
+if ( !class_exists( 'NelioABExamplePage' ) ) {
 
 	class NelioABExamplePage {
 

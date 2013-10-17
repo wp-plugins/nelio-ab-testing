@@ -39,11 +39,17 @@ if ( !class_exists( 'NelioABFormatter' ) ) {
 			$format = get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );
 			try {
 				$aux = new DateTime();
-				$aux->setTimestamp( $timestamp );
-				$aux->setTimezone( new DateTimeZone( $tz ) );
-				return $aux->format( $format ) . $tz_text;
+				if ( is_callable( array( $aux, 'setTimestamp' ) ) &&
+				     is_callable( array( $aux, 'setTimezone' ) ) ) {
+					$aux->setTimestamp( $timestamp );
+					$aux->setTimezone( new DateTimeZone( $tz ) );
+					return $aux->format( $format ) . $tz_text;
+				}
+				else {
+					return date_i18n( $format, $timestamp ) . $tz_text;
+				}
 			} catch ( Exception $e ) {
-				$date = date_i18n( $format, $timestamp ) . $tz_text;
+				return date_i18n( $format, $timestamp ) . $tz_text;
 			}
 
 		}

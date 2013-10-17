@@ -15,7 +15,7 @@
  */
 
 
-if( !class_exists( NelioABSettings ) ) {
+if( !class_exists( 'NelioABSettings' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 

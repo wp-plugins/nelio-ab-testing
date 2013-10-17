@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0.15
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -173,6 +173,13 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.1.1 =
+* Bug fix: removing all PHP warnings and notices
+
+= 1.1.0 =
+* Bug fix: no more callings to the undefined method DateTime::setTimestamp()
+for PHP < 5.3
+
 = 1.0.15 =
 * Page for selecting new experiment has been redesigned
 * Settings page has been redesigned
@@ -240,6 +247,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.0.15
-A few pages have been redesigned. The overall plugin is more robust now.
+= 1.1.1 =
+Removing all warnings and notices
 

@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABAltExpProgressPage ) ) {
+if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
@@ -304,6 +304,7 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 							$link      = get_permalink( $exp->get_original() );
 							$ori_label = __( 'Original', 'nelioab' );
 		
+							$edit_link = '';
 							if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 								$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
 									admin_url() . '/post.php?post=' . $exp->get_original() . '&action=edit',
@@ -621,7 +622,6 @@ if ( !class_exists( NelioABAltExpProgressPage ) ) {
 		?>
 		<script type="text/javascript">
 		(function($) {
-			var categories  = <?php echo json_encode( $categories ); ?>;
 			var visitors    = <?php echo json_encode( $visitors ); ?>;
 			var conversions = <?php echo json_encode( $conversions ); ?>;
 			var labels      = <?php echo json_encode( $labels ); ?>;

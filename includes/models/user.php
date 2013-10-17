@@ -15,7 +15,7 @@
  */
 
 
-if( !class_exists( NelioABUser ) ) {
+if( !class_exists( 'NelioABUser' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 

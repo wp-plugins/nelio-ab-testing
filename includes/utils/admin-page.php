@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABAdminPage ) ) {
+if ( !class_exists( 'NelioABAdminPage' ) ) {
 
 	abstract class NelioABAdminPage {
 
@@ -121,7 +121,7 @@ if ( !class_exists( NelioABAdminPage ) ) {
 				<h3><label><?php echo $section_title; ?></label></h3>
 				<div class="inside"><?php
 					foreach ( $fields as $field ) {
-						if ( $field['checkbox'] )
+						if ( isset( $field['checkbox'] ) && $field['checkbox'] )
 							$this->make_checkbox_field( $field );
 						else
 							$this->make_field( $field );
@@ -136,11 +136,11 @@ if ( !class_exists( NelioABAdminPage ) ) {
 			$field_id     = $field['id'];
 			$callback     = $field['callback'];
 			$is_mandatory = false;
-			if ( $field['mandatory'] )
+			if ( isset( $field['mandatory'] ) && $field['mandatory'] )
 				$is_mandatory = true;
 
 			$pre_err = '';
-			$pos_err = '';
+			$post_err = '';
 
 			if ( $this->is_invalid( $field_id ) ) {
 				$pre_err = '<strong style="color:red;">';
@@ -215,6 +215,7 @@ if ( !class_exists( NelioABAdminPage ) ) {
 			if ( $is_primary )
 				$primary = 'button-primary';
 
+			$disabled = '';
 			if ( !$is_enabled )
 				$disabled = $primary . '-disabled';
 

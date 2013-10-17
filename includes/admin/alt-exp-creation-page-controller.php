@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABAltExpCreationPageController ) ) {
+if ( !class_exists( 'NelioABAltExpCreationPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives-experiment.php' );
@@ -38,28 +38,29 @@ if ( !class_exists( NelioABAltExpCreationPageController ) ) {
 			}
 			catch ( Exception $e ) {
 				switch ( $e->getCode() ) {
-				case NelioABErrCodes::DEACTIVATED_USER:
-					require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
-					$view = new NelioABDeactivatedUserPage();
-					$view->render();
-					return;
-				case NelioABErrCodes::INVALID_MAIL:
-				case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
-				case NelioABErrCodes::NON_ACCEPTED_TAC:
-				case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
-					require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
-					$view = new NelioABInvalidConfigPage( $title );
-					$view->render();
-					return;
-				default:
-					break;
+					case NelioABErrCodes::DEACTIVATED_USER:
+						require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
+						$view = new NelioABDeactivatedUserPage();
+						$view->render();
+						return;
+					case NelioABErrCodes::INVALID_MAIL:
+					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
+					case NelioABErrCodes::NON_ACCEPTED_TAC:
+					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
+						require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
+						$view = new NelioABInvalidConfigPage( $title );
+						$view->render();
+						return;
+					default:
+						break;
 				}
 			}
 
 
 			// Preparing labels for PAGE vs POST alternatives
 			$alt_type = 'page';
-			if ( $_GET['experiment-type'] === 'alt-exp-post' )
+			if ( isset( $_GET['experiment-type'] ) &&
+			     $_GET['experiment-type'] === 'alt-exp-post' )
 				$alt_type = 'post';
 
 
@@ -109,10 +110,12 @@ if ( !class_exists( NelioABAltExpCreationPageController ) ) {
 			$view->set_experiment( $experiment );
 			$view->set_wp_pages( $list_of_pages );
 			$view->set_wp_posts( $list_of_posts );
-			if ( $_POST['action'] == 'show_empty_quickedit_box' )
-				$view->show_empty_quickedit_box();
-			if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-				$view->show_copying_content_quickedit_box();
+			if ( isset( $_POST['action'] ) ) {
+				if ( $_POST['action'] == 'show_empty_quickedit_box' )
+					$view->show_empty_quickedit_box();
+				if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
+					$view->show_copying_content_quickedit_box();
+			}
 			$view->render();
 		}
 

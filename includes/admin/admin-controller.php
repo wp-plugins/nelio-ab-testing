@@ -14,7 +14,7 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if ( !class_exists( NelioABAdminController ) ) {
+if ( !class_exists( 'NelioABAdminController' ) ) {
 
 	class NelioABAdminController {
 
@@ -65,7 +65,7 @@ if ( !class_exists( NelioABAdminController ) ) {
 			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 			add_action( 'admin_menu', array( $this, 'create_nelioab_settings_pages' ) );
 			add_action( 'admin_menu', array( $this, 'configure_edit_nelioab_alternative' ) );
-			add_action( 'pre_update_option_siteurl', array( NelioABSettings, 'update_registered_sites_if_required' ) );
+			add_action( 'pre_update_option_siteurl', array( 'NelioABSettings', 'update_registered_sites_if_required' ) );
 
 			// AJAX functions
 			add_action( 'wp_ajax_get_html_content', array( $this, 'generate_html_content' ) ) ;
@@ -183,10 +183,12 @@ if ( !class_exists( NelioABAdminController ) ) {
 		}
 
 		public function generate_html_content() {
-			$file = NELIOAB_DIR . $_POST['filename']; 
-			$class = $_POST['classname'];
-			require_once( $file );
-			call_user_func( array ( $class, 'generate_html_content' ) );
+			if ( isset( $_POST['filename'] ) && isset( $_POST['classname'] ) ) {
+				$file = NELIOAB_DIR . $_POST['filename']; 
+				$class = $_POST['classname'];
+				require_once( $file );
+				call_user_func( array ( $class, 'generate_html_content' ) );
+			}
 		}
 
 		/**
@@ -221,34 +223,42 @@ if ( !class_exists( NelioABAdminController ) ) {
 //				__( 'Dashboard', 'nelioab' ),
 //				'manage_options',
 //				'nelioab-admin-pages',
-//				array( NelioABDashboardPageController, 'build' ) );
+//				array( 'NelioABDashboardPageController', 'build' ) );
 
 	
 			// Experiments pages (depending on the action, we show one or another)
 			// ----------------------------------------------------------------------
-			switch ( $_GET['action'] ) {
-			case 'edit':
-				// When editing an experiment, we have to load the proper controller and view:
-				switch ( $_POST['nelioab_edit_exp_type'] ) {
-				case 'alt-exp-post':
-				case 'alt-exp-page':
-					require_once( NELIOAB_ADMIN_DIR . '/alt-exp-edition-page-controller.php' );
-					$page_to_build = array( NelioABAltExpEditionPageController, 'build' );
-					break;
+			$the_action = NULL;
+			if ( isset( $_GET['action'] ) )
+				$the_action = $_GET['action'];
 
+			switch ( $the_action ) {
+				case 'edit':
+					// When editing an experiment, we have to load the proper controller and view:
+					$edit_exp_type = NULL;
+					if ( isset( $_POST['nelioab_edit_exp_type'] ) )
+						$edit_exp_type = $_POST['nelioab_edit_exp_type'];
+	
+					switch ( $edit_exp_type ) {
+						case 'alt-exp-post':
+						case 'alt-exp-page':
+							require_once( NELIOAB_ADMIN_DIR . '/alt-exp-edition-page-controller.php' );
+							$page_to_build = array( 'NelioABAltExpEditionPageController', 'build' );
+							break;
+		
+						default:
+							require_once( NELIOAB_ADMIN_DIR . '/select-exp-edition-page-controller.php' );
+							$page_to_build = array( 'NelioABSelectExpEditionPageController', 'build' );
+					}
+					break;
+				case 'progress':
+					require_once( NELIOAB_ADMIN_DIR . '/alt-exp-progress-page-controller.php' );
+					$page_to_build = array( 'NelioABAltExpProgressPageController', 'build' );
+					break;
 				default:
-					require_once( NELIOAB_ADMIN_DIR . '/select-exp-edition-page-controller.php' );
-					$page_to_build = array( NelioABSelectExpEditionPageController, 'build' );
-				}
-				break;
-			case 'progress':
-				require_once( NELIOAB_ADMIN_DIR . '/alt-exp-progress-page-controller.php' );
-				$page_to_build = array( NelioABAltExpProgressPageController, 'build' );
-				break;
-			default:
-				require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
-				$page_to_build = array( NelioABExperimentsPageController, 'build' );
-				break;
+					require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
+					$page_to_build = array( 'NelioABExperimentsPageController', 'build' );
+					break;
 			}
 			add_submenu_page( $nelioab_menu,
 				__( 'Experiments', 'nelioab' ),
@@ -260,16 +270,20 @@ if ( !class_exists( NelioABAdminController ) ) {
 
 			// Creating Experiment; (depending on the type, we show one form or another)
 			// ----------------------------------------------------------------------
-			switch ( $_GET['experiment-type'] ) {
-			case 'alt-exp-page':
-			case 'alt-exp-post':
-				require_once( NELIOAB_ADMIN_DIR . '/alt-exp-creation-page-controller.php' );
-				$page_to_build = array( NelioABAltExpCreationPageController, 'build' );
-				break;
-			default:
-				require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
-				add_action( 'admin_head', array( $this, 'add_css_for_creation_page' ) );
-				$page_to_build = array( NelioABSelectExpCreationPageController, 'build' );
+			$experiment_type = NULL;
+			if ( isset( $_GET['experiment-type'] ) )
+				$experiment_type = $_GET['experiment-type'];
+
+			switch ( $experiment_type ) {
+				case 'alt-exp-page':
+				case 'alt-exp-post':
+					require_once( NELIOAB_ADMIN_DIR . '/alt-exp-creation-page-controller.php' );
+					$page_to_build = array( 'NelioABAltExpCreationPageController', 'build' );
+					break;
+				default:
+					require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
+					add_action( 'admin_head', array( $this, 'add_css_for_creation_page' ) );
+					$page_to_build = array( 'NelioABSelectExpCreationPageController', 'build' );
 			}
 			require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
@@ -286,7 +300,7 @@ if ( !class_exists( NelioABAdminController ) ) {
 				__( 'Settings', 'nelioab' ),
 				'manage_options',
 				'nelioab-settings',
-				array( NelioABSettingsPageController, 'build' ) );
+				array( 'NelioABSettingsPageController', 'build' ) );
 
 			// Feedback page
 			// ----------------------------------------------------------------------
@@ -296,7 +310,7 @@ if ( !class_exists( NelioABAdminController ) ) {
 				__( 'Feedback', 'nelioab' ),
 				'manage_options',
 				'nelioab-feedback',
-				array( NelioABFeedbackPageController, 'build' ) );
+				array( 'NelioABFeedbackPageController', 'build' ) );
 	
 		}
 
@@ -304,13 +318,13 @@ if ( !class_exists( NelioABAdminController ) ) {
 		public function configure_edit_nelioab_alternative() {
 			// 0. Check whether there is a post_id set. If there is not any,
 			// it is a new post, and so we can quit.
-			$post_id = $_REQUEST['post'];
-			if ( !isset( $post_id ) )
+			if ( !isset( $_REQUEST['post'] ) )
 				return;
+			$post_id = $_REQUEST['post'];
 
 			// 1. Determine whether the current post is a nelioab_alternative
 			// If it is not, quit
-			$post    = get_post( $post_id, ARRAY_A );
+			$post = get_post( $post_id, ARRAY_A );
 			if ( isset( $post ) && count( get_post_meta( $post_id, '_is_nelioab_alternative' ) ) == 0 )
 				return;
 
@@ -377,7 +391,7 @@ if ( !class_exists( NelioABAdminController ) ) {
 					</div>
 					<div style="float:right;margin-top:1em;margin-right:1em;">
 					<div id="preview-action">
-						<?php $preview_link = esc_url( apply_filters( 'preview_post_link', add_query_arg( 'preview', 'true', $preview_link ) ) ); ?>
+						<?php $preview_link = esc_url( apply_filters( 'preview_post_link', add_query_arg( 'preview', 'true' ) ) ); ?>
 						<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a>
 						<input type="hidden" name="wp-preview" id="wp-preview" value="" />
 					</div>
@@ -386,8 +400,12 @@ if ( !class_exists( NelioABAdminController ) ) {
 				<div style="margin:0.8em 0.2em 0.8em 0.2em;">
 					<b><?php _e( 'Go back to...', 'nelioab' ); ?></b>
 					<?php
+					$the_post_id = 0;
+					if ( isset( $_GET['post'] ) )
+						$the_post_id = $_GET['post'];
+
 					$url        = admin_url() . 'admin.php?page=nelioab-experiments';
-					$values     = explode( ',', get_post_meta( $_GET['post'], '_is_nelioab_alternative', true ) );
+					$values     = explode( ',', get_post_meta( $the_post_id, '_is_nelioab_alternative', true ) );
 					$exp_id     = $values[0];
 					$exp_status = $values[1];
 					?>
@@ -395,18 +413,18 @@ if ( !class_exists( NelioABAdminController ) ) {
 						<?php
 						require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 						switch( $exp_status ){
-						case NelioABExperimentStatus::DRAFT:
-						case NelioABExperimentStatus::READY:
-					   	?><li><a href="<?php echo $url . '&action=edit&id=' . $exp_id; ?>"><?php _e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
-							break;
-						case NelioABExperimentStatus::RUNNING:
-						case NelioABExperimentStatus::FINISHED:
-					   	?><li><a href="<?php echo $url . '&action=progress&id=' . $exp_id; ?>"><?php _e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
-							break;
-						case NelioABExperimentStatus::TRASH:
-						case NelioABExperimentStatus::PAUSED:
-						default:
-							// Nothing here
+							case NelioABExperimentStatus::DRAFT:
+							case NelioABExperimentStatus::READY:
+					   		?><li><a href="<?php echo $url . '&action=edit&id=' . $exp_id; ?>"><?php _e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
+								break;
+							case NelioABExperimentStatus::RUNNING:
+							case NelioABExperimentStatus::FINISHED:
+					   		?><li><a href="<?php echo $url . '&action=progress&id=' . $exp_id; ?>"><?php _e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
+								break;
+							case NelioABExperimentStatus::TRASH:
+							case NelioABExperimentStatus::PAUSED:
+							default:
+								// Nothing here
 						}
 						?>
 					   <li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>

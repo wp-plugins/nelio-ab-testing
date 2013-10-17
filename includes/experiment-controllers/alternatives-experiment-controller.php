@@ -88,8 +88,12 @@ class NelioABAlternativesExperimentController {
 		if ( $http_referer == $front_page_url )
 			$post_id = get_option( 'page_on_front' );
 
-		if ( $post_id )
-			$this->send_navigation_if_required( $post_id, $_POST['referer'] );
+		if ( $post_id ) {
+			$referer = '';
+			if ( isset( $_POST['referer'] ) )
+				$referer = $_POST['referer'];
+			$this->send_navigation_if_required( $post_id, $referer );
+		}
 		die();
 	}
 
@@ -230,7 +234,7 @@ class NelioABAlternativesExperimentController {
 		<?php
 	}
 
-	public function change_title_on_abtesting( $title, $id ) {
+	public function change_title_on_abtesting( $title, $id = -1 ) {
 		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		return "\t \t \t$title\t \t \t";
 	}

@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABAltExpProgressPageController ) ) {
+if ( !class_exists( 'NelioABAltExpProgressPageController' ) ) {
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-progress-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
@@ -35,9 +35,12 @@ if ( !class_exists( NelioABAltExpProgressPageController ) ) {
 
 		public static function generate_html_content() {
 
-			$exp_id = $_REQUEST['exp_id'];
-			$title  = __( 'Results of the Experiment', 'nelioab' );
-			$view   = new NelioABAltExpProgressPage( $title );
+			$exp_id = -1;
+			if ( isset( $_REQUEST['exp_id'] ) )
+				$exp_id = $_REQUEST['exp_id'];
+
+			$title = __( 'Results of the Experiment', 'nelioab' );
+			$view  = new NelioABAltExpProgressPage( $title );
 
 			$mgr = new NelioABExperimentsManager();
 			$exp = null;
@@ -89,7 +92,7 @@ if ( !class_exists( NelioABAltExpProgressPageController ) ) {
 
 }
 
-if ( isset( $_GET['forcestop'] ) ) {
+if ( isset( $_GET['forcestop'] ) && isset( $_GET['id'] ) ) {
 	require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
 	NelioABExperimentsPageController::stop_experiment( $_GET['id'] );
 	echo sprintf(

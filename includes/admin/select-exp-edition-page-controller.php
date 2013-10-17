@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( NelioABSelectExpEditionPageController ) ) {
+if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	require_once( NELIOAB_ADMIN_DIR . '/views/empty-ajax-page.php' );
@@ -29,7 +29,7 @@ if ( !class_exists( NelioABSelectExpEditionPageController ) ) {
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies
-				$view->keep_request_param( 'id', $_REQUEST['id'] );
+				$view->keep_request_param( 'id', $_GET['id'] );
 
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
 		}
@@ -40,7 +40,11 @@ if ( !class_exists( NelioABSelectExpEditionPageController ) ) {
 			$experiments_manager = new NelioABExperimentsManager();
 			$experiment = null;
 			try {
-				$experiment = $experiments_manager->get_experiment_by_id( $_POST['id'] );
+				$exp_id = -1;
+				if ( isset( $_POST['id'] ) )
+					$exp_id = $_POST['id'];
+
+				$experiment = $experiments_manager->get_experiment_by_id( $exp_id );
 				global $nelioab_admin_controller;
 				$nelioab_admin_controller->data = $experiment;
 			}
