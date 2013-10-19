@@ -33,6 +33,8 @@ class NelioABAlternativesExperimentController {
 			add_filter( 'pre_get_comments',    array( &$this, 'load_comments_from_original' ) );
 			add_filter( 'comments_array',      array( &$this, 'prepare_comments_form' ) );
 			add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
+			add_filter( 'post_link',           array( &$this, 'use_originals_post_link' ) );
+			add_filter( 'page_link',           array( &$this, 'use_originals_post_link' ) );
 			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
 		}
 		else {
@@ -176,17 +178,28 @@ class NelioABAlternativesExperimentController {
 		return $comments_query;
 	}
 
+	public function use_originals_post_link( $permalink, $id = 0, $leavename = false ) {
+		$perm_id = url_to_postid( $permalink );
+		if ( !$this->is_post_alternative( $perm_id ) )
+			return $permalink;
+
+		$ori_id = $this->get_original_related_to( $perm_id );
+		return get_permalink( $ori_id );
+	}
+
 	public function prepare_comments_form( $comments ) {
 		global $post;
 		$id = $post->ID;
 		if ( !$this->is_post_alternative( $id ) )
 			return $comments;
+
+		$ori_id = $this->get_original_related_to( $id );
 		?>
 
 		<script type="text/javascript">
 		(function($) {
 			$(document).ready(function(){
-				$("#comment_post_ID").attr( 'value', <?php echo $copy_from; ?> );
+				$("#comment_post_ID").attr( 'value', <?php echo $ori_id; ?> );
 			});
 		})(jQuery);
 		</script><?php
