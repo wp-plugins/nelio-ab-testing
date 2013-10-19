@@ -3,7 +3,7 @@ Contributors: Nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -173,6 +173,11 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.1.2 =
+* Bug fix: when querying the permalink of an alternative, the original's
+permalink is returned instead (important, for instance, for social sharing
+plugins)
+
 = 1.1.1 =
 * Bug fix: removing all PHP warnings and notices
 
@@ -247,6 +252,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.1.1 =
-Removing all warnings and notices
+= 1.1.2 =
+Alternative permalinks correspond to original's.
 
