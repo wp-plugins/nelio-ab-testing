@@ -1,5 +1,5 @@
 === Nelio A/B Testing ===
-Contributors: Nelio
+Contributors: Nelio Software
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.6
