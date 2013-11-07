@@ -40,6 +40,16 @@
 	background-image: url( '../images/new-exp-post.png' );
 }
 
+.nelioab-image-css {
+	background: url( '../images/new-exp-css.png' );
+	background-image: url( '../images/new-exp-css.png' );
+}
+
+.nelioab-image-theme {
+	background: url( '../images/new-exp-theme.png' );
+	background-image: url( '../images/new-exp-theme.png' );
+}
+
 
 
 /* HOVERING */
@@ -49,13 +59,7 @@
 	background-color: #3f67a8;
 }
 
-.nelioab-option:hover .nelioab-image-page {
+.nelioab-option:hover .nelioab-image {
 	background-position: -120px 0px;
 }
-
-.nelioab-option:hover .nelioab-image-post {
-	background-position: -120px 0px;
-}
-
-
 

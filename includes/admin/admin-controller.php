@@ -16,8 +16,11 @@
 
 if ( !class_exists( 'NelioABAdminController' ) ) {
 
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+
 	class NelioABAdminController {
 
+		public $error_message;
 		public $message;
 		public $global_warnings;
 		public $validation_errors;
@@ -32,6 +35,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		 * @since 0.1
 		 */
 		public function __construct() {
+			$this->error_message     = NULL;
 			$this->message           = NULL;
 			$this->global_warnings   = array();
 			$this->validation_errors = array();
@@ -80,56 +84,30 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			wp_enqueue_style( 'nelioab_new_exp_selection_css' );
 		}
 
-		public function add_custom_styles() {?>
-			<style type="text/css">
-				/* TODO: recover when using dashboard
-				#toplevel_page_nelioab-admin-pages div.wp-menu-image {
-					background-image: url("<?php echo NELIOAB_ADMIN_ASSETS_URL . '/images/menu.png?' . NELIOAB_PLUGIN_VERSION; ?>");
-					background-position: 0px -32px;
-				}
+		public function add_css_for_themes() {
+			wp_register_style( 'nelioab_theme_exp_css',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-theme-exp.css', false, NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_theme_exp_css' );
+		}
 
-				#toplevel_page_nelioab-admin-pages:hover div.wp-menu-image,
-				#toplevel_page_nelioab-admin-pages.wp-has-current-submenu div.wp-menu-image,
-				#toplevel_page_nelioab-admin-pages :hover div.wp-menu-image,
-				#toplevel_page_nelioab-admin-pages .wp-has-current-submenu div.wp-menu-image,
-				#toplevel_page_nelioab-admin-pages .current div.wp-menu-image {
-					background-position: 0px 0px;
-				}
-				*/
+		public function add_custom_styles() {
+			wp_register_style( 'nelioab_generic_css',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-generic.css', false, NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_generic_css' );
+		}
 
-				#toplevel_page_nelioab-experiments div.wp-menu-image {
-					background-image: url("<?php echo NELIOAB_ADMIN_ASSETS_URL . '/images/menu.png?' . NELIOAB_PLUGIN_VERSION; ?>");
-					background-position: 0px -32px;
-				}
-
-				#toplevel_page_nelioab-experiments:hover div.wp-menu-image,
-				#toplevel_page_nelioab-experiments.wp-has-current-submenu div.wp-menu-image,
-				#toplevel_page_nelioab-experiments :hover div.wp-menu-image,
-				#toplevel_page_nelioab-experiments .wp-has-current-submenu div.wp-menu-image,
-				#toplevel_page_nelioab-experiments .current div.wp-menu-image {
-					background-position: 0px 0px;
-				}
-
-				#icon-nelioab {
-					background-image: url("<?php echo NELIOAB_ADMIN_ASSETS_URL . '/images/icons32.png?' . NELIOAB_PLUGIN_VERSION; ?>");
-					background-position: -12px -6px;
-				}
-
-				.button-primary-disabled, .button-primary[disabled], .button-primary:disabled {
-					cursor: default;
-				}
-
-				.button-primary-disabled:hover, .button-primary[disabled]:hover, .button-primary:disabled:hover {
-					border: 1px solid #298cba !important;
-				}
-
-			</style>
-			<?
+		public function add_js_for_dialogs() {
+			wp_enqueue_script( 'jquery' );
+			wp_enqueue_script( 'jquery-ui-dialog' );
+			wp_enqueue_style( 'jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/smoothness/jquery-ui.css' );
+			wp_register_style( 'nelioab_dialog_css',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-dialog.css', false, NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_dialog_css' );
 		}
 
 		public function load_custom_style_and_scripts() {
 			// We make sure jQuery is loaded:
-			wp_enqueue_style( 'jquery' );
+			wp_enqueue_script( 'jquery' );
 
 			// Custom CSS for GRAPHICS and RESULTS (experiment progress)
 			wp_register_style( 'nelioab_progress_css',
@@ -184,7 +162,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		public function generate_html_content() {
 			if ( isset( $_POST['filename'] ) && isset( $_POST['classname'] ) ) {
-				$file = NELIOAB_DIR . $_POST['filename']; 
+				$file = NELIOAB_DIR . $_POST['filename'];
 				$class = $_POST['classname'];
 				require_once( $file );
 				call_user_func( array ( $class, 'generate_html_content' ) );
@@ -234,27 +212,17 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			switch ( $the_action ) {
 				case 'edit':
-					// When editing an experiment, we have to load the proper controller and view:
-					$edit_exp_type = NULL;
-					if ( isset( $_POST['nelioab_edit_exp_type'] ) )
-						$edit_exp_type = $_POST['nelioab_edit_exp_type'];
-	
-					switch ( $edit_exp_type ) {
-						case 'alt-exp-post':
-						case 'alt-exp-page':
-							require_once( NELIOAB_ADMIN_DIR . '/alt-exp-edition-page-controller.php' );
-							$page_to_build = array( 'NelioABAltExpEditionPageController', 'build' );
-							break;
-		
-						default:
-							require_once( NELIOAB_ADMIN_DIR . '/select-exp-edition-page-controller.php' );
-							$page_to_build = array( 'NelioABSelectExpEditionPageController', 'build' );
-					}
+					require_once( NELIOAB_ADMIN_DIR . '/select-exp-edition-page-controller.php' );
+					$page_to_build = array( 'NelioABSelectExpEditionPageController', 'build' );
 					break;
+
 				case 'progress':
-					require_once( NELIOAB_ADMIN_DIR . '/alt-exp-progress-page-controller.php' );
-					$page_to_build = array( 'NelioABAltExpProgressPageController', 'build' );
+					require_once( NELIOAB_ADMIN_DIR . '/select-exp-progress-page-controller.php' );
+					add_action( 'admin_head', array( $this, 'add_js_for_dialogs' ) );
+					$page_to_build = array( 'NelioABSelectExpProgressPageController', 'build' );
+
 					break;
+
 				default:
 					require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
 					$page_to_build = array( 'NelioABExperimentsPageController', 'build' );
@@ -270,22 +238,10 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Creating Experiment; (depending on the type, we show one form or another)
 			// ----------------------------------------------------------------------
-			$experiment_type = NULL;
-			if ( isset( $_GET['experiment-type'] ) )
-				$experiment_type = $_GET['experiment-type'];
-
-			switch ( $experiment_type ) {
-				case 'alt-exp-page':
-				case 'alt-exp-post':
-					require_once( NELIOAB_ADMIN_DIR . '/alt-exp-creation-page-controller.php' );
-					$page_to_build = array( 'NelioABAltExpCreationPageController', 'build' );
-					break;
-				default:
-					require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
-					add_action( 'admin_head', array( $this, 'add_css_for_creation_page' ) );
-					$page_to_build = array( 'NelioABSelectExpCreationPageController', 'build' );
-			}
 			require_once( NELIOAB_ADMIN_DIR . '/select-exp-creation-page-controller.php' );
+			add_action( 'admin_head', array( $this, 'add_css_for_creation_page' ) );
+			add_action( 'admin_head', array( $this, 'add_css_for_themes' ) );
+			$page_to_build = array( 'NelioABSelectExpCreationPageController', 'build' );
 			add_submenu_page( $nelioab_menu,
 				__( 'Add Experiment', 'nelioab' ),
 				__( 'Add Experiment', 'nelioab' ),
@@ -312,6 +268,19 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'nelioab-feedback',
 				array( 'NelioABFeedbackPageController', 'build' ) );
 	
+
+			// OTHER PAGES (not included in the menu)
+
+			// // CSS Editing
+			// // ----------------------------------------------------------------------
+			// require_once( NELIOAB_ADMIN_DIR . '/views/content/css-edit.php' );
+			// add_submenu_page( NULL,
+			// 	__( 'CSS Edit', 'nelioab' ),
+			// 	__( 'CSS Edit', 'nelioab' ),
+			// 	'manage_options',
+			// 	'nelioab-css-edit',
+			// 	array( 'NelioABCssEditPage', 'build' ) );
+
 		}
 
 
@@ -411,7 +380,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					?>
 					<ul style="margin-left:1.5em;">
 						<?php
-						require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 						switch( $exp_status ){
 							case NelioABExperimentStatus::DRAFT:
 							case NelioABExperimentStatus::READY:
@@ -435,7 +403,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 	}//NelioABAdminController
 }
- 
+
 if ( is_admin() )
 	$nelioab_admin_controller = new NelioABAdminController();
 
