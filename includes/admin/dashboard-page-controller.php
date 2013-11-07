@@ -26,29 +26,9 @@ if ( !class_exists( 'NelioABDashboardPageController' ) ) {
 			$title = __( 'Nelio A/B Testing &mdash; Dashboard', 'nelioab' );
 
 			// Check settings
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			try {
-				$aux = NelioABSettings::check_user_settings();
-			}
-			catch ( Exception $e ) {
-				switch ( $e->getCode() ) {
-					case NelioABErrCodes::DEACTIVATED_USER:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
-						$view = new NelioABDeactivatedUserPage();
-						$view->render();
-						return;
-					case NelioABErrCodes::INVALID_MAIL:
-					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
-					case NelioABErrCodes::NON_ACCEPTED_TAC:
-					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
-						$view = new NelioABInvalidConfigPage( $title );
-						$view->render();
-						return;
-					default:
-						break;
-				}
-			}
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
 
 			$view = new NelioABDashboardPage( $title );
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );

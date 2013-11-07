@@ -17,21 +17,39 @@
 
 if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+
 	require_once( NELIOAB_ADMIN_DIR . '/views/empty-ajax-page.php' );
 
 	class NelioABSelectExpEditionPageController {
 
+		public static function attempt_to_load_proper_controller() {
+			if ( isset( $_POST['nelioab_exp_type'] ) )
+				return NelioABSelectExpEditionPageController::get_controller( $_POST['nelioab_exp_type'] );
+			return NULL;
+		}
+
 		public static function build() {
 			$title = __( 'Edit Experiment', 'nelioab' );
 
-			$view  = new NelioABEmptyAjaxPage( $title );
+			$view = new NelioABEmptyAjaxPage( $title );
 
-			if ( isset( $_GET['id'] ) )
-				// The ID of the experiment to which the action applies
-				$view->keep_request_param( 'id', $_GET['id'] );
+			$controller = NelioABSelectExpEditionPageController::attempt_to_load_proper_controller();
+			if ( $controller != NULL ) {
+				$controller::build();
+			}
+			else {
+				if ( isset( $_GET['id'] ) )
+					// The ID of the experiment to which the action applies
+					$view->keep_request_param( 'id', $_GET['id'] );
 
-			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
+				if ( isset( $_GET['exp_type'] ) )
+					$view->keep_request_param( 'exp_type', $_GET['exp_type'] );
+
+				$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
+			}
+
 		}
 
 		public static function generate_html_content() {
@@ -44,7 +62,11 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 				if ( isset( $_POST['id'] ) )
 					$exp_id = $_POST['id'];
 
-				$experiment = $experiments_manager->get_experiment_by_id( $exp_id );
+				$exp_type = -1;
+				if ( isset( $_POST['exp_type'] ) )
+					$exp_type = $_POST['exp_type'];
+
+				$experiment = $experiments_manager->get_experiment_by_id( $exp_id, $exp_type );
 				global $nelioab_admin_controller;
 				$nelioab_admin_controller->data = $experiment;
 			}
@@ -53,13 +75,37 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 				NelioABErrorController::build( $e );
 			}
 
+			$controller = NelioABSelectExpEditionPageController::get_controller( $experiment->get_type() );
+			$controller::generate_html_content();
+		}
+
+		public static function get_controller( $type ) {
+
 			// Determine the proper controller and give it the control...
-			require_once( NELIOAB_ADMIN_DIR . '/alt-exp-edition-page-controller.php' );
-			NelioABAltExpEditionPageController::generate_html_content();
+			switch ( $type ) {
+				case NelioABExperiment::POST_ALT_EXP:
+				case NelioABExperiment::PAGE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/post-alt-exp-edition-page-controller.php' );
+					return 'NelioABPostAltExpEditionPageController';
+
+				case NelioABExperiment::THEME_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/theme-alt-exp-edition-page-controller.php' );
+					return 'NelioABThemeAltExpEditionPageController';
+
+				default:
+					require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+					$err = NelioABErrCodes::UNKNOWN_ERROR;
+					$e = new Exception( NelioABErrCodes::to_string( $err ), $err );
+					NelioABErrorController::build( $e );
+			}
+
 		}
 
 	}//NelioABSelectExpEditionPageController
 
 }
+
+$aux = NelioABSelectExpEditionPageController::attempt_to_load_proper_controller();
 
 ?>

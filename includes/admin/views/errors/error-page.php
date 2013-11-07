@@ -38,17 +38,6 @@ if ( !class_exists( 'NelioABErrorPage' ) ) {
 			echo '</center>';
 		}
 
-		public function render_content() {
-			echo '<center>';
-			echo sprintf( '<img src="%s" alt="%s" />',
-				NELIOAB_ASSETS_URL . '/admin/images/error-icon.png?' . NELIOAB_PLUGIN_VERSION,
-				__( 'Funny image to graphically notify of an error.', 'nelioab' )
-			);
-			echo '<h2>' . __( 'Oops! This was unexpected...', 'nelioab' ) . '</h2>';
-			parent::render_content();
-			echo '</center>';
-		}
-
 	}//NelioABErrorPage
 
 }
