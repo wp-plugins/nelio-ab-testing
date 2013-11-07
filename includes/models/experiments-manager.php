@@ -69,7 +69,9 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 			// PAGE OR POST ALTERNATIVE EXPERIMENT
 			if ( $type == NelioABExperiment::POST_ALT_EXP ||
-				$type == NelioABExperiment::PAGE_ALT_EXP ) {
+				$type == NelioABExperiment::PAGE_ALT_EXP ||
+				$type == NelioABExperiment::PAGE_OR_POST_ALT_EXP
+			) {
 				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/wp/altexp/' . $id );
 				$json_data = json_decode( $json_data['body'] );
 	
