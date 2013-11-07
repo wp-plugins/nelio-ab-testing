@@ -383,11 +383,15 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						switch( $exp_status ){
 							case NelioABExperimentStatus::DRAFT:
 							case NelioABExperimentStatus::READY:
-					   		?><li><a href="<?php echo $url . '&action=edit&id=' . $exp_id; ?>"><?php _e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
+					   		?><li><a href="<?php echo $url . '&action=edit&id=' . $exp_id .
+									'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
+										_e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
 								break;
 							case NelioABExperimentStatus::RUNNING:
 							case NelioABExperimentStatus::FINISHED:
-					   		?><li><a href="<?php echo $url . '&action=progress&id=' . $exp_id; ?>"><?php _e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
+					   		?><li><a href="<?php echo $url . '&action=progress&id=' . $exp_id .
+								'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
+									_e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
 								break;
 							case NelioABExperimentStatus::TRASH:
 							case NelioABExperimentStatus::PAUSED:
