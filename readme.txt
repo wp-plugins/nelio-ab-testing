@@ -35,6 +35,8 @@ account](http://wp-abtesting.com) to use our plugin (the service includes a
 page theme options...)
 * A/B and multivariate test of WordPress posts (title, content, page style,
 post theme options...)
+* Select one or more alternative themes among the installed ones and test
+which one works better!
 * Fresh information about the evolution of the experiment every day
 * Nice graphics about visitors, conversions, improvements, ...
 * Definition, management, and tracking of experiments integrated in WordPress
