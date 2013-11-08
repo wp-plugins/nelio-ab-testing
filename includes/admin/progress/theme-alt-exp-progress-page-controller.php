@@ -27,7 +27,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPageController' ) ) {
 
 		public static function build() {
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view = new NelioABAltExpProgressPage( $title );
+			$view  = new NelioABThemeAltExpProgressPage( $title );
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies
@@ -86,7 +86,11 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPageController' ) ) {
 		}
 
 		public function apply_alternative() {
-			// TODO: implement apply alternative for theme alt exp
+			if ( isset( $_POST['stylesheet'] ) && isset( $_POST['template'] ) ) {
+				update_option( 'stylesheet', $_POST['stylesheet'] );
+				update_option( 'template', $_POST['template'] );
+			}
+
 			echo 'OK';
 			die();
 		}

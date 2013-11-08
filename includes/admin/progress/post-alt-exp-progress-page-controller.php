@@ -27,7 +27,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 
 		public static function build() {
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view = new NelioABAltExpProgressPage( $title );
+			$view  = new NelioABPostAltExpProgressPage( $title );
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies

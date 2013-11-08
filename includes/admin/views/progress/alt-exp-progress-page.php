@@ -44,6 +44,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 		protected abstract function get_original_name();
 		protected abstract function get_original_value();
+		protected abstract function print_js_function_for_post_data_overriding();
 
 		protected function get_goal_name() {
 			$exp = $this->exp;
@@ -220,7 +221,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							<div id="nelioab-timeline" class="nelioab-timeline-graphic">
 							</div>
 							<?php
-								if ( $this->results->has_historic_info() )
+								if ( isset( $this->results ) && $this->results->has_historic_info() )
 									$this->print_timeline_for_alternatives_js();
 								else
 									$this->print_timeline_js();
@@ -275,9 +276,12 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							<?php
 							if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {?>
 								<script>
-								function nelioab_confirm_overriding(id) {
-									$ = jQuery;
+								<?php
+								$this->print_js_function_for_post_data_overriding();
+								?>
 
+								function nelioab_show_the_dialog_for_overriding(id) {
+									$ = jQuery;
 									$(function() {
 										$("#dialog-modal").dialog({
 											title: '<?php echo __( 'Override Original', 'nelioab' ); ?>',
@@ -304,14 +308,11 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		
 									jQuery("#loading-" + id).delay(120).fadeIn();
 		
-									jQuery("#apply_alternative #alternative").attr("value",id);
-
 									jQuery.ajax({
 										url: jQuery("#apply_alternative").attr("action"),
 										type: 'post',
 										data: jQuery('#apply_alternative').serialize(),
 										success: function(data) {
-console.log(data);
 											jQuery("#loading-" + id).fadeOut(250);
 											jQuery("#success-" + id).delay(500).fadeIn(200);
 										}
@@ -335,8 +336,8 @@ console.log(data);
 									smoothTransitions();
 									jQuery.get(
 										"<?php echo sprintf(
-											'%s/admin.php?page=nelioab-experiments&action=progress&id=%s&forcestop=true',
-											admin_url(), $this->exp->get_id() ); ?>",
+											'%s/admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
+											admin_url(), $this->exp->get_id(), $this->exp->get_type() ); ?>",
 										function(data) {
 											data = data.trim();
 											console.log(data);

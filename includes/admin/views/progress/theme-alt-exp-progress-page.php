@@ -42,6 +42,15 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			return $exp->get_original_theme()->get_value();
 		}
 
+		protected function print_js_function_for_post_data_overriding() {?>
+			function nelioab_confirm_overriding(id, stylesheet, template) {
+				jQuery("#apply_alternative #stylesheet").attr("value",stylesheet);
+				jQuery("#apply_alternative #template").attr("value",template);
+				nelioab_show_the_dialog_for_overriding(id);
+			}
+			<?php
+		}
+
 		protected function print_winner_info() {
 			// Winner (if any) details
 			$the_winner            = $this->who_wins();
@@ -80,20 +89,33 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 		protected function print_the_real_alternatives() {
 			// REAL ALTERNATIVES
 			// -----------------------------------------
-			$exp = $this->exp;
-			$i   = 0;
+			$exp        = $this->exp;
+			$i          = 0;
+			$the_themes = wp_get_themes();
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
 				$edit_link = '';
 				
 				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
-					$edit_link = sprintf(
-						' <small id="success-%3$s" style="display:none;">(%1$s)</small>' .
-						'<img id="loading-%3$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
-						'<small class="apply-link">(<a href="javascript:nelioab_confirm_overriding(\'%3$s\');">%4$s</a>)</small></li>',
-						__( 'Done!', 'nelioab' ),
-						NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
-						$alt->get_value(), __( 'Apply', 'nelioab' ) );
+					$theme = NULL;
+					foreach ( $the_themes as $t ) {
+						if ( $t['Template'] == $alt->get_value() ) {
+							$theme = $t;
+							break;
+						}
+					}
+
+					if ( $theme != NULL ) {
+						$edit_link = sprintf(
+							' <small id="success-%3$s" style="display:none;">(%1$s)</small>' .
+							'<img id="loading-%3$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
+							'<small class="apply-link">(<a href="javascript:nelioab_confirm_overriding(\'%3$s\', \'%4$s\', \'%5$s\');">%6$s</a>)</small></li>',
+							__( 'Done!', 'nelioab' ),
+							NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
+							$alt->get_value(),
+							$theme['Stylesheet'], $theme['Template'],
+							__( 'Apply', 'nelioab' ) );
+					}
 				}
 		
 				if ( $this->is_winner( $alt->get_value() ) )
@@ -113,7 +135,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			$exp = $this->exp;
 			?>
 			<p><?php
-				_e( 'You are about to override the original theme with the alternative.' .
+				_e( 'You are about to override the original theme with the alternative. ' .
 					'Do you want to continue?',
 					'nelioab' );
 			?></p>
@@ -122,8 +144,8 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 				$exp->get_id(); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
-				<input type="hidden" id="original" name="original" value="<?php echo $this->get_original_value(); ?>" />
-				<input type="hidden" id="alternative" name="alternative" value="" />
+				<input type="hidden" id="stylesheet" name="stylesheet" value="" />
+				<input type="hidden" id="template" name="template" value="" />
 			</form>
 			<?php
 		}

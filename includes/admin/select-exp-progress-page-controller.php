@@ -27,6 +27,8 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 		public static function attempt_to_load_proper_controller() {
 			if ( isset( $_POST['nelioab_exp_type'] ) )
 				return NelioABSelectExpProgressPageController::get_controller( $_POST['nelioab_exp_type'] );
+			if ( isset( $_GET['exp_type'] ) && isset( $_GET['forcestop'] ) )
+				return NelioABSelectExpProgressPageController::get_controller( $_GET['exp_type'] );
 			return NULL;
 		}
 

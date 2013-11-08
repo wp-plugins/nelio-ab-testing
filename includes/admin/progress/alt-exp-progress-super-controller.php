@@ -28,12 +28,15 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 
 		public function manage_actions() {
 
-			if ( isset( $_GET['forcestop'] ) && isset( $_GET['id'] ) ) {
+			if ( isset( $_GET['forcestop'] ) &&
+			     isset( $_GET['id'] ) &&
+			     isset( $_GET['exp_type'] )
+			) {
 				require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
-				NelioABExperimentsPageController::stop_experiment( $_GET['id'] );
+				NelioABExperimentsPageController::stop_experiment( $_GET['id'], $_GET['exp_type'] );
 				echo sprintf(
-					'[SUCCESS]%sadmin.php?page=nelioab-experiments&action=progress&id=%s',
-					admin_url(), $_GET['id'] );
+					'[SUCCESS]%sadmin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s',
+					admin_url(), $_GET['id'], $_GET['exp_type'] );
 				die();
 			}
 			

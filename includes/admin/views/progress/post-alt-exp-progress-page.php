@@ -49,6 +49,14 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			return $this->exp->get_original();
 		}
 
+		protected function print_js_function_for_post_data_overriding() {?>
+			function nelioab_confirm_overriding(id) {
+				jQuery("#apply_alternative #alternative").attr("value",id);
+				nelioab_show_the_dialog_for_overriding(id);
+			}
+			<?php
+		}
+
 		protected function print_winner_info() {
 			// Winner (if any) details
 			$the_winner            = $this->who_wins();

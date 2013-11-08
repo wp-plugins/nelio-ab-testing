@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -175,6 +175,11 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.2.1 =
+* Bug fix: stopping an experiment from the progress page is now working
+* Bug fix: overriding a theme alternative with another one from the progress
+page of an experiment is now working
+
 = 1.2 =
 * **New Feature!** You can now test different worpdress themes!
 * Improved page for listing experiments. On the one hand, each experiment has
@@ -262,6 +267,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.2 =
+= 1.2.1 =
 This new version allows you to test themes and provides some small fixes.
 
