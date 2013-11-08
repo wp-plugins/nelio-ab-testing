@@ -20,19 +20,59 @@ if ( !class_exists( 'NelioABErrorController' ) ) {
 	include_once( NELIOAB_UTILS_DIR . '/backend.php' );
 	class NelioABErrorController {
 
-		public static function build( $exception ) {
+		public static function get_view( $exception ) {
 			switch ( $exception->getCode() ) {
+				case NelioABErrCodes::SITE_IS_NOT_ACTIVE:
+					require_once( NELIOAB_ADMIN_DIR . '/views/errors/non-active-site-page.php' );
+					$view = new NelioABNonActiveSitePage();
+					break;
 				case NelioABErrCodes::DEACTIVATED_USER:
 					require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
 					$view = new NelioABDeactivatedUserPage();
+					break;
+				case NelioABErrCodes::INVALID_MAIL:
+				case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
+				case NelioABErrCodes::NON_ACCEPTED_TAC:
+				case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
+					require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
+					$view = new NelioABInvalidConfigPage();
 					break;
 				default:
 					require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
 					$view = new NelioABErrorPage( $exception->getMessage() );
 			}
 
+			return $view;
+		}
+
+		public static function build( $exception ) {
+			$view = NelioABErrorController::get_view( $exception );
 			$view->render_content();
 			die();
+		}
+
+		public static function build_error_page_on_invalid_settings() {
+			// Check settings
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			try {
+				$aux = NelioABSettings::check_user_settings();
+			}
+			catch ( Exception $e ) {
+				switch ( $e->getCode() ) {
+					case NelioABErrCodes::DEACTIVATED_USER:
+					case NelioABErrCodes::INVALID_MAIL:
+					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
+					case NelioABErrCodes::NON_ACCEPTED_TAC:
+					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
+						require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+						$view = NelioABErrorController::get_view( $e );
+						$view->render();
+						return true;
+					default:
+						return false;
+				}
+			}
+			return false;
 		}
 
 	}//NelioABErrorController

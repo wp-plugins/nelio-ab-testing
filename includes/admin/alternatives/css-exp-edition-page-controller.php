@@ -15,79 +15,89 @@
  */
 
 
-if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
+if ( !class_exists( 'NelioABCssExpEditionPageController' ) ) {
 
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-	require_once( NELIOAB_MODELS_DIR . '/alternatives-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/post-alternative-experiment.php' );
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-edition-page.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/css-exp-edition-page.php' );
 
-	class NelioABAltExpEditionPageController {
+	class NelioABCssExpEditionPageController {
 
-		private static function do_build() {
-			$title = __( 'Edit Experiment', 'nelioab' );
+		protected function do_build() {
+			$title = __( 'CSS Experiment', 'nelioab' );
 
 			// Check settings
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			try {
-				$aux = NelioABSettings::check_user_settings();
-			}
-			catch ( Exception $e ) {
-				switch ( $e->getCode() ) {
-					case NelioABErrCodes::DEACTIVATED_USER:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
-						$view = new NelioABDeactivatedUserPage();
-						$view->render();
-						return;
-					case NelioABErrCodes::INVALID_MAIL:
-					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
-					case NelioABErrCodes::NON_ACCEPTED_TAC:
-					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
-						$view = new NelioABInvalidConfigPage( $title );
-						$view->render();
-						return;
-					default:
-						break;
-				}
-			}
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
 
-			$options_for_posts = array(
-				'posts_per_page' => -1,
-				'orderby'        => 'title',
-				'order'          => 'asc' );
+			// We recover the experiment (if any)
+			// ----------------------------------------------
 
 			global $nelioab_admin_controller;
-			$experiment = $nelioab_admin_controller->data;
-			$view = new NelioABAltExpEditionPage( $title, $experiment->get_alt_type() );
-			$view->set_experiment( $experiment );
-			$view->set_wp_pages( get_pages() );
-			$view->set_wp_posts( get_posts( $options_for_posts ) );
+			$experiment = NULL;
+			if ( !empty( $nelioab_admin_controller->data ) ) {
+				$experiment = $nelioab_admin_controller->data;
+			}
+			else {
+				$experiment = new NelioABPostAlternativeExperiment( -1 );
+				$experiment->clear();
+			}
 
+
+//			// Checking whether there are pages or posts available
+//			// ---------------------------------------------------
+//
+//			// ...pages...
+//			$list_of_pages = get_pages();
+//
+//			// ...posts...
+//			$options_for_posts = array(
+//				'posts_per_page' => -1,
+//				'orderby'        => 'title',
+//				'order'          => 'asc' );
+//			$list_of_posts = get_posts( $options_for_posts );
+
+
+			// If everything is OK, we keep going!
+			// ---------------------------------------------------
+
+			// Creating the view
+			$view = $this->create_view();
+
+			$view->set_experiment( $experiment );
+//			$view->set_wp_pages( $list_of_pages );
+//			$view->set_wp_posts( $list_of_posts );
 			if ( isset( $_POST['action'] ) ) {
 				if ( $_POST['action'] == 'show_empty_quickedit_box' )
 					$view->show_empty_quickedit_box();
-				if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-					$view->show_copying_content_quickedit_box();
 			}
-
 			return $view;
 		}
 
+		public function create_view() {
+			$title = __( 'Edit CSS Experiment', 'nelioab' );
+			return new NelioABCssExpEditionPage( $title );
+		}
+
 		public static function build() {
-			$view = NelioABAltExpEditionPageController::do_build();
+			$aux  = new NelioABCssExpEditionPageController();
+			$view = $this->do_build();
 			$view->render();
 		}
 
 		public static function generate_html_content() {
-			$view = NelioABAltExpEditionPageController::do_build();
+			$aux  = new NelioABCssExpEditionPageController();
+			$view = $this->do_build();
 			$view->render_content();
 			die();
 		}
 
 		public static function remove_alternative() {
 			global $nelioab_admin_controller;
-			NelioABAltExpEditionPageController::build_experiment_from_post_data();
+			NelioABCssExpEditionPageController::build_experiment_from_post_data();
 			if ( isset( $_POST['alt_to_remove'] ) ) {
 				$alt_id = $_POST['alt_to_remove'];
 
@@ -98,11 +108,11 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 
 		public static function add_empty_alternative() {
 			global $nelioab_admin_controller;
-			NelioABAltExpEditionPageController::build_experiment_from_post_data();
-			$exp_type = 'page';
-			if ( isset( $_POST['nelioab_edit_exp_type'] ) &&
-			     $_POST['nelioab_edit_exp_type'] === 'alt-exp-post' )
-				$exp_type = 'post';
+			NelioABCssExpEditionPageController::build_experiment_from_post_data();
+			$exp_type = NelioABExperiment::PAGE_ALT_EXP;
+			if ( isset( $_POST['nelioab_exp_type'] ) &&
+			     $_POST['nelioab_exp_type'] == NelioABExperiment::POST_ALT_EXP )
+				$exp_type = NelioABExperiment::POST_ALT_EXP;
 
 			if ( isset( $_POST['new_alt_name'] ) ) {
 				$alt_name = stripslashes( $_POST['new_alt_name'] );
@@ -111,29 +121,9 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 			}
 		}
 
-		public static function add_alternative_copying_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-
-			global $nelioab_admin_controller;
-			NelioABAltExpEditionPageController::build_experiment_from_post_data();
-
-			if ( isset( $_POST['new_alt_name'] ) &&
-			     isset( $_POST['new_alt_postid'] ) &&
-			     isset( $_POST['new_alt_metadata'] ) ) {
-
-				$alt_name = stripslashes( $_POST['new_alt_name'] );
-				$alt_post_id = $_POST['new_alt_postid'];
-	
-				$exp = $nelioab_admin_controller->data;
-				$copy_metadata = isset( $_POST['new_alt_metadata'] );
-				NelioABSettings::set_copy_metadata( $copy_metadata );
-				$exp->create_alternative_copying_content( $alt_name, $alt_post_id, $copy_metadata );
-			}
-		}
-
 		public static function update_alternative_name() {
 			global $nelioab_admin_controller;
-			NelioABAltExpEditionPageController::build_experiment_from_post_data();
+			NelioABCssExpEditionPageController::build_experiment_from_post_data();
 			$exp = $nelioab_admin_controller->data;
 
 			if ( isset( $_POST['qe_alt_id'] ) &&
@@ -153,7 +143,7 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 
 		public static function validate() {
 			global $nelioab_admin_controller;
-			NelioABAltExpEditionPageController::build_experiment_from_post_data();
+			NelioABCssExpEditionPageController::build_experiment_from_post_data();
 			$exp = $nelioab_admin_controller->data;
 
 			$errors = array();
@@ -182,15 +172,6 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 
 			$nelioab_admin_controller->validation_errors = $errors;
 			return count( $nelioab_admin_controller->validation_errors ) == 0;
-
-//			if ( count( $nelioab_admin_controller->validation_errors ) == 0 ) {
-//				return true;
-//			}
-//			else {
-//				echo '[ERRORS]' . json_encode( $errors );
-//				die();
-//			}
-
 		}
 
 		public static function on_valid_submit() {
@@ -214,7 +195,7 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 		public static function cancel_changes() {
 			// 1. Delete any new alternatives created
 			global $nelioab_admin_controller;
-			NelioABAltExpEditionPageController::build_experiment_from_post_data();
+			NelioABCssExpEditionPageController::build_experiment_from_post_data();
 			$exp = $nelioab_admin_controller->data;
 
 			$exp->discard_changes();
@@ -228,7 +209,7 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 		public static function edit_alternative_content() {
 			// 1. Save any local changes
 			global $nelioab_admin_controller;
-			NelioABAltExpEditionPageController::build_experiment_from_post_data();
+			NelioABCssExpEditionPageController::build_experiment_from_post_data();
 			$experiment = $nelioab_admin_controller->data;
 			try {
 				$experiment->save();
@@ -247,7 +228,7 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 		}
 
 		public static function build_experiment_from_post_data() {
-			$exp = new NelioABAlternativesExperiment( $_POST['exp_id'] );
+			$exp = new NelioABPostAlternativeExperiment( $_POST['exp_id'] );
 			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
 			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
 			$exp->set_original( $_POST['exp_original'] );
@@ -259,44 +240,42 @@ if ( !class_exists( 'NelioABAltExpEditionPageController' ) ) {
 			$nelioab_admin_controller->data = $exp;
 		}
 
-	}//NelioABAltExpEditionPageController
+		public static function manage_actions() {
+			if ( !isset( $_POST['action'] ) )
+				return;
+
+			if ( $_POST['action'] == 'validate' )
+				if ( NelioABCssExpEditionPageController::validate() )
+					NelioABCssExpEditionPageController::on_valid_submit();
+
+			if ( $_POST['action'] == 'cancel' )
+				NelioABCssExpEditionPageController::cancel_changes();
+
+			if ( $_POST['action'] == 'remove_alternative' )
+				NelioABCssExpEditionPageController::remove_alternative();
+
+			if ( $_POST['action'] == 'add_empty_alt' )
+				NelioABCssExpEditionPageController::add_empty_alternative();
+
+			if ( $_POST['action'] == 'update_alternative_name' )
+				NelioABCssExpEditionPageController::update_alternative_name();
+
+			if ( $_POST['action'] == 'show_empty_quickedit_box' )
+				NelioABCssExpEditionPageController::build_experiment_from_post_data();
+
+			if ( $_POST['action'] == 'edit_alt_content' )
+				if ( NelioABCssExpEditionPageController::validate() )
+					NelioABCssExpEditionPageController::edit_alternative_content();
+
+			if ( $_POST['action'] == 'hide_new_alt_box' )
+				NelioABCssExpEditionPageController::build_experiment_from_post_data();
+		}
+
+	}//NelioABCssExpEditionPageController
 
 }
 
-if ( isset( $_POST['nelioab_edit_exp_form'] ) && isset( $_POST['action'] ) ) {
-
-	if ( $_POST['action'] == 'validate' )
-		if ( NelioABAltExpEditionPageController::validate() ) 
-			NelioABAltExpEditionPageController::on_valid_submit();
-
-	if ( $_POST['action'] == 'cancel' )
-		NelioABAltExpEditionPageController::cancel_changes();
-
-	if ( $_POST['action'] == 'remove_alternative' )
-		NelioABAltExpEditionPageController::remove_alternative();
-
-	if ( $_POST['action'] == 'add_empty_alt' )
-		NelioABAltExpEditionPageController::add_empty_alternative();
-
-	if ( $_POST['action'] == 'add_alt_copying_content' )
-		NelioABAltExpEditionPageController::add_alternative_copying_content();
-
-	if ( $_POST['action'] == 'update_alternative_name' )
-		NelioABAltExpEditionPageController::update_alternative_name();
-
-	if ( $_POST['action'] == 'show_empty_quickedit_box' )
-		NelioABAltExpEditionPageController::build_experiment_from_post_data();
-
-	if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-		NelioABAltExpEditionPageController::build_experiment_from_post_data();
-
-	if ( $_POST['action'] == 'edit_alt_content' )
-		if ( NelioABAltExpEditionPageController::validate() ) 
-			NelioABAltExpEditionPageController::edit_alternative_content();
-
-	if ( $_POST['action'] == 'hide_new_alt_box' )
-		NelioABAltExpEditionPageController::build_experiment_from_post_data();
-
-}
+if ( isset( $_POST['nelioab_edit_ab_css_exp_form'] ) )
+	NelioABCssExpEditionPageController::manage_actions();
 
 ?>

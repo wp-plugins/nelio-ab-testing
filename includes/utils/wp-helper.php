@@ -22,7 +22,9 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		/**
 		 *
 		 */
-		public static function override( $ori_id, $overriding_id ) {
+		public static function override( $ori_id, $overriding_id,
+				$meta = true, $categories = true, $tags = true ) {
+
 			$ori = get_post( $ori_id, ARRAY_A );
 			if ( !$ori )
 				return;
@@ -36,12 +38,9 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			$ori['post_parent']   = $overriding['post_parent'];
 			wp_update_post( $ori );
 
-			NelioABWpHelper::copy_terms( $overriding_id, $ori_id );
-
-			$copy_meta = get_post_meta( $overriding_id, '_is_nelioab_metadata_duplicated', true );
-			if ( $copy_meta )
+			if ( $meta )
 				NelioABWpHelper::copy_meta_info( $overriding_id, $ori_id );
-
+			NelioABWpHelper::copy_terms( $overriding_id, $ori_id, $categories, $tags );
 		}
 
 		/**
@@ -92,33 +91,44 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		/**
 		 * Copy all terms (including categories and tags) from one object to another
 		 */
-		public static function copy_terms( $src_id, $dest_id ) {
+		public static function copy_terms( $src_id, $dest_id, $copy_categories, $copy_tags ) {
 			
 			// First of all, we remove all terms from the destination
 			wp_delete_object_term_relationships( $dest_id, get_taxonomies() );
 
 			// And then we transfer the new ones
-			$terms = wp_get_post_terms( $src_id );
-			$aux   = array();
-			if ( $terms )
-				foreach ( $terms as $term )
-					array_push( $aux, $term->name );
-			wp_set_post_terms( $dest_id, $aux );
+			if ( $copy_tags ) {
+				$terms = wp_get_post_terms( $src_id );
+				$aux   = array();
+				if ( $terms )
+					foreach ( $terms as $term )
+						array_push( $aux, $term->name );
+				wp_set_post_terms( $dest_id, $aux );
+			}
 
-			$categories = wp_get_post_categories( $src_id );
-			if ( $categories )
-				wp_set_post_categories( $dest_id, $categories );
+			if ( $copy_categories ) {
+				$categories = wp_get_post_categories( $src_id );
+				if ( $categories )
+					wp_set_post_categories( $dest_id, $categories );
+			}
 
 		}
 
 		/**
 		 * Copy all comments from one post to another
-		 */ 
+		 */
 		public static function copy_comments( $src_id, $dest_id ) {
 			foreach ( get_comments( array( 'post_id' => $src_id ) ) as $comment ) {
 				$comment->comment_post_ID = $dest_id;
 				wp_insert_comment( (array) $comment );
 			}
+		}
+
+		/**
+		 *
+		 */
+		public static function is_at_least_version( $version ) {
+			return $version <= floatval( get_bloginfo( 'version' ) );
 		}
 
 	}//NelioABWpHelper

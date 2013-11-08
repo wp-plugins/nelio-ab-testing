@@ -1,6 +1,6 @@
 function nelioab_areCookiesEnabled() {
 	document.cookie = "__verify=1;path=/";
-	var supportsCookies = document.cookie.length > 1 && 
+	var supportsCookies = document.cookie.length > 1 &&
 		document.cookie.indexOf("__verify=1") > -1;
 	delete_cookie("__verify");
 	return supportsCookies;

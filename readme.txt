@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,8 @@ account](http://wp-abtesting.com) to use our plugin (the service includes a
 page theme options...)
 * A/B and multivariate test of WordPress posts (title, content, page style,
 post theme options...)
+* Select one or more alternative themes among the installed ones and test
+which one works better!
 * Fresh information about the evolution of the experiment every day
 * Nice graphics about visitors, conversions, improvements, ...
 * Definition, management, and tracking of experiments integrated in WordPress
@@ -173,6 +175,19 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.2.1 =
+* Bug fix: stopping an experiment from the progress page is now working
+* Bug fix: overriding a theme alternative with another one from the progress
+page of an experiment is now working
+
+= 1.2 =
+* **New Feature!** You can now test different worpdress themes!
+* Improved page for listing experiments. On the one hand, each experiment has
+an icon to quickly identify its type. On the other hand, statuses are now
+colorized.
+* Improved metadata management when applying the winning page/post alternative.
+* Some minor fixes
+
 = 1.1.2 =
 * Bug fix: when querying the permalink of an alternative, the original's
 permalink is returned instead (important, for instance, for social sharing
@@ -252,6 +267,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.1.2 =
-Alternative permalinks correspond to original's.
+= 1.2.1 =
+This new version allows you to test themes and provides some small fixes.
 

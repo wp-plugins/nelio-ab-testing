@@ -23,7 +23,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 
 
 		/** ************************************************************************
-		 * REQUIRED. Set up a constructor that references the parent constructor. We 
+		 * REQUIRED. Set up a constructor that references the parent constructor. We
 		 * use the parent reference to set some default configs.
 		 ***************************************************************************/
 		public function __construct( $super_params ){
@@ -43,14 +43,14 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		 * specifically build for a given column. Generally, it's recommended to include
 		 * one method for each column you want to render, keeping your package class
 		 * neat and organized. For example, if the class needs to process a column
-		 * named 'title', it would first see if a method named $this->column_title() 
+		 * named 'title', it would first see if a method named $this->column_title()
 		 * exists - if it does, that method will be used. If it doesn't, this one will
-		 * be used. Generally, you should try to use custom column methods as much as 
-		 * possible. 
-		 * 
-		 * For more detailed insight into how columns are handled, take a look at 
+		 * be used. Generally, you should try to use custom column methods as much as
+		 * possible.
+		 *
+		 * For more detailed insight into how columns are handled, take a look at
 		 * WP_List_Table::single_row_columns()
-		 * 
+		 *
 		 * @param array $item A singular item (one full row's worth of data)
 		 * @param array $column_name The name/slug of the column to be processed
 		 * @return string Text or HTML to be placed inside the column <td>
@@ -70,7 +70,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		 * REQUIRED if displaying checkboxes or using bulk actions! The 'cb' column
 		 * is given special treatment when columns are processed. It ALWAYS needs to
 		 * have it's own method.
-		 * 
+		 *
 		 * @see WP_List_Table::::single_row_columns()
 		 * @param array $item A singular item (one full row's worth of data)
 		 * @return string Text to be placed inside the column <td> (movie title only)
@@ -94,7 +94,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 
 		protected function prepare_pagination() {
 			/**
-			 * REQUIRED. Now we can add our *sorted* data to the items property, where 
+			 * REQUIRED. Now we can add our *sorted* data to the items property, where
 			 * it can be used by the rest of the class.
 			 */
 			$total_items = count( $this->items );
@@ -116,7 +116,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		 * get it ready to be displayed. At a minimum, we should set $this->items and
 		 * $this->set_pagination_args(), although the following properties and methods
 		 * are frequently interacted with here...
-		 * 
+		 *
 		 * @global WPDB $wpdb
 		 * @uses $this->_column_headers
 		 * @uses $this->items
@@ -141,7 +141,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			
 			
 			/**
-			 * REQUIRED. Finally, we build an array to be used by the class for column 
+			 * REQUIRED. Finally, we build an array to be used by the class for column
 			 * headers. The $this->_column_headers property takes an array which contains
 			 * 3 other arrays. One for all columns, one for hidden columns, and one
 			 * for sortable columns.
