@@ -39,7 +39,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$json_data = NelioABBackend::remote_get( sprintf(
-				NELIOAB_BACKEND_URL . '/wp/site/%s/exp',
+				NELIOAB_BACKEND_URL . '/v2/wp/site/%s/exp',
 				NelioABSettings::get_site_id()
 			) );
 
@@ -72,24 +72,26 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				$type == NelioABExperiment::PAGE_ALT_EXP ||
 				$type == NelioABExperiment::PAGE_OR_POST_ALT_EXP
 			) {
-				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/wp/altexp/' . $id );
+				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/v3/postexp/' . $id );
 				$json_data = json_decode( $json_data['body'] );
-	
-				$exp = new NelioABPostAlternativeExperiment( $json_data->id );
+
+				$exp = new NelioABPostAlternativeExperiment( $json_data->key->id );
 				$exp->set_name( $json_data->name );
 				if ( isset( $json_data->description ) )
 					$exp->set_description( $json_data->description );
 				$exp->set_type_using_kind_name( $json_data->kind );
-				$exp->set_original( $json_data->originalPage );
+				$exp->set_original( $json_data->originalPost );
 				$exp->set_status( $json_data->status );
-				$exp->set_conversion_post( $json_data->conversionPage );
+				if ( isset( $json_data->conversionPost ) )
+					foreach ( $json_data->conversionPost as $cp )
+						$exp->add_conversion_post( $cp );
 	
 				$alternatives = array();
 				if ( isset( $json_data->alternatives ) ) {
 					foreach ( $json_data->alternatives as $json_alt ) {
-						$alt = new NelioABAlternative( $json_alt->id );
+						$alt = new NelioABAlternative( $json_alt->key->id );
 						$alt->set_name( $json_alt->name );
-						$alt->set_value( $json_alt->page );
+						$alt->set_value( $json_alt->value );
 						array_push ( $alternatives, $alt );
 					}
 				}
@@ -100,7 +102,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 			// THEME ALTERNATIVE EXPERIMENT
 			if ( $type == NelioABExperiment::THEME_ALT_EXP ) {
-				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/globalexp/' . $id );
+				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/v3/globalexp/' . $id );
 				$json_data = json_decode( $json_data['body'] );
 
 				$exp = new NelioABThemeAlternativeExperiment( $json_data->key->id );
@@ -109,14 +111,14 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				if ( isset( $json_data->description ) )
 					$exp->set_description( $json_data->description );
 				$exp->set_status( $json_data->status );
-				$exp->set_conversion_post( $json_data->conversionPost );
+				$exp->add_conversion_post( $json_data->conversionPost );
 	
 				$alternatives = array();
 				if ( isset( $json_data->alternatives ) ) {
 					foreach ( $json_data->alternatives as $json_alt ) {
 						$alt = new NelioABAlternative( $json_alt->key->id );
 						$alt->set_name( $json_alt->name );
-						$alt->set_value( $json_alt->page );
+						$alt->set_value( $json_alt->value );
 						array_push ( $alternatives, $alt );
 					}
 				}

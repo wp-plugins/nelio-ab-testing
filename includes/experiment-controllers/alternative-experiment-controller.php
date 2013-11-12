@@ -166,7 +166,7 @@ class NelioABAlternativeExperimentController {
 		foreach ( $running_exps as $exp ) {
 			if ( $exp->get_type() != NelioABExperiment::THEME_ALT_EXP )
 				continue;
-			if ( $exp->get_conversion_post() == $post_id )
+			if ( $exp->includes_conversion_post( $post_id ) )
 				return true;
 		}
 		return false;
@@ -382,13 +382,13 @@ class NelioABAlternativeExperimentController {
 		return $alt_id;
 	}
 
-	private function is_goal_in_some_experiment( $post_id ) {
+	private function is_goal_in_some_page_or_post_experiment( $post_id ) {
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
 			if ( $exp->get_type() == NelioABExperiment::POST_ALT_EXP ||
 			     $exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ) {
-				if ( $exp->get_conversion_post() == $post_id )
+				if ( $exp->includes_conversion_post( $post_id ) )
 					return true;
 			}
 		}
@@ -434,7 +434,7 @@ class NelioABAlternativeExperimentController {
 		// IF DEST_ID does not belong to any experiment AND
 		//    there is not a GLOBAL experiment running
 		// THEN quit
-		if ( ! $this->is_goal_in_some_experiment( $actual_dest_id ) &&
+		if ( ! $this->is_goal_in_some_page_or_post_experiment( $actual_dest_id ) &&
 		     ! $this->has_post_alternative( $actual_dest_id ) &&
 		     ! $this->is_post_alternative( $actual_dest_id ) &&
 		     ! $is_there_a_relevant_theme_exp )
@@ -450,7 +450,7 @@ class NelioABAlternativeExperimentController {
 			return;
 
 		$url = sprintf(
-			NELIOAB_BACKEND_URL . '/site/%s/nav',
+			NELIOAB_BACKEND_URL . '/v2/site/%s/nav',
 			NelioABSettings::get_site_id()
 		);
 

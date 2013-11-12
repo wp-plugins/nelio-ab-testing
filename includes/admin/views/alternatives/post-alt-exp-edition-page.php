@@ -74,7 +74,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					'callback'  => array ( &$this, 'print_ori_field' ),
 					'mandatory' => true ),
 				array (
-					'label'     => __( 'Goal Page / Post', 'nelioab' ),
+					'label'     => __( 'Goal Pages and Posts', 'nelioab' ),
 					'id'        => 'exp_goal',
 					'callback'  => array ( &$this, 'print_goal_field' ),
 					'mandatory' => true ),
@@ -129,6 +129,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 				$("#exp_original").bind( "change", function() { checkSubmit(jQuery); } );
 				$("#exp_original").bind( "change", function() { oriChanged(jQuery); } );
 				$("#exp_goal").bind( "change", function() { checkSubmit(jQuery); } );
+				$("#active_goals").bind('NelioABGoalsChanged', function() { checkSubmit(jQuery); } );
 
 				// Alternatives
 				if ($("#exp_original").attr("value") != -1)
@@ -167,14 +168,12 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 				} catch ( e ) {}
 
 				try {
-					if ( $("#exp_goal").attr("value") == -1 )
-						return false;
-				} catch ( e ) {}
-
-				try {
 					if ( jQuery("#new-alt-form").size() == 1 )
 						return false;
 				} catch ( e ) {}
+
+				if ( $("#aux_goal_options option").length <= 1 )
+					return false;
 
 				return true;
 			}
@@ -211,19 +210,18 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			}
 
 			function oriChanged($) {
-				// Make all options visible
-				$("#exp_goal option").each(function() { $(this).show() });
+				// Make any hidden goal available
+				show_hidden_goal_options();
 
 				// If no option from original was selected, quit
 				ori = $("#exp_original").attr("value");
 				if (ori == -1)
 					return;
 
-				// Else, just make sure it is not the goal
-				if ( ori == $("#exp_goal").attr("value") )
-					$("#exp_goal").attr("value", -1);
+				if ( jQuery("#active_goal-" + ori).length != 0 )
+					remove_goal(ori);
+				remove_option_for_addition(ori);
 
-				$("#exp_goal option[value=" + ori + "]").hide();
 				checkSubmit(jQuery);
 			}
 
@@ -267,7 +265,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 
 		public function print_ori_field() {?>
 			<select id="exp_original" style="width:300px;"
-				name="exp_original" class="required" value="<?php echo $this->exp->get_conversion_post(); ?>"><?php
+				name="exp_original" class="required" value="<?php echo $this->exp->get_original(); ?>"><?php
 			$aux = $this->wp_pages;
 			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
 				$aux = $this->wp_posts;
@@ -276,7 +274,11 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					value="<?php echo $p->ID; ?>" <?php
 						if ( $this->exp->get_original() == $p->ID )
 							echo 'selected="selected"';
-					?>"><?php echo $p->post_title; ?></option><?php
+					?>"><?php
+					$title = $p->post_title;
+					if ( strlen( $title ) > 50 )
+						$title = substr( $title, 0, 50 ) . '...';
+					echo $title; ?></option><?php
 			}
 			?>
 			</select>

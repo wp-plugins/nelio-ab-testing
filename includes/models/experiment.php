@@ -146,7 +146,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 		public function start() {
 			$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/%s/start',
+					NELIOAB_BACKEND_URL . '/v2/exp/%s/start',
 					$this->get_id()
 				);
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -156,7 +156,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 		public function stop() {
 			$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/%s/stop',
+					NELIOAB_BACKEND_URL . '/v2/exp/%s/stop',
 					$this->get_id()
 				);
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );

@@ -106,7 +106,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			$results = new NelioABAltExpResult();
 			
 			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/altexp/%s/result',
+				NELIOAB_BACKEND_URL . '/v3/postexp/%s/result',
 				$this->get_id()
 			);
 
@@ -124,10 +124,14 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			$alt_res = new NelioABAltStats( true ); // Original
 			$alt_res->set_name( __( 'Original', 'nelioab' ) );
-			$alt_res->set_post_id( $this->get_original() );
-			$alt_res->set_num_of_visitors( $json_data['original']['visits'] );
-			$alt_res->set_num_of_conversions( $json_data['original']['conversions'] );
-			$alt_res->set_conversion_rate( $json_data['original']['conversionRate'] );
+			$alt_res->set_alt_id( $this->get_original() );
+			$alt_res->set_num_of_visitors( $json_data['originalStats']['visitors'] );
+			$alt_res->set_num_of_conversions( $json_data['originalStats']['conversions'] );
+			$alt_res->set_conversion_rate( $json_data['originalStats']['conversionRate'] );
+			if ( isset( $json_data['originalStats']['historyVisitors'] ) )
+				$alt_res->set_visitors_history( $json_data['originalStats']['historyVisitors'] );
+			if ( isset( $json_data['originalStats']['historyConversions'] ) )
+				$alt_res->set_conversions_history( $json_data['originalStats']['historyConversions'] );
 			$results->add_alternative_results( $alt_res );
 
 			$visitors_alt = 0;
@@ -146,21 +150,21 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( isset(	$json_data['improvementAlt'] ) )
 				$improvement_factor_alt = $json_data['improvementAlt'];
 
-			if ( is_array( $json_data['alternatives'] ) ) {
-				foreach ( $json_data['alternatives'] as $json_alt ) {
+			if ( is_array( $json_data['alternativeStats'] ) ) {
+				foreach ( $json_data['alternativeStats'] as $json_alt ) {
 					$alt_res = new NelioABAltStats();
 
 					$alternative = null;
 					foreach ( $this->get_alternatives() as $alt )
-						if ( $alt->get_value() == $json_alt['name'] )
+						if ( $alt->get_value() == $json_alt['altId'] )
 							$alternative = $alt;
 
 					if ( $alternative == null )
 						continue;
 	
 					$alt_res->set_name( $alternative->get_name() );
-					$alt_res->set_post_id( $json_alt['name'] );
-					$alt_res->set_num_of_visitors( $json_alt['visits'] );
+					$alt_res->set_alt_id( $json_alt['altId'] );
+					$alt_res->set_num_of_visitors( $json_alt['visitors'] );
 					$alt_res->set_num_of_conversions( $json_alt['conversions'] );
 					$alt_res->set_conversion_rate( $json_alt['conversionRate'] );
 					$alt_res->set_improvement_factor( $json_alt['improvementFactor'] );
@@ -173,8 +177,8 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				}
 			}
 
-			if ( is_array( $json_data['gtestStatistics'] ) ) {
-				foreach ( $json_data['gtestStatistics'] as $stats ) {
+			if ( is_array( $json_data['gTests'] ) ) {
+				foreach ( $json_data['gTests'] as $stats ) {
 					$g = new NelioABGTest( $stats['message'], $this->get_original() );
 					$min_ver = NULL;
 					if ( isset( $stats['minVersion'] ) ) {
@@ -222,7 +226,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( $this->get_original() < 0 )
 				return NelioABExperimentStatus::DRAFT;
 
-			if ( $this->get_conversion_post() < 0 )
+			if ( count( $this->get_conversion_posts() ) == 0 )
 				return NelioABExperimentStatus::DRAFT;
 
 			return NelioABExperimentStatus::READY;
@@ -232,16 +236,18 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
 			// 1. UPDATE OR CREATE THE EXPERIMENT
+			// -------------------------------------------------------------------------
+
 			$url = '';
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/site/%s/altexp',
+					NELIOAB_BACKEND_URL . '/v3/site/%s/postexp',
 					NelioABSettings::get_site_id()
 				);
 			}
 			else {
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/altexp/%s',
+					NELIOAB_BACKEND_URL . '/v3/postexp/%s/update',
 					$this->get_id()
 				);
 			}
@@ -254,8 +260,8 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			$body = array(
 				'name'           => $this->get_name(),
 				'description'    => $this->get_description(),
-				'originalPage'   => $this->get_original(),
-				'conversionPage' => $this->get_conversion_post(),
+				'originalPost'   => $this->get_original(),
+				'conversionPost' => $this->get_conversion_posts(),
 				'status'         => $this->get_status(),
 				'kind'           => $this->get_kind_name( $this->get_type() ),
 			);
@@ -282,7 +288,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 				$body = array( 'name' => $alt->get_name() );
 				$result = NelioABBackend::remote_post(
-					sprintf( NELIOAB_BACKEND_URL . '/alternative/%s', $alt->get_id() ),
+					sprintf( NELIOAB_BACKEND_URL . '/v3/alternative/%s/update', $alt->get_id() ),
 					$body );
 			}
 
@@ -292,7 +298,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					continue;
 
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/wp/delete/alternative/%s',
+					NELIOAB_BACKEND_URL . '/v2/wp/delete/alternative/%s',
 					$alt->get_id()
 				);
 
@@ -306,13 +312,14 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					continue;
 
 				$body = array(
-					'name' => $alt->get_name(),
-					'page' => $alt->get_value(),
+					'name'  => $alt->get_name(),
+					'value' => $alt->get_value(),
+					'kind'  => NelioABExperiment::get_kind_name( $this->get_type() ),
 				);
 
 				try {
 					$result = NelioABBackend::remote_post(
-						sprintf( NELIOAB_BACKEND_URL . '/altexp/%s/alternative', $exp_id ),
+						sprintf( NELIOAB_BACKEND_URL . '/v3/postexp/%s/alternative', $exp_id ),
 						$body );
 				}
 				catch ( Exception $e ) {
@@ -349,7 +356,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// 2. We remove the experiment itself
 			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/wp/delete/altexp/%s',
+				NELIOAB_BACKEND_URL . '/v3/postexp/%s/delete',
 				$this->get_id()
 			);
 

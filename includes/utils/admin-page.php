@@ -23,12 +23,18 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		protected $title_action;
 		protected $icon_id;
 		protected $uses_two_columns;
+		protected $message;
 
 		public function __construct( $title = '' ) {
 			$this->title            = $title;
 			$this->title_action     = '';
 			$this->icon_id          = 'icon-options-general';
 			$this->uses_two_columns = false;
+			$this->message          = false;
+		}
+
+		public function set_message( $message ) {
+			$this->message = $message;
 		}
 
 		public function set_title( $title ) {
@@ -138,10 +144,15 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		}
 
 		protected function print_message_content() {
-			global $nelioab_admin_controller;
-			$message = $nelioab_admin_controller->message;
-			if ( isset( $message ) && $message != NULL && strlen( $message ) > 0 )
-				echo '<p>' . $message . '</p>';
+			if ( $this->message ) {
+				echo '<p>' . $this->message . '</p>';
+			}
+			else {
+				global $nelioab_admin_controller;
+				$message = $nelioab_admin_controller->message;
+				if ( isset( $message ) && $message != NULL && strlen( $message ) > 0 )
+					echo '<p>' . $message . '</p>';
+			}
 		}
 
 		protected function print_errors( $display = 'block' ) {

@@ -48,7 +48,7 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 			$results = new NelioABAltExpResult();
 
 			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/globalexp/%s/result',
+				NELIOAB_BACKEND_URL . '/v3/globalexp/%s/result',
 				$this->get_id()
 			);
 
@@ -100,7 +100,7 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 					}
 
 					$alt_res->set_name( $alternative_name );
-					$alt_res->set_post_id( $json_alt['altId'] );
+					$alt_res->set_alt_id( $json_alt['altId'] );
 					$alt_res->set_num_of_visitors( $json_alt['visitors'] );
 					$alt_res->set_num_of_conversions( $json_alt['conversions'] );
 					$alt_res->set_conversion_rate( $json_alt['conversionRate'] );
@@ -157,7 +157,7 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 		}
 
 		protected function determine_proper_status() {
-			if ( $this->get_conversion_post() < 0 )
+			if ( count( $this->get_conversion_posts() ) == 0 )
 				return NelioABExperimentStatus::DRAFT;
 
 			return NelioABExperimentStatus::READY;
@@ -166,7 +166,7 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 		public function remove() {
 			// 1. We remove the experiment itself
 			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/globalexp/%s/delete',
+				NELIOAB_BACKEND_URL . '/v3/globalexp/%s/delete',
 				$this->get_id()
 			);
 
@@ -179,7 +179,7 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 
 		public function start() {
 			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/globalexp/%s/start',
+				NELIOAB_BACKEND_URL . '/v3/globalexp/%s/start',
 				$this->get_id()
 			);
 			$result = NelioABBackend::remote_post( $url );
@@ -187,7 +187,7 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 
 		public function stop() {
 			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/globalexp/%s/stop',
+				NELIOAB_BACKEND_URL . '/v3/globalexp/%s/stop',
 				$this->get_id()
 			);
 			$result = NelioABBackend::remote_post( $url );

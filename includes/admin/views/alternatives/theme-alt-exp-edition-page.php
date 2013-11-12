@@ -71,7 +71,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					'id'        => 'exp_descr',
 					'callback'  => array( &$this, 'print_descr_field' ) ),
 				array (
-					'label'     => __( 'Goal Page / Post', 'nelioab' ),
+					'label'     => __( 'Goal Pages and Posts', 'nelioab' ),
 					'id'        => 'exp_goal',
 					'callback'  => array ( &$this, 'print_goal_field' ),
 					'mandatory' => true ),

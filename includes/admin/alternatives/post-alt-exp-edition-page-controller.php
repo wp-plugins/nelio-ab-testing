@@ -191,7 +191,15 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
 			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
 			$exp->set_original( $_POST['exp_original'] );
-			$exp->set_conversion_post( $_POST['exp_goal'] );
+			if ( isset( $_POST['exp_goal'] ) ) {
+				if ( is_array( $_POST['exp_goal'] ) ) {
+					foreach ( $_POST['exp_goal'] as $goal )
+						$exp->add_conversion_post( $goal );
+				}
+				else {
+					$exp->add_conversion_post( $_POST['exp_goal'] );
+				}
+			}
 			$exp->load_encoded_appspot_alternatives( $_POST['appspot_alternatives'] );
 			$exp->load_encoded_local_alternatives( $_POST['local_alternatives'] );
 

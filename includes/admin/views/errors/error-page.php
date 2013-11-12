@@ -21,11 +21,11 @@ if ( !class_exists( 'NelioABErrorPage' ) ) {
 
 	class NelioABErrorPage extends NelioABAdminAjaxPage {
 
-		private $message;
+		private $error_message;
 
-		public function __construct( $message ) {
+		public function __construct( $error_message ) {
 			parent::__construct( __( 'Error', 'nelioab' ) );
-			$this->message = $message;
+			$this->error_message = $error_message;
 		}
 
 		protected function do_render() {
@@ -34,7 +34,7 @@ if ( !class_exists( 'NelioABErrorPage' ) ) {
 				NELIOAB_ASSETS_URL . '/admin/images/error-icon.png?' . NELIOAB_PLUGIN_VERSION,
 				__( 'Funny image to graphically notify of an error.', 'nelioab' )
 			);
-			echo "<h2>$this->message</h2>";
+			echo "<h2>$this->error_message</h2>";
 			echo '</center>';
 		}
 

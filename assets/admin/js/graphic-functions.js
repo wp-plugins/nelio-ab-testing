@@ -444,14 +444,8 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 	 });
 }
 
-function makeTimelinePerAlternativeGraphic(divName, labels, average, alternatives, startingDate) {
-		var series = [{
-			name: labels['average'],
-			pointInterval: 24 * 3600 * 1000, //every day
-			pointStart: startingDate,
-			color: '#A8D8F6',
-			data: average
-		}];
+function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, startingDate) {
+		var series = [];
 
 		series.push( {
 			name: labels['original'],

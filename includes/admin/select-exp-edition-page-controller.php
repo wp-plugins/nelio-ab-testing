@@ -37,7 +37,7 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 
 			$controller = NelioABSelectExpEditionPageController::attempt_to_load_proper_controller();
 			if ( $controller != NULL ) {
-				$controller::build();
+				call_user_func( array( $controller, 'build' ) );
 			}
 			else {
 				if ( isset( $_GET['id'] ) )
@@ -76,7 +76,7 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 			}
 
 			$controller = NelioABSelectExpEditionPageController::get_controller( $experiment->get_type() );
-			$controller::generate_html_content();
+			call_user_func( array( $controller, 'generate_html_content' ) );
 		}
 
 		public static function get_controller( $type ) {

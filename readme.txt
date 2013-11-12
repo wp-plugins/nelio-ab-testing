@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.2.1
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -175,6 +175,14 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.3 =
+* **New Feature!** You can now set more than one page or post as the goal
+of an experiment!
+* Improved _progress of the experiment_ page
+* Major bug fix: WSOD for PHP versions < 5.3 (because of calling a static
+method using a variable; error T_PAAMAYIM_NEKUDOTAYIM)
+* Some minor fixes
+
 = 1.2.1 =
 * Bug fix: stopping an experiment from the progress page is now working
 * Bug fix: overriding a theme alternative with another one from the progress
@@ -185,7 +193,7 @@ page of an experiment is now working
 * Improved page for listing experiments. On the one hand, each experiment has
 an icon to quickly identify its type. On the other hand, statuses are now
 colorized.
-* Improved metadata management when applying the winning page/post alternative.
+* Improved metadata management when applying the winning page/post alternative
 * Some minor fixes
 
 = 1.1.2 =
@@ -267,6 +275,6 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.2.1 =
-This new version allows you to test themes and provides some small fixes.
+= 1.3 =
+More than one page/post as GOAL. Several bug fixes.
 

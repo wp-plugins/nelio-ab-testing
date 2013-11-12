@@ -111,13 +111,13 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			$url = '';
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/site/%s/globalexp',
+					NELIOAB_BACKEND_URL . '/v3/site/%s/globalexp',
 					NelioABSettings::get_site_id()
 				);
 			}
 			else {
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/globalexp/%s/update',
+					NELIOAB_BACKEND_URL . '/v3/globalexp/%s/update',
 					$this->get_id()
 				);
 			}
@@ -131,7 +131,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 				'name'           => $this->get_name(),
 				'description'    => $this->get_description(),
 				'origin'         => $this->get_origins(),
-				'conversionPost' => $this->get_conversion_post(),
+				'conversionPost' => $this->get_conversion_posts(),
 				'status'         => $this->get_status(),
 				'kind'           => $this->get_kind_name( $this->get_type() ),
 			);
@@ -159,13 +159,13 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			if ( !$ori_appspot ) {
 				if ( $ori_local->value !== -1 ) {
 					$body = array(
-						'name' => $ori_local->name,
-						'page' => $ori_local->value,
-						'kind' => NelioABExperiment::get_kind_name( NelioABExperiment::THEME_ALT_EXP ),
+						'name'  => $ori_local->name,
+						'value' => $ori_local->value,
+						'kind'  => NelioABExperiment::get_kind_name( NelioABExperiment::THEME_ALT_EXP ),
 					);
 					try {
 						$result = NelioABBackend::remote_post(
-							sprintf( NELIOAB_BACKEND_URL . '/globalexp/%s/alternative', $exp_id ),
+							sprintf( NELIOAB_BACKEND_URL . '/v3/globalexp/%s/alternative', $exp_id ),
 							$body );
 					}
 					catch ( Exception $e ) {
@@ -176,11 +176,11 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			else {
 				if ( $ori_local->value != $ori_appspot->get_value() ) {
 					$body = array(
-						'name' => $ori_local->name,
-						'page' => $ori_local->value,
+						'name'  => $ori_local->name,
+						'value' => $ori_local->value,
 					);
 					$url = sprintf(
-						NELIOAB_BACKEND_URL . '/alternative/%s/update',
+						NELIOAB_BACKEND_URL . '/v3/alternative/%s/update',
 						$ori_appspot->get_id()
 					);
 					$result = NelioABBackend::remote_post( $url, $body );
@@ -193,7 +193,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 					continue;
 
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/alternative/%s/delete',
+					NELIOAB_BACKEND_URL . '/v2/alternative/%s/delete',
 					$alt->get_id()
 				);
 
@@ -207,14 +207,14 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 					continue;
 
 				$body = array(
-					'name' => $alt->name,
-					'page' => $alt->value,
+					'name'  => $alt->name,
+					'value' => $alt->value,
 					'kind' => NelioABExperiment::get_kind_name( NelioABExperiment::THEME_ALT_EXP ),
 				);
 
 				try {
 					$result = NelioABBackend::remote_post(
-						sprintf( NELIOAB_BACKEND_URL . '/globalexp/%s/alternative', $exp_id ),
+						sprintf( NELIOAB_BACKEND_URL . '/v3/globalexp/%s/alternative', $exp_id ),
 						$body );
 				}
 				catch ( Exception $e ) {

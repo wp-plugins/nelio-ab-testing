@@ -225,14 +225,14 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 		protected function get_labels_for_visitors_js() {
 			$labels = array();
-			$labels['title']       = __( 'Visitors and Conversions', 'nelioab' );
+			$labels['title']       = __( 'Page Views and Conversions', 'nelioab' );
 			if ( $this->is_ori_page )
 				$labels['subtitle']    = __( 'for the original and the alternative pages', 'nelioab' );
 			else
 				$labels['subtitle']    = __( 'for the original and the alternative posts', 'nelioab' );
 			$labels['xaxis']       = __( 'Alternatives', 'nelioab' );
 			$labels['detail']      = __( 'Number of {series.name}: <b>{point.y}</b>', 'nelioab' );
-			$labels['visitors']    = __( 'Visitors', 'nelioab' );
+			$labels['visitors']    = __( 'Page Views', 'nelioab' );
 			$labels['conversions'] = __( 'Conversions', 'nelioab' );
 			return $labels;
 		}

@@ -138,6 +138,22 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 
 			<br /><br /><br />
+			<?php
+				$print_plans = true;
+				if ( isset( $this->user_info['status'] ) &&
+				   ( $this->user_info['status'] == 1 ||
+				      $this->user_info['status'] == 2 ) )
+					$print_plans = false;
+
+				if ( $print_plans ) {
+					$this->set_message(
+						__( 'Haven\'t you subscribed to any of our plans? <b>'.
+							'<a href="http://wp-abtesting.com/subscription-plans/" target="_blank">' .
+							'Check them out and choose the one that best fits you</a></b>! ' .
+							'All our plans come with a <b>15-day free trial period</b>.',
+							'nelioab' ) );
+				}
+			?>
 			<h2 style="margin-bottom:0px;padding-bottom:0px;"><?php
 				$status_fg_color = '#777777';
 				$status_bg_color = '#EFEFEF';
@@ -155,7 +171,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 						$status_text     = __( 'NOT ACTIVE', 'nelioab' );
 					}
 				}
-	
+
 				$status_title = sprintf(
 					'<span style="color:%s;background-color:%s;font-size:0.5em;" class="add-new-h2">%s</span>',
 					$status_fg_color, $status_bg_color, $status_text );

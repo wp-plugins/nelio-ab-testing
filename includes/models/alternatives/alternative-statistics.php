@@ -20,7 +20,7 @@ if( !class_exists( 'NelioABAltStats' ) ) {
 	class NelioABAltStats {
 
 		private $name;
-		private $post_id;
+		private $alt_id;
 		private $num_of_visitors;
 		private $num_of_conversions;
 		private $conversion_rate;
@@ -43,12 +43,12 @@ if( !class_exists( 'NelioABAltStats' ) ) {
 			return $this->name;
 		}
 
-		public function set_post_id( $post_id ) {
-			$this->post_id = $post_id;;
+		public function set_alt_id( $alt_id ) {
+			$this->alt_id = $alt_id;;
 		}
 
-		public function get_post_id() {
-			return $this->post_id;
+		public function get_alt_id() {
+			return $this->alt_id;
 		}
 
 		public function set_num_of_visitors( $num_of_visitors ) {

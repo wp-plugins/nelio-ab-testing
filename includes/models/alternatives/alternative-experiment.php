@@ -27,7 +27,7 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 
 	abstract class NelioABAlternativeExperiment extends NelioABExperiment {
 
-		private $goal;
+		private $goals;
 		private $appspot_alternatives;
 		private $local_alternatives;
 
@@ -38,17 +38,25 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 		}
 
 		public function clear() {
-			$this->goal = -1;
+			$this->goals = array();
 			$this->appspot_alternatives = array();
 			$this->local_alternatives = array();
 		}
 
-		public function get_conversion_post() {
-			return $this->goal;
+		public function get_conversion_posts() {
+			return $this->goals;
 		}
 
-		public function set_conversion_post( $conversion_post ) {
-			$this->goal = $conversion_post;
+		public function add_conversion_post( $conversion_post ) {
+			if ( !$this->includes_conversion_post( $conversion_post ) )
+				array_push( $this->goals, $conversion_post );
+		}
+
+		public function includes_conversion_post( $conversion_post ) {
+			foreach ( $this->goals as $goal )
+				if ( $goal == $conversion_post )
+					return true;
+			return false;
 		}
 
 		public function get_appspot_alternatives() {

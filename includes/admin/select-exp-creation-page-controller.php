@@ -37,12 +37,12 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 
 			$controller = NelioABSelectExpCreationPageController::attempt_to_load_proper_controller();
 			if ( $controller != NULL ) {
-				$controller::build();
+				call_user_func( array( $controller, 'build' ) );
 			}
 			else {
 				if ( isset( $_GET['experiment-type'] ) ) {
 					$controller = NelioABSelectExpCreationPageController::get_controller( $_GET['experiment-type'] );
-					$controller::build();
+					call_user_func( array( $controller, 'build' ) );
 				}
 				else {
 					$view = new NelioABSelectExpCreationPage( $title );
