@@ -66,6 +66,8 @@ function nelioab_check_and_load_alt($) {
 			}
 
 			if ( is_load_required ) {
+				// nelioab_nav($) is called in the script nelioab-nav.js, which
+				// is included in the alternative.
 				nelioab_load_alt($);
 			}
 			else {

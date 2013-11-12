@@ -108,6 +108,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const INVALID_ALTERNATIVE              = 13;
 		const RESULTS_NOT_AVAILABLE_YET        = 14;
 		const DEACTIVATED_USER                 = 15;
+		const EXPERIMENT_ID_NOT_FOUND          = 16;
 
 		// These are "private" error codes
 		const BACKEND_NOT_AVAILABLE      = -1;
@@ -116,6 +117,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const ERROR_404                  = -4;
 		const NON_ACCEPTED_TAC           = -5;
 		const STATUS_204                 = -6;
+		const UNKNOWN_ERROR              = -7;
 
 		public static function to_string( $err ) {
 			switch( $err ) {
@@ -150,6 +152,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'Results for this experiment are not yet available.', 'nelioab' );
 				case NelioABErrCodes::DEACTIVATED_USER:
 					return __( 'User account has been deactivated.', 'nelioab' );
+				case NelioABErrCodes::EXPERIMENT_ID_NOT_FOUND:
+					return __( 'Experiment not found.', 'nelioab' );
 
 				// Private errors
 				case NelioABErrCodes::BACKEND_NOT_AVAILABLE:
@@ -162,6 +166,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'Terms and conditions are not accepted.', 'nelioab' );
 				case NelioABErrCodes::STATUS_204:
 					return __( 'Backend is not accessible.<br />Please, try again in just a few moments.', 'nelioab' );
+				case NelioABErrCodes::UNKNOWN_ERROR:
+					return __( 'An unknown error has occurred.', 'nelioab' );
 				case NelioABErrCodes::BACKEND_UNKNOWN_ERROR:
 				default:
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );

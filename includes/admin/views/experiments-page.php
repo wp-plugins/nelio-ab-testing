@@ -42,7 +42,25 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$this->current_status = $status;
 		}
 
-		protected function do_render() {?>
+		protected function do_render() {
+			// If there are no experiments, tell the user to create one.
+			if ( count( $this->experiments ) == 0 ) {
+				echo '<center>';
+				echo sprintf( '<img src="%s" alt="%s" />',
+					NELIOAB_ASSETS_URL . '/admin/images/happy.png?' . NELIOAB_PLUGIN_VERSION,
+					__( 'Happy smile.', 'nelioab' )
+				);
+				echo '<h2>';
+				echo sprintf(
+					__( 'Hey! It looks like you have not defined any experiments...<br />' .
+					'<a href="%s">Create one now</a>!', 'nelioab' ),
+					'admin.php?page=nelioab-add-experiment' );
+				echo '</h2>';
+				echo '</center>';
+				return;
+			}
+
+			?>
 			<script type="text/javascript">
 			function isInvalidClick(msg_id) {
 				switch (msg_id) {
@@ -97,7 +115,9 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 			$wp_list_table = new NelioABExperimentsTable( $this->filter_experiments( $this->current_status ) );
 			$wp_list_table->prepare_items();
+			echo '<div id="nelioab-experiment-list-table">';
 			$wp_list_table->display();
+			echo '</div>';
 		}
 
 		private function filter_experiments( $status = false ) {
@@ -130,12 +150,14 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				'ajax'      => false
 			)	);
 			$this->set_items( $experiments );
+			add_action( 'admin_head', array( &$this, 'admin_header' ) );
 		}
 		
 		function get_columns(){
 			return array(
+				'type'        => '',
 				'name'        => __( 'Name', 'nelioab' ),
-				'description' => __( 'Description', 'nelioab' ),
+				// 'description' => __( 'Description', 'nelioab' ),
 				'status'      => __( 'Status', 'nelioab' ),
 				'creation'    => __( 'Creation Date', 'nelioab' ),
 			);
@@ -150,50 +172,49 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 		function get_display_functions() {
 			return array(
-				'description' => 'get_description',
-				'status'      => 'get_status',
+				// 'description' => 'get_description',
 			);
 		}
 
-		function column_name( $exp ){
+		function column_name( $exp ) {
 
-			$edit_url     = '<a href="?page=nelioab-experiments&action=edit&id=%1$s">%2$s</a>';
-			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s">%2$s</a>';
-			$url          = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s">%3$s</a>';
-			$url_dialog   = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s" onclick="javascript:if(isInvalidClick(%4$s)){return false;}">%3$s</a>';
+			$edit_url     = '<a href="?page=nelioab-experiments&action=edit&id=%1$s&exp_type=%2$s">%3$s</a>';
+			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s">%3$s</a>';
+			$url          = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s">%4$s</a>';
+			$url_dialog   = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s" onclick="javascript:if(isInvalidClick(%5$s)){return false;}">%4$s</a>';
 
 			$actions = array();
 			switch( $exp->get_status() ) {
 				case NelioABExperimentStatus::DRAFT:
 					$actions = array(
-						'edit'  => sprintf( $edit_url, $exp->get_id(), __( 'Edit' ) ),
-						'trash' => sprintf( $url, 'trash', $exp->get_id(), __( 'Trash' ) ),
+						'edit'  => sprintf( $edit_url, $exp->get_id(), $exp->get_type(), __( 'Edit' ) ),
+						'trash' => sprintf( $url, 'trash', $exp->get_id(), $exp->get_type(), __( 'Trash' ) ),
 					);
 					break;
 				case NelioABExperimentStatus::READY:
 					$actions = array(
-						'edit'  => sprintf( $edit_url, $exp->get_id(), __( 'Edit' ) ),
-						'start' => sprintf( $url_dialog, 'start', $exp->get_id(), __( 'Start', 'nelioab' ), 0 ),
-						'trash' => sprintf( $url, 'trash', $exp->get_id(), __( 'Trash' ) ),
+						'edit'  => sprintf( $edit_url, $exp->get_id(), $exp->get_type(), __( 'Edit' ) ),
+						'start' => sprintf( $url_dialog, 'start', $exp->get_id(), $exp->get_type(), __( 'Start', 'nelioab' ), 0 ),
+						'trash' => sprintf( $url, 'trash', $exp->get_id(), $exp->get_type(), __( 'Trash' ) ),
 					);
 					break;
 				case NelioABExperimentStatus::RUNNING:
 					$actions = array(
-						'progress' => sprintf( $progress_url, $exp->get_id(), __( 'View' ) ),
-						'stop'     => sprintf( $url_dialog, 'stop', $exp->get_id(), __( 'Stop', 'nelioab' ), 1 ),
+						'theprogress' => sprintf( $progress_url, $exp->get_id(), $exp->get_type(), __( 'View' ) ),
+						'stop'        => sprintf( $url_dialog, 'stop', $exp->get_id(), $exp->get_type(), __( 'Stop', 'nelioab' ), 1 ),
 					);
 					break;
 				case NelioABExperimentStatus::FINISHED:
 					$actions = array(
-						'progress' => sprintf( $progress_url, $exp->get_id(), __( 'View' ) ),
-						'delete'   => sprintf( $url, 'delete', $exp->get_id(), __( 'Delete Permanently' ) ),
+						'theprogress' => sprintf( $progress_url, $exp->get_id(), $exp->get_type(), __( 'View' ) ),
+						'delete'      => sprintf( $url, 'delete', $exp->get_id(), $exp->get_type(), __( 'Delete Permanently' ) ),
 					);
 					break;
 				case NelioABExperimentStatus::TRASH:
 				default:
 					$actions = array(
-						'restore' => sprintf( $url, 'restore', $exp->get_id(), __( 'Restore' ) ),
-						'delete'  => sprintf( $url, 'delete', $exp->get_id(), __( 'Delete Permanently' ) ),
+						'restore' => sprintf( $url, 'restore', $exp->get_id(), $exp->get_type(), __( 'Restore' ) ),
+						'delete'  => sprintf( $url, 'delete', $exp->get_id(), $exp->get_type(), __( 'Delete Permanently' ) ),
 					);
 					break;
 			}
@@ -203,7 +224,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				'<span class="row-title">%2$s</span>%3$s',
 				/*%1$s*/ $exp->get_id(),
 				/*%2$s*/ $exp->get_name(),
-				/*%3$s*/ $this->row_actions($actions)
+				/*%3$s*/ $this->row_actions( $actions )
 			);
 		}
 
@@ -213,7 +234,58 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		}
 
 		public function column_status( $exp ){
-			return NelioABExperimentStatus::to_string( $exp->get_status() );
+			$str = NelioABExperimentStatus::to_string( $exp->get_status() );
+			switch( $exp->get_status() ) {
+				case NelioABExperimentStatus::DRAFT:
+					return $this->make_label( $str, '#999999', '#EEEEEE' );
+				case NelioABExperimentStatus::PAUSED:
+					return $this->make_label( $str, '#999999', '#EEEEEE' );
+				case NelioABExperimentStatus::READY:
+					return $this->make_label( $str, '#E96500', '#FFF6AD' );
+				case NelioABExperimentStatus::RUNNING:
+					return $this->make_label( $str, '#266529', '#D1FFD3' );
+				case NelioABExperimentStatus::FINISHED:
+					return $this->make_label( $str, '#103269', '#BED6FC' );
+				case NelioABExperimentStatus::TRASH:
+					return $this->make_label( $str, '#802A28', '#FFE0DF' );
+				default:
+					return $this->make_label( $str, '#999999', '#EEEEEE' );
+			}
+		}
+
+		function column_type( $exp ){
+			$img = '<img src="' . NELIOAB_ADMIN_ASSETS_URL . '/images/tab-type-%1$s.png" ' .
+				'alt="%2$s" title="%2$s" />';
+
+			switch( $exp->get_type() ) {
+				case NelioABExperiment::PAGE_ALT_EXP:
+					return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+				case NelioABExperiment::POST_ALT_EXP:
+					return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
+				case NelioABExperiment::THEME_ALT_EXP:
+					return sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
+				case NelioABExperiment::CSS_ALT_EXP:
+					return sprintf( $img, 'css', __( 'CSS', 'nelioab' ) );
+				default:
+					return '';
+			}
+		}
+
+		private function make_label( $label, $color, $bgcolor = false ) {
+			if ( $bgcolor )
+				$aux = 'background-color:' . $bgcolor . ';';
+			else
+				$aux = '';
+			$style = '<div style="padding-top:5px;">' .
+				'<span class="add-new-h2" style="' .
+				'color:%s;' .
+				$aux .
+				'font-size:90%%;' .
+				'padding-top:1px;' .
+				'padding-bottom:1px;' .
+				'position:inherit;' .
+				'">%s</span></div>';
+			return sprintf( $style, $color, $label );
 		}
 
 	}// NelioABExperimentsTable

@@ -15,15 +15,15 @@
  */
 
 
-if ( !class_exists( 'NelioABAltExpCreationPage' ) ) {
+if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-edition-page.php' );
-	class NelioABAltExpCreationPage extends NelioABAltExpEditionPage {
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/post-alt-exp-edition-page.php' );
+	class NelioABPostAltExpCreationPage extends NelioABPostAltExpEditionPage {
 
 		public function __construct( $title, $alt_type ) {
 			parent::__construct( $title, $alt_type );
 			$this->set_icon( 'icon-nelioab' );
-			$this->set_form_name( 'nelioab_new_exp_form' );
+			$this->set_form_name( 'nelioab_new_ab_post_exp_form' );
 		}
 
 		public function print_page_buttons() {
@@ -38,7 +38,7 @@ if ( !class_exists( 'NelioABAltExpCreationPage' ) ) {
 				);
 		}
 
-	}//NelioABAltExpCreationPage
+	}//NelioABPostAltExpCreationPage
 
 }
 

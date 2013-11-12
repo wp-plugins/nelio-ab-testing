@@ -33,14 +33,68 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 	 */
 	abstract class NelioABExperiment {
 
+		const UNKNOWN_TYPE          = -1;
+		const NO_TYPE_SET           = 0;
+		const POST_ALT_EXP          = 1;
+		const PAGE_ALT_EXP          = 2;
+		const CSS_ALT_EXP           = 3;
+		const THEME_ALT_EXP         = 4;
+		const PAGE_OR_POST_ALT_EXP  = 5; // Used for returning from editing a post/page content
+
 		protected $id;
 		private $name;
 		private $descr;
 		private $status;
 		private $creation_date;
+		private $type;
 
-		public function __construct( ) {
+		public function __construct() {
 			$this->clear();
+			$type = NelioABExperiment::NO_TYPE_SET;
+		}
+
+		public function get_type() {
+			return $this->type;
+		}
+
+		public function set_type( $type ) {
+			$this->type = $type;
+		}
+
+		public function set_type_using_kind_name( $kind ) {
+			switch( $kind ) {
+				case 'PostAlternativeExperiment':
+					$this->set_type( NelioABExperiment::POST_ALT_EXP );
+					break;
+				case 'PageAlternativeExperiment':
+					$this->set_type( NelioABExperiment::PAGE_ALT_EXP );
+					break;
+				case 'CssGlobalAlternativeExperiment':
+					$this->set_type( NelioABExperiment::CSS_ALT_EXP );
+					break;
+				case 'ThemeGlobalAlternativeExperiment':
+					$this->set_type( NelioABExperiment::THEME_ALT_EXP );
+					break;
+				default:
+					// This should never happen...
+					$this->set_type( NelioABExperiment::UNKNOWN_TYPE );
+					break;
+			}
+		}
+
+		protected function get_kind_name( $kind ) {
+			switch( $kind ) {
+				case NelioABExperiment::POST_ALT_EXP:
+					return 'PostAlternativeExperiment';
+				case NelioABExperiment::PAGE_ALT_EXP:
+					return 'PageAlternativeExperiment';
+				case NelioABExperiment::CSS_ALT_EXP:
+					return 'CssGlobalAlternativeExperiment';
+				case NelioABExperiment::THEME_ALT_EXP:
+					return 'ThemeGlobalAlternativeExperiment';
+				default:
+					return 'NelioABExperiment';
+			}
 		}
 
 		public function get_id() {
@@ -92,7 +146,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 		public function start() {
 			$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/%s/start',
+					NELIOAB_BACKEND_URL . '/v2/exp/%s/start',
 					$this->get_id()
 				);
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -102,7 +156,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 		public function stop() {
 			$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/%s/stop',
+					NELIOAB_BACKEND_URL . '/v2/exp/%s/stop',
 					$this->get_id()
 				);
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
