@@ -17,6 +17,8 @@
 
 if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+	require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
 	class NelioABSelectExpCreationPage extends NelioABAdminPage {
 
@@ -28,15 +30,28 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 		public function do_render() {
 			$url = admin_url() . 'admin.php?page=nelioab-add-experiment&experiment-type=';
 
-			// Option 1
-			$this->do_box( $url . 'alt-exp-page',
+			// PAGE
+			$this->do_box( $url . NelioABExperiment::PAGE_ALT_EXP,
 				__( 'New A/B or Multivariate<br />Test for Pages', 'nelioab' ),
-				'page' ); //NELIOAB_ADMIN_ASSETS_URL . '/images/new-exp-page.png' );
+				'page' );
 
-			// Option 2
-			$this->do_box( $url . 'alt-exp-post',
+			// POST
+			$this->do_box( $url . NelioABExperiment::POST_ALT_EXP,
 				__( 'New A/B or Multivariate<br />Test for Posts', 'nelioab' ),
-				'post' ); //NELIOAB_ADMIN_ASSETS_URL . '/images/new-exp-post.png' );
+				'post' );
+
+			// // CSS
+			// $this->do_box( $url . NelioABExperiment::CSS_ALT_EXP,
+			// 	__( 'New A/B or Multivariate<br />CSS Test', 'nelioab' ),
+			// 	'css' );
+
+			// THEMES (enabled starting at version 3.4)
+			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
+				$this->do_box( $url . NelioABExperiment::THEME_ALT_EXP,
+					__( 'New A/B or Multivariate<br />Theme Test', 'nelioab' ),
+					'theme' );
+			}
+
 		}
 
 
@@ -45,7 +60,7 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 				<div class="nelioab-option">
 					<div class="nelioab-option-image-holder">
 						&nbsp;
-						<div class="nelioab-option-image nelioab-image-<?php echo $icon; ?>">&nbsp;</div>
+						<div class="nelioab-option-image nelioab-image nelioab-image-<?php echo $icon; ?>">&nbsp;</div>
 						&nbsp;
 					</div>
 					<p style="line-height:1.2em;"><?php echo $label; ?></p>
@@ -55,7 +70,7 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 			<?php
 		}
 
-	}//NelioABAltExpCreationPage
+	}//NelioABSelectExpCreationPage
 
 }
 

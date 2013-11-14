@@ -62,6 +62,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				jQuery("#ajax-loader-label2").hide().delay(10000).fadeIn('fast');
 				jQuery("#poststuff").delay(100).fadeOut(150);
 				jQuery("#errors-div").delay(100).fadeOut(150);
+				jQuery("#error-message-div").delay(100).fadeOut(150);
 				jQuery("#message-div").delay(100).fadeOut(150);
 				jQuery("#ajax-loader").delay(260).fadeIn(150);
 			}
@@ -77,14 +78,16 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			<div class="wrap">
 				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
 				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>
-				<?php 
+				<?php
 					global $nelioab_admin_controller;
 					if ( $this->is_data_pending ) {
 						$this->print_global_warnings();
+						$this->print_error_message( 'none' );
 						$this->print_message( 'none' );
 						$this->print_errors( 'none' );
 					}
 					else {
+						$this->print_error_message();
 						$this->print_message();
 						$this->print_errors();
 					}
@@ -112,6 +115,14 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 					</div>
 				</div>
 			</div><?php
+			if ( !$this->is_data_pending ) {?>
+				<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
+					<div id="dialog-content">
+						<?php $this->print_dialog_content(); ?>
+					</div>
+				</div>
+			<?php
+			}
 
 			if ( $this->is_data_pending ) {?>
 			<script>
@@ -119,6 +130,29 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				function nelioabHideSpinnerAndShowContent() {
 					jQuery("#ajax-loader").fadeOut(200, function() {
 						jQuery("#poststuff").fadeIn(200);
+						var aux;
+
+						aux = jQuery("#error-message-box-delayed").html().trim();
+						if ( aux.length > 0 ) {
+							jQuery("#error-message-div").addClass("to-be-shown");
+							jQuery("#error-message-div").html( aux );
+						}
+						aux = jQuery("#message-box-delayed").html().trim();
+						if ( aux.length > 0 ) {
+							jQuery("#message-div").addClass("to-be-shown");
+							jQuery("#message-div").html( aux );
+						}
+						aux = jQuery("#errors-box-delayed").html().trim();
+						if ( aux.length > 0 ) {
+							jQuery("#errors-div").addClass("to-be-shown");
+							jQuery("#errors-div").html( aux );
+						}
+
+						if ( jQuery("#error-message-div").hasClass("to-be-shown") ) {
+							jQuery("#error-message-div").css('display','block');
+							jQuery("#error-message-div").hide();
+							jQuery("#error-message-div").fadeIn(200);
+						}
 						if ( jQuery("#message-div").hasClass("to-be-shown") ) {
 							jQuery("#message-div").css('display','block');
 							jQuery("#message-div").hide();
@@ -161,6 +195,23 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 		public function render_content() {
 			$this->do_render();
 			?>
+			<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
+				<div id="dialog-content">
+					<?php
+					if ( !$this->is_data_pending )
+						$this->print_dialog_content();
+					?>
+				</div>
+			</div>
+			<div id="error-message-box-delayed" style="display:none;">
+				<?php $this->print_error_message_content(); ?>
+			</div>
+			<div id="message-box-delayed" style="display:none;">
+				<?php $this->print_message_content(); ?>
+			</div>
+			<div id="errors-box-delayed" style="display:none;">
+				<?php $this->print_errors_content(); ?>
+			</div>
 			<br />
 			<div class="actions"><?php
 				$this->print_page_buttons();?>

@@ -41,7 +41,15 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
 					__( 'In order to use our service, please make sure you have introduced your ' .
 					'<i>Registration Number</i> under the <i>Settings</i> page. If you haven\'t, just ' .
-					'click the button below to set it.', 'nelioab' )
+					'click the button at the end of this page to set it.', 'nelioab' )
+				);
+
+			echo sprintf( "<p style=\"$style\">%s</p>\n",
+					__( 'If, on the other hand, you have not subscribed to any of our plans yet, please '.
+					'<a href="http://wp-abtesting.com/subscription-plans/" target="_blank">check ' .
+					'them out and choose the one that best fits you</a>! Keep in mind ' .
+					'<b>all our plans come with a 15-day free trial period</b>.',
+					'nelioab' )
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",

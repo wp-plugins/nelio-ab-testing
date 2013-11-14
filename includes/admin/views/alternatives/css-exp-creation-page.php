@@ -15,16 +15,31 @@
  */
 
 
-if ( !class_exists( 'SinglePostHtmlView' ) ) {
+if ( !class_exists( 'NelioABCssExpCreationPage' ) ) {
 
-	class SinglePostHtmlView {
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/css-exp-edition-page.php' );
+	class NelioABCssExpCreationPage extends NelioABCssExpEditionPage {
 
-		public static function render( $message ) {?>
-			<p><b><? echo $message; ?></b></p>
-			<p>This line and the previous one are inserted by the view...</p>
-			<?php
+		public function __construct( $title ) {
+			parent::__construct( $title );
+			$this->set_icon( 'icon-nelioab' );
+			$this->set_form_name( 'nelioab_new_ab_css_exp_form' );
 		}
-	}//SinglePostHtmlView
+
+		public function print_page_buttons() {
+			echo $this->make_js_button(
+					_x( 'Create', 'action', 'nelioab' ),
+					'javascript:submitAndRedirect(\'validate\')',
+					false, true
+				);
+			echo $this->make_js_button(
+					_x( 'Cancel', 'nelioab' ),
+					'javascript:submitAndRedirect(\'cancel\')'
+				);
+		}
+
+	}//NelioABCssExpCreationPage
+
 }
 
 ?>

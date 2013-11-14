@@ -36,7 +36,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				);
 
 				$json_data = NelioABBackend::remote_post_raw(
-					NELIOAB_BACKEND_URL . '/customer/validate',
+					NELIOAB_BACKEND_URL . '/v2/customer/validate',
 					$params );
 
 				$json_data = json_decode( $json_data['body'] );
@@ -65,8 +65,11 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			foreach( $sites as $s )
 				if ( $s->get_url() == $this_url )
 					$registered = true;
+
 			if ( $registered )
 				NelioABSettings::register_this_site();
+			else
+				NelioABSettings::set_has_a_configured_site( false );
 		}
 
 		public static function get_customer_id() {
@@ -129,6 +132,22 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			return get_option( 'nelioab_copy_metadata', true );
 		}
 
+		public static function set_copy_tags( $enabled ) {
+			update_option( 'nelioab_copy_tags', $enabled );
+		}
+
+		public static function is_copying_tags_enabled() {
+			return get_option( 'nelioab_copy_tags', true );
+		}
+
+		public static function set_copy_categories( $enabled ) {
+			update_option( 'nelioab_copy_categories', $enabled );
+		}
+
+		public static function is_copying_categories_enabled() {
+			return get_option( 'nelioab_copy_categories', true );
+		}
+
 		public static function check_user_settings() {
 
 			if ( !NelioABSettings::is_email_valid() ) {
@@ -157,7 +176,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			$offset     = 1800; // seg == 30min
 			// if ( ( $the_past + $offset ) < $now ) {
 				try {
-					$url = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
+					$url = sprintf( NELIOAB_BACKEND_URL . '/v2/customer/%s/check', NelioABSettings::get_customer_id() );
 					$aux = NelioABBackend::remote_get( $url );
 					update_option( 'nelioab_last_check_user_settings', $now );
 				}
@@ -172,10 +191,16 @@ if( !class_exists( 'NelioABSettings' ) ) {
 
 		public static function get_registered_sites_information() {
 			$res = new NelioABSitesInfo();
-			$res->set_max_sites( 3 ); // TODO: recover data from json, when finally available
 
+			// Set max number of sites
+			$url = sprintf( NELIOAB_BACKEND_URL . '/v2/customer/%s/check', NelioABSettings::get_customer_id() );
+			$json_data = NelioABBackend::remote_get( $url );
+			$json_data = json_decode( $json_data['body'] );
+			$res->set_max_sites( $json_data->allowedSites );
+
+			// Retrieve information about each site
 			$json_data = NelioABBackend::remote_get(
-				sprintf( NELIOAB_BACKEND_URL . '/customer/%s/site', NelioABSettings::get_customer_id() )
+				sprintf( NELIOAB_BACKEND_URL . '/v2/customer/%s/site', NelioABSettings::get_customer_id() )
 			);
 
 			$json_data = json_decode( $json_data['body'] );
@@ -204,7 +229,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				);
 				try {
 					$json_data = NelioABBackend::remote_post(
-						sprintf( NELIOAB_BACKEND_URL . '/site/%s', $id ),
+						sprintf( NELIOAB_BACKEND_URL . '/v2/site/%s', $id ),
 						$params
 					);
 				}
@@ -219,7 +244,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			try {
 				$params = array( 'url' => get_option( 'siteurl' ) );
 				$json_data = NelioABBackend::remote_post( sprintf(
-					NELIOAB_BACKEND_URL . '/customer/%s/site/activate',
+					NELIOAB_BACKEND_URL . '/v2/customer/%s/site/activate',
 					NelioABSettings::get_customer_id()
 				), $params );
 
@@ -229,7 +254,6 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			}
 			catch ( Exception $e ) {
 				NelioABSettings::set_has_a_configured_site( false );
-				// TODO check errors
 				throw $e;
 			}
 
@@ -239,12 +263,11 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			
 			try {
 				$json_data = NelioABBackend::remote_post( sprintf(
-					NELIOAB_BACKEND_URL . '/site/%s/deactivate',
+					NELIOAB_BACKEND_URL . '/v2/site/%s/deactivate',
 					NelioABSettings::get_site_id()
 				)	);
 			}
 			catch ( Exception $e ) {
-				// TODO check errors
 				throw $e;
 			}
 
@@ -296,7 +319,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			return $this->max_sites;
 		}
 
-	}//NelioABSitesInfo 
+	}//NelioABSitesInfo
 
 	class NelioABSite {
 		const INACTIVE          = 0;

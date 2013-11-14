@@ -22,15 +22,31 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		protected $title;
 		protected $title_action;
 		protected $icon_id;
+		protected $uses_two_columns;
+		protected $message;
 
 		public function __construct( $title = '' ) {
-			$this->title        = $title;
-			$this->title_action = '';
-			$this->icon_id      = 'icon-options-general';
+			$this->title            = $title;
+			$this->title_action     = '';
+			$this->icon_id          = 'icon-options-general';
+			$this->uses_two_columns = false;
+			$this->message          = false;
+		}
+
+		public function set_message( $message ) {
+			$this->message = $message;
+		}
+
+		public function set_title( $title ) {
+			$this->title = $title;
 		}
 
 		public function set_icon( $icon_id ) {
 			$this->icon_id = $icon_id;
+		}
+
+		public function enable_two_columns( $uses ) {
+			$this->uses_two_columns = $uses;
 		}
 
 		protected abstract function do_render();
@@ -43,20 +59,33 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<div class="wrap">
 				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
 				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>
-				<?php 
+				<?php
 						$this->print_global_warnings();
+						$this->print_error_message();
 						$this->print_message();
 						$this->print_errors();
 				?>
 				<br />
-				<div id="poststuff" class="metabox-hold"><?php
+				<div id="poststuff" class="metabox-hold <?php
+				if ( $this->uses_two_columns )
+					echo 'has-right-sidebar'
+				?>"><?php
 					$this->do_render();?>
 					<br />
 					<div class="actions"><?php
 						$this->print_page_buttons();?>
 					</div>
 				</div>
-			</div><?php
+			</div>
+			<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
+				<div id="dialog-content">
+					<?php $this->print_dialog_content(); ?>
+				</div>
+			</div>
+			<?php
+		}
+
+		protected function print_dialog_content() {
 		}
 
 		protected function print_global_warnings() {
@@ -75,6 +104,29 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			</div><?php
 		}
 
+		protected function print_error_message( $display = 'block' ) {
+			global $nelioab_admin_controller;
+			$message = $nelioab_admin_controller->error_message;
+			$aux_class = '';
+			if ( !isset( $message ) || $message == NULL || strlen( $message ) == 0 )
+				$display = 'none';
+			else
+				$aux_class = 'to-be-shown';
+			?>
+			<div id="error-message-div"
+				class="error below-h2 <?php echo $aux_class; ?>"
+				style="display:<?php echo $display; ?>">
+					<?php $this->print_error_message_content(); ?>
+			</div><?php
+		}
+
+		protected function print_error_message_content() {
+			global $nelioab_admin_controller;
+			$message = $nelioab_admin_controller->error_message;
+			if ( isset( $message ) && $message != NULL && strlen( $message ) > 0 )
+				echo '<p>' . $message . '</p>';
+		}
+
 		protected function print_message( $display = 'block' ) {
 			global $nelioab_admin_controller;
 			$message = $nelioab_admin_controller->message;
@@ -87,10 +139,20 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<div id="message-div"
 				class="updated below-h2 <?php echo $aux_class; ?>"
 				style="display:<?php echo $display; ?>">
-				<p><?php
-					echo $nelioab_admin_controller->message;
-				?></p>
+					<?php $this->print_message_content(); ?>
 			</div><?php
+		}
+
+		protected function print_message_content() {
+			if ( $this->message ) {
+				echo '<p>' . $this->message . '</p>';
+			}
+			else {
+				global $nelioab_admin_controller;
+				$message = $nelioab_admin_controller->message;
+				if ( isset( $message ) && $message != NULL && strlen( $message ) > 0 )
+					echo '<p>' . $message . '</p>';
+			}
 		}
 
 		protected function print_errors( $display = 'block' ) {
@@ -104,6 +166,13 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<div id="errors-div"
 				class="error <?php echo $aux_class; ?>"
 				style="display:<?php echo $display; ?>"><?php
+					$this->print_errors_content();
+			?>
+			</div><?php
+		}
+
+		protected function print_errors_content() {
+			global $nelioab_admin_controller;
 			if ( count( $nelioab_admin_controller->validation_errors ) > 0 ) {?>
 				<p><?php echo _('The following errors have been encountered:'); ?></p>
 				<ul style="padding-left:2em;"><?php
@@ -112,8 +181,6 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 				</ul>
 			<?php
 			}
-			?>
-			</div><?php
 		}
 
 		protected function make_section( $section_title, $fields ) {?>
