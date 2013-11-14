@@ -111,7 +111,9 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				if ( isset( $json_data->description ) )
 					$exp->set_description( $json_data->description );
 				$exp->set_status( $json_data->status );
-				$exp->add_conversion_post( $json_data->conversionPost );
+				if ( isset( $json_data->conversionPost ) )
+					foreach ( $json_data->conversionPost as $cp )
+						$exp->add_conversion_post( $cp );
 	
 				$alternatives = array();
 				if ( isset( $json_data->alternatives ) ) {

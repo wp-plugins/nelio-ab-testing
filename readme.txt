@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.3
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -175,6 +175,11 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.3.1 =
+* Bug fix: the definition of Goal Pages (or Posts) for theme experiments
+works properly
+
+* **New Feature!** You can now set more than one page or post as the goal
 = 1.3 =
 * **New Feature!** You can now set more than one page or post as the goal
 of an experiment!
@@ -275,6 +280,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.3 =
-More than one page/post as GOAL. Several bug fixes.
-
+= 1.3.1 =
+The definition of Goal Pages (or Posts) for theme experiments works properly
