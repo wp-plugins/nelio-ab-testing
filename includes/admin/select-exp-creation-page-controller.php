@@ -21,40 +21,64 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 
 	class NelioABSelectExpCreationPageController {
 
+		public static function attempt_to_load_proper_controller() {
+			if ( isset( $_POST['nelioab_exp_type'] ) )
+				return NelioABSelectExpCreationPageController::get_controller( $_POST['nelioab_exp_type'] );
+			return NULL;
+		}
+
 		public static function build() {
 			$title = __( 'Experiment Type Selection', 'nelioab' );
 
 			// Check settings
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			try {
-				$aux = NelioABSettings::check_user_settings();
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
+			$controller = NelioABSelectExpCreationPageController::attempt_to_load_proper_controller();
+			if ( $controller != NULL ) {
+				call_user_func( array( $controller, 'build' ) );
 			}
-			catch ( Exception $e ) {
-				switch ( $e->getCode() ) {
-					case NelioABErrCodes::DEACTIVATED_USER:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
-						$view = new NelioABDeactivatedUserPage();
-						$view->render();
-						return;
-					case NelioABErrCodes::INVALID_MAIL:
-					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
-					case NelioABErrCodes::NON_ACCEPTED_TAC:
-					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
-						$view = new NelioABInvalidConfigPage( $title );
-						$view->render();
-						return;
-					default:
-						break;
+			else {
+				if ( isset( $_GET['experiment-type'] ) ) {
+					$controller = NelioABSelectExpCreationPageController::get_controller( $_GET['experiment-type'] );
+					call_user_func( array( $controller, 'build' ) );
+				}
+				else {
+					$view = new NelioABSelectExpCreationPage( $title );
+					$view->render();
 				}
 			}
 
-			$view = new NelioABSelectExpCreationPage( $title );
-			$view->render();
+		}
+
+		public static function get_controller( $type ) {
+
+			// Determine the proper controller and give it the control...
+			switch ( $type ) {
+				case NelioABExperiment::POST_ALT_EXP:
+				case NelioABExperiment::PAGE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/post-alt-exp-creation-page-controller.php' );
+					return 'NelioABPostAltExpCreationPageController';
+
+				case NelioABExperiment::THEME_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/theme-alt-exp-creation-page-controller.php' );
+					return 'NelioABThemeAltExpCreationPageController';
+
+				default:
+					require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+					$err = NelioABErrCodes::UNKNOWN_ERROR;
+					$e = new Exception( NelioABErrCodes::to_string( $err ), $err );
+					NelioABErrorController::build( $e );
+			}
+
 		}
 
 	}//NelioABSelectExpCreationPageController
 
 }
+
+$aux = NelioABSelectExpCreationPageController::attempt_to_load_proper_controller();
 
 ?>

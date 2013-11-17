@@ -15,16 +15,19 @@
  */
 
 
-if ( !class_exists( 'NelioABAltExpProgressPageController' ) ) {
+if ( !class_exists( 'NelioABThemeAltExpProgressPageController' ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-progress-page.php' );
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 
-	class NelioABAltExpProgressPageController {
+	require_once( NELIOAB_ADMIN_DIR . '/views/progress/theme-alt-exp-progress-page.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/progress/alt-exp-progress-super-controller.php' );
+
+	class NelioABThemeAltExpProgressPageController extends NelioABAltExpProgressSuperController {
 
 		public static function build() {
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view = new NelioABAltExpProgressPage( $title );
+			$view  = new NelioABThemeAltExpProgressPage( $title );
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies
@@ -35,24 +38,30 @@ if ( !class_exists( 'NelioABAltExpProgressPageController' ) ) {
 
 		public static function generate_html_content() {
 
-			$exp_id = -1;
-			if ( isset( $_REQUEST['exp_id'] ) )
-				$exp_id = $_REQUEST['exp_id'];
+			global $nelioab_admin_controller;
+			if ( isset( $nelioab_admin_controller->data ) ) {
+				$exp    = $nelioab_admin_controller->data;
+				$exp_id = $exp->get_id();
+			}
+			else {
+				$exp_id = -1;
+				if ( isset( $_REQUEST['exp_id'] ) )
+					$exp_id = $_REQUEST['exp_id'];
+	
+				$mgr = new NelioABExperimentsManager();
+				$exp = null;
+	
+				try {
+					$exp = $mgr->get_experiment_by_id( $exp_id, NelioABExperiment::THEME_ALT_EXP );
+				}
+				catch ( Exception $e ) {
+					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+					NelioABErrorController::build( $e );
+				}
+			}
 
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view  = new NelioABAltExpProgressPage( $title );
-
-			$mgr = new NelioABExperimentsManager();
-			$exp = null;
-
-			try {
-				$exp = $mgr->get_experiment_by_id( $exp_id );
-			}
-			catch ( Exception $e ) {
-				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
-				NelioABErrorController::build( $e );
-			}
-
+			$view  = new NelioABThemeAltExpProgressPage( $title );
 			$view->set_experiment( $exp );
 
 			try {
@@ -77,32 +86,20 @@ if ( !class_exists( 'NelioABAltExpProgressPageController' ) ) {
 		}
 
 		public function apply_alternative() {
-			if ( isset( $_POST['original'] ) && isset( $_POST['alternative'] ) ) {
-				$ori_id = $_POST['original'];
-				$alt_id = $_POST['alternative'];
-
-				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-				NelioABWPHelper::override( $ori_id, $alt_id );
-				echo 'OK';
-				die();
+			if ( isset( $_POST['stylesheet'] ) && isset( $_POST['template'] ) ) {
+				update_option( 'stylesheet', $_POST['stylesheet'] );
+				update_option( 'template', $_POST['template'] );
 			}
+
+			echo 'OK';
+			die();
 		}
 
-	}//NelioABAltExpProgressPageController
+	}//NelioABThemeAltExpProgressPageController
 
 }
 
-if ( isset( $_GET['forcestop'] ) && isset( $_GET['id'] ) ) {
-	require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
-	NelioABExperimentsPageController::stop_experiment( $_GET['id'] );
-	echo sprintf(
-		'[SUCCESS]%sadmin.php?page=nelioab-experiments&action=progress&id=%s',
-		admin_url(), $_GET['id'] );
-	die();
-}
-
-if ( isset( $_GET['apply-alternative'] ) ) {
-	NelioABAltExpProgressPageController::apply_alternative();
-}
+$aux = new NelioABThemeAltExpProgressPageController();
+$aux->manage_actions();
 
 ?>
