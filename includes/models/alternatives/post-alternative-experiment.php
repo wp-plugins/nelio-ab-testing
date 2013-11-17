@@ -54,6 +54,10 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		}
 
 		public function create_empty_alternative( $name, $post_type ) {
+			if ( $post_type == NelioABExperiment::PAGE_ALT_EXP )
+				$post_type = 'page';
+			else
+				$post_type = 'post';
 			$post = array(
 				'post_type'    => $post_type,
 				'post_title'   => $name,
