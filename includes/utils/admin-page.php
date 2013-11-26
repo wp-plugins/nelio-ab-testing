@@ -244,9 +244,8 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<div style="height:1em;">&nbsp;</div>
 			<input
 				type="checkbox" <?php if ( $checked ) echo 'checked="checked" '; ?>
-				id="<?php echo $id; ?>" name="<?php echo $id; ?>">
+				id="<?php echo $id; ?>" name="<?php echo $id; ?>" />
 					&nbsp;&nbsp;&nbsp;<?php echo $label; ?>
-			</input>
 			<?php
 		}
 
@@ -287,7 +286,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 				$disabled = $primary . '-disabled';
 
 			return sprintf(
-				'<a class="%3$s %4$s" href="%2$s">%1$s</a>&nbsp;',
+				'<a class="nelioab-js-button %3$s %4$s" href="%2$s">%1$s</a>&nbsp;',
 				$name, $js, $primary, $disabled );
 		}
 

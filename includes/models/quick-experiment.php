@@ -37,11 +37,6 @@ if( !class_exists( 'NelioABQuickExperiment' ) ) {
 			$this->type = $type;
 		}
 
-		public function get_results() {
-			// Nothing to be done here
-			return NULL;
-		}
-
 		public function save() {
 			// Nothing to be done here
 		}
@@ -55,6 +50,10 @@ if( !class_exists( 'NelioABQuickExperiment' ) ) {
 		}
 
 		public function stop() {
+			// Nothing to be done here
+		}
+
+		public function get_url_for_making_goal_persistent( $goal, $type ) {
 			// Nothing to be done here
 		}
 

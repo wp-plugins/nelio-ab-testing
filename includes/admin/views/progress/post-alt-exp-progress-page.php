@@ -37,6 +37,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			$exp = $this->exp;
 			$aux = get_post( $exp->get_original() );
 			$this->ori = sprintf( __( 'id is %s', 'nelioab' ), $aux->ID );
+			$this->is_ori_page = true;
 			if ( $aux ) {
 				$this->ori = trim( $aux->post_title );
 				if ( $aux->post_type == 'post' )
@@ -132,13 +133,20 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 						__( 'Edit' ) );
 				}
 		
+				$winner_button = '';
+				if ( $this->is_winner( $alt->get_value() ) )
+					$winner_button = '-primary';
+
 				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
 					$edit_link = sprintf(
-						' <small id="success-%3$s" style="display:none;">(%1$s)</small>' .
-						'<img id="loading-%3$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
-						'<small class="apply-link">(<a href="javascript:nelioab_confirm_overriding(%3$s);">%4$s</a>)</small></li>',
+						' <small id="success-%4$s" style="display:none;">(%1$s)</small>' .
+						'<img id="loading-%4$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
+						'<span class="apply-link"><a class="button%3$s" ' .
+						'style="font-size:96%%;padding-left:5px;padding-right:5px;margin-left:1em;" '.
+						'href="javascript:nelioab_confirm_overriding(%4$s);">%5$s</a></span></li>',
 						__( 'Done!', 'nelioab' ),
 						NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
+						$winner_button,
 						$alt->get_value(), __( 'Apply', 'nelioab' ) );
 				}
 		

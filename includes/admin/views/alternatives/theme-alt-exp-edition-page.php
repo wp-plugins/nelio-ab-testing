@@ -135,7 +135,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 				// Global form
 				checkSubmit(jQuery);
 				$("#exp_name").bind( "change paste keyup", function() { checkSubmit(jQuery); } );
-				$("#exp_goal").bind( "change", function() { checkSubmit(jQuery); } );
+				$("#active_goals").bind('NelioABGoalsChanged', function() { checkSubmit(jQuery); } );
 
 			});
 
@@ -157,15 +157,23 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 						return false;
 				} catch ( e ) {}
 
-				try {
-					if ( $("#exp_goal").attr("value") == -1 )
-						return false;
-				} catch ( e ) {}
+				if ( !is_there_one_goal_at_least() )
+					return false;
 
 				return true;
 			}
 
-			function submitAndRedirect(action) {
+			function submitAndRedirect(action,force) {
+				if ( !force ) {
+					var primaryEnabled = true;
+					jQuery(".nelioab-js-button").each(function() {
+						if ( jQuery(this).hasClass("button-primary") &&
+						     jQuery(this).hasClass("button-primary-disabled") )
+						primaryEnabled = false;
+					});
+					if ( !primaryEnabled )
+						return;
+				}
 				smoothTransitions();
 				jQuery("#action").attr('value', action);
 				jQuery.post(
@@ -190,12 +198,12 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 		public function print_page_buttons() {
 			echo $this->make_js_button(
 					_x( 'Update', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\')',
+					'javascript:submitAndRedirect(\'validate\',false)',
 					false, true
 				);
 			echo $this->make_js_button(
 					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\')'
+					'javascript:submitAndRedirect(\'cancel\',true)'
 				);
 		}
 

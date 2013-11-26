@@ -25,21 +25,31 @@
  */
 class NelioABController {
 
+	private $alt_exp_controller;
+
 	public function __construct() {
-		add_action( 'init', array( &$this, 'init' ) );
+		$this->alt_exp_controller = NULL;
 
 		// Trick for proper THEME ALT EXP testing
 		if ( isset( $_POST['nelioab_load_alt'] ) ) {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			// Theme alt exp related
 			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
-				$dir = NELIOAB_DIR . '/experiment-controllers';
-				require_once( $dir . '/alternative-experiment-controller.php' );
-				$aux = new NelioABAlternativeExperimentController();
+				$aux = $this->get_alt_exp_controller();
 				add_filter( 'stylesheet', array( &$aux, 'modify_stylesheet' ) );
 				add_filter( 'template',   array( &$aux, 'modify_template' ) );
 			}
 		}
+
+		add_action( 'init', array( &$this, 'init' ) );
+	}
+
+	private function get_alt_exp_controller() {
+		$dir = NELIOAB_DIR . '/experiment-controllers';
+		require_once( $dir . '/alternative-experiment-controller.php' );
+		if ( $this->alt_exp_controller == NULL )
+			$this->alt_exp_controller = new NelioABAlternativeExperimentController();
+		return $this->alt_exp_controller;
 	}
 
 	public function init() {
@@ -97,8 +107,8 @@ class NelioABController {
 		$dir = NELIOAB_DIR . '/experiment-controllers';
 
 		// Controller for changing a page using its alternatives:
-		require_once( $dir . '/alternative-experiment-controller.php' );
-		$conexp_controller = new NelioABAlternativeExperimentController();
+		$conexp_controller = $this->get_alt_exp_controller();
+		$conexp_controller->hook_to_wordpress();
 
 		// Done.
 	}

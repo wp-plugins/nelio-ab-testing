@@ -7,19 +7,19 @@ function nelioab_init() {
 	nelioab_hide_body();
 
 	// Synchronize cookies
-	if ( !nelioab_sync_cookies(jQuery) ) {
+	if ( !nelioab_sync_cookies_and_check_if_load_required(jQuery) ) {
 		nelioab_show_body();
 		return;
 	}
 
-
 	// Load alt
-	nelioab_check_and_load_alt(jQuery);
+	nelioab_load_alt(jQuery);
 }
 
-var aux;
-function nelioab_sync_cookies($) {
-	var cookies_sync = false;
+function nelioab_sync_cookies_and_check_if_load_required($) {
+	var are_cookies_sync = false;
+	var is_load_alt_required = false;
+
 	$.ajax({
 		type:  'POST',
 		async: false,
@@ -27,58 +27,30 @@ function nelioab_sync_cookies($) {
 		data: {
 			nelioab_cookies: nelioab_get_local_cookies(),
 			nelioab_sync: 'true',
+			nelioab_sync_and_check: 'true',
 		},
 	}).success(function(data) {
 		try {
 			json = JSON.parse(data);
-			if ( json['__nelioab_new_version'] != undefined )
+			cookies = json.cookies;
+			if ( cookies['__nelioab_new_version'] != undefined )
 				clean_cookies();
-			$.each(json, function(name, value) {
+			$.each(cookies, function(name, value) {
 				if (nelioab_get_cookie_by_name(name) == undefined)
 					document.cookie = name + "=" + value + ";path=/";
 			});
 			delete_cookie("__nelioab_new_version");
-			cookies_sync = true;
+			are_cookies_sync = true;
+
+			is_load_alt_required = ( json.load_alt == 'LOAD_ALT' );
+			if ( !is_load_alt_required )
+				nelioab_nav($);
 		}
 		catch(e) {
 		}
 	});
 
-	return cookies_sync;
-}
-
-function nelioab_check_and_load_alt($) {
-	$.ajax({
-		type:  'POST',
-		async: false,
-		url:   window.location.href,
-		data: {
-			nelioab_cookies: nelioab_get_local_cookies(),
-			nelioab_check_alt: 'true',
-		},
-		success: function(data) {
-			try {
-				is_load_required = JSON.parse(data);
-			}
-			catch(e) {
-				nelioab_show_body();
-				return;
-			}
-
-			if ( is_load_required ) {
-				// nelioab_nav($) is called in the script nelioab-nav.js, which
-				// is included in the alternative.
-				nelioab_load_alt($);
-			}
-			else {
-				nelioab_nav($);
-				nelioab_show_body();
-			}
-		},
-		error: function(data) {
-			nelioab_show_body();
-		}
-	});
+	return are_cookies_sync && is_load_alt_required;
 }
 
 function nelioab_load_alt($) {

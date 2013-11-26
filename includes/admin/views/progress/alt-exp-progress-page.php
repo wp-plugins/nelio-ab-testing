@@ -26,17 +26,21 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		protected $results;
 		protected $is_single_goal;
 		protected $winner_label;
+		protected $goal;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
 			$this->exp          = null;
+			$this->goal         = null;
 			$this->results      = null;
 		}
 
 		public function set_experiment( $exp ) {
 			$this->exp = $exp;
-			$this->is_single_goal = count( $exp->get_conversion_posts() ) <= 1;
+			$goals = $this->exp->get_goals();
+			$this->goal = $goals[0];
+			$this->is_single_goal = count( $this->goal->get_pages() ) <= 1;
 		}
 
 		public function set_results( $results ) {
@@ -48,64 +52,104 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		protected abstract function print_js_function_for_post_data_overriding();
 
 		private function print_single_goal_info() {
+			$pages = $this->goal->get_pages();
+			$page  = $pages[0];
+
+			if ( $page->is_internal() )
+				$this->print_single_goal_info_internal( $page );
+			else
+				$this->print_single_goal_info_external( $page );
+		}
+
+		private function print_single_goal_info_internal( $page ) {
 			// Get goal post
 			$post = false;
 			$is_goal_page = false;
-			$conversion_posts = $this->exp->get_conversion_posts();
-			if ( count( $conversion_posts ) > 0 ) {
-				$post = get_post( $conversion_posts[0] );
-				$link = get_permalink( $conversion_posts[0] );
-				$is_goal_page = ( $post->post_type == 'page' );
-			}
+			$post = get_post( $page->get_reference() );
+			$link = get_permalink( $page->get_reference() );
+			$is_goal_page = ( $post->post_type == 'page' );
 
 			// Create goal title
 			if ( $is_goal_page )
-				$goal = __( 'Goal page not found.', 'nelioab' );
+				$label = __( 'Goal page not found.', 'nelioab' );
 			else
-				$goal = __( 'Goal post not found.', 'nelioab' );
+				$label = __( 'Goal post not found.', 'nelioab' );
 			if ( $post )
-				$goal = trim( $post->post_title );
-			if ( strlen( $goal ) == 0 ) {
+				$label = trim( $post->post_title );
+			if ( strlen( $label ) == 0 ) {
 				if ( $is_goal_page )
-					$goal = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
+					$label = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
 				else
-					$goal = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
+					$label = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
 			}
-			?>
-			<h3><?php
-			if ( $is_goal_page )
-				_e( 'Goal Page', 'nelioab' );
-			else
-				_e( 'Goal Post', 'nelioab' );
-			?></h3><p><?php
 			if ( $post )
-				echo sprintf( '<a href="%s" target="_blank">%s</a>', $link, $goal );
-			else
-				echo $goal;
-			?></p><?php
+				$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $label );
+			$this->do_single_print( $label, $is_goal_page );
 		}
 
-		private function print_multiple_goals_info() {?>
-			<h3><?php _e( 'Goal Pages and Posts', 'nelioab' ); ?></h3>
+		private function print_single_goal_info_external( $page ) {
+			$label = sprintf( '<a href="%s" target="_blank">%s</a>',
+				$page->get_reference(),
+				$page->get_title() );
+			$this->do_single_print( $label, true );
+		}
+
+		private function do_single_print( $label, $is_goal_page ) {?>
+			<h3><?php
+			$aux  = $this->goal->get_pages();
+			$page = false;
+			if ( count( $aux ) > 0 )
+				$page = $aux[0];
+			if ( $page && $page->accepts_indirect_navigations() ) {
+				if ( $is_goal_page )
+					_e( 'Indirect Goal Page', 'nelioab' );
+				else
+					_e( 'Indirect Goal Post', 'nelioab' );
+			}
+			else {
+				if ( $is_goal_page )
+					_e( 'Direct Goal Page', 'nelioab' );
+				else
+					_e( 'Direct Goal Post', 'nelioab' );
+			}
+			?></h3><p><?php echo $label; ?></p><?php
+		}
+
+		private function print_multiple_goals_info() {
+			$aux  = $this->goal->get_pages();
+			$page = false;
+			if ( count( $aux ) > 0 )
+				$page = $aux[0];
+			if ( $page && $page->accepts_indirect_navigations() ) {?>
+				<h3><?php _e( 'Indirect Goal Pages and Posts', 'nelioab' ); ?></h3><?php
+			}
+			else {?>
+				<h3><?php _e( 'Direct Goal Pages and Posts', 'nelioab' ); ?></h3><?php
+			}?>
 			<ul style="margin-left:2em;"><?php
-			$conversion_posts = $this->exp->get_conversion_posts();
-			foreach ( $conversion_posts as $cp ) {
-				$post = get_post( $cp );
-				$name = sprintf( __( 'Page or post «%s» not found.', 'nelioab' ), $cp );
-				if ( $post ) {
-					$name = trim( $post->post_title );
-					$link = get_permalink( $post );
-					if ( strlen( $name ) == 0 ) {
-						if ( $is_goal_page )
-							$name = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
-						else
-							$name = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
+			$pages = $this->goal->get_pages();
+			foreach ( $pages as $page ) {
+				if ( $page->is_internal() ) {
+					$post = get_post( $page->get_reference() );
+					$label = sprintf( __( 'Page or post «%s» not found.', 'nelioab' ), $page->get_reference() );
+					if ( $post ) {
+						$name = trim( $post->post_title );
+						$link = get_permalink( $post );
+						if ( strlen( $name ) == 0 ) {
+							if ( $is_goal_page )
+								$name = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
+							else
+								$name = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
+						}
+						$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $name );
 					}
-					echo sprintf( '<li>- <a href="%s" target="_blank">%s</a></li>', $link, $name );
 				}
 				else {
-					echo "<li>- $name</li>";
+					$link  = $page->get_reference();
+					$name  = $page->get_title();
+					$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $name );
 				}
+				echo "<li>- $label</li>";
 			}
 			?></ul><?php
 		}
@@ -386,7 +430,6 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 											admin_url(), $this->exp->get_id(), $this->exp->get_type() ); ?>",
 										function(data) {
 											data = data.trim();
-											console.log(data);
 											if ( data.indexOf("[SUCCESS]") == 0) {
 												location.href = data.replace("[SUCCESS]", "");
 											}
@@ -430,7 +473,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				<?php $this->print_improvement_factor_js(); ?>
 	
 				<?php
-				$wp_list_table = new NelioABAltExpResultTable( $res->get_alternative_results() );
+				$wp_list_table = new NelioABAltExpProgressTable( $res->get_alternative_results() );
 				$wp_list_table->prepare_items();
 				$wp_list_table->display();
 				?>
@@ -915,7 +958,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 	}//NelioABAltExpProgressPage
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
-	class NelioABAltExpResultTable extends NelioABAdminTable {
+	class NelioABAltExpProgressTable extends NelioABAdminTable {
 
 		private $form_name;
 		private $show_new_form;

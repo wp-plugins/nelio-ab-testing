@@ -83,7 +83,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 					<h4><?php _e( 'Rename Alternative', 'nelioab' ); ?></h4>
 					<label>
 						<span class="title"><?php _e( 'Name', 'nelioab' ); ?> </span>
-						<span class="input-text-wrap"><input type="text" id="qe_alt_name" name="qe_alt_name" class="ptitle" value="" /></span>
+						<span class="input-text-wrap"><input type="text" id="qe_alt_name" name="qe_alt_name" class="ptitle" value="" maxlength="200" /></span>
 					</label>
 					<input type="hidden" id="qe_alt_id" name="qe_alt_id" value="" />
 				</div>
@@ -128,7 +128,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 							<label>
 								<span class="title"><?php _e( 'Name', 'nelioab' ); ?> </span>
 								<span class="input-text-wrap">
-									<input type="text" id="new_alt_name" name="new_alt_name" class="ptitle" value="" style="width:300px;" />
+									<input type="text" id="new_alt_name" name="new_alt_name" class="ptitle" value="" style="width:300px;" maxlength="200" />
 									<span class="description" style="display:block;"><?php
 										_e( 'Set a descriptive name for the alternative.', 'nelioab' );
 									?> <small><a href="http://wp-abtesting.com/faqs/what-is-the-name-of-an-alternative-used-for" target="_blank"><?php

@@ -71,7 +71,9 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 			try {
 				// The function "get_results" may throw an exception. This is why
 				// we use it in here.
-				$view->set_results( $exp->get_results() );
+				$goals = $exp->get_goals();
+				$goal  = $goals[0];
+				$view->set_results( $goal->get_results() );
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_UTILS_DIR . '/backend.php' );

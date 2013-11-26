@@ -74,7 +74,7 @@ if ( !class_exists( 'NelioABSettingsPageController' ) ) {
 			$user_info['firstname']    = '&ndash;';
 			$user_info['lastname']     = '&ndash;';
 			try {
-				$url  = sprintf( NELIOAB_BACKEND_URL . '/v2/customer/%s', NelioABSettings::get_customer_id() );
+				$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s', NelioABSettings::get_customer_id() );
 				$json = NelioABBackend::remote_get( $url );
 				$json = json_decode( $json['body'] );
 

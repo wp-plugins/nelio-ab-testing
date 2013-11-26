@@ -21,42 +21,23 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative.php' );
-	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-experiment-result.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-statistics.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/gstats.php' );
 
 	abstract class NelioABAlternativeExperiment extends NelioABExperiment {
 
-		private $goals;
 		private $appspot_alternatives;
 		private $local_alternatives;
 
 		public function __construct( $id ) {
 			parent::__construct();
 			$this->id = $id;
-			$this->clear();
 		}
 
 		public function clear() {
-			$this->goals = array();
+			parent::clear();
 			$this->appspot_alternatives = array();
 			$this->local_alternatives = array();
-		}
-
-		public function get_conversion_posts() {
-			return $this->goals;
-		}
-
-		public function add_conversion_post( $conversion_post ) {
-			if ( !$this->includes_conversion_post( $conversion_post ) )
-				array_push( $this->goals, $conversion_post );
-		}
-
-		public function includes_conversion_post( $conversion_post ) {
-			foreach ( $this->goals as $goal )
-				if ( $goal == $conversion_post )
-					return true;
-			return false;
 		}
 
 		public function get_appspot_alternatives() {
@@ -153,6 +134,7 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 		}
 
 		public abstract function discard_changes();
+		public abstract function get_originals_id();
 		protected abstract function determine_proper_status();
 
 	}//NelioABAlternativeExperiment

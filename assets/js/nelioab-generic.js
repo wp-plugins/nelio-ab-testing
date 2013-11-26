@@ -82,3 +82,28 @@ function nelioab_nav($) {
 	});
 }
 
+function nelioab_nav_to_external_page($, external_page_link) {
+	$.ajax({
+		type:  'POST',
+		async: false,
+		timeout: 1000,
+		url:   window.location.href,
+		data: {
+			referer: window.location.href,
+			nelioab_cookies: nelioab_get_local_cookies(),
+			nelioab_nav: 'true',
+			nelioab_nav_to_external_page: external_page_link,
+		},
+	});
+}
+
+function nelioab_prepare_outlinks($, href) {
+	$("a").each(function() {
+		if ( $(this).attr('href') == href ) {
+			$(this).click(function() {
+				nelioab_nav_to_external_page($,href);
+			});
+		}
+	});
+}
+

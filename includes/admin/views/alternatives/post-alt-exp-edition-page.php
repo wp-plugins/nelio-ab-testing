@@ -24,6 +24,9 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 
 		protected $alt_type;
 
+		protected $original_id;
+		protected $alternatives;
+
 		protected $show_new_form;
 		protected $copying_content;
 
@@ -33,6 +36,18 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			$this->show_new_form   = false;
 			$this->copying_content = false;
 			$this->alt_type        = $alt_type;
+			$this->original_id     = -1;
+			$this->alternatives    = array();
+			// Enabling selector for indirect goals
+			$this->force_direct_selector_enabled = true;
+		}
+
+		public function set_original_id( $id ) {
+			$this->original_id = $id;
+		}
+
+		public function set_alternatives( $alternatives ) {
+			$this->alternatives = $alternatives;
 		}
 
 		public function get_alt_exp_type() {
@@ -101,7 +116,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			?></h2><?php
 
 			$wp_list_table = new NelioABPostAlternativesTable(
-				$this->exp->get_alternatives(),
+				$this->alternatives,
 				$this->get_form_name(),
 				$this->alt_type,
 				$this->show_new_form,
@@ -172,7 +187,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 						return false;
 				} catch ( e ) {}
 
-				if ( $("#aux_goal_options option").length <= 1 )
+				if ( !is_there_one_goal_at_least() )
 					return false;
 
 				return true;
@@ -210,17 +225,34 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			}
 
 			function oriChanged($) {
-				// Make any hidden goal available
-				show_hidden_goal_options();
+				// Make the previous origin available for selection by...
+				// ------------------------------------------------------------
+				// 1. Simulating they are all available again
+				jQuery("#aux_goal_options option").each(function() {
+					id = jQuery(this).attr('value');
+					if ( jQuery("#active_goals #active_goal-" + id).length == 0 )
+						make_option_available_again(jQuery(this));
+				});
+				// 2. Making "already" goals non selectable
+				jQuery("#active_goals input.wordpress-goal").each(function() {
+					remove_option_for_addition(jQuery(this).attr('value'));
+				});
 
-				// If no option from original was selected, quit
+
+				// Now, make the current option available not selectable
+				// ------------------------------------------------------------
 				ori = $("#exp_original").attr("value");
 				if (ori == -1)
 					return;
 
-				if ( jQuery("#active_goal-" + ori).length != 0 )
-					remove_goal(ori);
-				remove_option_for_addition(ori);
+				if ( jQuery("#active_goals input[value=" + ori + "]").length != 0 ) {
+					var aux = jQuery("#active_goals input[value=" + ori + "]");
+					aux = aux.parent().attr('id').split('-')[1];
+					remove_goal(aux);
+				}
+				else {
+					remove_option_for_addition(ori);
+				}
 
 				checkSubmit(jQuery);
 			}
@@ -228,7 +260,17 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			function validateAlternative() {
 			}
 
-			function submitAndRedirect(action) {
+			function submitAndRedirect(action,force) {
+				if ( !force ) {
+					var primaryEnabled = true;
+					jQuery(".nelioab-js-button").each(function() {
+						if ( jQuery(this).hasClass("button-primary") &&
+						     jQuery(this).hasClass("button-primary-disabled") )
+						primaryEnabled = false;
+					});
+					if ( !primaryEnabled )
+						return;
+				}
 				smoothTransitions();
 				jQuery("#action").attr('value', action);
 				jQuery.post(
@@ -253,28 +295,28 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		public function print_page_buttons() {
 			echo $this->make_js_button(
 					_x( 'Update', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\')',
+					'javascript:submitAndRedirect(\'validate\',false)',
 					false, true
 				);
 			echo $this->make_js_button(
 					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\')'
+					'javascript:submitAndRedirect(\'cancel\',true)'
 				);
 		}
 
 
 		public function print_ori_field() {?>
 			<select id="exp_original" style="width:300px;"
-				name="exp_original" class="required" value="<?php echo $this->exp->get_original(); ?>"><?php
+				name="exp_original" class="required" value="<?php echo $this->original_id; ?>"><?php
 			$aux = $this->wp_pages;
 			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
 				$aux = $this->wp_posts;
 			foreach ( $aux as $p ) {?>
 				<option
-					value="<?php echo $p->ID; ?>" <?php
-						if ( $this->exp->get_original() == $p->ID )
-							echo 'selected="selected"';
-					?>"><?php
+					value="<?php echo $p->ID; ?>"<?php
+						if ( $this->original_id == $p->ID )
+							echo ' selected="selected"';
+					?>><?php
 					$title = $p->post_title;
 					if ( strlen( $title ) > 50 )
 						$title = substr( $title, 0, 50 ) . '...';
@@ -331,7 +373,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			return sprintf(
 				'<a style="cursor:pointer;" onClick="javascript:' .
 					'jQuery(\'#content_to_edit\').attr(\'value\', %s);' .
-					'submitAndRedirect(\'%s\')' .
+					'submitAndRedirect(\'%s\',true)' .
 					'">%s</a>',
 				$alt->get_value(),
 				'edit_alt_content',

@@ -124,17 +124,35 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 		}
 
 		public static function start_experiment( $exp_id, $exp_type ) {
+			$mgr = new NelioABExperimentsManager();
+			$exp = NULL;
+
 			try {
-				$mgr = new NelioABExperimentsManager();
 				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
-				if ( NelioABExperimentsPageController::can_experiment_be_started( $exp ) ) {
-					$exp->start();
-					NelioABExperimentsManager::update_running_experiments_cache( true );
-				}
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
 				NelioABErrorController::build( $e );
+			}
+
+			try {
+				if ( $exp == NULL || !NelioABExperimentsPageController::can_experiment_be_started( $exp ) )
+					return;
+				$exp->start();
+				NelioABExperimentsManager::update_running_experiments_cache( true );
+			}
+			catch ( Exception $e ) {
+				global $nelioab_admin_controller;
+				switch ( $e->getCode() ) {
+					case NelioABErrCodes::MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC:
+						$nelioab_admin_controller->error_message = $e->getMessage();
+						return;
+
+					default:
+						require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+						NelioABErrorController::build( $e );
+				}
+
 			}
 		}
 
@@ -183,8 +201,8 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 						if ( $running_exp->get_type() == NelioABExperiment::THEME_ALT_EXP ) {
 							$nelioab_admin_controller->error_message = sprintf(
 								__( 'The experiment cannot be started, because there is another ' .
-									'A/B or Multivariate Theme Test named «%s». Please, stop ' .
-									'that experiment before starting the new one.',
+									'A/B or Multivariate Theme Test named «%s» running. Please, ' .
+									'stop that experiment before starting the new one.',
 									'nelioab' ),
 								$running_exp->get_name() );
 							return false;

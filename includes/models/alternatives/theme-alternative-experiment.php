@@ -37,6 +37,10 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			return $this->original_appspot_theme;
 		}
 
+		public function get_originals_id() {
+			return $this->get_original_theme()->get_id();
+		}
+
 		protected function determine_proper_status() {
 			if ( count( $this->get_local_alternatives() ) <= 0 )
 				return NelioABExperimentStatus::DRAFT;
@@ -60,7 +64,9 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 
 		public function add_selected_theme( $id, $name ) {
 			$this->add_local_alternative(
-				array( 'name' => $name, 'value' => $id ) );
+				json_decode( json_encode(
+					array( 'name' => $name, 'value' => $id )
+				) ) );
 		}
 
 		public function encode_appspot_alternatives() {
@@ -97,9 +103,9 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			return true;
 		}
 
-		public function was_theme_selected_in_appspot( $theme_id ) {
-			foreach( $this->get_appspot_alternatives() as $alt )
-				if ( $alt->get_value() == $theme_id )
+		public function is_theme_selected_locally( $theme_id ) {
+			foreach( $this->get_local_alternatives() as $alt )
+				if ( $alt->value == $theme_id )
 					return true;
 			return false;
 		}
@@ -111,29 +117,29 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			$url = '';
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/v3/site/%s/globalexp',
+					NELIOAB_BACKEND_URL . '/site/%s/exp/global',
 					NelioABSettings::get_site_id()
 				);
 			}
 			else {
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/v3/globalexp/%s/update',
+					NELIOAB_BACKEND_URL . '/exp/global/%s/update',
 					$this->get_id()
 				);
 			}
 
-			if ( $this->get_status() == NelioABExperimentStatus::READY ||
-				$this->get_status() == NelioABExperimentStatus::DRAFT ||
-				!defined( $this->get_status() ) )
+			if ( $this->get_status() != NelioABExperimentStatus::PAUSED &&
+			     $this->get_status() != NelioABExperimentStatus::RUNNING &&
+			     $this->get_status() != NelioABExperimentStatus::FINISHED &&
+			     $this->get_status() != NelioABExperimentStatus::TRASH )
 				$this->set_status( $this->determine_proper_status() );
 
 			$body = array(
 				'name'           => $this->get_name(),
 				'description'    => $this->get_description(),
 				'origin'         => $this->get_origins(),
-				'conversionPost' => $this->get_conversion_posts(),
 				'status'         => $this->get_status(),
-				'kind'           => $this->get_kind_name( $this->get_type() ),
+				'kind'           => $this->get_textual_type(),
 			);
 
 			$result = NelioABBackend::remote_post( $url, $body );
@@ -146,6 +152,10 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 				$exp_id = $json->key->id;
 				$this->id = $exp_id;
 			}
+
+			// 1.1 SAVE GOALS
+			// -------------------------------------------------------------------------
+			$this->make_goals_persistent();
 
 
 			// 2. UPDATE THE ALTERNATIVES
@@ -161,11 +171,11 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 					$body = array(
 						'name'  => $ori_local->name,
 						'value' => $ori_local->value,
-						'kind'  => NelioABExperiment::get_kind_name( NelioABExperiment::THEME_ALT_EXP ),
+						'kind'  => NelioABExperiment::THEME_ALT_EXP_STR,
 					);
 					try {
 						$result = NelioABBackend::remote_post(
-							sprintf( NELIOAB_BACKEND_URL . '/v3/globalexp/%s/alternative', $exp_id ),
+							sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 							$body );
 					}
 					catch ( Exception $e ) {
@@ -180,7 +190,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 						'value' => $ori_local->value,
 					);
 					$url = sprintf(
-						NELIOAB_BACKEND_URL . '/v3/alternative/%s/update',
+						NELIOAB_BACKEND_URL . '/alternative/%s/update',
 						$ori_appspot->get_id()
 					);
 					$result = NelioABBackend::remote_post( $url, $body );
@@ -193,7 +203,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 					continue;
 
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/v2/alternative/%s/delete',
+					NELIOAB_BACKEND_URL . '/alternative/%s/delete',
 					$alt->get_id()
 				);
 
@@ -209,12 +219,12 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 				$body = array(
 					'name'  => $alt->name,
 					'value' => $alt->value,
-					'kind' => NelioABExperiment::get_kind_name( NelioABExperiment::THEME_ALT_EXP ),
+					'kind' => NelioABExperiment::THEME_ALT_EXP_STR,
 				);
 
 				try {
 					$result = NelioABBackend::remote_post(
-						sprintf( NELIOAB_BACKEND_URL . '/v3/globalexp/%s/alternative', $exp_id ),
+						sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 						$body );
 				}
 				catch ( Exception $e ) {
@@ -222,6 +232,22 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 
 			}
 
+		}
+
+		public function get_url_for_making_goal_persistent( $goal, $goal_type_url ) {
+			if ( $goal->get_id() == -1 ) {
+				$url = sprintf(
+					NELIOAB_BACKEND_URL . '/exp/global/%1$s/goal/%2$s',
+					$this->get_id(), $goal_type_url
+				);
+			}
+			else {
+				$url = sprintf(
+					NELIOAB_BACKEND_URL . '/goal/%2$s/%1$s/update',
+					$goal->get_id(), $goal_type_url
+				);
+			}
+			return $url;
 		}
 
 	}//NelioABThemeAlternativeExperiment

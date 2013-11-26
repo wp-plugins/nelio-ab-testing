@@ -46,8 +46,8 @@ if( !class_exists( 'NelioABUser' ) ) {
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			$exp = null;
 			foreach ( $running_exps as $data ) {
-				if ( ! $data->get_type() == NelioABExperiment::POST_ALT_EXP &&
-				     ! $data->get_type() == NelioABExperiment::PAGE_ALT_EXP ) {
+				if ( $data->get_type() != NelioABExperiment::POST_ALT_EXP &&
+				     $data->get_type() != NelioABExperiment::PAGE_ALT_EXP ) {
 					continue;
 				}
 				if ( $data->get_original() == $post_id ) {

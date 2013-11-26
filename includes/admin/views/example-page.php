@@ -98,7 +98,7 @@ if ( !class_exists( 'NelioABExamplePage' ) ) {
 			$authorbox = esc_textarea( $authorbox ); //sanitise output
 			?>
 
-			<textarea id="textarea_example"
+			<textarea id="textarea_example" maxlength="450"
 					name="nelioab_options[textarea_example]" cols="20" rows="5"
 					class="large-text code"><? echo $authorbox; ?></textarea>
 			<?php

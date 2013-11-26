@@ -18,7 +18,9 @@
 if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+	require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/theme-alternative-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/theme-alt-exp-edition-page.php' );
 
@@ -97,10 +99,25 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			// If everything is OK, we keep going!
 			// ---------------------------------------------------
 
+			// We select appspot_alternatives...
+			foreach( $experiment->get_appspot_alternatives() as $alt )
+				$experiment->add_selected_theme( $alt->get_value(), $alt->get_name() );
+
 			// Creating the view
 			$view = $this->create_view();
 
-			$view->set_experiment( $experiment );
+			// Experiment information
+			$view->set_experiment_id( $experiment->get_id() );
+			$view->set_experiment_name( $experiment->get_name() );
+			$view->set_experiment_descr( $experiment->get_description() );
+			$goals = $experiment->get_goals();
+			if ( count( $goals ) > 0 )
+				$view->set_goal( $goals[0] );
+			else
+				$view->set_goal( new NelioABPageAccessedGoal( $experiment ) );
+			$view->set_encoded_appspot_alternatives( $experiment->encode_appspot_alternatives() );
+			$view->set_encoded_local_alternatives( $experiment->encode_local_alternatives() );
+
 			$view->set_wp_pages( $list_of_pages );
 			$view->set_wp_posts( $list_of_posts );
 
@@ -113,9 +130,6 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 				$current_theme->get_screenshot(),
 				$current_theme->offsetGet( 'Author' ) );
 
-			foreach( $experiment->get_appspot_alternatives() as $alt )
-				$experiment->add_selected_theme( $alt->get_value(), $alt->get_name() );
-
 			foreach ( $themes as $theme ) {
 				$id = $theme['Template'];
 				if ( $id == $current_theme_id )
@@ -125,7 +139,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 					$theme->offsetGet( 'Title' ),
 					$theme->get_screenshot(),
 					$theme->offsetGet( 'Author' ),
-					$experiment->was_theme_selected_in_appspot( $id ) );
+					$experiment->is_theme_selected_locally( $id ) );
 			}
 
 			return $view;
@@ -148,17 +162,12 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			$exp = new NelioABThemeAlternativeExperiment( $_POST['exp_id'] );
 			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
 			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
-			if ( isset( $_POST['exp_goal'] ) ) {
-				if ( is_array( $_POST['exp_goal'] ) ) {
-					foreach ( $_POST['exp_goal'] as $goal )
-						$exp->add_conversion_post( $goal );
-				}
-				else {
-					$exp->add_conversion_post( $_POST['exp_goal'] );
-				}
-			}
+
 			$exp->load_encoded_appspot_alternatives( $_POST['appspot_alternatives'] );
 			$exp->load_encoded_local_alternatives( $_POST['local_alternatives'] );
+
+			$exp_goal = $this->build_goal_from_post_data( $exp );
+			$exp->add_goal( $exp_goal );
 
 			$current_theme = wp_get_theme();
 			$current_theme_id = basename( $current_theme->get_stylesheet_directory() );

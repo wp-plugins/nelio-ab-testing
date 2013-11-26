@@ -29,12 +29,12 @@ if ( !class_exists( 'NelioABThemeAltExpCreationPage' ) ) {
 		public function print_page_buttons() {
 			echo $this->make_js_button(
 					_x( 'Create', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\')',
+					'javascript:submitAndRedirect(\'validate\',false)',
 					false, true
 				);
 			echo $this->make_js_button(
 					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\')'
+					'javascript:submitAndRedirect(\'cancel\',true)'
 				);
 		}
 

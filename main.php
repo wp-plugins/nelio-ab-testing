@@ -19,14 +19,14 @@
 /*
  * Plugin Name: Nelio A/B Testing
  * Description: Optimize your site based on data, not opinions. With this plugin, you will be able to perform A/B testing (and more) on your wordpress site.
- * Version: 1.3.2
+ * Version: 1.4
  * Author: Nelio Software
  * Plugin URI: http://wp-abtesting.com
  * Text Domain: nelioab
  */
 
 // PLUGIN VERSION
-define( 'NELIOAB_PLUGIN_VERSION', '1.3.2' );
+define( 'NELIOAB_PLUGIN_VERSION', '1.4' );
 
 // Plugin dir name...
 define( 'NELIOAB_PLUGIN_NAME', 'Nelio A/B Testing' );
@@ -43,7 +43,7 @@ define( 'NELIOAB_MODELS_DIR', NELIOAB_DIR . '/models' );
 
 // Some URLs...
 define( 'NELIOAB_URL', plugin_dir_url( __FILE__ ) );
-define( 'NELIOAB_BACKEND_URL', 'https://nelioabtesting.appspot.com/_ah/api/nelioab');
+define( 'NELIOAB_BACKEND_URL', 'https://nelioabtesting.appspot.com/_ah/api/nelioab/v4');
 define( 'NELIOAB_FEEDBACK_URL', 'https://neliofeedback.appspot.com/_ah/api/feedback/v1');
 define( 'NELIOAB_ASSETS_URL', plugins_url() . '/' . NELIOAB_PLUGIN_DIR_NAME . '/assets' );
 define( 'NELIOAB_ADMIN_ASSETS_URL', NELIOAB_ASSETS_URL . '/admin' );
@@ -53,10 +53,20 @@ function nelioab_i18n() {
 }
 add_action( 'plugins_loaded', 'nelioab_i18n' );
 
+// Two debug functions pretty useful...
+function nelioab_p( $obj, $title = false) {
+	if ( $title ) nelioab_e( $title, true );
+	echo '<pre>'; print_r( $obj ); echo '</pre>';
+}
+function nelioab_e( $str, $title = false ) {
+	if ( $title ) echo '<pre> </pre><pre> </pre>';
+	echo '<pre>' . $str . '</pre>';
+	if ( $title ) echo '<pre>=========================================</pre>';
+}
+
 require_once( NELIOAB_UTILS_DIR . '/cookies.php' );
 require_once( NELIOAB_DIR . '/controller.php' );
 require_once( NELIOAB_ADMIN_DIR . '/admin-controller.php' );
-
 
 // Clean all stuff when activating the plugin
 require_once( NELIOAB_UTILS_DIR . '/cleaner.php' );

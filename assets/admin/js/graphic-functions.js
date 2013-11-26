@@ -81,7 +81,9 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 				width: 4,
 				color: '#C0D0E0',
 				zIndex: 4
-			}]
+			}],
+			min: 0,
+			max: 100
 		},
 		plotOptions: {
 			column: {
@@ -505,12 +507,14 @@ function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, starti
 						 fontWeight: "normal",
 					 }
 				},
-				min: 0.1,
+				min: 0,
+				max: 100,
 				startOnTick: true,
 				allowDecimals: false,
 				maxPadding: 0.1,
 		  },
 		  tooltip: {
+            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.1f}%</b><br/>',
 				shared: false
 		  },
 		  legend: {

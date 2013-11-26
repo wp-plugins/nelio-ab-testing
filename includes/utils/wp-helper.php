@@ -18,7 +18,7 @@
 if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 	abstract class NelioABWpHelper {
-
+		
 		/**
 		 *
 		 */
@@ -31,6 +31,10 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			$overriding = get_post( $overriding_id, ARRAY_A );
 			if ( !$overriding )
 				return;
+
+			require_once( NELIOAB_UTILS_DIR . '/optimize-press-support.php' );
+			NelioABOptimizePressSupport::make_post_compatible_with_optimizepress(
+				$ori_id, $overriding_id );
 
 			$ori['post_title']    = $overriding['post_title'];
 			$ori['post_content']  = $overriding['post_content'];
@@ -77,11 +81,15 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 						continue;
 
 					if ( !is_array( $val ) ) {
-						update_post_meta( $dest_id, $key, $val );
+						if ( is_serialized( $val ) )
+							$val = unserialize( $val );
+						add_post_meta( $dest_id, $key, $val );
 					}
 					else {
 						foreach ( $val as $aux ) {
-							update_post_meta( $dest_id, $key, $aux );
+							if ( is_serialized( $aux ) )
+								$aux = unserialize( $aux );
+							add_post_meta( $dest_id, $key, $aux );
 						}
 					}
 				}

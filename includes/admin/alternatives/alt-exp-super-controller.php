@@ -18,7 +18,9 @@
 if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+	require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/post-alternative-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/post-alt-exp-edition-page.php' );
 
@@ -128,6 +130,34 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 			echo '[SUCCESS]' . admin_url() .
 				'admin.php?page=nelioab-experiments&action=list';
 			die();
+		}
+
+		public function build_goal_from_post_data( $experiment ) {
+			$exp_goal = new NelioABPageAccessedGoal( $experiment );
+			if ( isset( $_POST['goal_id'] ) )
+				$exp_goal->set_id( $_POST['goal_id'] );
+
+			$goals_from_post = array();
+			if ( isset( $_POST['exp_goal'] ) ) {
+				if ( is_array( $_POST['exp_goal'] ) )
+					$goals_from_post = $_POST['exp_goal'];
+				else
+					$goals_from_post = array( $_POST['exp_goal'] );
+			}
+
+			foreach ( $goals_from_post as $goal ) {
+				if ( is_numeric( $goal ) ) {
+					$page = new NelioABPageDescription( $goal );
+					$exp_goal->add_page( $page );
+				}
+				else {
+					$goal = json_decode( urldecode( $goal ) );
+					$page = new NelioABPageDescription( $goal->url, false );
+					$page->set_title( $goal->name );
+					$exp_goal->add_page( $page );
+				}
+			}
+			return $exp_goal;
 		}
 
 		public function manage_actions() {

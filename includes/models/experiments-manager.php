@@ -24,6 +24,8 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 	class NelioABExperimentsManager implements iNelioABDataManager {
 
+		private static $running_experiments = NULL;
+
 		private $experiments;
 		private $are_experiments_loaded;
 
@@ -39,52 +41,56 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$json_data = NelioABBackend::remote_get( sprintf(
-				NELIOAB_BACKEND_URL . '/v2/wp/site/%s/exp',
+				NELIOAB_BACKEND_URL . '/site/%s/exp',
 				NelioABSettings::get_site_id()
 			) );
 
-			$this->are_experiments_loaded = true;
-
 			$json_data = json_decode( $json_data['body'] );
+			$aux = array();
 			if ( isset( $json_data->items ) ) {
 				foreach ( $json_data->items as $json_exp ) {
-					$exp = new NelioABQuickExperiment( $json_exp->id );
-					$exp->set_type_using_kind_name( $json_exp->kind );
+					$exp = new NelioABQuickExperiment( $json_exp->key->id );
+					$exp->set_type_using_text( $json_exp->kind );
 					$exp->set_name( $json_exp->name );
 					if ( isset( $json_exp->description ) )
 						$exp->set_description( $json_exp->description );
 					$exp->set_status( $json_exp->status );
 					try { $exp->set_creation_date( $json_exp->creation ); }
 					catch ( Exception $exception ) {}
-					array_push( $this->experiments, $exp );
+					array_push( $aux, $exp );
 				}
 			}
 
+			usort( $aux, array( 'NelioABExperiment', 'cmp_obj' ) );
+
+			$this->experiments = $aux;
+			$this->are_experiments_loaded = true;
 			return $this->experiments;
 		}
 
 		public function get_experiment_by_id( $id, $type ) {
 
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+			require_once( NELIOAB_MODELS_DIR . '/goals/goals-manager.php' );
 
 			// PAGE OR POST ALTERNATIVE EXPERIMENT
 			if ( $type == NelioABExperiment::POST_ALT_EXP ||
 				$type == NelioABExperiment::PAGE_ALT_EXP ||
 				$type == NelioABExperiment::PAGE_OR_POST_ALT_EXP
 			) {
-				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/v3/postexp/' . $id );
+				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/post/' . $id );
 				$json_data = json_decode( $json_data['body'] );
 
 				$exp = new NelioABPostAlternativeExperiment( $json_data->key->id );
 				$exp->set_name( $json_data->name );
 				if ( isset( $json_data->description ) )
 					$exp->set_description( $json_data->description );
-				$exp->set_type_using_kind_name( $json_data->kind );
+				$exp->set_type_using_text( $json_data->kind );
 				$exp->set_original( $json_data->originalPost );
 				$exp->set_status( $json_data->status );
-				if ( isset( $json_data->conversionPost ) )
-					foreach ( $json_data->conversionPost as $cp )
-						$exp->add_conversion_post( $cp );
+				if ( isset( $json_data->goals ) )
+					foreach ( $json_data->goals as $goal )
+						NelioABGoalsManager::load_goal_from_json( $exp, $goal );
 	
 				$alternatives = array();
 				if ( isset( $json_data->alternatives ) ) {
@@ -102,18 +108,18 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 			// THEME ALTERNATIVE EXPERIMENT
 			if ( $type == NelioABExperiment::THEME_ALT_EXP ) {
-				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/v3/globalexp/' . $id );
+				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/global/' . $id );
 				$json_data = json_decode( $json_data['body'] );
 
 				$exp = new NelioABThemeAlternativeExperiment( $json_data->key->id );
-				$exp->set_type_using_kind_name( $json_data->kind );
+				$exp->set_type_using_text( $json_data->kind );
 				$exp->set_name( $json_data->name );
 				if ( isset( $json_data->description ) )
 					$exp->set_description( $json_data->description );
 				$exp->set_status( $json_data->status );
-				if ( isset( $json_data->conversionPost ) )
-					foreach ( $json_data->conversionPost as $cp )
-						$exp->add_conversion_post( $cp );
+				if ( isset( $json_data->goals ) )
+					foreach ( $json_data->goals as $goal )
+						NelioABGoalsManager::load_goal_from_json( $exp, $goal );
 	
 				$alternatives = array();
 				if ( isset( $json_data->alternatives ) ) {
@@ -175,13 +181,16 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 		}
 
 		public static function get_running_experiments_from_cache() {
-			$result = get_option( 'nelioab_running_experiments', array() );
-			// UPDATE TO VERSION 1.2: make sure we have objects...
-			if ( !get_option( 'nelioab_running_experiments_cache_uses_objects', false ) ) {
-				NelioABExperimentsManager::update_running_experiments_cache( true );
-				$result = get_option( 'nelioab_running_experiments', array() );
+			require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+			if ( self::$running_experiments == NULL ) {
+				self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
+				// UPDATE TO VERSION 1.2: make sure we have objects...
+				if ( !get_option( 'nelioab_running_experiments_cache_uses_objects', false ) ) {
+					NelioABExperimentsManager::update_running_experiments_cache( true );
+					self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
+				}
 			}
-			return $result;
+			return self::$running_experiments;
 		}
 
 		private static function get_running_experiments() {

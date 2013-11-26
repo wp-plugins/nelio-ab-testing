@@ -25,14 +25,14 @@ function nelioab_clean() {
 		array( 'meta_key' => 'is_nelioab_alternative' )
 	);
 
-	// Remove the options related to "user_id". Now we are using "reg_num"
-	$res = $wpdb->query(
-		$wpdb->prepare(
-			'DELETE FROM ' . $wpdb->options .
-			' WHERE option_name LIKE \'%\'',
-			'%nelioab%client_id%'
-		)
-	);
+//	// Remove the options related to "user_id". Now we are using "reg_num"
+//	$res = $wpdb->query(
+//		$wpdb->prepare(
+//			'DELETE FROM ' . $wpdb->options .
+//			' WHERE option_name LIKE \'%\'',
+//			'%nelioab%client_id%'
+//		)
+//	);
 
 }
 

@@ -109,6 +109,10 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const RESULTS_NOT_AVAILABLE_YET        = 14;
 		const DEACTIVATED_USER                 = 15;
 		const EXPERIMENT_ID_NOT_FOUND          = 16;
+		const INVALID_GOAL                     = 17;
+
+		// Error codes corresponding to package details
+		const MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC = 100;
 
 		// These are "private" error codes
 		const BACKEND_NOT_AVAILABLE      = -1;
@@ -154,6 +158,19 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'User account has been deactivated.', 'nelioab' );
 				case NelioABErrCodes::EXPERIMENT_ID_NOT_FOUND:
 					return __( 'Experiment not found.', 'nelioab' );
+				case NelioABErrCodes::INVALID_GOAL:
+					return __( 'Goal not found.', 'nelioab' );
+
+
+				// Error codes corresponding to package details
+				case NelioABErrCodes::MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC:
+					return sprintf(
+						__( 'Oops! The experiment cannot be started because it defines more than ' .
+						'one goal page. Please, modify your experiment so that it includes one ' .
+						'goal page only or <a href="%s">upgrade your Nelio A/B subscription ' .
+						'package</a>.', 'nelioab' ),
+						'http://wp-abtesting.com/inquiry-subscription-plans/' );
+
 
 				// Private errors
 				case NelioABErrCodes::BACKEND_NOT_AVAILABLE:
