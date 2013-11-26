@@ -4,7 +4,7 @@
 if (!String.prototype.nelioabformat) {
   String.prototype.nelioabformat = function() {
 	var args = arguments;
-	return this.replace(/{(\d+)}/g, function(match, number) { 
+	return this.replace(/{(\d+)}/g, function(match, number) {
 	  return typeof args[number] != 'undefined'
 		? args[number]
 		: match
@@ -30,7 +30,7 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 			renderTo: divName,
 			type: 'column',
 			borderWidth: 1,
-			borderColor: '#C0C0C0' 
+			borderColor: '#C0C0C0'
 		},
 		title: {
 			text: labels['title'],
@@ -81,7 +81,9 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 				width: 4,
 				color: '#C0D0E0',
 				zIndex: 4
-			}]
+			}],
+			min: 0,
+			max: 100
 		},
 		plotOptions: {
 			column: {
@@ -101,7 +103,6 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 		},
 		tooltip: {
 			formatter: function () {
-				// TODO: use sprintf
 				return labels['detail'].nelioabformat(this.x, this.y)
 			}
 		},
@@ -142,7 +143,7 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 			renderTo: divName,
 			type: 'column',
 			borderWidth: 1,
-			borderColor: '#C0C0C0' 
+			borderColor: '#C0C0C0'
 		},
 		title: {
 			text: labels['title'],
@@ -252,7 +253,7 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 			spacingRight: 30,
 			borderColor: '#C0C0C0',
 			marginLeft: 2,
-			marginLeft: 40 
+			marginLeft: 40
 		},
 		legend: {
 			navigation: {
@@ -345,10 +346,10 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
  *	title			=>
  *	subtitle	 =>
  *	yaxis			=>
- * subtitle1	=> 
- * subtitle2	=> 
- * visitors	 => 
- * conversions => 
+ * subtitle1	=>
+ * subtitle2	=>
+ * visitors	 =>
+ * conversions =>
  *
  */
 function makeTimelineGraphic(divName, labels, visitors, conversions, startingDate) {
@@ -445,3 +446,106 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 	 });
 }
 
+function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, startingDate) {
+		var series = [];
+
+		series.push( {
+			name: labels['original'],
+			pointInterval: 24 * 3600 * 1000, //every day
+			pointStart: startingDate,
+			color: '#CC0000',
+			data: alternatives[0]
+		} );
+
+		for ( i=1; i<alternatives.length; ++i ) {
+			series.push( {
+				name: labels['alternative'].replace('%s', i),
+				pointInterval: 24 * 3600 * 1000, //every day
+				pointStart: startingDate,
+				data: alternatives[i]
+			} );
+		}
+
+	return new Highcharts.Chart({
+	chart: {
+				renderTo: divName,
+				zoomType: 'x',
+				spacingRight: 20,
+				borderWidth: 0,
+				backgroundColor: '#F7F7F7',
+		  },
+		  title: {
+				text: labels['title'],
+				style: {
+					 color: '#464646',
+					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				}
+		  },
+		  subtitle: {
+				text: document.ontouchstart === undefined ?
+					 labels['subtitle1'] :
+					 labels['subtitle2'],
+				style: {
+					 color: '#808080',
+					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				}
+		  },
+		  xAxis: {
+				type: 'datetime',
+				maxZoom: 1 * 24 * 3600000, // one day
+				title: {
+					 text: null
+				}
+		  },
+		  yAxis: {
+				title: {
+					 text: labels['yaxis'],
+					 align: 'low',
+					 style: {
+						 color: '#464646',
+						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontWeight: "normal",
+					 }
+				},
+				min: 0,
+				max: 100,
+				startOnTick: true,
+				allowDecimals: false,
+				maxPadding: 0.1,
+		  },
+		  tooltip: {
+            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.1f}%</b><br/>',
+				shared: false
+		  },
+		  legend: {
+				enabled: true
+		  },
+		  plotOptions: {
+				area: {
+					 lineWidth: 1,
+					 marker: {
+						  enabled: false,
+						  symbol: 'circle',
+						  radius: 2,
+						  states: {
+								hover: {
+									 enabled: true
+								}
+						  }
+					 },
+					 shadow: false,
+					 states: {
+						  hover: {
+								lineWidth: 1,
+								enabled: true
+						  }
+					 },
+					 threshold: null,
+				}
+		  },
+		  credits: {
+				enabled: false
+		  },
+		  series: series,
+	 });
+}

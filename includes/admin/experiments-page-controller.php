@@ -18,6 +18,7 @@
 if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/experiments-page.php' );
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 
 	class NelioABExperimentsPageController {
@@ -25,30 +26,11 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 		public static function build() {
 			$title = __( 'Experiments', 'nelioab' );
 
+
 			// Check settings
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			try {
-				$aux = NelioABSettings::check_user_settings();
-			}
-			catch ( Exception $e ) {
-				switch ( $e->getCode() ) {
-					case NelioABErrCodes::DEACTIVATED_USER:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/deactivated-user-page.php' );
-						$view = new NelioABDeactivatedUserPage();
-						$view->render();
-						return;
-					case NelioABErrCodes::INVALID_MAIL:
-					case NelioABErrCodes::INVALID_PRODUCT_REG_NUM:
-					case NelioABErrCodes::NON_ACCEPTED_TAC:
-					case NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED:
-						require_once( NELIOAB_ADMIN_DIR . '/views/errors/invalid-config-page.php' );
-						$view = new NelioABInvalidConfigPage( $title );
-						$view->render();
-						return;
-					default:
-						break;
-				}
-			}
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
 
 			$view = new NelioABExperimentsPage( $title );
 
@@ -68,35 +50,40 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 				// The ID of the experiment to which the action applies
 				$view->keep_request_param( 'exp_id', $_GET['id'] );
 
+			if ( isset( $_GET['exp_type'] ) )
+				// The ID of the experiment to which the action applies
+				$view->keep_request_param( 'exp_type', $_GET['exp_type'] );
+
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
 		}
 
 		public static function generate_html_content() {
 			// Before rendering content we check whether an action was required
 			if ( isset( $_REQUEST['GET_action'] ) &&
-			     isset( $_REQUEST['exp_id'] ) ) {
+			     isset( $_REQUEST['exp_id'] ) &&
+			     isset( $_REQUEST['exp_type'] ) ) {
 
 				switch ( $_REQUEST['GET_action'] ) {
 					case 'start':
-						NelioABExperimentsPageController::start_experiment( $_REQUEST['exp_id'] );
+						NelioABExperimentsPageController::start_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
 						break;
 					case 'stop':
-						NelioABExperimentsPageController::stop_experiment( $_REQUEST['exp_id'] );
+						NelioABExperimentsPageController::stop_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
 						break;
 					case 'trash':
-						NelioABExperimentsPageController::trash_experiment( $_REQUEST['exp_id'] );
+						NelioABExperimentsPageController::trash_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
 						break;
 					case 'restore':
-						NelioABExperimentsPageController::untrash_experiment( $_REQUEST['exp_id'] );
+						NelioABExperimentsPageController::untrash_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
 						break;
 					case 'delete':
-						NelioABExperimentsPageController::remove_experiment( $_REQUEST['exp_id'] );
+						NelioABExperimentsPageController::remove_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
 						break;
 					default:
 						// Nothing to be done by default
 
 						// REMEMBER: if something has to be done "by default", YOU must pay
-						// attention to the IF checking of ISSET variables... 
+						// attention to the IF checking of ISSET variables...
 				}
 			}
 
@@ -125,10 +112,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			die();
 		}
 
-		public static function remove_experiment( $exp_id ) {
+		public static function remove_experiment( $exp_id, $exp_type ) {
 			$mgr = new NelioABExperimentsManager();
 			try {
-				$mgr->remove_experiment_by_id( $exp_id );
+				$mgr->remove_experiment_by_id( $exp_id, $exp_type );
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -136,23 +123,102 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			}
 		}
 
-		public static function start_experiment( $exp_id ) {
+		public static function start_experiment( $exp_id, $exp_type ) {
+			$mgr = new NelioABExperimentsManager();
+			$exp = NULL;
+
 			try {
-				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id );
+				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+			}
+			catch ( Exception $e ) {
+				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+				NelioABErrorController::build( $e );
+			}
+
+			try {
+				if ( $exp == NULL || !NelioABExperimentsPageController::can_experiment_be_started( $exp ) )
+					return;
 				$exp->start();
 				NelioABExperimentsManager::update_running_experiments_cache( true );
 			}
 			catch ( Exception $e ) {
-				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
-				NelioABErrorController::build( $e );
+				global $nelioab_admin_controller;
+				switch ( $e->getCode() ) {
+					case NelioABErrCodes::MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC:
+						$nelioab_admin_controller->error_message = $e->getMessage();
+						return;
+
+					default:
+						require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+						NelioABErrorController::build( $e );
+				}
+
 			}
 		}
 
-		public static function stop_experiment( $exp_id ) {
+		private static function can_experiment_be_started( $exp ) {
+			global $nelioab_admin_controller;
+
+			$exp_type = $exp->get_type();
+			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+
+			switch( $exp_type ) {
+
+				case NelioABExperiment::PAGE_ALT_EXP:
+					foreach( $running_exps as $running_exp ) {
+						if ( $running_exp->get_type() != NelioABExperiment::PAGE_ALT_EXP )
+							continue;
+						if ( $running_exp->get_original() == $exp->get_original() ) {
+							$nelioab_admin_controller->error_message = sprintf(
+								__( 'The experiment cannot be started, because there is another ' .
+									'experiment running that is testing the same page. Please, ' .
+									'stop the experiment named «%s» before starting the new one.',
+									'nelioab' ),
+								$running_exp->get_name() );
+							return false;
+						}
+					}
+					break;
+
+				case NelioABExperiment::POST_ALT_EXP:
+					foreach( $running_exps as $running_exp ) {
+						if ( $running_exp->get_type() != NelioABExperiment::POST_ALT_EXP )
+							continue;
+						if ( $running_exp->get_original() == $exp->get_original() ) {
+							$nelioab_admin_controller->error_message = sprintf(
+								__( 'The experiment cannot be started, because there is another ' .
+									'experiment running that is testing the same post. Please, ' .
+									'stop the experiment named «%s» before starting the new one.',
+									'nelioab' ),
+								$running_exp->get_name() );
+							return false;
+						}
+					}
+					break;
+
+				case NelioABExperiment::THEME_ALT_EXP:
+					foreach( $running_exps as $running_exp ) {
+						if ( $running_exp->get_type() == NelioABExperiment::THEME_ALT_EXP ) {
+							$nelioab_admin_controller->error_message = sprintf(
+								__( 'The experiment cannot be started, because there is another ' .
+									'A/B or Multivariate Theme Test named «%s» running. Please, ' .
+									'stop that experiment before starting the new one.',
+									'nelioab' ),
+								$running_exp->get_name() );
+							return false;
+						}
+					}
+					break;
+
+			}
+
+			return true;
+		}
+
+		public static function stop_experiment( $exp_id, $exp_type ) {
 			try {
 				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id );
+				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
 				$exp->stop();
 				NelioABExperimentsManager::update_running_experiments_cache( true );
 			}
@@ -162,10 +228,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			}
 		}
 
-		public static function trash_experiment( $exp_id ) {
+		public static function trash_experiment( $exp_id, $exp_type ) {
 			try {
 				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id );
+				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
 				$exp->update_status_and_save( NelioABExperimentStatus::TRASH );
 			}
 			catch ( Exception $e ) {
@@ -174,10 +240,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			}
 		}
 
-		public static function untrash_experiment( $exp_id ) {
+		public static function untrash_experiment( $exp_id, $exp_type ) {
 			try {
 				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id );
+				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
 				$exp->untrash();
 			}
 			catch ( Exception $e ) {

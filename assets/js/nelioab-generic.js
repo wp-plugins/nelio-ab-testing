@@ -1,6 +1,6 @@
 function nelioab_areCookiesEnabled() {
 	document.cookie = "__verify=1;path=/";
-	var supportsCookies = document.cookie.length > 1 && 
+	var supportsCookies = document.cookie.length > 1 &&
 		document.cookie.indexOf("__verify=1") > -1;
 	delete_cookie("__verify");
 	return supportsCookies;
@@ -79,6 +79,31 @@ function nelioab_nav($) {
 			nelioab_cookies: nelioab_get_local_cookies(),
 			nelioab_nav: 'true',
 		},
+	});
+}
+
+function nelioab_nav_to_external_page($, external_page_link) {
+	$.ajax({
+		type:  'POST',
+		async: false,
+		timeout: 1000,
+		url:   window.location.href,
+		data: {
+			referer: window.location.href,
+			nelioab_cookies: nelioab_get_local_cookies(),
+			nelioab_nav: 'true',
+			nelioab_nav_to_external_page: external_page_link,
+		},
+	});
+}
+
+function nelioab_prepare_outlinks($, href) {
+	$("a").each(function() {
+		if ( $(this).attr('href') == href ) {
+			$(this).click(function() {
+				nelioab_nav_to_external_page($,href);
+			});
+		}
 	});
 }
 

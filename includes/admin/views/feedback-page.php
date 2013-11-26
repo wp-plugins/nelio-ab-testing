@@ -75,6 +75,9 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 
 			function sendFeedback() {
 				$ = jQuery;
+				button = $("#fb-controls > a");
+				if ( button.hasClass("button-primary-disabled") )
+					return;
 				disableButton();
 				$("#fb-processing").fadeOut(300, function() {
 					$("#fb-ok").css('display', 'none');
@@ -111,7 +114,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 		}
 
 		public function print_textarea() {?>
-			<textarea id="content" name="content" cols="80" rows="4"></textarea>
+			<textarea id="content" name="content" cols="80" rows="4" maxlength="450"></textarea>
 		<?}
 
 	}//NelioABFeedbackPage

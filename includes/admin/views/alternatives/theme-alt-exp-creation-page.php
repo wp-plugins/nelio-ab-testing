@@ -15,30 +15,30 @@
  */
 
 
-if ( !class_exists( 'NelioABAltExpCreationPage' ) ) {
+if ( !class_exists( 'NelioABThemeAltExpCreationPage' ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alt-exp-edition-page.php' );
-	class NelioABAltExpCreationPage extends NelioABAltExpEditionPage {
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/theme-alt-exp-edition-page.php' );
+	class NelioABThemeAltExpCreationPage extends NelioABThemeAltExpEditionPage {
 
-		public function __construct( $title, $alt_type ) {
-			parent::__construct( $title, $alt_type );
+		public function __construct() {
+			parent::__construct( __( 'Add Theme Experiment', 'nelioab' ) );
 			$this->set_icon( 'icon-nelioab' );
-			$this->set_form_name( 'nelioab_new_exp_form' );
+			$this->set_form_name( 'nelioab_new_ab_theme_exp_form' );
 		}
 
 		public function print_page_buttons() {
 			echo $this->make_js_button(
 					_x( 'Create', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\')',
+					'javascript:submitAndRedirect(\'validate\',false)',
 					false, true
 				);
 			echo $this->make_js_button(
 					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\')'
+					'javascript:submitAndRedirect(\'cancel\',true)'
 				);
 		}
 
-	}//NelioABAltExpCreationPage
+	}//NelioABThemeAltExpCreationPage
 
 }
 

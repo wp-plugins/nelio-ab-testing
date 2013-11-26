@@ -25,8 +25,31 @@
  */
 class NelioABController {
 
+	private $alt_exp_controller;
+
 	public function __construct() {
+		$this->alt_exp_controller = NULL;
+
+		// Trick for proper THEME ALT EXP testing
+		if ( isset( $_POST['nelioab_load_alt'] ) ) {
+			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+			// Theme alt exp related
+			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
+				$aux = $this->get_alt_exp_controller();
+				add_filter( 'stylesheet', array( &$aux, 'modify_stylesheet' ) );
+				add_filter( 'template',   array( &$aux, 'modify_template' ) );
+			}
+		}
+
 		add_action( 'init', array( &$this, 'init' ) );
+	}
+
+	private function get_alt_exp_controller() {
+		$dir = NELIOAB_DIR . '/experiment-controllers';
+		require_once( $dir . '/alternative-experiment-controller.php' );
+		if ( $this->alt_exp_controller == NULL )
+			$this->alt_exp_controller = new NelioABAlternativeExperimentController();
+		return $this->alt_exp_controller;
 	}
 
 	public function init() {
@@ -57,7 +80,7 @@ class NelioABController {
 	 * When a user connects to our site, she gets a set of cookies. These
 	 * cookies depend on the version of the plugin. If the last time she
 	 * connected the site had an older version, we update the information
-	 * so that she can get rid of any old cookies (via JS). 
+	 * so that she can get rid of any old cookies (via JS).
 	 */
 	private function version_control() {
 		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
@@ -84,8 +107,8 @@ class NelioABController {
 		$dir = NELIOAB_DIR . '/experiment-controllers';
 
 		// Controller for changing a page using its alternatives:
-		require_once( "$dir/alternatives-experiment-controller.php" );
-		$conexp_controller = new NelioABAlternativesExperimentController();
+		$conexp_controller = $this->get_alt_exp_controller();
+		$conexp_controller->hook_to_wordpress();
 
 		// Done.
 	}
@@ -106,7 +129,7 @@ class NelioABController {
 	}
 
 }//NelioABController
- 
+
 if ( !is_admin() )
 	$nelioab_controller = new NelioABController();
 

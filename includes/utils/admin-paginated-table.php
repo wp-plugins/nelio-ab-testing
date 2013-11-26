@@ -47,7 +47,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		
 		protected function prepare_pagination() {
 			/**
-			 * REQUIRED. Now we can add our *sorted* data to the items property, where 
+			 * REQUIRED. Now we can add our *sorted* data to the items property, where
 			 * it can be used by the rest of the class.
 			 */
 			$this->items = $this->data_manager->list_elements();

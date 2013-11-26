@@ -17,32 +17,141 @@
 
 if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
-	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 
-	class NelioABAltExpProgressPage extends NelioABAdminAjaxPage {
+	abstract class NelioABAltExpProgressPage extends NelioABAdminAjaxPage {
 
-		private $exp;
-		private $results;
-
-		private $is_ori_page;
-		private $is_goal_page;
+		protected $exp;
+		protected $results;
+		protected $is_single_goal;
+		protected $winner_label;
+		protected $goal;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
 			$this->exp          = null;
+			$this->goal         = null;
 			$this->results      = null;
-			$this->is_ori_page  = true;
-			$this->is_goal_page = true;
 		}
 
 		public function set_experiment( $exp ) {
 			$this->exp = $exp;
+			$goals = $this->exp->get_goals();
+			$this->goal = $goals[0];
+			$this->is_single_goal = count( $this->goal->get_pages() ) <= 1;
 		}
 
 		public function set_results( $results ) {
 			$this->results = $results;
+		}
+
+		protected abstract function get_original_name();
+		protected abstract function get_original_value();
+		protected abstract function print_js_function_for_post_data_overriding();
+
+		private function print_single_goal_info() {
+			$pages = $this->goal->get_pages();
+			$page  = $pages[0];
+
+			if ( $page->is_internal() )
+				$this->print_single_goal_info_internal( $page );
+			else
+				$this->print_single_goal_info_external( $page );
+		}
+
+		private function print_single_goal_info_internal( $page ) {
+			// Get goal post
+			$post = false;
+			$is_goal_page = false;
+			$post = get_post( $page->get_reference() );
+			$link = get_permalink( $page->get_reference() );
+			$is_goal_page = ( $post->post_type == 'page' );
+
+			// Create goal title
+			if ( $is_goal_page )
+				$label = __( 'Goal page not found.', 'nelioab' );
+			else
+				$label = __( 'Goal post not found.', 'nelioab' );
+			if ( $post )
+				$label = trim( $post->post_title );
+			if ( strlen( $label ) == 0 ) {
+				if ( $is_goal_page )
+					$label = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
+				else
+					$label = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
+			}
+			if ( $post )
+				$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $label );
+			$this->do_single_print( $label, $is_goal_page );
+		}
+
+		private function print_single_goal_info_external( $page ) {
+			$label = sprintf( '<a href="%s" target="_blank">%s</a>',
+				$page->get_reference(),
+				$page->get_title() );
+			$this->do_single_print( $label, true );
+		}
+
+		private function do_single_print( $label, $is_goal_page ) {?>
+			<h3><?php
+			$aux  = $this->goal->get_pages();
+			$page = false;
+			if ( count( $aux ) > 0 )
+				$page = $aux[0];
+			if ( $page && $page->accepts_indirect_navigations() ) {
+				if ( $is_goal_page )
+					_e( 'Indirect Goal Page', 'nelioab' );
+				else
+					_e( 'Indirect Goal Post', 'nelioab' );
+			}
+			else {
+				if ( $is_goal_page )
+					_e( 'Direct Goal Page', 'nelioab' );
+				else
+					_e( 'Direct Goal Post', 'nelioab' );
+			}
+			?></h3><p><?php echo $label; ?></p><?php
+		}
+
+		private function print_multiple_goals_info() {
+			$aux  = $this->goal->get_pages();
+			$page = false;
+			if ( count( $aux ) > 0 )
+				$page = $aux[0];
+			if ( $page && $page->accepts_indirect_navigations() ) {?>
+				<h3><?php _e( 'Indirect Goal Pages and Posts', 'nelioab' ); ?></h3><?php
+			}
+			else {?>
+				<h3><?php _e( 'Direct Goal Pages and Posts', 'nelioab' ); ?></h3><?php
+			}?>
+			<ul style="margin-left:2em;"><?php
+			$pages = $this->goal->get_pages();
+			foreach ( $pages as $page ) {
+				if ( $page->is_internal() ) {
+					$post = get_post( $page->get_reference() );
+					$label = sprintf( __( 'Page or post «%s» not found.', 'nelioab' ), $page->get_reference() );
+					if ( $post ) {
+						$name = trim( $post->post_title );
+						$link = get_permalink( $post );
+						if ( strlen( $name ) == 0 ) {
+							if ( $is_goal_page )
+								$name = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
+							else
+								$name = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
+						}
+						$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $name );
+					}
+				}
+				else {
+					$link  = $page->get_reference();
+					$name  = $page->get_title();
+					$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $name );
+				}
+				echo "<li>- $label</li>";
+			}
+			?></ul><?php
 		}
 
 		protected function do_render() {
@@ -55,34 +164,20 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			if ( empty( $descr ) )
 				$descr = '-';
 
-			// Goal title
-			$goal = __( 'Page not found.', 'nelioab' );
-			$aux  = get_post( $exp->get_conversion_post() );
-			if ( $aux ) {
-				$goal = trim( $aux->post_title );
-				if ( $aux->post_type == 'post' )
-					$this->is_goal_page = false;
-			}
-			if ( strlen( $goal ) == 0 )
-				$goal = sprintf( __( 'No title available (id is %s)', 'nelioab' ), $aux->ID );
-
 			// Original title
-			$aux  = get_post( $exp->get_original() );
-			$ori = sprintf( __( 'id is %s', 'nelioab' ), $aux->ID );
-			if ( $aux ) {
-				$ori = trim( $aux->post_title );
-				if ( $aux->post_type == 'post' )
-					$this->is_ori_page = false;
-			}
+			$ori = $this->get_original_name();
 
 			// Statistics
 			$total_visitors    = 0;
 			$total_conversions = 0;
 			$conversion_rate   = '&mdash;';
+			$originals_conversion_rate = '&mdash;';
 			if ( $res ) {
 				$total_visitors    = number_format( $res->get_total_visitors(), 0, '', ' ' );
 				$total_conversions = number_format( $res->get_total_conversions(), 0, '', ' ' );
 				$conversion_rate   = number_format( $res->get_total_conversion_rate(), 2 );
+				$aux = $res->get_alternative_results();
+				$originals_conversion_rate = number_format( $aux[0]->get_conversion_rate(), 2 );
 			}
 
 			// Winner (if any) details
@@ -95,9 +190,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			else
 				$the_winner_conversion_rate = number_format( $the_winner_conversion_rate, 2 );
 
-			$winner_label = sprintf( ' alt-type-winner" title="%s"',
+			$this->winner_label = sprintf( ' alt-type-winner" title="%s"',
 				sprintf( __( 'Wins with a %s%% confidence', 'nelioab'), $the_winner_confidence ) );
-
 
 			// PRINTING RESULTS
 			// ----------------------------------------------------------------
@@ -178,12 +272,6 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 						<div>
 							<div id="summary-numbers">
-								<h3><?php _e( 'Conversions / Visitors', 'nelioab' ); ?></h3>
-								<p class="result"><?php echo $total_conversions . ' / ' . $total_visitors; ?></p>
-
-								<h3><?php _e( 'Average Conversion Rate', 'nelioab' ); ?></h3>
-								<p class="result"><?php printf( '%s %%', $conversion_rate ); ?></p>
-
 								<h3><?php
 									$conf_label = ' (' . __( 'Confidence', 'nelioab' ) . ')';
 									if ( $the_winner == -1 )
@@ -212,11 +300,23 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 								<h3><?php _e( 'Winner\'s Conversion Rate', 'nelioab' ); ?></h3>
 								<p class="result"><?php printf( '%s %%', $the_winner_conversion_rate ); ?></p>
+
+								<h3><?php _e( 'Original\'s Conversion Rate', 'nelioab' ); ?></h3>
+								<p class="result"><?php printf( '%s %%', $originals_conversion_rate ); ?></p>
+
+								<h3><?php _e( 'Conversions / Page Views', 'nelioab' ); ?></h3>
+								<p class="result"><?php echo $total_conversions . ' / ' . $total_visitors; ?></p>
+
 							</div>
 	
 							<div id="nelioab-timeline" class="nelioab-timeline-graphic">
 							</div>
-							<?php $this->print_timeline_js(); ?>
+							<?php
+								if ( isset( $this->results ) && $this->results->has_historic_info() )
+									$this->print_timeline_for_alternatives_js();
+								else
+									$this->print_timeline_js();
+							?>
 
 							<div class="clear"></div>
 
@@ -236,14 +336,13 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							<p><?php echo $exp->get_name(); ?></p>
 						<h3><?php _e( 'Description', 'nelioab' ); ?></h3>
 							<p><?php echo $descr; ?></p>
-						<h3><?php
-							if ( $this->is_goal_page )
-								_e( 'Goal Page', 'nelioab' );
+						<?php
+							if ( $this->is_single_goal )
+								$this->print_single_goal_info();
 							else
-								_e( 'Goal Post', 'nelioab' );
-						?></h3>
-							<?php $link = get_permalink( $exp->get_conversion_post() ); ?>
-							<p><?php echo sprintf( '<a href="%s" target="_blank">%s</a>', $link, $goal ); ?></p>
+								$this->print_multiple_goals_info();
+						?>
+
 					</div>
 	
 					<div id="exp-info-alts">
@@ -267,94 +366,55 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							<?php
 							if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {?>
 								<script>
-								function nelioab_confirm_overriding_original(id) {
-									if ( !confirm( "<?php
-											if ( $this->is_ori_page )
-												_e( 'You are about to override the original page ' .
-												'with the contents of an alternative. ' .
-												'Do you really want to continue?', 'nelioab' );
-											else
-												_e( 'You are about to override the original post ' .
-												'with the contents of an alternative. ' .
-												'Do you really want to continue?', 'nelioab' );
-										?>" ) )
-											return;
-		
+								<?php
+								$this->print_js_function_for_post_data_overriding();
+								?>
+
+								function nelioab_show_the_dialog_for_overriding(id) {
+									$ = jQuery;
+									$(function() {
+										$("#dialog-modal").dialog({
+											title: '<?php echo __( 'Override Original', 'nelioab' ); ?>',
+											resizable: false,
+											width: 500,
+											modal: true,
+											buttons: {
+												"OK": function() {
+													$(this).dialog("close");
+													nelioab_do_override(id);
+												},
+												"Cancel": function() {
+													$(this).dialog("close");
+												}
+											}
+										});
+									});
+								}
+
+								function nelioab_do_override(id) {
 									jQuery(".apply-link").each(function() {
 										jQuery(this).fadeOut(100);
 									});
 		
 									jQuery("#loading-" + id).delay(120).fadeIn();
 		
-									jQuery.post(
-										"<?php echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&apply-alternative=true&id=' . $exp->get_id(); ?>",
-										{ 'original': <?php echo $exp->get_original(); ?>, 'alternative': id },
-										function(data) {
+									jQuery.ajax({
+										url: jQuery("#apply_alternative").attr("action"),
+										type: 'post',
+										data: jQuery('#apply_alternative').serialize(),
+										success: function(data) {
 											jQuery("#loading-" + id).fadeOut(250);
 											jQuery("#success-" + id).delay(500).fadeIn(200);
-										});
+										}
+									});
 								}
 								</script>
+
 							<?php
 							}
 		
-		
-							// THE ORIGINAL
-							// -----------------------------------------
-							$link      = get_permalink( $exp->get_original() );
-							$ori_label = __( 'Original', 'nelioab' );
-		
-							$edit_link = '';
-							if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-								$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-									admin_url() . '/post.php?post=' . $exp->get_original() . '&action=edit',
-									__( 'Edit' ) );
-							}
-		
-							if ( $this->is_winner( $exp->get_original() ) )
-								$set_as_winner = $winner_label;
-							else
-								$set_as_winner = '';
-
-							echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span><a href="%s" target="_blank">%s</a>%s</li>',
-								$set_as_winner, $ori_label, $link, $ori, $edit_link );
-		
-		
-							// AND THE ALTERNATIVES
-							// -----------------------------------------
-		
-							$i = 0;
-							foreach ( $exp->get_alternatives() as $alt ) {
-								$i++;
-								$link      = get_permalink( $alt->get_post_id() );
-								$edit_link = '';
-								
-								if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-									$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-										admin_url() . '/post.php?post=' . $alt->get_post_id() . '&action=edit',
-										__( 'Edit' ) );
-								}
-		
-								if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
-									$edit_link = sprintf(
-										' <small id="success-%3$s" style="display:none;">(%1$s)</small>' .
-										'<img id="loading-%3$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
-										'<small class="apply-link">(<a href="javascript:nelioab_confirm_overriding_original(%3$s);">%4$s</a>)</small></li>',
-										__( 'Done!', 'nelioab' ),
-										NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
-										$alt->get_post_id(), __( 'Apply', 'nelioab' ) );
-								}
-		
-								if ( $this->is_winner( $alt->get_post_id() ) )
-									$set_as_winner = $winner_label;
-								else
-									$set_as_winner = '';
-
-								$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
-								echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span><a href="%s" target="_blank">%s</a>%s',
-									$set_as_winner, $alt_label, $link, $alt->get_name(), $edit_link );
-		
-							}
+							$this->print_the_original_alternative();
+							$this->print_the_real_alternatives();
 							?>
 						</ul>
 
@@ -366,11 +426,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									smoothTransitions();
 									jQuery.get(
 										"<?php echo sprintf(
-											'%s/admin.php?page=nelioab-experiments&action=progress&id=%s&forcestop=true',
-											admin_url(), $this->exp->get_id() ); ?>",
+											'%s/admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
+											admin_url(), $this->exp->get_id(), $this->exp->get_type() ); ?>",
 										function(data) {
 											data = data.trim();
-											console.log(data);
 											if ( data.indexOf("[SUCCESS]") == 0) {
 												location.href = data.replace("[SUCCESS]", "");
 											}
@@ -414,7 +473,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				<?php $this->print_improvement_factor_js(); ?>
 	
 				<?php
-				$wp_list_table = new NelioABAltExpResultsTable( $res->get_alternative_results() );
+				$wp_list_table = new NelioABAltExpProgressTable( $res->get_alternative_results() );
 				$wp_list_table->prepare_items();
 				$wp_list_table->display();
 				?>
@@ -435,34 +494,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					?></p>
 
 					<?php
-					if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-						if ( $the_winner == 0 ) {
-							if ( $this->is_ori_page )
-								echo '<p><b>' . __( 'Right now, no alternative is beating the original page.', 'nelioab' ) . '</b></p>';
-							else
-								echo '<p><b>' . __( 'Right now, no alternative is beating the original post.', 'nelioab' ) . '</b></p>';
-						}
-						if ( $the_winner > 0 ) {
-							if ( $this->is_ori_page )
-								echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original page.', 'nelioab' ), $the_winner ) . '</b></p>';
-							else
-								echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original post.', 'nelioab' ), $the_winner ) . '</b></p>';
-						}
-					}
-					else {
-						if ( $the_winner == 0 ) {
-							if ( $this->is_ori_page )
-								echo '<p><b>' . __( 'No alternative was better the original page.', 'nelioab' ) . '</b></p>';
-							else
-								echo '<p><b>' . __( 'No alternative was better the original post.', 'nelioab' ) . '</b></p>';
-						}
-						if ( $the_winner > 0 ) {
-							if ( $this->is_ori_page )
-								echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original page.', 'nelioab' ), $the_winner ) . '</b></p>';
-							else
-								echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original post.', 'nelioab' ), $the_winner ) . '</b></p>';
-						}
-					}
+					$this->print_winner_info();
 					?>
 	
 					<ul style="list-style-type:circle; margin-left:2em;">
@@ -492,27 +524,31 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			
 		}
 
-		private function get_winning_conversion_rate() {
+		abstract protected function print_the_original_alternative();
+		abstract protected function print_the_real_alternatives();
+		abstract protected function print_winner_info();
+
+		protected function get_winning_conversion_rate() {
 			$res = $this->results;
 			if ( $res == null )
 				return -1;
 
 			foreach ( $res->get_alternative_results() as $alt_result ) {
-				if ( $this->is_winner( $alt_result->get_post_id() ) )
+				if ( $this->is_winner( $alt_result->get_alt_id() ) )
 					return $alt_result->get_conversion_rate();
 			}
 
 			return -1;
 		}
 
-		private function get_winning_confidence() {
+		protected function get_winning_confidence() {
 			$bestg = $this->get_winning_gtest();
 			if ( !$bestg )
 				return -1;
 			return number_format( $bestg->get_certainty(), 2 );
 		}
 
-		private function get_winning_gtest() {
+		protected function get_winning_gtest() {
 			$res = $this->results;
 			if ( $res == null )
 				return false;
@@ -525,23 +561,23 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 			$bestg = $gtests[count( $gtests ) - 1];
 			if ( $bestg->is_original_the_best() ) {
-				if ( $bestg->get_type() == NelioABGStats::WINNER )
+				if ( $bestg->get_type() == NelioABGTest::WINNER )
 					return $bestg;
 			}
 			else {
 				$aux = null;
 				foreach ( $gtests as $gtest )
-					if ( $gtest->get_min() == $exp->get_original() )
+					if ( $gtest->get_min() == $this->get_original_value() )
 						$aux = $gtest;
 				if ( $aux )
-					if ( $aux->get_type() == NelioABGStats::WINNER )
+					if ( $aux->get_type() == NelioABGTest::WINNER )
 						return $aux;
 			}
 			
 			return false;
 		}
 
-		private function is_winner( $id ) {
+		protected function is_winner( $id ) {
 			$res = $this->results;
 			if ( $res == null )
 				return false;
@@ -552,20 +588,20 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 			$bestg = $gtests[count( $gtests ) - 1];
 			if ( $bestg->get_max() == $id )
-				if ( $bestg->get_type() == NelioABGStats::WINNER )
+				if ( $bestg->get_type() == NelioABGTest::WINNER )
 					return true;
 
 			return false;
 		}
 
-		private function who_wins() {
+		protected function who_wins() {
 			$exp = $this->exp;
-			if ( $this->is_winner( $exp->get_original() ) )
+			if ( $this->is_winner( $this->get_original_value() ) )
 				return 0;
 			$i = 0;
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
-				if ( $this->is_winner( $alt->get_post_id() ) )
+				if ( $this->is_winner( $alt->get_value() ) )
 					return $i;
 			}
 			return -1;
@@ -575,7 +611,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		 *
 		 *
 		 */
-		private function print_timeline_js() {
+		protected function print_timeline_js() {
 
 			$res = $this->results;
 
@@ -616,8 +652,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$labels['title']       = __( 'Evolution of the Experiment', 'nelioab' );
 			$labels['subtitle1']   = __( 'Click and drag in the plot area to zoom in', 'nelioab' );
 			$labels['subtitle2']   = __( 'Pinch the chart to zoom in', 'nelioab' );
-			$labels['yaxis']       = __( 'Visitors and Conversions', 'nelioab' );
-			$labels['visitors']    = __( 'Visitors', 'nelioab' );
+			$labels['yaxis']       = __( 'Page Views and Conversions', 'nelioab' );
+			$labels['visitors']    = __( 'Page Views', 'nelioab' );
 			$labels['conversions'] = __( 'Conversions', 'nelioab' );
 		?>
 		<script type="text/javascript">
@@ -634,11 +670,101 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		<?php
 		}
 
+		private function array_division( $arr_numerator, $arr_divisor ) {
+			$len = count( $arr_numerator );
+			$aux = count( $arr_divisor );
+			if ( $aux < $len )
+				$len = $aux;
+
+			$result = array();
+			for ( $i = 0; $i < $len; ++$i ) {
+				$num = $arr_numerator[$i];
+				$div = $arr_divisor[$i];
+				if ( $div < 1 )
+					$aux = 0;
+				else
+					$aux = round( ($num / $div) * 100 );
+				array_push( $result, $aux );
+			}
+
+			return $result;
+		}
+
 		/**
 		 *
 		 *
 		 */
-		private function print_conversion_rate_js() {
+		protected function print_timeline_for_alternatives_js() {
+
+			$res = $this->results;
+
+			// Start date
+			// -------------------------------------------
+			$first_update = time();
+			if ( is_object( $res ) )
+				$first_update = strtotime( $res->get_first_update() ); // This has to be a unixtimestamp...
+			$timestamp    = mktime( 0, 0, 0,
+					date( 'n', $first_update ),
+					date( 'j', $first_update ),
+					date( 'Y', $first_update )
+				); // M, D, Y
+
+			// Build data
+			// -------------------------------------------
+			$average      = array();
+			$alternatives = array();
+			if ( is_object( $res ) ) {
+				$average = $this->array_division(
+					$res->get_conversions_history(), $res->get_visitors_history() );
+
+				$alternatives = array();
+				foreach( $res->get_alternative_results() as $alt_res ) {
+					array_push( $alternatives, $this->array_division(
+						$alt_res->get_conversions_history(), $alt_res->get_visitors_history() ) );
+				}
+			}
+
+			$the_count = count( $average );
+			for( $i = 0; $i < ( 7 - $the_count ); ++$i ) {
+				array_unshift( $average, 0 );
+				$aux = array();
+				foreach( $alternatives as $alt ) {
+					array_unshift( $alt, 0 );
+					array_push( $aux, $alt );
+				}
+				$alternatives = $aux;
+				$timestamp = $timestamp - 86400; // substract one day
+			}
+			$year  = date( 'Y', $timestamp );
+			$month = intval( date( 'n', $timestamp ) ) - 1;
+			$day   = date( 'j', $timestamp );
+			$date  = sprintf( 'Date.UTC(%s, %s, %s)', $year, $month, $day );
+
+			// Building labels (i18n)
+			// -------------------------------------------
+			$labels = array();
+			$labels['title']       = __( 'Evolution of the Experiment', 'nelioab' );
+			$labels['subtitle1']   = __( 'Click and drag in the plot area to zoom in', 'nelioab' );
+			$labels['subtitle2']   = __( 'Pinch the chart to zoom in', 'nelioab' );
+			$labels['yaxis']       = __( 'Conversion Rate', 'nelioab' );
+			$labels['original']    = __( 'Original', 'nelioab' );
+			$labels['alternative'] = __( 'Alternative %s', 'nelioab' );
+		?>
+		<script type="text/javascript">
+		(function($) {
+			var alternatives = <?php echo json_encode( $alternatives ); ?>;
+			var labels       = <?php echo json_encode( $labels ); ?>;
+			var startDate    = <?php echo $date; ?>;
+
+			timelineGraphic = makeTimelinePerAlternativeGraphic("nelioab-timeline", labels, alternatives, startDate);
+			resizeGraphics();
+		})(jQuery);
+		</script>
+		<?php
+		}
+
+		abstract protected function get_labels_for_conversion_rate_js();
+		protected function print_conversion_rate_js() {
 			$alt_results = $this->results->get_alternative_results();
 
 			// Build categories
@@ -693,16 +819,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 			// Building labels (i18n)
 			// -------------------------------------------
-			$labels = array();
-			$labels['title']    = __( 'Conversion Rates', 'nelioab' );
-			if ( $this->is_ori_page )
-				$labels['subtitle'] = __( 'for the original and the alternative pages', 'nelioab' );
-			else
-				$labels['subtitle'] = __( 'for the original and the alternative posts', 'nelioab' );
-			$labels['xaxis']    = __( 'Alternatives', 'nelioab' );
-			$labels['yaxis']    = __( 'Conversion Rate (%)', 'nelioab' );
-			$labels['column']   = __( '{0}%', 'nelioab' );
-			$labels['detail']   = __( '<b>{0}</b><br />Conversions: {1}%', 'nelioab' );
+			$labels = $this->get_labels_for_conversion_rate_js();
 		?>
 		<script type="text/javascript">
 		(function($) {
@@ -716,11 +833,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		<?php
 		}
 
-		/**
-		 *
-		 *
-		 */
-		private function print_improvement_factor_js() {
+		abstract protected function get_labels_for_improvement_factor_js();
+		protected function print_improvement_factor_js() {
 			$alt_results = $this->results->get_alternative_results();
 
 			// For the improvement factor, the original alternative is NOT used
@@ -779,16 +893,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 			// Building labels (i18n)
 			// -------------------------------------------
-			$labels = array();
-			$labels['title']    = __( 'Improvement Factors', 'nelioab' );
-			if ( $this->is_ori_page )
-				$labels['subtitle'] = __( 'with respect to the original page', 'nelioab' );
-			else
-				$labels['subtitle'] = __( 'with respect to the original post', 'nelioab' );
-			$labels['xaxis']    = __( 'Alternatives', 'nelioab' );
-			$labels['yaxis']    = __( 'Improvement (%)', 'nelioab' );
-			$labels['column']   = __( '{0}%', 'nelioab' );
-			$labels['detail']   = __( '<b>{0}</b><br />{1}% improvement', 'nelioab' );
+			$labels = $this->get_labels_for_improvement_factor_js();
 		?>
 		<script type="text/javascript">
 		(function($) {
@@ -802,11 +907,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		<?php
 		}
 
-		/**
-		 *
-		 *
-		 */
-		private function print_visitors_js() {
+		abstract protected function get_labels_for_visitors_js();
+		protected function print_visitors_js() {
 			$alt_results = $this->results->get_alternative_results();
 
 			// Build categories
@@ -837,16 +939,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 			// Building labels (i18n)
 			// -------------------------------------------
-			$labels = array();
-			$labels['title']       = __( 'Visitors and Conversions', 'nelioab' );
-			if ( $this->is_ori_page )
-				$labels['subtitle']    = __( 'for the original and the alternative pages', 'nelioab' );
-			else
-				$labels['subtitle']    = __( 'for the original and the alternative posts', 'nelioab' );
-			$labels['xaxis']       = __( 'Alternatives', 'nelioab' );
-			$labels['detail']      = __( 'Number of {series.name}: <b>{point.y}</b>', 'nelioab' );
-			$labels['visitors']    = __( 'Visitors', 'nelioab' );
-			$labels['conversions'] = __( 'Conversions', 'nelioab' );
+			$labels = $this->get_labels_for_visitors_js();
 		?>
 		<script type="text/javascript">
 		(function($) {
@@ -865,7 +958,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 	}//NelioABAltExpProgressPage
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
-	class NelioABAltExpResultsTable extends NelioABAdminTable {
+	class NelioABAltExpProgressTable extends NelioABAdminTable {
 
 		private $form_name;
 		private $show_new_form;
@@ -884,7 +977,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		public function get_columns(){
 			return array(
 				'name'        => __( 'Name', 'nelioab' ),
-				'visits'      => __( 'Number of Visits', 'nelioab' ),
+				'visits'      => __( 'Number of Page Views', 'nelioab' ),
 				'conversions' => __( 'Number of Conversions', 'nelioab' ),
 				'rate'        => __( 'Conversion Rate', 'nelioab' ),
 				'improvement' => __( 'Improvement Factor', 'nelioab' ),

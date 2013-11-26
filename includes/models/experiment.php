@@ -33,14 +33,84 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 	 */
 	abstract class NelioABExperiment {
 
+		const UNKNOWN_TYPE          = -1;
+		const NO_TYPE_SET           =  0;
+		const POST_ALT_EXP          =  1;
+		const PAGE_ALT_EXP          =  2;
+		const CSS_ALT_EXP           =  3;
+		const THEME_ALT_EXP         =  4;
+		const PAGE_OR_POST_ALT_EXP  =  5; // Used for returning from editing a post/page content
+
+		const UNKNOWN_TYPE_STR  = 'UnknownExperiment';
+		// NO_TYPE_SET_STR; Does not make sense
+		const POST_ALT_EXP_STR  = 'PostAlternativeExperiment';
+		const PAGE_ALT_EXP_STR  = 'PageAlternativeExperiment';
+		const CSS_ALT_EXP_STR   = 'CssGlobalAlternativeExperiment';
+		const THEME_ALT_EXP_STR = 'ThemeGlobalAlternativeExperiment';
+		// PAGE_OR_POST_ALT_EXP_STR; Does not make sense
+
 		protected $id;
+		protected $goals;
 		private $name;
 		private $descr;
 		private $status;
 		private $creation_date;
+		private $type;
 
-		public function __construct( ) {
+		public function __construct() {
 			$this->clear();
+		}
+
+		public function get_type() {
+			return $this->type;
+		}
+
+		public function set_type( $type ) {
+			$this->type = $type;
+		}
+
+		public function get_goals() {
+			return $this->goals;
+		}
+
+		public function add_goal( $goal ) {
+			array_push( $this->goals, $goal );
+		}
+
+		public function set_type_using_text( $kind ) {
+			switch( $kind ) {
+				case NelioABExperiment::POST_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::POST_ALT_EXP );
+					break;
+				case NelioABExperiment::PAGE_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::PAGE_ALT_EXP );
+					break;
+				case NelioABExperiment::CSS_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::CSS_ALT_EXP );
+					break;
+				case NelioABExperiment::THEME_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::THEME_ALT_EXP );
+					break;
+				default:
+					// This should never happen...
+					$this->set_type( NelioABExperiment::UNKNOWN_TYPE );
+					break;
+			}
+		}
+
+		protected function get_textual_type() {
+			switch( $this->type ) {
+				case NelioABExperiment::POST_ALT_EXP:
+					return NelioABExperiment::POST_ALT_EXP_STR;
+				case NelioABExperiment::PAGE_ALT_EXP:
+					return NelioABExperiment::PAGE_ALT_EXP_STR;
+				case NelioABExperiment::CSS_ALT_EXP:
+					return NelioABExperiment::CSS_ALT_EXP_STR;
+				case NelioABExperiment::THEME_ALT_EXP:
+					return NelioABExperiment::THEME_ALT_EXP_STR;
+				default:
+					return NelioABExperiment::UNKNOWN_TYPE_STR;
+			}
 		}
 
 		public function get_id() {
@@ -84,30 +154,33 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 			$this->name     = '';
 			$this->descr    = '';
 			$this->status   = NelioABExperimentStatus::DRAFT;
+			$this->type     = NelioABExperiment::NO_TYPE_SET;
+			$this->goals    = array();
 		}
 
+		public function make_goals_persistent() {
+			require_once( NELIOAB_MODELS_DIR . '/goals/goals-manager.php' );
+			foreach ( $this->get_goals() as $goal ) {
+				switch ( $goal->get_kind() ) {
+					case NelioABGoal::PAGE_ACCESSED_GOAL:
+					default:
+					$type = 'page-accessed';
+				}
+				$url = $this->get_url_for_making_goal_persistent( $goal, $type );
+				$encoded = NelioABGoalsManager::encode_goal_for_appengine( $goal );
+				$result = NelioABBackend::remote_post( $url, $encoded );
+			}
+		}
+
+		public abstract function get_url_for_making_goal_persistent( $goal, $type );
 		public abstract function save();
 		public abstract function remove();
-		public abstract function get_results();
 
-		public function start() {
-			$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/%s/start',
-					$this->get_id()
-				);
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
-			$result = NelioABBackend::remote_post( $url );
-			$this->set_status( NelioABExperimentStatus::RUNNING );
-		}
+		public abstract function start();
+		public abstract function stop();
 
-		public function stop() {
-			$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/%s/stop',
-					$this->get_id()
-				);
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
-			$result = NelioABBackend::remote_post( $url );
-			$this->set_status( NelioABExperimentStatus::FINISHED );
+		public static function cmp_obj( $a, $b ) {
+			return strcmp( $a->get_name(), $b->get_name() );
 		}
 
 	}//NelioABExperiment

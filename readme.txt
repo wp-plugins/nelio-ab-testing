@@ -1,9 +1,9 @@
-=== Nelio A/B Testing ===
+=== Nelio AB Testing ===
 Contributors: nelio
-Tags: a/b testing, a/b test, a b test, a b testing, split testing, website optimization, conversion optimization
+Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.1.2
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,8 +19,8 @@ experiments from within your WordPress' dashboard, creating a lovely,
 integrated, and well-known user experience.
 
 On the technical side, **any gathered information about experiments and
-statistical calculus is performed and stored in Nelio's backend servers**. As a
-result, the load in your WordPress server does not increase and can focus on
+statistical calculus are performed and stored in Nelio's backend servers**. As
+a result, the load in your WordPress server does not increase and can focus on
 what matters to you: serving information to your visitors as quickly as
 possible.
 
@@ -35,6 +35,8 @@ account](http://wp-abtesting.com) to use our plugin (the service includes a
 page theme options...)
 * A/B and multivariate test of WordPress posts (title, content, page style,
 post theme options...)
+* Select one or more alternative themes among the installed ones and test
+which one works better!
 * Fresh information about the evolution of the experiment every day
 * Nice graphics about visitors, conversions, improvements, ...
 * Definition, management, and tracking of experiments integrated in WordPress
@@ -72,9 +74,16 @@ left labeled "Nelio A/B Testing".
 left labeled "Nelio A/B Testing".
 
 
+** I successfully installed the plugin. What should I do now? **
+
+If you have successfully installed our plugin using one of the aforementioned
+methods, now it is just time to use it! Take a look at our [Getting Started
+Guide](http://wp-abtesting.com/getting-started-guide/) to cover the basis.
+
+
 == Frequently Asked Questions ==
 
-= Why do you need an A/B testing native WordPress solution? =
+= Why do I need an A/B testing native WordPress solution? =
 
 * **Easier learning curve.** No need to learn yet another tool. Everything
 (from the creation of tests to the visualization of the results) is done from
@@ -85,7 +94,7 @@ site to reflect the winner alternative as soon as the results are statistically
 significant. Instead, with a generic tool, once you have the winner, you´ll
 need to back to WordPress and manually modify the posts to implement the
 changes yourself.
-* **Fine-grained testing.** The “testing unit” in a generic tool is the web
+* **Fine-grained testing.** The "testing unit" in a generic tool is the web
 page since this the HTML of the page is the only thing those tools have access
 to. Instead a native WordPress solution can access all your WordPress
 components, including the menu, your widget configuration, theme,… so you can
@@ -97,63 +106,9 @@ only be done when the AB Testing tool has access to the internals of your
 WordPress installation.
 
 
-= What are the features implemented so far? =
+= More questions? Take a look at our site!=
 
-You can create A/B and multivariate tests for pages, setting the visit to
-another page of your site as conversion goal.  You can then see the evolution
-and results of the test (so far, results are refreshed every 2 hours but note
-that we can change the frequency during the test). Apart from the raw numbers
-(number of visits, conversions,…), we have included some easy-to-understand
-information about the statistical significance of the results.
-
-
-= And the rest? =
-
-We'll keep adding more features in the following weeks.
-
-
-= Can I use this service in different domains? =
-
-Yes. For this version, we permit up to three different simultaneous
-domains/websites.
-
-
-= Any limitation on the number of visitors that can be part of a test? =
-
-There’s no limitation for this version. Note that, this is one of the values
-that we will be closely monitoring and we may decide to cap the number of
-visits per day.
-
-
-= How does the service work? =
-
-In short, the service requires you to install a plug-in on your WP site. This
-plug-in will monitor the visitors of your site and send anonymous information
-(e.g. navigations, conversions, ...) to our backend servers where the processing
-of all the data takes place.
-
-
-= How does the plug-in work (in case you care about technical stuff)? =
-
-We understand that before installing our plugin you may want to know some more
-details about how it internally works. Our plug-in is not using redirections or
-shortcodes and it is fully compatible with caching plugins. So, then, how does
-the plugin component of the service work? In short:
-
-* A small JavaScript code is added to all the pages under test. This JavaScript
-is used to replace the content of the original page with the content of an
-alternative one when the visitor is (randomly) assigned to an alternative page.
-Note that even if the original page was cached the javascript code will be able
-to replace the content since it executes on the client side.  Obviously, since
-the alternative versions won’t be cached (since they are not real published
-pages) and must be served by WP, the loading time for them will be slightly
-worse.
-* Every time the visitor navigates to another page, the plug-in checks whether
-this navigation is relevant (for the purpose of the test) and if so, sends the
-details to our cloud service asynchronously.
-* From the WP admin area you can see the results of the test. When opening the
-results page, the plug-in will request the processed data from the cloud
-back-end and display using nice graphics.
+We keep an [up-to-date FAQs page in our site](http://wp-abtesting.com/faqs/).
 
 
 == Screenshots ==
@@ -172,6 +127,45 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.4 =
+* **New Feature!** you can now set an external webpage as the goal of an
+experiment
+* **New Feature!** you can now count as a conversion an indirect navigation
+to the experiment
+* **Now compatible with OptimizePress**!
+* **Now compatible with JetPack**!
+* Some minor tweaks
+
+= 1.3.2 =
+* Bug fix: alternative pages or posts created using the "empty alternative"
+option can be edited
+
+= 1.3.1 =
+* Bug fix: the definition of Goal Pages (or Posts) for theme experiments
+works properly
+
+* **New Feature!** You can now set more than one page or post as the goal
+= 1.3 =
+* **New Feature!** You can now set more than one page or post as the goal
+of an experiment!
+* Improved _progress of the experiment_ page
+* Major bug fix: WSOD for PHP versions < 5.3 (because of calling a static
+method using a variable; error T_PAAMAYIM_NEKUDOTAYIM)
+* Some minor fixes
+
+= 1.2.1 =
+* Bug fix: stopping an experiment from the progress page is now working
+* Bug fix: overriding a theme alternative with another one from the progress
+page of an experiment is now working
+
+= 1.2 =
+* **New Feature!** You can now test different worpdress themes!
+* Improved page for listing experiments. On the one hand, each experiment has
+an icon to quickly identify its type. On the other hand, statuses are now
+colorized.
+* Improved metadata management when applying the winning page/post alternative
+* Some minor fixes
 
 = 1.1.2 =
 * Bug fix: when querying the permalink of an alternative, the original's
@@ -252,6 +246,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.1.2 =
-Alternative permalinks correspond to original's.
-
+= 1.4 =
+More powerful definition of goal. Compatibility with OptimizePress and JetPack.
