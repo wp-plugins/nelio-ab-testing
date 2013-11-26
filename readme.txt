@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.4
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -128,6 +128,9 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.4.1 =
+* Bug fix: version 1.4 was not properly uploaded in the WordPress repository
+
 = 1.4 =
 * **New Feature!** you can now set an external webpage as the goal of an
 experiment
@@ -246,5 +249,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.4 =
+= 1.4.1 =
 More powerful definition of goal. Compatibility with OptimizePress and JetPack.
