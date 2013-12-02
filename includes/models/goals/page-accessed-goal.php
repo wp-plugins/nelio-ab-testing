@@ -68,6 +68,9 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 
 		public static function decode_from_appengine( $exp, $json ) {
 			$result = new NelioABPageAccessedGoal( $exp );
+			$result->set_id( $json->key->id );
+			$result->set_name( $json->name );
+			$result->set_as_main_goal( $json->isMainGoal );
 			require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
 			if ( isset( $json->pages ) )
 				foreach ( $json->pages as $p )

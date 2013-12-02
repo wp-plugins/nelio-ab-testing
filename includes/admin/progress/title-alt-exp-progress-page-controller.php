@@ -15,19 +15,19 @@
  */
 
 
-if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
+if ( !class_exists( 'NelioABTitleAltExpProgressPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/progress/post-alt-exp-progress-page.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/views/progress/title-alt-exp-progress-page.php' );
 	require_once( NELIOAB_ADMIN_DIR . '/progress/alt-exp-progress-super-controller.php' );
 
-	class NelioABPostAltExpProgressPageController extends NelioABAltExpProgressSuperController {
+	class NelioABTitleAltExpProgressPageController extends NelioABAltExpProgressSuperController {
 
 		public static function build() {
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view  = new NelioABPostAltExpProgressPage( $title );
+			$view  = new NelioABTitleAltExpProgressPage( $title );
 
 			if ( isset( $_GET['id'] ) )
 				// The ID of the experiment to which the action applies
@@ -35,6 +35,9 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 
 			if ( isset( $_GET['exp_type'] ) )
 				$view->keep_request_param( 'exp_type', $_GET['exp_type'] );
+
+			if ( isset( $_GET['actual_exp_type'] ) )
+				$view->keep_request_param( 'exp_type', $_GET['actual_exp_type'] );
 
 			if ( isset( $_GET['goal'] ) )
 				$view->keep_request_param( 'goal', $_GET['goal'] );
@@ -71,7 +74,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 			}
 
 			$title = __( 'Results of the Experiment', 'nelioab' );
-			$view  = new NelioABPostAltExpProgressPage( $title );
+			$view  = new NelioABTitleAltExpProgressPage( $title );
 			$view->set_experiment( $exp );
 
 			$goals = $exp->get_goals();
@@ -89,30 +92,24 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 
 		public function apply_alternative() {
 			if ( isset( $_POST['original'] ) && isset( $_POST['alternative'] ) ) {
-				$ori_id = $_POST['original'];
-				$alt_id = $_POST['alternative'];
+				$ori_id    = $_POST['original'];
+				$alt_title = urldecode( $_POST['alternative'] );
 
-				$categories = isset( $_POST['copy_categories'] ) && $_POST['copy_categories'] == 'on';
-				$tags       = isset( $_POST['copy_tags'] ) && $_POST['copy_tags'] == 'on';
-				$meta       = isset( $_POST['copy_meta'] ) && $_POST['copy_meta'] == 'on';
-
-				require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-				NelioABSettings::set_copy_metadata( $meta );
-				NelioABSettings::set_copy_categories( $categories );
-				NelioABSettings::set_copy_tags( $tags );
-
-				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-				NelioABWPHelper::override( $ori_id, $alt_id, $meta, $categories, $tags );
-				echo 'OK';
-				die();
+				$post = get_post( $ori_id, ARRAY_A );
+				if ( $post ) {
+					$post['post_title'] = $alt_title;
+					wp_update_post( $post );
+					echo 'OK';
+					die();
+				}
 			}
 		}
 
-	}//NelioABPostAltExpProgressPageController
+	}//NelioABTitleAltExpProgressPageController
 
 }
 
-$aux = new NelioABPostAltExpProgressPageController();
+$aux = new NelioABTitleAltExpProgressPageController();
 $aux->manage_actions();
 
 ?>

@@ -15,7 +15,7 @@
  */
 
 
-if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
+if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
@@ -23,23 +23,23 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/post-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/post-alt-exp-edition-page.php' );
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/title-alt-exp-edition-page.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/alternatives/alt-exp-super-controller.php' );
-	class NelioABPostAltExpEditionPageController extends NelioABAltExpSuperController {
+	class NelioABTitleAltExpEditionPageController extends NelioABAltExpSuperController {
 
 		public static function get_instance() {
-			return new NelioABPostAltExpEditionPageController();
+			return new NelioABTitleAltExpEditionPageController();
 		}
 
 		public static function build() {
-			$aux  = NelioABPostAltExpEditionPageController::get_instance();
+			$aux  = NelioABTitleAltExpEditionPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render();
 		}
 
 		public static function generate_html_content() {
-			$aux  = NelioABPostAltExpEditionPageController::get_instance();
+			$aux  = NelioABTitleAltExpEditionPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render_content();
 			die();
@@ -53,14 +53,6 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			$error = NelioABErrorController::build_error_page_on_invalid_settings();
 			if ( $error ) return;
 
-			// Preparing labels for PAGE vs POST alternatives
-			// ----------------------------------------------
-
-			$alt_type = NelioABExperiment::PAGE_ALT_EXP;
-			if ( isset( $_GET['experiment-type'] ) &&
-			     $_GET['experiment-type'] == NelioABExperiment::POST_ALT_EXP )
-				$alt_type = NelioABExperiment::POST_ALT_EXP;
-
 
 			// We recover the experiment (if any)
 			// ----------------------------------------------
@@ -69,10 +61,10 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			$experiment = NULL;
 			if ( !empty( $nelioab_admin_controller->data ) ) {
 				$experiment = $nelioab_admin_controller->data;
-				$alt_type   = $experiment->get_type();
 			}
 			else {
 				$experiment = new NelioABPostAlternativeExperiment( -1 );
+				$experiment->set_to_test_title_only( true );
 				$experiment->clear();
 			}
 
@@ -82,23 +74,16 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 
 			// ...pages...
 			$list_of_pages = get_pages();
-			if ( $alt_type == NelioABExperiment::PAGE_ALT_EXP && count( $list_of_pages ) == 0 ) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
-				$view = new NelioABErrorPage(
-					__( 'There are no pages available.', 'nelioab' ) );
-				return $view;
-			}
-
-			// ...posts...
 			$options_for_posts = array(
 				'posts_per_page' => -1,
 				'orderby'        => 'title',
 				'order'          => 'asc' );
 			$list_of_posts = get_posts( $options_for_posts );
-			if ( $alt_type == NelioABExperiment::POST_ALT_EXP && count( $list_of_posts ) == 0 ) {
+
+			if ( count( $list_of_pages ) == 0 && count( $list_of_posts ) == 0) {
 				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
 				$view = new NelioABErrorPage(
-					__( 'There are no posts available.', 'nelioab' ) );
+					__( 'There are no pages nor posts available.', 'nelioab' ) );
 				return $view;
 			}
 
@@ -126,7 +111,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			}
 
 			// Creating the view
-			$view = $this->create_view( $alt_type );
+			$view = $this->create_view();
 			$view->force_direct( $force_direct );
 
 			// Experiment information
@@ -146,48 +131,25 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			$view->set_wp_pages( $list_of_pages );
 			$view->set_wp_posts( $list_of_posts );
 			if ( isset( $_POST['action'] ) ) {
-				if ( $_POST['action'] == 'show_empty_quickedit_box' )
-					$view->show_empty_quickedit_box();
-				if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-					$view->show_copying_content_quickedit_box();
+				if ( $_POST['action'] == 'show_quickedit_box' )
+					$view->show_title_quickedit_box();
 			}
 			return $view;
 		}
 
-		public function create_view( $alt_type ) {
+		public function create_view() {
 			$title = __( 'Edit Experiment', 'nelioab' );
-			return new NelioABPostAltExpEditionPage( $title, $alt_type );
+			return new NelioABTitleAltExpEditionPage( $title );
 		}
 
-		public function add_empty_alternative() {
+		public function add_title_alternative() {
 			global $nelioab_admin_controller;
 			$this->build_experiment_from_post_data();
-			$exp_type = NelioABExperiment::PAGE_ALT_EXP;
-			if ( isset( $_POST['nelioab_exp_type'] ) &&
-			     $_POST['nelioab_exp_type'] == NelioABExperiment::POST_ALT_EXP )
-				$exp_type = NelioABExperiment::POST_ALT_EXP;
 
 			if ( isset( $_POST['new_alt_name'] ) ) {
 				$alt_name = stripslashes( $_POST['new_alt_name'] );
 				$exp = $nelioab_admin_controller->data;
-				$exp->create_empty_alternative( $alt_name, $exp_type );
-			}
-		}
-
-		public function add_alternative_copying_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-
-			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
-
-			if ( isset( $_POST['new_alt_name'] ) &&
-			     isset( $_POST['new_alt_postid'] ) ) {
-
-				$alt_name = stripslashes( $_POST['new_alt_name'] );
-				$alt_post_id = $_POST['new_alt_postid'];
-
-				$exp = $nelioab_admin_controller->data;
-				$exp->create_alternative_copying_content( $alt_name, $alt_post_id );
+				$exp->create_title_alternative( $alt_name );
 			}
 		}
 
@@ -200,29 +162,9 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			return $ok_parent && $ok;
 		}
 
-		public function edit_alternative_content() {
-			// 1. Save any local changes
-			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
-			$experiment = $nelioab_admin_controller->data;
-			try {
-				$experiment->save();
-			}
-			catch ( Exception $e ) {
-				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
-				NelioABErrorController::build( $e );
-			}
-
-			// 2. Redirect to the edit page
-			$post_id = 0;
-			if ( isset( $_POST['content_to_edit'] ) )
-				$post_id = $_POST['content_to_edit'];
-			echo '[SUCCESS]' . admin_url() . 'post.php?action=edit&post=' . $post_id;
-			die();
-		}
-
 		public function build_experiment_from_post_data() {
 			$exp = new NelioABPostAlternativeExperiment( $_POST['exp_id'] );
+			$exp->set_to_test_title_only( true );
 			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
 			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
 			$exp->set_original( $_POST['exp_original'] );
@@ -246,33 +188,23 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 
 			parent::manage_actions();
 
-			if ( $_POST['action'] == 'add_empty_alt' )
-				$this->add_empty_alternative();
+			if ( $_POST['action'] == 'add_alt' )
+				$this->add_title_alternative();
 
-			if ( $_POST['action'] == 'add_alt_copying_content' )
-				$this->add_alternative_copying_content();
-
-			if ( $_POST['action'] == 'show_empty_quickedit_box' )
+			if ( $_POST['action'] == 'show_quickedit_box' )
 				$this->build_experiment_from_post_data();
-
-			if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-				$this->build_experiment_from_post_data();
-
-			if ( $_POST['action'] == 'edit_alt_content' )
-				if ( $this->validate() )
-					$this->edit_alternative_content();
 
 			if ( $_POST['action'] == 'hide_new_alt_box' )
 				$this->build_experiment_from_post_data();
 
 		}
 
-	}//NelioABPostAltExpEditionPageController
+	}//NelioABTitleAltExpEditionPageController
 
 }
 
-if ( isset( $_POST['nelioab_edit_ab_post_exp_form'] ) ) {
-	$controller = NelioABPostAltExpEditionPageController::get_instance();
+if ( isset( $_POST['nelioab_edit_ab_title_exp_form'] ) ) {
+	$controller = NelioABTitleAltExpEditionPageController::get_instance();
 	$controller->manage_actions();
 }
 

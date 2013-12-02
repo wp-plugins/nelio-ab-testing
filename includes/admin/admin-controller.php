@@ -25,7 +25,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		public $global_warnings;
 		public $validation_errors;
 		public $data;
-	
+
 		/**
 		 * The class constructor
 		 *
@@ -124,7 +124,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function exclude_alternative_posts_and_pages( $query ) {
-	
+
 			if ( $query->is_main_query() ) {
 				$alt_ids = array();
 
@@ -156,7 +156,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					$query->set( 'post__not_in', $alt_ids );
 				}
 			}
-	
+
 			return $query;
 		}
 
@@ -192,7 +192,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				null,
 				'div' );
 
-	
+
 //			// Dashboard page
 //			// ----------------------------------------------------------------------
 //			require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
@@ -203,7 +203,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 //				'nelioab-admin-pages',
 //				array( 'NelioABDashboardPageController', 'build' ) );
 
-	
+
 			// Experiments pages (depending on the action, we show one or another)
 			// ----------------------------------------------------------------------
 			$the_action = NULL;
@@ -248,7 +248,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'manage_options',
 				'nelioab-add-experiment',
 				$page_to_build );
-				
+
 
 			require_once( NELIOAB_ADMIN_DIR . '/settings-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
@@ -267,7 +267,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'manage_options',
 				'nelioab-feedback',
 				array( 'NelioABFeedbackPageController', 'build' ) );
-	
+
 
 			// OTHER PAGES (not included in the menu)
 

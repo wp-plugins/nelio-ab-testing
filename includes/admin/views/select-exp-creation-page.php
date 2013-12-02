@@ -30,42 +30,77 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 		public function do_render() {
 			$url = admin_url() . 'admin.php?page=nelioab-add-experiment&experiment-type=';
 
+			// ---------------------------------------------------------------------------
+			?><h2 style="font-size:180%;margin-bottom:0px;"><?php
+			_e( 'Basic Experiment Types', 'nelioab' );
+			?></h2><?php
+			// ---------------------------------------------------------------------------
+
+			// TITLE ONLY
+			$this->do_box(
+				__( 'New A/B or Multivariate<br />Test for Page/Post Titles', 'nelioab' ),
+				'title', $url . NelioABExperiment::TITLE_ALT_EXP );
+
 			// PAGE
-			$this->do_box( $url . NelioABExperiment::PAGE_ALT_EXP,
+			$this->do_box(
 				__( 'New A/B or Multivariate<br />Test for Pages', 'nelioab' ),
-				'page' );
+				'page', $url . NelioABExperiment::PAGE_ALT_EXP );
 
 			// POST
-			$this->do_box( $url . NelioABExperiment::POST_ALT_EXP,
+			$this->do_box(
 				__( 'New A/B or Multivariate<br />Test for Posts', 'nelioab' ),
-				'post' );
-
-			// // CSS
-			// $this->do_box( $url . NelioABExperiment::CSS_ALT_EXP,
-			// 	__( 'New A/B or Multivariate<br />CSS Test', 'nelioab' ),
-			// 	'css' );
+				'post', $url . NelioABExperiment::POST_ALT_EXP );
 
 			// THEMES (enabled starting at version 3.4)
 			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
-				$this->do_box( $url . NelioABExperiment::THEME_ALT_EXP,
+				$this->do_box(
 					__( 'New A/B or Multivariate<br />Theme Test', 'nelioab' ),
-					'theme' );
+					'theme', $url . NelioABExperiment::THEME_ALT_EXP );
 			}
+
+
+			?><h2 style="font-size:180%;margin-bottom:0px;padding-top:2em;"><?php
+			_e( 'Professional Experiment Types', 'nelioab' );
+			?></h2><?php
+
+			// CSS
+			$this->do_box(
+				__( 'New A/B or Multivariate<br />CSS Test', 'nelioab' ),
+				'css'/*, $url . NelioABExperiment::CSS_ALT_EXP*/ );
+
+			// MENU
+			$this->do_box(
+				__( 'New A/B or Multivariate<br />Menu Test', 'nelioab' ),
+				'menu'/*, $url . NelioABExperiment::MENU_ALT_EXP*/ );
+
+			// WIDGET
+			$this->do_box(
+				__( 'New A/B or Multivariate<br />Widget Test', 'nelioab' ),
+				'widget'/*, $url . NelioABExperiment::WIDGET_ALT_EXP*/ );
 
 		}
 
 
-		private function do_box( $url, $label, $icon ) {?>
-			<a href="<?php echo $url; ?>">
+		private function do_box( $label, $icon, $url = false ) {
+			if ( $url ) {
+				$open_tag  = '<a href="' . $url . '">';
+				$close_tag = '</a>';
+			}
+			else {
+				$open_tag  = '<span class="nelioab-option-disabled">';
+				$close_tag = '</span>';
+			}
+			?>
+			<?php echo $open_tag; ?>
 				<div class="nelioab-option">
 					<div class="nelioab-option-image-holder">
 						&nbsp;
 						<div class="nelioab-option-image nelioab-image nelioab-image-<?php echo $icon; ?>">&nbsp;</div>
 						&nbsp;
 					</div>
-					<p style="line-height:1.2em;"><?php echo $label; ?></p>
+					<p style="line-height:1.2em;margin-top:0em;"><?php echo $label; ?></p>
 				</div>
-			</a>
+			<?php echo $close_tag; ?>
 
 			<?php
 		}

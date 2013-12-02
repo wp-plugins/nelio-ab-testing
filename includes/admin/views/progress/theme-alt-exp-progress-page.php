@@ -31,6 +31,10 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			$this->results = null;
 		}
 
+		protected function print_experiment_details_title() {
+			_e( 'Details of the Theme Experiment', 'nelioab' );
+		}
+
 		protected function get_original_name() {
 			// Original title
 			$exp = $this->exp;
@@ -76,7 +80,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			// -----------------------------------------
 			$exp       = $this->exp;
 			$ori_label = __( 'Original', 'nelioab' );
-		
+
 			if ( $this->is_winner( $this->get_original_value() ) )
 				$set_as_winner = $this->winner_label;
 			else
@@ -95,7 +99,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
 				$edit_link = '';
-				
+
 				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
 					$theme = NULL;
 					foreach ( $the_themes as $t ) {
@@ -124,7 +128,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 							__( 'Apply', 'nelioab' ) );
 					}
 				}
-		
+
 				if ( $this->is_winner( $alt->get_value() ) )
 					$set_as_winner = $this->winner_label;
 				else
@@ -133,7 +137,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
 				echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s%s',
 					$set_as_winner, $alt_label, $alt->get_name(), $edit_link );
-		
+
 			}
 		}
 

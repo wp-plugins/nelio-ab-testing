@@ -78,24 +78,46 @@ if( !class_exists( 'NelioABUser' ) ) {
 				$post = get_post( $post_id );
 				if ( !$post ) return $post_id;
 
-				$post = get_post( $alt_post );
-				if ( !$post ) return $post_id;
+				if ( $alt_post < 0 ) {
+					// The ALT_POST id is negative if we are testing titles only
+				}
+				else {
+					// If we are not, we check whether the post exists or not...
+					$post = get_post( $alt_post );
+					if ( !$post ) return $post_id;
+				}
 
 				// If everything seems to exist, we set the cookie and keep going
 				nelioab_setcookie( $cookie_name, $alt_post, $cookie_life );
 			}
-			$alt_post = $NELIOAB_COOKIES[$cookie_name];
+			else {
+				$alt_post = $NELIOAB_COOKIES[$cookie_name];
+			}
 
+			// This cookies works because it is a session cookie...
 			$cookie_name =  NelioABSettings::cookie_prefix() . 'title_' . $post_id;
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
 				// Creating the cookie for the title that goes to the menus
 				$post      = get_post( $post_id );
 				$ori_title = rawurlencode( $post->post_title );
 
-				$post = get_post( $alt_post );
-				if ( $post ) {
-					$alt_title = rawurlencode( $post->post_title );
-					nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title" );
+				if ( $alt_post < 0 ) {
+					$alternative = false;
+					foreach ( $exp->get_alternatives() as $alt )
+						if ( $alt->get_value() == $alt_post )
+							$alternative = $alt;
+
+					if ( $alternative ) {
+						$alt_title = rawurlencode( $alternative->get_name() );
+						nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title" );
+					}
+				}
+				else {
+					$post = get_post( $alt_post );
+					if ( $post ) {
+						$alt_title = rawurlencode( $post->post_title );
+						nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title" );
+					}
 				}
 			}
 

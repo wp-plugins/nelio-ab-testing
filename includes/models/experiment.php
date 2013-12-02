@@ -39,7 +39,13 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		const PAGE_ALT_EXP          =  2;
 		const CSS_ALT_EXP           =  3;
 		const THEME_ALT_EXP         =  4;
-		const PAGE_OR_POST_ALT_EXP  =  5; // Used for returning from editing a post/page content
+
+		// Used for returning from editing a post/page content
+		const PAGE_OR_POST_ALT_EXP  =  5;
+
+		// This type is internal and it is only used while the experiment is created
+		// When the experiment is running, we use the proper type
+		const TITLE_ALT_EXP = 6;
 
 		const UNKNOWN_TYPE_STR  = 'UnknownExperiment';
 		// NO_TYPE_SET_STR; Does not make sense
@@ -160,6 +166,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 		public function make_goals_persistent() {
 			require_once( NELIOAB_MODELS_DIR . '/goals/goals-manager.php' );
+			$remaining_goals = array();
 			foreach ( $this->get_goals() as $goal ) {
 				switch ( $goal->get_kind() ) {
 					case NelioABGoal::PAGE_ACCESSED_GOAL:
@@ -167,9 +174,85 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 					$type = 'page-accessed';
 				}
 				$url = $this->get_url_for_making_goal_persistent( $goal, $type );
-				$encoded = NelioABGoalsManager::encode_goal_for_appengine( $goal );
-				$result = NelioABBackend::remote_post( $url, $encoded );
+				if ( $goal->has_to_be_deleted() ) {
+					$result = NelioABBackend::remote_post( $url );
+				}
+				else {
+					array_push( $remaining_goals, $goal );
+					$encoded = NelioABGoalsManager::encode_goal_for_appengine( $goal );
+					$result = NelioABBackend::remote_post( $url, $encoded );
+				}
 			}
+			$this->goals = $remaining_goals;
+		}
+
+		protected function split_page_accessed_goal_if_any() {
+			// I'm not sure this line is necessary at all... I hope so!
+			$this->unsplit_page_accessed_goal_if_any();
+
+			$requires_persistance = false;
+			$goals = $this->get_goals();
+
+			if ( count( $goals ) == 1 && !$goals[0]->is_main_goal() ) {
+				$goals[0]->set_as_main_goal( true );
+				$requires_persistance = true;
+			}
+
+			$main_goal = NULL;
+			foreach ( $goals as $goal ) {
+				if ( $goal->is_main_goal() ) {
+					$main_goal = $goal;
+					break;
+				}
+			}
+
+			if ( $main_goal != NULL &&
+			     $main_goal->get_kind() == NelioABGoal::PAGE_ACCESSED_GOAL ) {
+
+				if ( count( $main_goal->get_pages() ) > 1 ) {
+					foreach ( $main_goal->get_pages() as $page ) {
+						$requires_persistance = true;
+						$goal = new NelioABPageAccessedGoal( $this );
+						$goal->add_page( $page );
+						$this->add_goal( $goal );
+					}
+				}
+			}
+
+			if ( $requires_persistance )
+				$this->make_goals_persistent();
+		}
+
+		protected function unsplit_page_accessed_goal_if_any() {
+			$page_accessed_goals = array();
+			$other_goals         = array();
+
+			foreach ( $this->get_goals() as $goal ) {
+				if ( $goal->get_kind() == NelioABGoal::PAGE_ACCESSED_GOAL )
+					array_push( $page_accessed_goals, $goal );
+				else
+					array_push( $other_goals, $goal );
+			}
+
+			if ( count( $page_accessed_goals ) <= 1 )
+				return;
+
+			// If there are more than one page accessed goals,
+			// one of them has to be the master,
+			// and we have to delete the rest
+			$master = false;
+			foreach ( $page_accessed_goals as $goal ) {
+				if ( $goal->is_main_goal() )
+					$master = $goal;
+				else
+					$goal->set_to_be_deleted( true );
+			}
+
+			// If none is the master (strange situation), I just leave
+			if ( !$master )
+				return;
+
+			$this->make_goals_persistent();
 		}
 
 		public abstract function get_url_for_making_goal_persistent( $goal, $type );

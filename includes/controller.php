@@ -15,7 +15,7 @@
  */
 
 
-	
+
 /**
  * Nelio AB Testing main controller
  *
@@ -66,7 +66,7 @@ class NelioABController {
 		if ( isset( $_POST['nelioab_sync'] ) ) {
 			// We control that cookies correspond to the last version of the plugin
 			$this->version_control();
-	
+
 			// We assign the current user an ID (if she does not have any)
 			require_once( NELIOAB_MODELS_DIR . '/user.php' );
 			$user_id = NelioABUser::get_id();
