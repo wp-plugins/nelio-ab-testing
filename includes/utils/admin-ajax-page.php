@@ -167,7 +167,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				}
 
 				jQuery(document).ready(function() {
-				
+
 					var data = {
 						"action"	 : "get_html_content",<?php
 						foreach ( $this->post_params as $param )
@@ -177,7 +177,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 						"filename"  : "<?php echo $this->controller_file; ?>",
 						"classname" : "<?php echo $this->controller_class; ?>"
 					};
-				
+
 					// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 					jQuery.post(ajaxurl, data, function(response) {
 						jQuery("#poststuff > #ajax-data").html(response);

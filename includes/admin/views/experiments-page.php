@@ -52,7 +52,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				);
 				echo '<h2>';
 				echo sprintf(
-					__( 'Hey! It looks like you have not defined any experiments...<br />' .
+					__( 'Hey! It looks like you have not defined any experiment...<br />' .
 					'<a href="%s">Create one now</a>!', 'nelioab' ),
 					'admin.php?page=nelioab-add-experiment' );
 				echo '</h2>';
@@ -152,7 +152,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$this->set_items( $experiments );
 			add_action( 'admin_head', array( &$this, 'admin_header' ) );
 		}
-		
+
 		function get_columns(){
 			return array(
 				'type'        => '',
@@ -218,7 +218,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					);
 					break;
 			}
-			
+
 			//Build row actions
 			return sprintf(
 				'<span class="row-title">%2$s</span>%3$s',
@@ -258,14 +258,32 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				'alt="%2$s" title="%2$s" />';
 
 			switch( $exp->get_type() ) {
+				case NelioABExperiment::TITLE_ALT_EXP:
+					return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
+
 				case NelioABExperiment::PAGE_ALT_EXP:
-					return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+					if ( $exp->tests_title_only() )
+						return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
+					else
+						return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+
 				case NelioABExperiment::POST_ALT_EXP:
-					return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
+					if ( $exp->tests_title_only() )
+						return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
+					else
+						return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
+
 				case NelioABExperiment::THEME_ALT_EXP:
 					return sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
+
 				case NelioABExperiment::CSS_ALT_EXP:
 					return sprintf( $img, 'css', __( 'CSS', 'nelioab' ) );
+
+				// case NelioABExperiment::WIDGET_ALT_EXP:
+				// 	return sprintf( $img, 'widget', __( 'Widget', 'nelioab' ) );
+
+				// case NelioABExperiment::MENU_ALT_EXP:
+				// 	return sprintf( $img, 'menu', __( 'Menu', 'nelioab' ) );
 				default:
 					return '';
 			}

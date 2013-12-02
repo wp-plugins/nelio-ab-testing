@@ -25,7 +25,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 
 		function __construct( $super_params ) {
 			global $status, $page;
-					
+
 			//Set parent defaults
 			parent::__construct( $super_params );
 			$this->items_per_page = 10;
@@ -44,7 +44,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 				'list of items within a PaginatedTable. Please, ' .
 				'use a basic AdminTable instead' );
 		}
-		
+
 		protected function prepare_pagination() {
 			/**
 			 * REQUIRED. Now we can add our *sorted* data to the items property, where
@@ -52,8 +52,8 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			 */
 			$this->items = $this->data_manager->list_elements();
 			$total_items = count( $this->items );
-			
-			
+
+
 			/**
 			 * REQUIRED. We also have to register our pagination options & calculations.
 			 */

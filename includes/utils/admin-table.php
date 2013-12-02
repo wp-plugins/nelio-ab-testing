@@ -28,7 +28,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		 ***************************************************************************/
 		public function __construct( $super_params ){
 			global $status, $page;
-					
+
 			//Set parent defaults
 			parent::__construct( $super_params );
 		}
@@ -64,8 +64,8 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 				return sprintf( __( 'Error displaying column `%s\'.', 'nelioab' ), $column_name );
 			}
 		}
-		
-			
+
+
 		/** ************************************************************************
 		 * REQUIRED if displaying checkboxes or using bulk actions! The 'cb' column
 		 * is given special treatment when columns are processed. It ALWAYS needs to
@@ -98,7 +98,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			 * it can be used by the rest of the class.
 			 */
 			$total_items = count( $this->items );
-			
+
 			/**
 			 * REQUIRED. We also have to register our pagination options & calculations.
 			 */
@@ -108,8 +108,8 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 				'total_pages' => 1
 			) );
 		}
-		
-		
+
+
 		/** ************************************************************************
 		 * REQUIRED! This is where you prepare your data for display. This method will
 		 * usually be used to query the database, sort and filter the data, and generally
@@ -127,7 +127,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		 **************************************************************************/
 		public function prepare_items() {
 			global $wpdb; //This is used only if making any database queries
-	
+
 			/**
 			 * REQUIRED. Now we need to define our column headers. This includes a complete
 			 * array of columns to be displayed (slugs & titles), a list of columns
@@ -138,8 +138,8 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			$columns = $this->get_columns();
 			$hidden = array();
 			$sortable = $this->get_sortable_columns();
-			
-			
+
+
 			/**
 			 * REQUIRED. Finally, we build an array to be used by the class for column
 			 * headers. The $this->_column_headers property takes an array which contains
@@ -147,8 +147,8 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			 * for sortable columns.
 			 */
 			$this->_column_headers = array($columns, $hidden, $sortable);
-			
-			
+
+
 			/**
 			 * Optional. You can handle your bulk actions however you see fit. In this
 			 * case, we'll handle them within our package just to keep things clean.
@@ -212,7 +212,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 					});
 				});
 
-				
+
 			</script>
 			<?php
 		}
@@ -237,7 +237,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		// TODO: Implemented this function
 		public function inline_edit_form_ok_button() {
 		}
-	
+
 		// TODO: fix this operation AND documentation
 		public function inline_edit_form() {
 		}

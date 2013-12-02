@@ -145,6 +145,14 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			update_option( 'nelioab_site_id', $site_id );
 		}
 
+		public static function get_site_url() {
+			return get_option( 'nelioab_site_url', false );
+		}
+
+		public static function set_site_url( $site_url ) {
+			update_option( 'nelioab_site_url', $site_url );
+		}
+
 		public static function check_terms_and_conditions( $accepted ) {
 			update_option( 'nelioab_are_tac_accepted', $accepted );
 		}
@@ -263,6 +271,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 						sprintf( NELIOAB_BACKEND_URL . '/site/%s', $id ),
 						$params
 					);
+					NelioABSettings::set_site_url( $url );
 				}
 				catch ( Exception $e ) {}
 			}
@@ -282,6 +291,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				$json_data = json_decode( $json_data['body'] );
 				NelioABSettings::set_has_a_configured_site( true );
 				NelioABSettings::set_site_id( $json_data->key->id );
+				NelioABSettings::set_site_url( get_option( 'siteurl' ) );
 			}
 			catch ( Exception $e ) {
 				NelioABSettings::set_has_a_configured_site( false );
@@ -291,7 +301,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 		}
 
 		public static function deregister_this_site() {
-			
+
 			try {
 				$json_data = NelioABBackend::remote_post( sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/deactivate',
@@ -324,7 +334,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 
 	}//NelioABSettings
 
-	
+
 	class NelioABSitesInfo {
 		private $sites;
 		private $max_sites;

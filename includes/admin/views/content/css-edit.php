@@ -17,7 +17,7 @@
 
 require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
 class NelioABCssEditPage extends NelioABAdminPage {
-	
+
 	public static function build() {
 		$view = new NelioABCssEditPage();
 		$view->set_icon( 'icon-tools' );

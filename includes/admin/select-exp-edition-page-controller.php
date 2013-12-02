@@ -75,7 +75,11 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 				NelioABErrorController::build( $e );
 			}
 
-			$controller = NelioABSelectExpEditionPageController::get_controller( $experiment->get_type() );
+			$type = $experiment->get_type();
+			if ( $type == NelioABExperiment::PAGE_ALT_EXP || $type == NelioABExperiment::POST_ALT_EXP )
+				if ( $experiment->tests_title_only() )
+					$type = NelioABExperiment::TITLE_ALT_EXP;
+			$controller = NelioABSelectExpEditionPageController::get_controller( $type );
 			call_user_func( array( $controller, 'generate_html_content' ) );
 		}
 
@@ -83,6 +87,10 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 
 			// Determine the proper controller and give it the control...
 			switch ( $type ) {
+				case NelioABExperiment::TITLE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/title-alt-exp-edition-page-controller.php' );
+					return 'NelioABTitleAltExpEditionPageController';
+
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/alternatives/post-alt-exp-edition-page-controller.php' );

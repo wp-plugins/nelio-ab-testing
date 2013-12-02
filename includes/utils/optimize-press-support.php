@@ -31,7 +31,7 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 				$new_post_id, $old_post_id ) {
 
 			global $wpdb;
-			
+
 			$table_name = $wpdb->prefix . 'optimizepress_post_layouts';
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name )
 				return;
@@ -42,13 +42,13 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 				'WHERE post_id = ' . $old_post_id );
 			if ( $old_post_entry == 0 )
 				return;
-			
+
 			$row = $wpdb->get_row(
 				'SELECT * ' .
 				'FROM ' . $wpdb->prefix . 'optimizepress_post_layouts ' .
 				'WHERE post_id = ' . $old_post_id,
 				ARRAY_A );
-			
+
 			$old_post_entry = $wpdb->get_var(
 				'SELECT COUNT(*) ' .
 				'FROM ' . $wpdb->prefix . 'optimizepress_post_layouts ' .

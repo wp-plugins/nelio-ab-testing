@@ -18,7 +18,7 @@
 if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 	abstract class NelioABWpHelper {
-		
+
 		/**
 		 *
 		 */
@@ -100,7 +100,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		 * Copy all terms (including categories and tags) from one object to another
 		 */
 		public static function copy_terms( $src_id, $dest_id, $copy_categories, $copy_tags ) {
-			
+
 			// First of all, we remove all terms from the destination
 			wp_delete_object_term_relationships( $dest_id, get_taxonomies() );
 

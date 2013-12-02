@@ -51,7 +51,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 				$actions = array(
 					'rename'	=>
 						$this->make_quickedit_button( __( 'Rename', 'nelioab' ) ),
-	
+
 					'edit-content'	=> $this->get_edit_code( $alt ),
 
 					'delete'	=> sprintf(
@@ -66,7 +66,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 						__( 'Delete' ) ),
 				);
 			}
-			
+
 			//Return the title contents
 			return sprintf(
 				'<span class="row-title alt-name">%1$s</span>%2$s<span class="alt-id" style="display:none;">%3$s</span>',
@@ -95,7 +95,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 				echo $this->make_form_javascript( $this->form_name, 'update_alternative_name' );
 				?>><?php _e( 'Update', 'nelioab' ); ?></a><?php
 		}
-	
+
 		public function print_js_body_for_inline_form() {?>
 			name = row.find("span.alt-name").first().html();
 			id = row.find("span.alt-id").first().html();
@@ -167,8 +167,8 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 				'total_pages' => 1
 			) );
 		}
-		
-		
+
+
 
 	}// NelioABExperimentsTable
 

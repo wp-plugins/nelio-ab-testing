@@ -23,7 +23,7 @@ if ( !class_exists( 'NelioABFormatter' ) ) {
 			$aux = $timestamp;
 			if ( !is_int( $aux ) )
 				$aux = strtotime( $timestamp );
-			
+
 			return NelioABFormatter::format_unix_timestamp( $aux, $tz );
 		}
 
