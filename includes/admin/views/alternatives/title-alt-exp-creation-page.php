@@ -15,22 +15,30 @@
  */
 
 
-if ( !class_exists( 'NelioABDashboardPage' ) ) {
+if ( !class_exists( 'NelioABTitleAltExpCreationPage' ) ) {
 
-	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
-	class NelioABDashboardPage extends NelioABAdminAjaxPage {
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/title-alt-exp-edition-page.php' );
+	class NelioABTitleAltExpCreationPage extends NelioABTitleAltExpEditionPage {
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
+			$this->set_form_name( 'nelioab_new_ab_title_exp_form' );
 		}
 
-		protected function do_render() { ?>
-			<p>Dashboard stuff goes here.</p>
-			<?php
+		public function print_page_buttons() {
+			echo $this->make_js_button(
+					_x( 'Create', 'action', 'nelioab' ),
+					'javascript:submitAndRedirect(\'validate\',false)',
+					false, true
+				);
+			echo $this->make_js_button(
+					_x( 'Cancel', 'nelioab' ),
+					'javascript:submitAndRedirect(\'cancel\',true)'
+				);
 		}
 
-	}//NelioABDashboardPage
+	}//NelioABTitleAltExpCreationPage
 
 }
 

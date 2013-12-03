@@ -70,7 +70,7 @@ if ( !class_exists( 'NelioABExamplePage' ) ) {
 		public function render() {
 			?>
 			<div class="wrap">
-<div class="icon32" id="icon-options-general"></div>
+				<div class="icon32" id="icon-options-general"></div>
 				<h2>Hola</h2>
 
 				<form id="nelioab_example_settings" action="options.php" method="post">
@@ -84,7 +84,7 @@ if ( !class_exists( 'NelioABExamplePage' ) ) {
 			<?php
 		}
 
-		public function authorbox_desc() {?>
+		public function authorbox_desc() { ?>
 			<p>Enter the tests using the form 'opA:opB-goal'.</p>
 			<p>For example, if default option is post id 3, and its alternative is 4,
 				and the target post is 10, the test is defined as '3:4-10'.</p>
@@ -100,7 +100,7 @@ if ( !class_exists( 'NelioABExamplePage' ) ) {
 
 			<textarea id="textarea_example" maxlength="450"
 					name="nelioab_options[textarea_example]" cols="20" rows="5"
-					class="large-text code"><? echo $authorbox; ?></textarea>
+					class="large-text code"><?php echo $authorbox; ?></textarea>
 			<?php
 		}
 

@@ -84,7 +84,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 		abstract protected function print_alternatives();
 		abstract protected function print_validator_js();
 
-		protected function do_render() {?>
+		protected function do_render() { ?>
 			<form id="<?php echo $this->get_form_name(); ?>" method="post">
 				<input type="hidden" name="<?php echo $this->get_form_name(); ?>" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $this->get_alt_exp_type(); ?>" />
@@ -119,7 +119,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 		public function print_custom_js() {
 		}
 
-		public function print_name_field() {?>
+		public function print_name_field() { ?>
 			<input name="exp_name" type="text" id="exp_name" maxlength="250"
 				class="regular-text" value="<?php echo $this->experiment_name; ?>" />
 			<span class="description" style="display:block;"><?php
@@ -129,7 +129,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 			?></a></small></span><?php
 		}
 
-		public function print_descr_field() {?>
+		public function print_descr_field() { ?>
 			<textarea id="exp_descr" style="width:300px;" maxlength="450"
 				name="exp_descr" cols="45" rows="3"><?php echo $this->experiment_descr; ?></textarea>
 			<span class="description" style="display:block;"><?php
@@ -369,7 +369,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 					</optgroup>
 					<?php
 					$counter = 0;
-					if ( count( $this->wp_pages ) > 0 ) {?>
+					if ( count( $this->wp_pages ) > 0 ) { ?>
 						<optgroup id="page-options" label="<?php _e( 'WordPress Pages' ); ?>">
 						<?php
 						foreach ( $this->wp_pages as $p ) {
@@ -377,30 +377,30 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 							$short = $title;
 							if ( strlen( $short ) > 50 )
 								$short = substr( $short, 0, 50 ) . '...';
-							$title = str_replace( '"', '\'\'', $title );?>
+							$title = str_replace( '"', '\'\'', $title ); ?>
 							<option
 								id="goal-<?php echo $counter; ++$counter; ?>"
 								value="<?php echo $p->ID; ?>"
 								title="<?php echo $title; ?>"><?php
 								echo $short; ?></option><?php
-						}?>
+						} ?>
 						</optgroup><?php
 					}
-	
-					if ( count( $this->wp_posts ) > 0 ) {?>
+
+					if ( count( $this->wp_posts ) > 0 ) { ?>
 						<optgroup id="post-options" label="<?php _e( 'WordPress Posts' ); ?>"><?php
 						foreach ( $this->wp_posts as $p ) {
 							$title = $p->post_title;
 							$short = $title;
 							if ( strlen( $short ) > 50 )
 								$short = substr( $short, 0, 50 ) . '...';
-							$title = str_replace( '"', '\'\'', $title );?>
+							$title = str_replace( '"', '\'\'', $title ); ?>
 							<option
 								id="goal-<?php echo $counter; ++$counter; ?>"
 								value="<?php echo $p->ID; ?>"
 								title="<?php echo $title; ?>"><?php
 								echo $short; ?></option><?php
-						}?>
+						} ?>
 						</optgroup><?php
 					}
 					?>
@@ -503,7 +503,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 				_e( 'Help', 'nelioab' );
 			?></a></small></span>
 			<?php
-			if ( $this->force_direct_selector_enabled ) {?>
+			if ( $this->force_direct_selector_enabled ) { ?>
 				<div style="margin-top:1em;">
 				<input name="is_force_direct_submitted" value="true" type="hidden" />
 				<input name="force_direct" type="checkbox" <?php

@@ -27,6 +27,8 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 		public static function attempt_to_load_proper_controller() {
 			if ( isset( $_POST['nelioab_exp_type'] ) )
 				return NelioABSelectExpProgressPageController::get_controller( $_POST['nelioab_exp_type'] );
+			if ( isset( $_GET['actual_exp_type'] ) && isset( $_GET['forcestop'] ) )
+				return NelioABSelectExpProgressPageController::get_controller( $_GET['actual_exp_type'] );
 			if ( isset( $_GET['exp_type'] ) && isset( $_GET['forcestop'] ) )
 				return NelioABSelectExpProgressPageController::get_controller( $_GET['exp_type'] );
 			return NULL;
@@ -42,12 +44,16 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 				call_user_func( array( $controller, 'build' ) );
 			}
 			else {
+
 				if ( isset( $_GET['id'] ) )
 					// The ID of the experiment to which the action applies
 					$view->keep_request_param( 'id', $_GET['id'] );
 
 				if ( isset( $_GET['exp_type'] ) )
 					$view->keep_request_param( 'exp_type', $_GET['exp_type'] );
+
+				if ( isset( $_GET['goal'] ) )
+					$view->keep_request_param( 'goal', $_GET['goal'] );
 
 				$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
 			}
@@ -76,7 +82,11 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 				NelioABErrorController::build( $e );
 			}
 
-			$controller = NelioABSelectExpProgressPageController::get_controller( $experiment->get_type() );
+			$type = $experiment->get_type();
+			if ( $type == NelioABExperiment::PAGE_ALT_EXP || $type == NelioABExperiment::POST_ALT_EXP )
+				if ( $experiment->tests_title_only() )
+					$type = NelioABExperiment::TITLE_ALT_EXP;
+			$controller = NelioABSelectExpProgressPageController::get_controller( $type );
 			call_user_func( array( $controller, 'generate_html_content' ) );
 		}
 
@@ -84,6 +94,10 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 
 			// Determine the proper controller and give it the control...
 			switch ( $type ) {
+				case NelioABExperiment::TITLE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/progress/title-alt-exp-progress-page-controller.php' );
+					return 'NelioABTitleAltExpProgressPageController';
+
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/progress/post-alt-exp-progress-page-controller.php' );

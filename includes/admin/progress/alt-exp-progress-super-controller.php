@@ -39,7 +39,7 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 					admin_url(), $_GET['id'], $_GET['exp_type'] );
 				die();
 			}
-			
+
 			if ( isset( $_POST['apply_alternative'] ) ) {
 				$this->apply_alternative();
 				return;

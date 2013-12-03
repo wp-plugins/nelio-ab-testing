@@ -108,14 +108,14 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 					?>
 						<br />
 						<div class="actions"><?php
-							$this->print_page_buttons();?>
+							$this->print_page_buttons(); ?>
 						</div><?php
 					}
 					?>
 					</div>
 				</div>
 			</div><?php
-			if ( !$this->is_data_pending ) {?>
+			if ( !$this->is_data_pending ) { ?>
 				<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
 					<div id="dialog-content">
 						<?php $this->print_dialog_content(); ?>
@@ -124,7 +124,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			<?php
 			}
 
-			if ( $this->is_data_pending ) {?>
+			if ( $this->is_data_pending ) { ?>
 			<script>
 
 				function nelioabHideSpinnerAndShowContent() {
@@ -167,7 +167,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				}
 
 				jQuery(document).ready(function() {
-				
+
 					var data = {
 						"action"	 : "get_html_content",<?php
 						foreach ( $this->post_params as $param )
@@ -177,7 +177,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 						"filename"  : "<?php echo $this->controller_file; ?>",
 						"classname" : "<?php echo $this->controller_class; ?>"
 					};
-				
+
 					// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 					jQuery.post(ajaxurl, data, function(response) {
 						jQuery("#poststuff > #ajax-data").html(response);
@@ -214,7 +214,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			</div>
 			<br />
 			<div class="actions"><?php
-				$this->print_page_buttons();?>
+				$this->print_page_buttons(); ?>
 			</div><?php
 		}
 

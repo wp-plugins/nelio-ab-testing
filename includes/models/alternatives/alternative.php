@@ -76,7 +76,7 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 			return array(
 				'id'            => $this->id,
 				'name'          => $this->name,
-				'post_id'       => $this->value,
+				'value'         => $this->value,
 				'was_removed'   => $this->was_removed,
 				'is_dirty'      => $this->is_dirty,
 			);
@@ -84,7 +84,7 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 
 		public function load_json( $json ) {
 			$this->name          = $json->name;
-			$this->value         = $json->post_id;
+			$this->value         = $json->value;
 			$this->id            = $json->id;
 			$this->was_removed   = $json->was_removed;
 			$this->is_dirty      = $json->is_dirty;

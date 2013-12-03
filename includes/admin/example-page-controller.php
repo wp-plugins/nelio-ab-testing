@@ -18,7 +18,7 @@
 if ( !class_exists( 'NelioABExamplePageController' ) ) {
 
 	class NelioABExamplePageController {
-	
+
 		public static function build() {
 			require_once( NELIOAB_ADMIN_DIR . '/views/example-page.php' );
 
@@ -34,7 +34,7 @@ if ( !class_exists( 'NelioABExamplePageController' ) ) {
 
 		public static function validate() {
 		}
-	
+
 	}//NelioABExamplePageController
 }
 

@@ -15,27 +15,22 @@
  */
 
 
-if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
+if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/alt-exp-page.php' );
-	class NelioABPostAltExpEditionPage extends NelioABAltExpPage {
-
-		protected $alt_type;
+	class NelioABTitleAltExpEditionPage extends NelioABAltExpPage {
 
 		protected $original_id;
 		protected $alternatives;
 
 		protected $show_new_form;
-		protected $copying_content;
 
-		public function __construct( $title, $alt_type = NelioABExperiment::PAGE_ALT_EXP ) {
+		public function __construct( $title ) {
 			parent::__construct( $title );
-			$this->set_form_name( 'nelioab_edit_ab_post_exp_form' );
+			$this->set_form_name( 'nelioab_edit_ab_title_exp_form' );
 			$this->show_new_form   = false;
-			$this->copying_content = false;
-			$this->alt_type        = $alt_type;
 			$this->original_id     = -1;
 			$this->alternatives    = array();
 			// Enabling selector for indirect goals
@@ -51,27 +46,15 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		}
 
 		public function get_alt_exp_type() {
-			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
-			if ( $this->alt_type == NelioABExperiment::PAGE_ALT_EXP )
-				return NelioABExperiment::PAGE_ALT_EXP;
-			else
-				return NelioABExperiment::POST_ALT_EXP;
+			return NelioABExperiment::TITLE_ALT_EXP;
 		}
 
-		public function show_empty_quickedit_box() {
+		public function show_title_quickedit_box() {
 			$this->show_new_form   = true;
-			$this->copying_content = false;
-		}
-
-		public function show_copying_content_quickedit_box() {
-			$this->show_new_form   = true;
-			$this->copying_content = true;
 		}
 
 		protected function get_basic_info_elements() {
-			$ori_label = __( 'Original Page', 'nelioab' );
-			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-				$ori_label = __( 'Original Post', 'nelioab' );
+			$ori_label = __( 'Original Page or Post', 'nelioab' );
 
 			return array(
 				array (
@@ -99,34 +82,18 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		protected function print_alternatives() { ?>
 			<h2 style="padding-top:2em;"><?php
 
-				$explanation = __( 'based on an existing page', 'nelioab' );
-				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					$explanation = __( 'based on an existing post', 'nelioab' );
-
 				_e( 'Alternatives', 'nelioab' );
 				echo ' ' . $this->make_form_action_link(
-					__( 'New Alternative <small>(empty)</small>', 'nelioab' ),
-					$this->form_name, 'show_empty_quickedit_box'
-				);
-				echo ' ' . $this->make_form_action_link(
-					sprintf( __( 'New Alternative <small>(%s)</small>', 'nelioab' ), $explanation),
-					$this->form_name, 'show_copying_content_quickedit_box'
+					__( 'New Alternative Title', 'nelioab' ),
+					$this->form_name, 'show_quickedit_box'
 				);
 
 			?></h2><?php
 
-			$wp_list_table = new NelioABPostAlternativesTable(
+			$wp_list_table = new NelioABTitleAlternativesTable(
 				$this->alternatives,
 				$this->get_form_name(),
-				$this->alt_type,
-				$this->show_new_form,
-				$this->copying_content );
-			if ( $this->copying_content ) {
-				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					$wp_list_table->set_wp_posts_or_pages( $this->wp_posts );
-				else
-					$wp_list_table->set_wp_posts_or_pages( $this->wp_pages );
-			}
+				$this->show_new_form );
 			$wp_list_table->prepare_items();
 			$wp_list_table->display();
 		}
@@ -288,6 +255,24 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					}
 				});
 			}
+
+			function setOriTitleInAltsTable() {
+				try {
+					var value = jQuery("#exp_original").attr('value');
+					var name = jQuery("#exp_original option[value=" + value + "]").text();
+					jQuery("#original-title-row").text(name);
+				}
+				catch ( e ) {
+					jQuery("#original-title-row").text("<?php _e( 'Original Title', 'nelioab' ); ?>");
+				}
+			}
+
+			jQuery(document).ready(function() {
+				jQuery("#exp_original").bind( "change", function() {
+					setOriTitleInAltsTable();
+				});
+				setOriTitleInAltsTable();
+			});
 			</script>
 			<?php
 		}
@@ -308,10 +293,9 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		public function print_ori_field() { ?>
 			<select id="exp_original" style="width:300px;"
 				name="exp_original" class="required" value="<?php echo $this->original_id; ?>"><?php
-			$aux = $this->wp_pages;
-			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-				$aux = $this->wp_posts;
-			foreach ( $aux as $p ) { ?>
+
+			echo '<optgroup label="' . __( 'Pages', 'nelioab' ) . '"';
+			foreach ( $this->wp_pages as $p ) { ?>
 				<option
 					value="<?php echo $p->ID; ?>"<?php
 						if ( $this->original_id == $p->ID )
@@ -322,113 +306,191 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 						$title = substr( $title, 0, 50 ) . '...';
 					echo $title; ?></option><?php
 			}
+
+			echo '<optgroup label="' . __( 'Posts', 'nelioab' ) . '"';
+			foreach ( $this->wp_posts as $p ) { ?>
+				<option
+					value="<?php echo $p->ID; ?>"<?php
+						if ( $this->original_id == $p->ID )
+							echo ' selected="selected"';
+					?>><?php
+					$title = $p->post_title;
+					if ( strlen( $title ) > 50 )
+						$title = substr( $title, 0, 50 ) . '...';
+					echo $title; ?></option><?php
+			}
+
 			?>
 			</select>
 			<span class="description" style="display:block;"><?php
-				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					_e( 'This is the post for which alternatives will be created.', 'nelioab' );
-				else
-					_e( 'This is the page for which alternatives will be created.', 'nelioab' );
+				_e( 'This is the page (or post) whose title you want to test.', 'nelioab' );
 			?> <small><a href="http://wp-abtesting.com/faqs/what-is-the-original-pagepost-of-an-experiment" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
 
-	}//NelioABPostAltExpEditionPage
+	}//NelioABTitleAltExpEditionPage
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/alternatives-table.php' );
-	class NelioABPostAlternativesTable extends NelioABAlternativesTable {
+	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
+	class NelioABTitleAlternativesTable extends NelioABAdminTable {
 
+		private $form_name;
 		private $show_new_form;
-		private $copying_content;
-		private $wp_posts_or_pages;
-		private $alt_type;
 
-		function __construct( $items, $form_name, $alt_type, $show_new_form = false, $copying_content = false ){
-   	   parent::__construct( $items, $form_name );
-			$this->alt_type          = $alt_type;
+		function __construct( $items, $form_name, $show_new_form = false ){
+			parent::__construct( array(
+				'singular'  => __( 'alternative', 'nelioab' ),
+				'plural'    => __( 'alternatives', 'nelioab' ),
+				'ajax'      => false
+			)	);
+			$this->set_items( $items );
+			$this->form_name         = $form_name;
 			$this->show_new_form     = $show_new_form;
-			$this->copying_content   = $copying_content;
-			$this->wp_posts_or_pages = array();
 		}
 
-		public function set_wp_posts_or_pages( $wp_posts_or_pages ) {
-			$this->wp_posts_or_pages = $wp_posts_or_pages;
+		public function get_columns(){
+			return array(
+				'name' => __( 'Name', 'nelioab' ),
+			);
 		}
 
 		public function extra_tablenav( $which ) {
 			if ( $which == 'top' ){
-				$text = __( 'Please, <b>add one or more</b> alternatives to the Original Page ' .
-					'using the buttons above.',
+				$text = __( 'Please, <b>add one or more</b> title alternatives.',
 					'nelioab' );
-				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					$text = __( 'Please, <b>add one or more</b> alternatives to the Original Post ' .
-						'using the buttons above.',
-						'nelioab' );
 				echo $text;
 			}
 		}
 
-		protected function get_edit_code( $alt ){
+		public function column_name( $alt ){
+
+			//Build row actions
+			if ( $this->show_new_form ) {
+				$actions = array( 'none' => '&nbsp;' );
+			}
+			else {
+				$actions = array(
+					'rename'	=>
+						$this->make_quickedit_button( __( 'Change Title', 'nelioab' ) ),
+
+					'delete'	=> sprintf(
+						'<a style="cursor:pointer;" onClick="javascript:' .
+							'jQuery(\'#action\').attr(\'value\', \'%s\');' .
+							'jQuery(\'#alt_to_remove\').attr(\'value\', %s);' .
+							'jQuery(\'#%s\').submit();'.
+							'">%s</a>',
+						'remove_alternative',
+						$alt->get_id(),
+						$this->form_name,
+						__( 'Delete' ) ),
+				);
+			}
+
+			//Return the title contents
 			return sprintf(
-				'<a style="cursor:pointer;" onClick="javascript:' .
-					'jQuery(\'#content_to_edit\').attr(\'value\', %s);' .
-					'submitAndRedirect(\'%s\',true)' .
-					'">%s</a>',
-				$alt->get_value(),
-				'edit_alt_content',
-				__( 'Save Experiment & Edit Content', 'nelioab' ) );
+				'<span class="row-title alt-name">%1$s</span>%2$s<span class="alt-id" style="display:none;">%3$s</span>',
+				/*%1$s*/ $alt->get_name(),
+				/*%2$s*/ $this->row_actions( $actions ),
+				/*%3$s*/ $alt->get_id()
+			);
 		}
 
-		protected function hide_quick_actions() {
- 			return $this->show_new_form;
+		// TODO document this operation
+		public function inline_edit_form() { ?>
+			<fieldset class="inline-edit-col-left">
+				<div class="inline-edit-col">
+					<h4><?php _e( 'Change Title', 'nelioab' ); ?></h4>
+					<label>
+						<span class="title"><?php _e( 'Title', 'nelioab' ); ?> </span>
+						<span class="input-text-wrap"><input type="text" id="qe_alt_name" name="qe_alt_name" class="ptitle" value="" maxlength="200" /></span>
+					</label>
+					<input type="hidden" id="qe_alt_id" name="qe_alt_id" value="" />
+				</div>
+			</fieldset><?php
+		}
+
+		public function inline_edit_form_ok_button() { ?>
+			<a class="button-primary save alignleft" <?php
+				echo $this->make_form_javascript( $this->form_name, 'update_alternative_name' );
+				?>><?php _e( 'Update', 'nelioab' ); ?></a><?php
+		}
+
+		public function print_js_body_for_inline_form() { ?>
+			name = row.find("span.alt-name").first().html();
+			id = row.find("span.alt-id").first().html();
+			jQuery("#inline-edit").find("#qe_alt_name").first().attr("value", name);
+			jQuery("#inline-edit").find("#qe_alt_id").first().attr("value", id);
+			<?php
 		}
 
 		public function display_rows_or_placeholder() {
 			if ( $this->show_new_form )
 				$this->print_new_alt_form();
 
-			$title = __( 'Original Page', 'nelioab' );
-			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-				$title = __( 'Original Post', 'nelioab' );
+			$title = __( 'Original Title', 'nelioab' );
 
-			$expl = __( 'The original page can be considered an alternative that has to be tested.', 'nelioab' );
-			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-				$expl = __( 'The original post can be considered an alternative that has to be tested.', 'nelioab' );
+			$expl = __( 'The original title can be considered an alternative that has to be tested.', 'nelioab' );
 			?>
 			<tr><td>
-				<span class="row-title"><?php echo $title; ?></span>
+				<span id="original-title-row" class="row-title"><?php echo $title; ?></span>
 				<div class="row-actions"><?php echo $expl; ?></div>
 			</td></tr>
 			<?php
 			parent::display_rows();
 		}
 
-		protected function print_additional_info_for_new_alt_form() {
-			if ( $this->copying_content ) { ?>
-				<label style="padding-top:0.5em;">
-					<span class="title"><?php _e( 'Source', 'nelioab' ); ?> </span>
-					<span class="input-text-wrap">
-						<select id="new_alt_postid" name="new_alt_postid" style="width:300px;">
-						<?php
-						foreach ($this->wp_posts_or_pages as $p) { ?>
-							<option value="<?php echo $p->ID; ?>"><?php echo $p->post_title; ?></option><?php
-						} ?>
-						</select>
-						<span class="description" style="display:block;"><?php _e( 'The selected page\'s content will be duplicated and used by this alternative.', 'nelioab' ); ?></span>
-					</span>
-				</label><?php
-			}
-		}
-
 		protected function print_save_button_for_new_alt_form() { ?>
 			<a class="button-primary save alignleft" <?php
-				if ( $this->copying_content )
-					echo $this->make_form_javascript( $this->form_name, 'add_alt_copying_content' );
-				else
-					echo $this->make_form_javascript( $this->form_name, 'add_empty_alt' );
+				echo $this->make_form_javascript( $this->form_name, 'add_alt' );
 				?> style="margin-right:0.4em;"><?php _e( 'Create', 'nelioab' ); ?></a>
 			<?php
+		}
+
+		public function print_new_alt_form() { ?>
+			<tr id="new-alt-form" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page" style="display:visible;">
+				<td colspan="<?php echo $this->get_column_count(); ?>" class="colspanchange">
+
+					<fieldset class="inline-edit-col-left">
+						<div class="inline-edit-col">
+							<h4><?php _e( 'New Alternative Title', 'nelioab' ); ?></h4>
+							<label>
+								<span class="title"><?php _e( 'Title', 'nelioab' ); ?> </span>
+								<span class="input-text-wrap">
+									<input type="text" id="new_alt_name" name="new_alt_name" class="ptitle" value="" style="width:300px;" maxlength="200" />
+									<span class="description" style="display:block;"><?php
+										_e( 'Set an alternative title for the original page or post.', 'nelioab' );
+									?></a></small></span>
+								</span>
+							</label>
+						</div>
+					</fieldset>
+
+					<p class="submit inline-edit-save">
+
+						<?php
+						$this->print_save_button_for_new_alt_form();
+						?>
+
+						<a class="button-secondary cancel alignleft" <?php
+							echo $this->make_form_javascript( $this->form_name, 'hide_new_alt_box' );
+							?>><?php _e( 'Cancel', 'nelioab' ); ?></a>
+
+						<br class="clear" />
+					</p>
+				</td>
+			</tr><?php
+
+		}
+
+		// TODO: extract this function to an utility (now copied from admin-page.php)
+		// Original Name: make_form_javascript
+		protected function make_form_javascript( $form_name, $hidden_action ) {
+			return sprintf(
+				' onClick="javascript:' .
+				'jQuery(\'#%1$s > #action\').attr(\'value\', \'%2$s\');' .
+				'jQuery(\'#%1$s\').submit();" ',
+				$form_name, $hidden_action
+			);
 		}
 
 	}// NelioABExperimentsTable

@@ -51,6 +51,8 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				foreach ( $json_data->items as $json_exp ) {
 					$exp = new NelioABQuickExperiment( $json_exp->key->id );
 					$exp->set_type_using_text( $json_exp->kind );
+					if ( isset( $json_exp->testsTitleOnly ) )
+						$exp->set_to_test_title_only( $json_exp->testsTitleOnly );
 					$exp->set_name( $json_exp->name );
 					if ( isset( $json_exp->description ) )
 						$exp->set_description( $json_exp->description );
@@ -83,6 +85,8 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 				$exp = new NelioABPostAlternativeExperiment( $json_data->key->id );
 				$exp->set_name( $json_data->name );
+				if ( isset( $json_data->testsTitleOnly ) )
+					$exp->set_to_test_title_only( $json_data->testsTitleOnly );
 				if ( isset( $json_data->description ) )
 					$exp->set_description( $json_data->description );
 				$exp->set_type_using_text( $json_data->kind );
@@ -91,7 +95,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				if ( isset( $json_data->goals ) )
 					foreach ( $json_data->goals as $goal )
 						NelioABGoalsManager::load_goal_from_json( $exp, $goal );
-	
+
 				$alternatives = array();
 				if ( isset( $json_data->alternatives ) ) {
 					foreach ( $json_data->alternatives as $json_alt ) {
@@ -120,7 +124,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				if ( isset( $json_data->goals ) )
 					foreach ( $json_data->goals as $goal )
 						NelioABGoalsManager::load_goal_from_json( $exp, $goal );
-	
+
 				$alternatives = array();
 				if ( isset( $json_data->alternatives ) ) {
 					foreach ( $json_data->alternatives as $json_alt ) {

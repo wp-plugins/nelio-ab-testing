@@ -51,7 +51,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 				$actions = array(
 					'rename'	=>
 						$this->make_quickedit_button( __( 'Rename', 'nelioab' ) ),
-	
+
 					'edit-content'	=> $this->get_edit_code( $alt ),
 
 					'delete'	=> sprintf(
@@ -66,7 +66,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 						__( 'Delete' ) ),
 				);
 			}
-			
+
 			//Return the title contents
 			return sprintf(
 				'<span class="row-title alt-name">%1$s</span>%2$s<span class="alt-id" style="display:none;">%3$s</span>',
@@ -77,7 +77,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 		}
 
 		// TODO document this operation
-		public function inline_edit_form() {?>
+		public function inline_edit_form() { ?>
 			<fieldset class="inline-edit-col-left">
 				<div class="inline-edit-col">
 					<h4><?php _e( 'Rename Alternative', 'nelioab' ); ?></h4>
@@ -90,13 +90,13 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 			</fieldset><?php
 		}
 
-		public function inline_edit_form_ok_button() {?>
+		public function inline_edit_form_ok_button() { ?>
 			<a class="button-primary save alignleft" <?php
 				echo $this->make_form_javascript( $this->form_name, 'update_alternative_name' );
 				?>><?php _e( 'Update', 'nelioab' ); ?></a><?php
 		}
-	
-		public function print_js_body_for_inline_form() {?>
+
+		public function print_js_body_for_inline_form() { ?>
 			name = row.find("span.alt-name").first().html();
 			id = row.find("span.alt-id").first().html();
 			jQuery("#inline-edit").find("#qe_alt_name").first().attr("value", name);
@@ -118,7 +118,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 		abstract protected function print_additional_info_for_new_alt_form();
 		abstract protected function print_save_button_for_new_alt_form();
 
-		public function print_new_alt_form() {?>
+		public function print_new_alt_form() { ?>
 			<tr id="new-alt-form" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page" style="display:visible;">
 				<td colspan="<?php echo $this->get_column_count(); ?>" class="colspanchange">
 
@@ -167,8 +167,8 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 				'total_pages' => 1
 			) );
 		}
-		
-		
+
+
 
 	}// NelioABExperimentsTable
 

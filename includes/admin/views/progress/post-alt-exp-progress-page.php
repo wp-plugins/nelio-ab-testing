@@ -22,14 +22,21 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 	class NelioABPostAltExpProgressPage extends NelioABAltExpProgressPage {
 
-		private $ori;
-		private $is_ori_page;
+		protected $ori;
+		protected $is_ori_page;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
 			$this->exp          = null;
 			$this->results      = null;
+		}
+
+		protected function print_experiment_details_title() {
+			if ( $this->is_ori_page )
+				_e( 'Details of the Page Experiment', 'nelioab' );
+			else
+				_e( 'Details of the Post Experiment', 'nelioab' );
 		}
 
 		protected function get_original_name() {
@@ -50,7 +57,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			return $this->exp->get_original();
 		}
 
-		protected function print_js_function_for_post_data_overriding() {?>
+		protected function print_js_function_for_post_data_overriding() { ?>
 			function nelioab_confirm_overriding(id) {
 				jQuery("#apply_alternative #alternative").attr("value",id);
 				nelioab_show_the_dialog_for_overriding(id);
@@ -100,14 +107,14 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			$exp       = $this->exp;
 			$link      = get_permalink( $exp->get_original() );
 			$ori_label = __( 'Original', 'nelioab' );
-		
+
 			$edit_link = '';
 			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 				$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
 					admin_url() . '/post.php?post=' . $exp->get_original() . '&action=edit',
 					__( 'Edit' ) );
 			}
-		
+
 			if ( $this->is_winner( $exp->get_original() ) )
 				$set_as_winner = $this->winner_label;
 			else
@@ -126,13 +133,13 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 				$i++;
 				$link      = get_permalink( $alt->get_value() );
 				$edit_link = '';
-				
+
 				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 					$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
 						admin_url() . '/post.php?post=' . $alt->get_value() . '&action=edit',
 						__( 'Edit' ) );
 				}
-		
+
 				$winner_button = '';
 				if ( $this->is_winner( $alt->get_value() ) )
 					$winner_button = '-primary';
@@ -149,7 +156,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 						$winner_button,
 						$alt->get_value(), __( 'Apply', 'nelioab' ) );
 				}
-		
+
 				if ( $this->is_winner( $alt->get_value() ) )
 					$set_as_winner = $this->winner_label;
 				else
@@ -158,7 +165,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
 				echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span><a href="%s" target="_blank">%s</a>%s',
 					$set_as_winner, $alt_label, $link, $alt->get_name(), $edit_link );
-		
+
 			}
 		}
 
@@ -191,14 +198,14 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					if ( NelioABSettings::is_copying_metadata_enabled() ) echo 'checked="checked" ';
 				?>/><?php _e( 'Override all metadata', 'nelioab' ); ?></p>
 				<?php
-				if ( !$this->is_ori_page ) {?>
+				if ( !$this->is_ori_page ) { ?>
 					<p><input type="checkbox" id="copy_categories" name="copy_categories" <?php
 						if ( NelioABSettings::is_copying_categories_enabled() ) echo 'checked="checked" ';
 					?>/><?php _e( 'Override categories', 'nelioab' ); ?></p>
 					<p><input type="checkbox" id="copy_tags" name="copy_tags" <?php
 						if ( NelioABSettings::is_copying_tags_enabled() ) echo 'checked="checked" ';
 					?>/><?php _e( 'Override tags', 'nelioab' ); ?></p><?php
-				}?>
+				} ?>
 			</form>
 			<?php
 		}

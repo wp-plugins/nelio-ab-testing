@@ -56,6 +56,10 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 
 			// Determine the proper controller and give it the control...
 			switch ( $type ) {
+				case NelioABExperiment::TITLE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/title-alt-exp-creation-page-controller.php' );
+					return 'NelioABTitleAltExpCreationPageController';
+
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/alternatives/post-alt-exp-creation-page-controller.php' );

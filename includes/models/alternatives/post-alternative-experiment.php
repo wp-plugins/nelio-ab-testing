@@ -22,10 +22,12 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 	class NelioABPostAlternativeExperiment extends NelioABAlternativeExperiment {
 
 		private $ori;
+		private $tests_title_only;
 
 		public function __construct( $id ) {
 			parent::__construct( $id );
 			$this->set_type( NelioABExperiment::NO_TYPE_SET );
+			$this->tests_title_only = false;
 		}
 
 		public function clear() {
@@ -39,6 +41,14 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 		public function get_originals_id() {
 			return $this->get_original();
+		}
+
+		public function set_to_test_title_only( $only ) {
+			$this->tests_title_only = $only;
+		}
+
+		public function tests_title_only() {
+			return $this->tests_title_only;
 		}
 
 		public function set_original( $ori ) {
@@ -55,6 +65,19 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				else
 					$this->set_type( NelioABExperiment::POST_ALT_EXP );
 			}
+		}
+
+		public function create_title_alternative( $name ) {
+			$alts         = $this->get_alternatives();
+			$fake_post_id = -1;
+			foreach ( $alts as $aux )
+				if ( $aux->get_value() <= $fake_post_id )
+					$fake_post_id = $aux->get_value() - 1;
+
+			$alternative = new NelioABAlternative();
+			$alternative->set_name( $name );
+			$alternative->set_value( $fake_post_id );
+			$this->add_local_alternative( $alternative );
 		}
 
 		public function create_empty_alternative( $name, $post_type ) {
@@ -97,10 +120,15 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			// Create new empty post
 			$post_data = array(
 				'post_type'    => $src_post['post_type'],
+				'post_title'   => $src_post['post_title'],
+				'post_content' => $src_post['post_content'],
+				'post_excerpt' => $src_post['post_excerpt'],
 				'post_status'  => 'draft',
 				'post_name'    => 'nelioab_' . rand(1, 10),
 			);
 			$new_post_id = wp_insert_post( $post_data, true );
+			if ( is_wp_error( $new_post_id ) )
+				return;
 			$new_post = get_post( $new_post_id, ARRAY_A );
 
 			// Override all information
@@ -170,6 +198,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				'originalPost'   => $this->get_original(),
 				'status'         => $this->get_status(),
 				'kind'           => $this->get_textual_type(),
+				'testsTitleOnly' => $this->tests_title_only(),
 			);
 
 			$result = NelioABBackend::remote_post( $url, $body );
@@ -267,9 +296,13 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				);
 			}
 			else {
+				if ( $goal->has_to_be_deleted() )
+					$action = 'delete';
+				else
+					$action = 'update';
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/goal/%2$s/%1$s/update',
-					$goal->get_id(), $goal_type_url
+					NELIOAB_BACKEND_URL . '/goal/%2$s/%1$s/%3$s',
+					$goal->get_id(), $goal_type_url, $action
 				);
 			}
 			return $url;
@@ -297,6 +330,10 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
  		}
 
 		public function start() {
+			// If the experiment is already running, quit
+			if ( $this->get_status() == NelioABExperimentStatus::RUNNING )
+				return;
+
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$ori = get_post( $this->get_original() );
 			if ( $ori ) {
@@ -312,8 +349,15 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					NELIOAB_BACKEND_URL . '/exp/post/%s/start',
 					$this->get_id()
 				);
-			$result = NelioABBackend::remote_post( $url );
-			$this->set_status( NelioABExperimentStatus::RUNNING );
+			try {
+				$this->split_page_accessed_goal_if_any();
+				$result = NelioABBackend::remote_post( $url );
+				$this->set_status( NelioABExperimentStatus::RUNNING );
+			}
+			catch ( Exception $e ) {
+				$this->unsplit_page_accessed_goal_if_any();
+				throw $e;
+			}
 		}
 
 		public function stop() {

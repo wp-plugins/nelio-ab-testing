@@ -70,11 +70,23 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
  		}
 
 		public function start() {
+			// If the experiment is already running, quit
+			if ( $this->get_status() == NelioABExperimentStatus::RUNNING )
+				return;
+
 			$url = sprintf(
 				NELIOAB_BACKEND_URL . '/exp/global/%s/start',
 				$this->get_id()
 			);
-			$result = NelioABBackend::remote_post( $url );
+			try {
+				$this->split_page_accessed_goal_if_any();
+				$result = NelioABBackend::remote_post( $url );
+				$this->set_status( NelioABExperimentStatus::RUNNING );
+			}
+			catch ( Exception $e ) {
+				$this->unsplit_page_accessed_goal_if_any();
+				throw $e;
+			}
 		}
 
 		public function stop() {
@@ -83,6 +95,7 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 				$this->get_id()
 			);
 			$result = NelioABBackend::remote_post( $url );
+			$this->set_status( NelioABExperimentStatus::FINISHED );
 		}
 
 	}//NelioABGlobalAlternativeExperiment
