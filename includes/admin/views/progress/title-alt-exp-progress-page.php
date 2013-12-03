@@ -53,7 +53,7 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 				$set_as_winner, $ori_label, $link, $this->ori, $edit_link );
 		}
 
-		protected function print_js_function_for_post_data_overriding() {?>
+		protected function print_js_function_for_post_data_overriding() { ?>
 			function nelioab_confirm_overriding(id, title) {
 				jQuery("#apply_alternative #alternative").attr("value",title);
 				nelioab_show_the_dialog_for_overriding(id);

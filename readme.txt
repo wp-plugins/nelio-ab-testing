@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.5
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -127,6 +127,10 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.5.1 =
+* Bug fix: compatibility with the WordPress hosting service "WPonFire"
+* Some minor tweaks
 
 = 1.5 =
 * **New Feature!** Improved view for the progress/results of an experiment.
@@ -256,5 +260,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.5 =
-Aggregated/per-goal results of a multi-goal experiment. Title-only A/B Test.
+= 1.5.1 =
+Bug fix: compatibility with the WordPress hosting service "WPonFire"

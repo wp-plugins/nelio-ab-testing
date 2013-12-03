@@ -79,7 +79,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			);
 		}
 
-		protected function print_alternatives() {?>
+		protected function print_alternatives() { ?>
 			<h2 style="padding-top:2em;"><?php
 
 				_e( 'Alternatives', 'nelioab' );
@@ -98,7 +98,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			$wp_list_table->display();
 		}
 
-		protected function print_validator_js() {?>
+		protected function print_validator_js() { ?>
 			<script type="text/javascript">
 			jQuery(document).ready(function() {
 				var $ = jQuery;
@@ -290,12 +290,12 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 		}
 
 
-		public function print_ori_field() {?>
+		public function print_ori_field() { ?>
 			<select id="exp_original" style="width:300px;"
 				name="exp_original" class="required" value="<?php echo $this->original_id; ?>"><?php
 
 			echo '<optgroup label="' . __( 'Pages', 'nelioab' ) . '"';
-			foreach ( $this->wp_pages as $p ) {?>
+			foreach ( $this->wp_pages as $p ) { ?>
 				<option
 					value="<?php echo $p->ID; ?>"<?php
 						if ( $this->original_id == $p->ID )
@@ -308,7 +308,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			}
 
 			echo '<optgroup label="' . __( 'Posts', 'nelioab' ) . '"';
-			foreach ( $this->wp_posts as $p ) {?>
+			foreach ( $this->wp_posts as $p ) { ?>
 				<option
 					value="<?php echo $p->ID; ?>"<?php
 						if ( $this->original_id == $p->ID )
@@ -396,7 +396,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 		}
 
 		// TODO document this operation
-		public function inline_edit_form() {?>
+		public function inline_edit_form() { ?>
 			<fieldset class="inline-edit-col-left">
 				<div class="inline-edit-col">
 					<h4><?php _e( 'Change Title', 'nelioab' ); ?></h4>
@@ -409,13 +409,13 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			</fieldset><?php
 		}
 
-		public function inline_edit_form_ok_button() {?>
+		public function inline_edit_form_ok_button() { ?>
 			<a class="button-primary save alignleft" <?php
 				echo $this->make_form_javascript( $this->form_name, 'update_alternative_name' );
 				?>><?php _e( 'Update', 'nelioab' ); ?></a><?php
 		}
 
-		public function print_js_body_for_inline_form() {?>
+		public function print_js_body_for_inline_form() { ?>
 			name = row.find("span.alt-name").first().html();
 			id = row.find("span.alt-id").first().html();
 			jQuery("#inline-edit").find("#qe_alt_name").first().attr("value", name);
@@ -439,14 +439,14 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			parent::display_rows();
 		}
 
-		protected function print_save_button_for_new_alt_form() {?>
+		protected function print_save_button_for_new_alt_form() { ?>
 			<a class="button-primary save alignleft" <?php
 				echo $this->make_form_javascript( $this->form_name, 'add_alt' );
 				?> style="margin-right:0.4em;"><?php _e( 'Create', 'nelioab' ); ?></a>
 			<?php
 		}
 
-		public function print_new_alt_form() {?>
+		public function print_new_alt_form() { ?>
 			<tr id="new-alt-form" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page" style="display:visible;">
 				<td colspan="<?php echo $this->get_column_count(); ?>" class="colspanchange">
 

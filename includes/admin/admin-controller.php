@@ -336,7 +336,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		}
 
-		public function print_alternative_box() {?>
+		public function print_alternative_box() { ?>
 			<script>
 				var nelioab_style_metabox = document.createElement("style");
 			   nelioab_style_metabox.setAttribute("type", "text/css");

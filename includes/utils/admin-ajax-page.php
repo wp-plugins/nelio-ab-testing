@@ -108,14 +108,14 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 					?>
 						<br />
 						<div class="actions"><?php
-							$this->print_page_buttons();?>
+							$this->print_page_buttons(); ?>
 						</div><?php
 					}
 					?>
 					</div>
 				</div>
 			</div><?php
-			if ( !$this->is_data_pending ) {?>
+			if ( !$this->is_data_pending ) { ?>
 				<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
 					<div id="dialog-content">
 						<?php $this->print_dialog_content(); ?>
@@ -124,7 +124,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			<?php
 			}
 
-			if ( $this->is_data_pending ) {?>
+			if ( $this->is_data_pending ) { ?>
 			<script>
 
 				function nelioabHideSpinnerAndShowContent() {
@@ -214,7 +214,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			</div>
 			<br />
 			<div class="actions"><?php
-				$this->print_page_buttons();?>
+				$this->print_page_buttons(); ?>
 			</div><?php
 		}
 

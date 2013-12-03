@@ -88,7 +88,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			$this->max_sites = $max_sites;
 		}
 
-		protected function do_render() {?>
+		protected function do_render() { ?>
 			<form id="nelioab_account_form" method="post">
 
 				<?php
@@ -196,7 +196,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 					'view your account details and use our service.',
 					'nelioab' ) . '</p>';
 			}
-			else {?>
+			else { ?>
 
 				<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
 				<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
@@ -212,15 +212,15 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				?></p>
 
 				<?php
-				if ( isset( $this->user_info['total_quota'] ) ) {?>
+				if ( isset( $this->user_info['total_quota'] ) ) { ?>
 					<p style="margin-top:0em;margin-left:3em;"><?php
 						printf( __( 'This subscription plan permits up to %d page views per month.', 'nelioab' ),
 							$this->user_info['total_quota'] ); ?></p>
 				<?php
-				}?>
+				} ?>
 
 				<?php
-				if ( isset( $this->user_info['quota'] ) ) {?>
+				if ( isset( $this->user_info['quota'] ) ) { ?>
 					<h3><?php _e( 'Available Quota', 'nelioab' ); ?>
 					<small>(<a href="http://wp-abtesting.com/faqs/what-is-a-tested-pageview"><?php
 						_e( 'Help', 'nelioab' );
@@ -236,7 +236,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 					<p style="color:<?php echo $quota_color; ?>;margin-top:0em;margin-left:3em;font-size:120%;"><b><?php
 						echo $the_quota; ?></b></p>
 				<?php
-				}?>
+				} ?>
 
 				<?php if ( $this->is_email_valid && $this->is_reg_num_valid && $this->tac ) { ?>
 
@@ -279,10 +279,10 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 							default:
 								// Nothing to be done
-						}?>
+						} ?>
 
 						<?php
-						if ( count( $other_sites ) > 0 ) {?>
+						if ( count( $other_sites ) > 0 ) { ?>
 							<ul style="margin-left:3em;margin-top:0px;">
 							<?php
 							foreach( $other_sites as $site )
@@ -291,7 +291,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 							?>
 							</ul>
 						<?php
-						}?>
+						} ?>
 
 						<?php
 						switch( $this->current_site_status ) {
@@ -302,7 +302,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 							default:
 								// Nothing to be done
-						}?>
+						} ?>
 
 						<form id="nelioab_registration_form" method="post">
 							<input type="hidden" name="nelioab_registration_form" value="true" />
@@ -318,19 +318,19 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			}
 		}
 
-		public function print_email_field() {?>
+		public function print_email_field() { ?>
 			<input name="settings_email" type="text" id="settings_email" maxlength="400"
 				class="regular-text" value="<?php echo $this->email; ?>"/><?php
 		}
 
-		public function print_reg_num_field() {?>
+		public function print_reg_num_field() { ?>
 			<input name="settings_reg_num" type="text" id="settings_reg_num" maxlength="26"
 				class="regular-text" value="<?php echo $this->reg_num; ?>"/><?php
 			if ( $this->is_email_valid) {
-				if ( $this->is_reg_num_valid ) {?>
+				if ( $this->is_reg_num_valid ) { ?>
 					<span style="color:#00AA00; font-weight:bold;"><?php _e( 'OK', 'nelioab' ); ?></span><?php
 				}
-				else {?>
+				else { ?>
 					<span style="color:red; font-weight:bold;"><?php _e( 'INVALID', 'nelioab' ); ?></span><?php
 				}
 			}

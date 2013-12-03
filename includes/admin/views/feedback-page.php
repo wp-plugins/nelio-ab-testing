@@ -25,7 +25,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 			$this->set_icon( 'icon-nelioab' );
 		}
 
-		protected function do_render() {?>
+		protected function do_render() { ?>
 			<form id="nelioab_feedback_form" method="post">
 			<input type="hidden" name="nelioab_feedback_form" value="true" />
 			<?php
@@ -50,7 +50,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 				); ?>
 			<div id="fb-processing" style="display:inline-block;">
 				<div id="fb-sending" style="display:none;vertical-align:middle;">
-					<img src="<?php echo NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION;?>" alt="<?php _e( 'Sending...', 'nelioab' ); ?>" />
+					<img src="<?php echo NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION; ?>" alt="<?php _e( 'Sending...', 'nelioab' ); ?>" />
 				</div>
 				<div id="fb-fail" style="display:none;"><?php _e( 'There was an error while sending your comment. Please, try again.', 'nelioab' ); ?> </div>
 				<div id="fb-ok" style="display:none;"><?php _e( 'Comment successfully sent.', 'nelioab' ); ?> </div>
@@ -110,12 +110,13 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 
 			</script>
 
-<?php
+		<?php
 		}
 
-		public function print_textarea() {?>
+		public function print_textarea() { ?>
 			<textarea id="content" name="content" cols="80" rows="4" maxlength="450"></textarea>
-		<?}
+		<?php
+		}
 
 	}//NelioABFeedbackPage
 

@@ -25,7 +25,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			$this->set_icon( 'icon-nelioab' );
 		}
 
-		protected function do_render() {?>
+		protected function do_render() { ?>
 			<p>Dashboard stuff goes here.</p>
 			<?php
 		}

@@ -46,7 +46,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			return $exp->get_original_theme()->get_value();
 		}
 
-		protected function print_js_function_for_post_data_overriding() {?>
+		protected function print_js_function_for_post_data_overriding() { ?>
 			function nelioab_confirm_overriding(id, stylesheet, template) {
 				jQuery("#apply_alternative #stylesheet").attr("value",stylesheet);
 				jQuery("#apply_alternative #template").attr("value",template);

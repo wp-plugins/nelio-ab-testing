@@ -174,7 +174,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$this->do_single_print( $label, true );
 		}
 
-		private function do_single_print( $label, $is_goal_page ) {?>
+		private function do_single_print( $label, $is_goal_page ) { ?>
 			<h3><?php
 			$aux  = $this->goal->get_pages();
 			$page = false;
@@ -200,12 +200,12 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$page = false;
 			if ( count( $aux ) > 0 )
 				$page = $aux[0];
-			if ( $page && $page->accepts_indirect_navigations() ) {?>
+			if ( $page && $page->accepts_indirect_navigations() ) { ?>
 				<h3><?php _e( 'Indirect Goal Pages and Posts', 'nelioab' ); ?></h3><?php
 			}
-			else {?>
+			else { ?>
 				<h3><?php _e( 'Direct Goal Pages and Posts', 'nelioab' ); ?></h3><?php
-			}?>
+			} ?>
 			<ul style="margin-left:2em;"><?php
 			$pages = $this->goal->get_pages();
 			foreach ( $pages as $page ) {
@@ -326,7 +326,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		</script>
 
 			<?php
-			if ( count( $this->goals ) > 1 ) {?>
+			if ( count( $this->goals ) > 1 ) { ?>
 				<h3 class="nav-tab-wrapper" style="margin:0em;padding:0em;padding-left:2em;margin-bottom:2em;">
 				<?php
 
@@ -451,7 +451,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 						<ul>
 							<?php
-							if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {?>
+							if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
 								<script>
 								function nelioab_confirm_editing() {
 									return confirm( "<?php
@@ -462,10 +462,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 								}
 								</script>
 							<?php
-							}?>
+							} ?>
 
 							<?php
-							if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {?>
+							if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) { ?>
 								<script>
 								<?php
 								$this->print_js_function_for_post_data_overriding();
@@ -558,7 +558,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 			<?php
 			// If results are available, print them.
-			if ( $res != null ) {?>
+			if ( $res != null ) { ?>
 
 				<!-- Summary graphics -->
 				<div id="nelioab-visitors" class="nelioab-summary-graphic">

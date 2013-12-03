@@ -30,7 +30,7 @@ class NelioABCssEditPage extends NelioABAdminPage {
 		parent::__construct( $title );
 	}
 
-	protected function do_render() {?>
+	protected function do_render() { ?>
 
 		<!-- SIDEBAR -->
 		<div id="side-info-column" class="inner-sidebar">

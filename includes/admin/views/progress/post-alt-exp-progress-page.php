@@ -57,7 +57,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			return $this->exp->get_original();
 		}
 
-		protected function print_js_function_for_post_data_overriding() {?>
+		protected function print_js_function_for_post_data_overriding() { ?>
 			function nelioab_confirm_overriding(id) {
 				jQuery("#apply_alternative #alternative").attr("value",id);
 				nelioab_show_the_dialog_for_overriding(id);
@@ -198,14 +198,14 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					if ( NelioABSettings::is_copying_metadata_enabled() ) echo 'checked="checked" ';
 				?>/><?php _e( 'Override all metadata', 'nelioab' ); ?></p>
 				<?php
-				if ( !$this->is_ori_page ) {?>
+				if ( !$this->is_ori_page ) { ?>
 					<p><input type="checkbox" id="copy_categories" name="copy_categories" <?php
 						if ( NelioABSettings::is_copying_categories_enabled() ) echo 'checked="checked" ';
 					?>/><?php _e( 'Override categories', 'nelioab' ); ?></p>
 					<p><input type="checkbox" id="copy_tags" name="copy_tags" <?php
 						if ( NelioABSettings::is_copying_tags_enabled() ) echo 'checked="checked" ';
 					?>/><?php _e( 'Override tags', 'nelioab' ); ?></p><?php
-				}?>
+				} ?>
 			</form>
 			<?php
 		}

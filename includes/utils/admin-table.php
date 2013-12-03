@@ -170,7 +170,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		// TODO: aixo hauria d'estar ben identificat (la var nelioabEditingItem,
 		// per si tinc mes d'una taula i tal...)
 		public function display() {
-			parent::display();?>
+			parent::display(); ?>
 			<script>
 				var nelioabEditingItem = null;
 				function showInlineEdit( row ) {
@@ -219,7 +219,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 
 		// TODO: fix this operation AND documentation
 		// Mejor identificador para el inline-edit?
-		private function print_inline_edit_form() {?>
+		private function print_inline_edit_form() { ?>
 			<tr id="inline-edit" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page" style="display:none;">
 				<td colspan="<?php echo $this->get_column_count(); ?>" class="colspanchange">
 					<?php $this->inline_edit_form(); ?>
@@ -249,7 +249,7 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		}
 
 		// TODO document this operation
-		public function print_js_body_for_inline_form() {?>
+		public function print_js_body_for_inline_form() { ?>
 			// No code provided
 			<?php
 		}
