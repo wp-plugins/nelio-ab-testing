@@ -95,7 +95,9 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				<br />
 				<div id="ajax-loader" style="text-align:center;<?php echo $is_data_pending_loader; ?>">
 					<br /><br />
-					<img src="<?php echo NELIOAB_ASSETS_URL . '/images/loading.gif?' . NELIOAB_PLUGIN_VERSION; ?>" alt="<?php _e( 'Loading animation', 'nelioab' ); ?>" />
+					<img
+						style="width:90px;height:90px;"
+						src="<?php echo NELIOAB_ASSETS_URL . '/images/loading.gif?' . NELIOAB_PLUGIN_VERSION; ?>" alt="<?php _e( 'Loading animation', 'nelioab' ); ?>" />
 					<h2 style="color:grey;margin:0px;padding:0px;"><?php _e( 'Loading...', 'nelioab' ); ?></h2>
 					<p id="ajax-loader-label1" style="color:grey;margin:0px;padding:0px;"><?php _e( 'Please, wait a moment.', 'nelioab' ); ?></p>
 					<p id="ajax-loader-label2" style="color:grey;margin:0px;padding:0px;display:none;"><?php _e( 'Keep waiting...', 'nelioab' ); ?></p>

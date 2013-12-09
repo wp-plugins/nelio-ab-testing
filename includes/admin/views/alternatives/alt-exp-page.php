@@ -429,16 +429,15 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 			</select>
 			<p style="margin-top:1em;margin-bottom:0em;">
 				<span style="width:18px;height:18px;margin:0em;display:inline-block;">
-					<span id="goals-warning" style="display:none;">
-						<a href="http://wp-abtesting.com/inquiry-subscription-plans/">
-							<img src="<?php
-								echo NELIOAB_ADMIN_ASSETS_URL . '/images/warning.png';
-							?>" title="<?php
+					<span id="goals-warning"
+						style="display:none;margin-right:8px;">
+						<a href="http://wp-abtesting.com/inquiry-subscription-plans/"><span
+							class="nelioab-inline-asset nelioab-warning"
+							title="<?php
 								_e( 'In order to use experiments with more than one goal, you ' .
 									'first have to upgrade your subscription plan.',
 									'nelioab' );
-							?>" />
-						</a>
+							?>"></span></a>
 					</span>
 				</span>
 				<b><?php _e( 'Selected Goals:', 'nelioab' ); ?></b>

@@ -81,7 +81,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$page = $goal->get_pages();
 			$page = $page[0];
 			if ( $page->is_external() ) {
-				$goal->set_name( $page->get_name() );
+				$goal->set_name( $page->get_title() );
 			}
 			else {
 				$name = __( 'Unnamed', 'nelioab' );
@@ -355,20 +355,19 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 						$lights_img   = '';
 						$lights_label = '';
 						if ( $the_winner == -1 ) {
-							$lights_img = NELIOAB_ADMIN_ASSETS_URL . '/images/clock.png';
+							$lights_img = 'status-clock';
 							$lights_label = __( 'There is not enough data to determine any winner yet', 'nelioab' );
 						}
 						else if ( $the_winner_confidence < 90 ) {
-							$lights_img = NELIOAB_ADMIN_ASSETS_URL . '/images/star.png';
+							$lights_img = 'status-star';
 							$lights_label = __( 'There is a possible winner, but keep in mind the confidence does not reach 90%', 'nelioab' );
 						}
 						else {
-							$lights_img = NELIOAB_ADMIN_ASSETS_URL . '/images/tick.png';
+							$lights_img = 'status-tick';
 							$lights_label = __( 'There is a clear winner, with a confidence greater than 90%', 'nelioab' );
 						}
-					?><img style="margin-bottom:-4px;"
-						src="<?php echo $lights_img; ?>"
-						title="<?php echo $lights_label; ?>"/> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
+					?><div class="<?php echo $lights_img; ?>"
+						title="<?php echo $lights_label; ?>"></div> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
 					<div class="inside">
 
 						<div>
@@ -672,7 +671,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					if ( $gtest->get_min() == $this->get_original_value() )
 						$aux = $gtest;
 				if ( $aux )
-					if ( $aux->get_type() == NelioABGTest::WINNER )
+					if ( $aux->get_type() == NelioABGTest::WINNER ||
+					     $aux->get_type() == NelioABGTest::DROP_VERSION )
 						return $aux;
 			}
 

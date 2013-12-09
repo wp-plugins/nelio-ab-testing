@@ -25,7 +25,7 @@ if (!String.prototype.nelioabformat) {
  *
  */
 function makeConversionRateGraphic(divName, labels, categories, data) {
-	return new Highcharts.Chart({
+	var conchart = new Highcharts.Chart({
 		chart: {
 			renderTo: divName,
 			type: 'column',
@@ -82,8 +82,7 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 				color: '#C0D0E0',
 				zIndex: 4
 			}],
-			min: 0,
-			max: 100
+			min: 0
 		},
 		plotOptions: {
 			column: {
@@ -124,6 +123,11 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 			}
 		}],
 	});
+
+	if ( conchart.yAxis[0].getExtremes().dataMax < 100 )
+		conchart.yAxis[0].setExtremes(0, 100);
+
+	return conchart;
 }
 
 /**
@@ -138,7 +142,7 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
  *
  */
 function makeImprovementFactorGraphic(divName, labels, categories, data) {
-	return new Highcharts.Chart({
+	var imchart = new Highcharts.Chart({
 		chart: {
 			renderTo: divName,
 			type: 'column',
@@ -230,6 +234,17 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 			}
 		}],
 	});
+
+   if ( imchart.yAxis[0].getExtremes().dataMin >= 0 &&
+	     imchart.yAxis[0].getExtremes().dataMax < 100 ) {
+		imchart.yAxis[0].setExtremes(0, 100);
+	}
+   else if (imchart.yAxis[0].getExtremes().dataMin > -100 &&
+	         imchart.yAxis[0].getExtremes().dataMax <= 0 ) {
+		imchart.yAxis[0].setExtremes(-100, 0);
+	}
+
+   return imchart;
 }
 
 

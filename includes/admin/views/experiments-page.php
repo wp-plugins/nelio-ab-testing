@@ -254,8 +254,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		}
 
 		function column_type( $exp ){
-			$img = '<img src="' . NELIOAB_ADMIN_ASSETS_URL . '/images/tab-type-%1$s.png" ' .
-				'alt="%2$s" title="%2$s" />';
+			$img = '<div class="tab-type tab-type-%1$s" alt="%2$s" title="%2$s"></div>';
 
 			switch( $exp->get_type() ) {
 				case NelioABExperiment::TITLE_ALT_EXP:

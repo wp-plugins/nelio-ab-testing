@@ -1,0 +1,89 @@
+.tab-type {
+	width: 32px;
+	height: 32px;
+}
+
+.tab-type-title {
+	background:       url( '../images/tab-type-title.png' );
+	background-image: url( '../images/tab-type-title.png' );
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.tab-type-title {
+	background:       url( '../images/2x/tab-type-title.png' );
+	background-image: url( '../images/2x/tab-type-title.png' );
+	background-size: 32px 32px;
+} }
+
+.tab-type-page {
+	background:       url( '../images/tab-type-page.png' );
+	background-image: url( '../images/tab-type-page.png' );
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.tab-type-page {
+	background:       url( '../images/2x/tab-type-page.png' );
+	background-image: url( '../images/2x/tab-type-page.png' );
+	background-size: 32px 32px;
+} }
+
+.tab-type-post {
+	background:       url( '../images/tab-type-post.png' );
+	background-image: url( '../images/tab-type-post.png' );
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.tab-type-post {
+	background:       url( '../images/2x/tab-type-post.png' );
+	background-image: url( '../images/2x/tab-type-post.png' );
+	background-size: 32px 32px;
+} }
+
+.tab-type-theme {
+	background:       url( '../images/tab-type-theme.png' );
+	background-image: url( '../images/tab-type-theme.png' );
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.tab-type-theme {
+	background:       url( '../images/2x/tab-type-theme.png' );
+	background-image: url( '../images/2x/tab-type-theme.png' );
+	background-size: 32px 32px;
+} }
+
+.tab-type-css {
+	background:       url( '../images/tab-type-css.png' );
+	background-image: url( '../images/tab-type-css.png' );
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.tab-type-css {
+	background:       url( '../images/2x/tab-type-css.png' );
+	background-image: url( '../images/2x/tab-type-css.png' );
+	background-size: 32px 32px;
+} }
+
+.tab-type-menu {
+	background:       url( '../images/tab-type-menu.png' );
+	background-image: url( '../images/tab-type-menu.png' );
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.tab-type-menu {
+	background:       url( '../images/2x/tab-type-menu.png' );
+	background-image: url( '../images/2x/tab-type-menu.png' );
+	background-size: 32px 32px;
+} }
+
+.tab-type-widget {
+	background:       url( '../images/tab-type-widget.png' );
+	background-image: url( '../images/tab-type-widget.png' );
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.tab-type-widget {
+	background:       url( '../images/2x/tab-type-widget.png' );
+	background-image: url( '../images/2x/tab-type-widget.png' );
+	background-size: 32px 32px;
+} }
+

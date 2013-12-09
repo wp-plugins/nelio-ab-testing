@@ -26,11 +26,110 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 		}
 
 		protected function do_render() { ?>
+
+			<!-- SHARING -->
+			<div class="share_pre">
+				<h2><?php _e( 'Together, we\'ll build a better service!', 'nelioab' ); ?></h2>
+
+				<p><?php
+					_e( 'We\'re honoured you\'re using our service. We hope ' .
+					    'Nelio A/B Testing is meeting your expectations. Together, ' .
+					    'we\'ll get your site to the next level!',
+						'nelioab' );
+				?></p>
+
+				<p><?php
+					_e( 'If you\'re happy with our service, please help us ' .
+					    '<b>spread the word and let others know about your ' .
+					    'experience with Nelio A/B Testing</b>!',
+						'nelioab' );
+				?></p>
+
+				<p><?php
+					_e( 'As a token of appreciation, we will be ' .
+					    'happy to add to your quota 1000 more pageviews per ' .
+					    'month for your efforts (plus an additional 100 for ' .
+					    'each retweet / reshare you get from your followers, ' .
+					    'up to a maximum of a second additional 1000 ' .
+					    'pageviews extension).',
+						'nelioab' );
+				?></p>
+
+			</div>
+
+			<!-- SHARING -->
+			<div class="share" style="height:3em;">
+				<!-- TWITTER -->
+				<div style="float:left; min-width: 130px;">
+				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://wp-abtesting.com/" data-text="Just wanted to share the new #WordPress A/B and Multivariate Native Testing Service by @WPMigrations... It rocks! Check it out!">Tweet</a>
+				</div>
+
+				<!-- FACEBOOK -->
+				<div style="float:left; min-width: 185px;">
+				<div class="fb-like" data-href="http://wp-abtesting.com" data-send="false" data-layout="button_count" data-width="450" data-show-faces="true" data-action="recommend"></div>
+				<div id="fb-root"></div>
+				</div>
+
+				<!-- GOOGLE PLUS -->
+				<div style="float:left; min-width: 140px;">
+				<div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://wp-abtesting.com/"></div>
+				</div>
+
+				<!-- LINKEDIN -->
+				<div style="float:left;">
+				<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share" data-url="http://wp-abtesting.com/" data-counter="right"></script>
+				</div>
+			</div>
+
+			<p><?php
+				printf(
+					__( 'And, please, don\'t forget to <a href="%s" target="_blank">rate '.
+					    'the plugin in the WordPress Plugin Directory</a>!', 'nelioab' ),
+					'http://wordpress.org/plugins/nelio-ab-testing/' );
+			?></p>
+
+			<!-- SCRIPTS FOR SHARING -->
+			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+			<script>(function(d, s, id) {
+			  var js, fjs = d.getElementsByTagName(s)[0];
+			  if (d.getElementById(id)) return;
+			  js = d.createElement(s); js.id = id;
+			  js.src = "//connect.facebook.net/es_LA/all.js#xfbml=1";
+			  fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));</script>
+			<script type="text/javascript">
+			  (function() {
+			    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			    po.src = 'https://apis.google.com/js/plusone.js';
+			    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+			  })();
+			</script>
+
+
+			<!-- FEEDBACK -->
+			<div class="feedback_pre" style="margin-top:6em;">
+				<h2><?php _e( 'Your opinion matters!', 'nelioab' ); ?></h2>
+
+				<p><?php
+					_e( 'Would you like to request a new feature? Do you have ' .
+					    'any doubt using our service? Have you encountered ' .
+					    'any problems?',
+						'nelioab' );
+				?></p>
+
+				<p><?php
+					_e( 'Please, <b>do not hesitate to contact us ' .
+					    'and tell what you are thinking!</b>',
+						'nelioab' );
+				?></p>
+
+			</div>
+
 			<form id="nelioab_feedback_form" method="post">
 			<input type="hidden" name="nelioab_feedback_form" value="true" />
 			<?php
 			$this->make_section(
-				__( 'Feedback &mdash; Your opinion matters; Tell us what you think!', 'nelioab' ),
+				__( 'Contact with Nelio', 'nelioab' ),
 				array(
 					array(
 						'label'     => __( 'Share your thoughts with us', 'nelioab' ),
@@ -45,7 +144,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 
 			<div id="fb-controls" style="height:48px;">
 			<?php echo $this->make_button(
-					__( 'Send Feedback', 'nelioab' ),
+					__( 'Send Comment', 'nelioab' ),
 					'javascript:void(0);sendFeedback();', true
 				); ?>
 			<div id="fb-processing" style="display:inline-block;">

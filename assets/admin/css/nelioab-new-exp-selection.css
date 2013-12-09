@@ -43,35 +43,77 @@
 	background-image: url( '../images/new-exp-page.png' );
 }
 
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-image-page {
+	background-image: url( '../images/2x/new-exp-page.png' );
+	background-size: 240px 120px;
+} }
+
 .nelioab-image-post {
 	background: url( '../images/new-exp-post.png' );
 	background-image: url( '../images/new-exp-post.png' );
 }
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-image-post {
+	background-image: url( '../images/2x/new-exp-post.png' );
+	background-size: 240px 120px;
+} }
 
 .nelioab-image-css {
 	background: url( '../images/new-exp-css.png' );
 	background-image: url( '../images/new-exp-css.png' );
 }
 
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-image-css {
+	background-image: url( '../images/2x/new-exp-css.png' );
+	background-size: 240px 120px;
+} }
+
 .nelioab-image-menu {
 	background: url( '../images/new-exp-menu.png' );
 	background-image: url( '../images/new-exp-menu.png' );
 }
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-image-menu {
+	background-image: url( '../images/2x/new-exp-menu.png' );
+	background-size: 240px 120px;
+} }
 
 .nelioab-image-title {
 	background: url( '../images/new-exp-title.png' );
 	background-image: url( '../images/new-exp-title.png' );
 }
 
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-image-title {
+	background-image: url( '../images/2x/new-exp-title.png' );
+	background-size: 240px 120px;
+} }
+
 .nelioab-image-theme {
 	background: url( '../images/new-exp-theme.png' );
 	background-image: url( '../images/new-exp-theme.png' );
 }
 
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-image-theme {
+	background-image: url( '../images/2x/new-exp-theme.png' );
+	background-size: 240px 120px;
+} }
+
 .nelioab-image-widget {
 	background: url( '../images/new-exp-widget.png' );
 	background-image: url( '../images/new-exp-widget.png' );
 }
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-image-widget {
+	background-image: url( '../images/2x/new-exp-widget.png' );
+	background-size: 240px 120px;
+} }
 
 
 /* HOVERING */

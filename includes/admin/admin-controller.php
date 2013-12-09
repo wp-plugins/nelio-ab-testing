@@ -114,6 +114,10 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				NELIOAB_ADMIN_ASSETS_URL . '/css/progress.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_progress_css' );
 
+			wp_register_style( 'nelioab_tab_type_css',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-tab-type.css', false, NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_tab_type_css' );
+
 			// Custom JS for GRAPHICS (conversion experiment progress)
 			wp_enqueue_script( 'nelioab_highcharts',
 				NELIOAB_ADMIN_ASSETS_URL . '/js/highcharts.js?' . NELIOAB_PLUGIN_VERSION );
@@ -262,8 +266,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			// ----------------------------------------------------------------------
 			require_once( NELIOAB_ADMIN_DIR . '/feedback-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
-				__( 'Feedback', 'nelioab' ),
-				__( 'Feedback', 'nelioab' ),
+				__( 'Share & Comment', 'nelioab' ),
+				__( 'Share & Comment', 'nelioab' ),
 				'manage_options',
 				'nelioab-feedback',
 				array( 'NelioABFeedbackPageController', 'build' ) );
