@@ -25,7 +25,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		public $global_warnings;
 		public $validation_errors;
 		public $data;
-	
+
 		/**
 		 * The class constructor
 		 *
@@ -114,6 +114,10 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				NELIOAB_ADMIN_ASSETS_URL . '/css/progress.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_progress_css' );
 
+			wp_register_style( 'nelioab_tab_type_css',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-tab-type.css', false, NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_tab_type_css' );
+
 			// Custom JS for GRAPHICS (conversion experiment progress)
 			wp_enqueue_script( 'nelioab_highcharts',
 				NELIOAB_ADMIN_ASSETS_URL . '/js/highcharts.js?' . NELIOAB_PLUGIN_VERSION );
@@ -124,7 +128,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function exclude_alternative_posts_and_pages( $query ) {
-	
+
 			if ( $query->is_main_query() ) {
 				$alt_ids = array();
 
@@ -156,7 +160,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					$query->set( 'post__not_in', $alt_ids );
 				}
 			}
-	
+
 			return $query;
 		}
 
@@ -192,7 +196,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				null,
 				'div' );
 
-	
+
 //			// Dashboard page
 //			// ----------------------------------------------------------------------
 //			require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
@@ -203,7 +207,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 //				'nelioab-admin-pages',
 //				array( 'NelioABDashboardPageController', 'build' ) );
 
-	
+
 			// Experiments pages (depending on the action, we show one or another)
 			// ----------------------------------------------------------------------
 			$the_action = NULL;
@@ -248,7 +252,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'manage_options',
 				'nelioab-add-experiment',
 				$page_to_build );
-				
+
 
 			require_once( NELIOAB_ADMIN_DIR . '/settings-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
@@ -262,12 +266,12 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			// ----------------------------------------------------------------------
 			require_once( NELIOAB_ADMIN_DIR . '/feedback-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
-				__( 'Feedback', 'nelioab' ),
-				__( 'Feedback', 'nelioab' ),
+				__( 'Share & Comment', 'nelioab' ),
+				__( 'Share & Comment', 'nelioab' ),
 				'manage_options',
 				'nelioab-feedback',
 				array( 'NelioABFeedbackPageController', 'build' ) );
-	
+
 
 			// OTHER PAGES (not included in the menu)
 
@@ -336,7 +340,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		}
 
-		public function print_alternative_box() {?>
+		public function print_alternative_box() { ?>
 			<script>
 				var nelioab_style_metabox = document.createElement("style");
 			   nelioab_style_metabox.setAttribute("type", "text/css");

@@ -96,7 +96,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			);
 		}
 
-		protected function print_alternatives() {?>
+		protected function print_alternatives() { ?>
 			<h2 style="padding-top:2em;"><?php
 
 				$explanation = __( 'based on an existing page', 'nelioab' );
@@ -131,7 +131,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			$wp_list_table->display();
 		}
 
-		protected function print_validator_js() {?>
+		protected function print_validator_js() { ?>
 			<script type="text/javascript">
 			jQuery(document).ready(function() {
 				var $ = jQuery;
@@ -305,13 +305,13 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		}
 
 
-		public function print_ori_field() {?>
+		public function print_ori_field() { ?>
 			<select id="exp_original" style="width:300px;"
 				name="exp_original" class="required" value="<?php echo $this->original_id; ?>"><?php
 			$aux = $this->wp_pages;
 			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
 				$aux = $this->wp_posts;
-			foreach ( $aux as $p ) {?>
+			foreach ( $aux as $p ) { ?>
 				<option
 					value="<?php echo $p->ID; ?>"<?php
 						if ( $this->original_id == $p->ID )
@@ -355,7 +355,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		public function set_wp_posts_or_pages( $wp_posts_or_pages ) {
 			$this->wp_posts_or_pages = $wp_posts_or_pages;
 		}
-		
+
 		public function extra_tablenav( $which ) {
 			if ( $which == 'top' ){
 				$text = __( 'Please, <b>add one or more</b> alternatives to the Original Page ' .
@@ -405,15 +405,15 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		}
 
 		protected function print_additional_info_for_new_alt_form() {
-			if ( $this->copying_content ) {?>
+			if ( $this->copying_content ) { ?>
 				<label style="padding-top:0.5em;">
 					<span class="title"><?php _e( 'Source', 'nelioab' ); ?> </span>
 					<span class="input-text-wrap">
 						<select id="new_alt_postid" name="new_alt_postid" style="width:300px;">
 						<?php
-						foreach ($this->wp_posts_or_pages as $p) {?>
+						foreach ($this->wp_posts_or_pages as $p) { ?>
 							<option value="<?php echo $p->ID; ?>"><?php echo $p->post_title; ?></option><?php
-						}?>
+						} ?>
 						</select>
 						<span class="description" style="display:block;"><?php _e( 'The selected page\'s content will be duplicated and used by this alternative.', 'nelioab' ); ?></span>
 					</span>
@@ -421,7 +421,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			}
 		}
 
-		protected function print_save_button_for_new_alt_form() {?>
+		protected function print_save_button_for_new_alt_form() { ?>
 			<a class="button-primary save alignleft" <?php
 				if ( $this->copying_content )
 					echo $this->make_form_javascript( $this->form_name, 'add_alt_copying_content' );

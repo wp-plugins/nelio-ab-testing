@@ -95,7 +95,9 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				<br />
 				<div id="ajax-loader" style="text-align:center;<?php echo $is_data_pending_loader; ?>">
 					<br /><br />
-					<img src="<?php echo NELIOAB_ASSETS_URL . '/images/loading.gif?' . NELIOAB_PLUGIN_VERSION; ?>" alt="<?php _e( 'Loading animation', 'nelioab' ); ?>" />
+					<img
+						style="width:90px;height:90px;"
+						src="<?php echo NELIOAB_ASSETS_URL . '/images/loading.gif?' . NELIOAB_PLUGIN_VERSION; ?>" alt="<?php _e( 'Loading animation', 'nelioab' ); ?>" />
 					<h2 style="color:grey;margin:0px;padding:0px;"><?php _e( 'Loading...', 'nelioab' ); ?></h2>
 					<p id="ajax-loader-label1" style="color:grey;margin:0px;padding:0px;"><?php _e( 'Please, wait a moment.', 'nelioab' ); ?></p>
 					<p id="ajax-loader-label2" style="color:grey;margin:0px;padding:0px;display:none;"><?php _e( 'Keep waiting...', 'nelioab' ); ?></p>
@@ -108,14 +110,14 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 					?>
 						<br />
 						<div class="actions"><?php
-							$this->print_page_buttons();?>
+							$this->print_page_buttons(); ?>
 						</div><?php
 					}
 					?>
 					</div>
 				</div>
 			</div><?php
-			if ( !$this->is_data_pending ) {?>
+			if ( !$this->is_data_pending ) { ?>
 				<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
 					<div id="dialog-content">
 						<?php $this->print_dialog_content(); ?>
@@ -124,7 +126,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			<?php
 			}
 
-			if ( $this->is_data_pending ) {?>
+			if ( $this->is_data_pending ) { ?>
 			<script>
 
 				function nelioabHideSpinnerAndShowContent() {
@@ -167,7 +169,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				}
 
 				jQuery(document).ready(function() {
-				
+
 					var data = {
 						"action"	 : "get_html_content",<?php
 						foreach ( $this->post_params as $param )
@@ -177,7 +179,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 						"filename"  : "<?php echo $this->controller_file; ?>",
 						"classname" : "<?php echo $this->controller_class; ?>"
 					};
-				
+
 					// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 					jQuery.post(ajaxurl, data, function(response) {
 						jQuery("#poststuff > #ajax-data").html(response);
@@ -214,7 +216,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			</div>
 			<br />
 			<div class="actions"><?php
-				$this->print_page_buttons();?>
+				$this->print_page_buttons(); ?>
 			</div><?php
 		}
 

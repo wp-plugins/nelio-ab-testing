@@ -78,7 +78,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 			);
 		}
 
-		protected function print_alternatives() {?>
+		protected function print_alternatives() { ?>
 			<h2 style="padding-top:2em;"><?php _e( 'Alternatives', 'nelioab' ); ?></h2>
 
 			<?php
@@ -100,7 +100,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 
 		}
 
-		private function print_theme( $id, $name, $image, $creator, $selected, $current = false ) {?>
+		private function print_theme( $id, $name, $image, $creator, $selected, $current = false ) { ?>
 			<div class="nelioab-theme<?php
 				if ( $selected ) echo ' nelioab-selected';
 				if ( $current ) echo ' nelioab-is-current-theme';
@@ -112,10 +112,10 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					</div>
 					<div class="nelioab-theme-tick">&nbsp;</div>
 					<?php
-					if ( $current ) {?>
+					if ( $current ) { ?>
 						<div class="nelioab-current-theme"><?php _e( 'Current Theme' ); ?> </div>
 					<?php
-					}?>
+					} ?>
 				</div>
 				<div class="theme-description">
 					<p><b class="the-theme-name"><?php echo $name; ?></b><br />
@@ -127,7 +127,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 		<?php
 		}
 
-		protected function print_validator_js() {?>
+		protected function print_validator_js() { ?>
 			<script type="text/javascript">
 			jQuery(document).ready(function() {
 				var $ = jQuery;

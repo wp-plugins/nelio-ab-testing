@@ -19,7 +19,7 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 
 	abstract class NelioABHtmlGenerator extends WP_List_Table {
 
-		public static function print_filters( $filter_url, $filters, $filter_name, $current = false ) {?>
+		public static function print_filters( $filter_url, $filters, $filter_name, $current = false ) { ?>
 			<ul class='subsubsub'><?php
 				// Default filter
 				$filter = $filters[0];
@@ -47,7 +47,7 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 						$filter['label'],
 						$filter['count']
 					)	);
-				}?>
+				} ?>
 			</ul><?php
 		}
 

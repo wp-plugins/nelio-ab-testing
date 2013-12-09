@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.4.1
+Stable tag: 1.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,7 +78,7 @@ left labeled "Nelio A/B Testing".
 
 If you have successfully installed our plugin using one of the aforementioned
 methods, now it is just time to use it! Take a look at our [Getting Started
-Guide](http://wp-abtesting.com/getting-started-guide/) to cover the basis.
+Guide](http://wp-abtesting.com/getting-started-guide/) to cover the basics.
 
 
 == Frequently Asked Questions ==
@@ -127,6 +127,23 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.5.2 =
+* Improved quality for all graphical assets
+* The "Feedback" page has been changed to a "Share & Comment" page
+* Bug fix: endless loading loop when viewing the progress of some experiments
+* Some minor tweaks
+
+= 1.5.1 =
+* Bug fix: compatibility with the WordPress hosting service "WPonFire"
+* Some minor tweaks
+
+= 1.5 =
+* **New Feature!** Improved view for the progress/results of an experiment.
+When setting more than one goal, you can now see the aggregated conversion
+rate for all goals or the conversion rates for each goal
+* **New Feature!** Simplified UI for testing only changes in the title of
+a page/post
 
 = 1.4.1 =
 * Bug fix: version 1.4 was not properly uploaded in the WordPress repository
@@ -249,5 +266,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.4.1 =
-More powerful definition of goal. Compatibility with OptimizePress and JetPack.
+= 1.5.2 =
+Bug fix in the progress page and some minor tweaks.

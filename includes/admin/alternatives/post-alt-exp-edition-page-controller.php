@@ -185,7 +185,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 
 				$alt_name = stripslashes( $_POST['new_alt_name'] );
 				$alt_post_id = $_POST['new_alt_postid'];
-	
+
 				$exp = $nelioab_admin_controller->data;
 				$exp->create_alternative_copying_content( $alt_name, $alt_post_id );
 			}

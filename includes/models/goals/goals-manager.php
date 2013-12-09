@@ -29,7 +29,6 @@ if( !class_exists( 'NelioABGoalsManager' ) ) {
 				case NelioABGoal::PAGE_ACCESSED_GOAL_STR:
 				require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 				$goal = NelioABPageAccessedGoal::decode_from_appengine( $exp, $json );
-				$goal->set_id( $json->key->id );
 				$exp->add_goal( $goal );
 				break;
 			}

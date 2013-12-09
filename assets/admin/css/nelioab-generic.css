@@ -40,6 +40,13 @@
 	background-position: 0px -32px;
 }
 
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+	#toplevel_page_nelioab-experiments div.wp-menu-image {
+		background-image: url('../images/2x/menu.png');
+		background-size: 30px 64px;
+	}
+}
+
 #toplevel_page_nelioab-experiments:hover div.wp-menu-image,
 #toplevel_page_nelioab-experiments.wp-has-current-submenu div.wp-menu-image,
 #toplevel_page_nelioab-experiments :hover div.wp-menu-image,
@@ -53,6 +60,12 @@
 	background-position: -12px -6px;
 }
 
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+#icon-nelioab {
+	background-image: url('../images/2x/icons32.png');
+	background-size: 58px 45px;
+	}
+}
 .button-primary-disabled, .button-primary[disabled], .button-primary:disabled {
 	cursor: default;
 }
@@ -60,3 +73,30 @@
 .button-primary-disabled:hover, .button-primary[disabled]:hover, .button-primary:disabled:hover {
 	border: 1px solid #298cba !important;
 }
+
+
+
+/* ------------------- */
+/*       ASSETS        */
+/* ------------------- */
+
+.nelioab-inline-asset {
+	width:18px;
+	height:18px;
+	display:inline-block;
+}
+
+.nelioab-warning {
+	background:       url( '../images/warning.png' );
+	background-image: url( '../images/warning.png' );
+}
+
+
+@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+.nelioab-warning {
+	background:       url( '../images/2x/warning.png' );
+	background-image: url( '../images/2x/warning.png' );
+	background-size: 18px 18px;
+} }
+
+

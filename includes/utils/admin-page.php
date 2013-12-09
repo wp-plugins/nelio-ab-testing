@@ -70,10 +70,10 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 				if ( $this->uses_two_columns )
 					echo 'has-right-sidebar'
 				?>"><?php
-					$this->do_render();?>
+					$this->do_render(); ?>
 					<br />
 					<div class="actions"><?php
-						$this->print_page_buttons();?>
+						$this->print_page_buttons(); ?>
 					</div>
 				</div>
 			</div>
@@ -173,17 +173,17 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 
 		protected function print_errors_content() {
 			global $nelioab_admin_controller;
-			if ( count( $nelioab_admin_controller->validation_errors ) > 0 ) {?>
+			if ( count( $nelioab_admin_controller->validation_errors ) > 0 ) { ?>
 				<p><?php echo _('The following errors have been encountered:'); ?></p>
 				<ul style="padding-left:2em;"><?php
 					foreach ( $nelioab_admin_controller->validation_errors as $err )
-						echo '<li>&ndash; ' . $err[1] . '</li>';?>
+						echo '<li>&ndash; ' . $err[1] . '</li>'; ?>
 				</ul>
 			<?php
 			}
 		}
 
-		protected function make_section( $section_title, $fields ) {?>
+		protected function make_section( $section_title, $fields ) { ?>
 			<div class="stuffbox">
 				<h3><label><?php echo $section_title; ?></label></h3>
 				<div class="inside"><?php

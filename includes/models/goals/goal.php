@@ -34,12 +34,15 @@ if( !class_exists( 'NelioABGoal' ) ) {
 		private $name;
 		private $is_main_goal;
 
+		private $has_to_be_deleted;
+
 		public function __construct( $exp, $id = -1 ) {
 			$this->kind = NelioABGoal::UNDEFINED_GOAL_TYPE;
 			$this->name = __( 'Undefined', 'nelioab' );
 			$this->exp  = $exp;
 			$this->id   = $id;
-			$this->is_main_goal = true;
+			$this->is_main_goal = false;
+			$this->has_to_be_deleted = false;
 		}
 
 		public function get_experiment() {
@@ -99,6 +102,14 @@ if( !class_exists( 'NelioABGoal' ) ) {
 
 		public function set_as_main_goal( $is_main_goal ) {
 			$this->is_main_goal = $is_main_goal;
+		}
+
+		public function set_to_be_deleted( $delete ) {
+			$this->has_to_be_deleted = $delete;
+		}
+
+		public function has_to_be_deleted() {
+			return $this->has_to_be_deleted;
 		}
 
 		public abstract function get_results();

@@ -242,9 +242,13 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 				);
 			}
 			else {
+				if ( $goal->has_to_be_deleted() )
+					$action = 'delete';
+				else
+					$action = 'update';
 				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/goal/%2$s/%1$s/update',
-					$goal->get_id(), $goal_type_url
+					NELIOAB_BACKEND_URL . '/goal/%2$s/%1$s/%3$s',
+					$goal->get_id(), $goal_type_url, $action
 				);
 			}
 			return $url;

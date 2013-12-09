@@ -33,6 +33,12 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 				// The ID of the experiment to which the action applies
 				$view->keep_request_param( 'exp_id', $_GET['id'] );
 
+			if ( isset( $_GET['exp_type'] ) )
+				$view->keep_request_param( 'exp_type', $_GET['exp_type'] );
+
+			if ( isset( $_GET['goal'] ) )
+				$view->keep_request_param( 'goal', $_GET['goal'] );
+
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
 		}
 
@@ -47,14 +53,14 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 				$exp_id = -1;
 				if ( isset( $_REQUEST['exp_id'] ) )
 					$exp_id = $_REQUEST['exp_id'];
-	
+
 				$exp_type = -1;
 				if ( isset( $_POST['exp_type'] ) )
 					$exp_type = $_POST['exp_type'];
 
 				$mgr = new NelioABExperimentsManager();
 				$exp = null;
-	
+
 				try {
 					$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
 				}
@@ -68,23 +74,13 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 			$view  = new NelioABPostAltExpProgressPage( $title );
 			$view->set_experiment( $exp );
 
-			try {
-				// The function "get_results" may throw an exception. This is why
-				// we use it in here.
-				$goals = $exp->get_goals();
-				$goal  = $goals[0];
-				$view->set_results( $goal->get_results() );
-			}
-			catch ( Exception $e ) {
-				require_once( NELIOAB_UTILS_DIR . '/backend.php' );
-				if ( $e->getCode() == NelioABErrCodes::RESULTS_NOT_AVAILABLE_YET ) {
-					$view->set_results( null );
-				}
-				else {
-					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
-					NelioABErrorController::build( $e );
-				}
-			}
+			$goals = $exp->get_goals();
+			$view->set_goals( $goals );
+
+			$goal_id = -1;
+			if ( isset( $_REQUEST['goal'] ) )
+				$goal_id = $_REQUEST['goal'];
+			$view->set_current_selected_goal( $goal_id );
 
 			$view->render_content();
 
