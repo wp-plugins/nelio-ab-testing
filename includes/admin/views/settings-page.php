@@ -202,19 +202,31 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
 				<h3><?php _e( 'Subscription Details', 'nelioab' ); ?></h3>
 				<p style="margin-top:0em;margin-left:3em;"><?php
-					if ( !isset( $this->user_info['subscription'] ) )
+					if ( !isset( $this->user_info['subscription_url'] ) ) {
 						_e( 'No subscription information available.', 'nelioab' );
-					else if ( $this->user_info['subscription'] == 'BETA' )
-						_e( 'You are using your BETA free-pass.', 'nelioab' );
-					else
-						printf( '<a href="%s">%s</a>', $this->user_info['subscription'],
-							__( 'Check your subscription details.', 'nelioab' ) );
+					}
+					else if ( $this->user_info['subscription_url'] == 'BETA' ) {
+						_e( 'You are using a <b>beta free-pass</b>.', 'nelioab' );
+					}
+					else {
+						if ( $this->user_info['subscription_plan'] == 0 ) {
+							printf( '%s <a href="%s">%s</a>',
+								__( 'You are using the <b>Free Trial</b> version of ' .
+								    'Nelio A/B Testing.', 'nelioab' ),
+								$this->user_info['subscription_url'],
+								__( 'Subscribe now and continue using our service!', 'nelioab' ) );
+						}
+						else {
+							printf( '<a href="%s">%s</a>', $this->user_info['subscription_url'],
+								__( 'Check your subscription details.', 'nelioab' ) );
+						}
+					}
 				?></p>
 
 				<?php
 				if ( isset( $this->user_info['total_quota'] ) ) { ?>
 					<p style="margin-top:0em;margin-left:3em;"><?php
-						printf( __( 'This subscription plan permits up to %d page views per month.', 'nelioab' ),
+						printf( __( 'Your current plan permits up to %d page views per month.', 'nelioab' ),
 							$this->user_info['total_quota'] ); ?></p>
 				<?php
 				} ?>

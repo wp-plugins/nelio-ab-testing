@@ -78,12 +78,13 @@ if ( !class_exists( 'NelioABSettingsPageController' ) ) {
 				$json = NelioABBackend::remote_get( $url );
 				$json = json_decode( $json['body'] );
 
-				$user_info['firstname']    = $json->firstname;
-				$user_info['lastname']     = $json->lastname;
-				$user_info['subscription'] = $json->subscriptionUrl;
-				$user_info['status']       = $json->status;
-				$user_info['total_quota']  = intval( $json->quotaPerMonth );
-				$user_info['quota']        = intval( $json->quota + $json->quotaExtra );
+				$user_info['firstname']         = $json->firstname;
+				$user_info['lastname']          = $json->lastname;
+				$user_info['subscription_url']  = $json->subscriptionUrl;
+				$user_info['subscription_plan'] = $json->subscriptionPlan;
+				$user_info['status']            = $json->status;
+				$user_info['total_quota']       = intval( $json->quotaPerMonth );
+				$user_info['quota']             = intval( $json->quota + $json->quotaExtra );
 			}
 			catch ( Exception $e ) {
 			}
