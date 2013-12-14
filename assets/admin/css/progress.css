@@ -10,11 +10,11 @@
 	display: inline-block;
 }
 
-@media( min-width:1200px ) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
    .nelioab-summary-graphic { width:30%; }
 }
 
-@media( max-width:1200px ) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
    .nelioab-summary-graphic { max-width:480px; display:block; }
 }
 
@@ -32,7 +32,7 @@
 	display:inline-block;
 	margin-bottom:-4px;
 }
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-star {
 	background:       url( '../images/2x/star.png' );
 	background-image: url( '../images/2x/star.png' );
@@ -47,7 +47,7 @@
 	display:inline-block;
 	margin-bottom:-4px;
 }
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-clock {
 	background:       url( '../images/2x/clock.png' );
 	background-image: url( '../images/2x/clock.png' );
@@ -62,7 +62,7 @@
 	display:inline-block;
 	margin-bottom:-4px;
 }
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-tick {
 	background:       url( '../images/2x/tick.png' );
 	background-image: url( '../images/2x/tick.png' );
@@ -91,11 +91,11 @@ div#info-summary {
 	}
 
 	#summary-numbers > .result {
-		font-size:17px;
+		font-size:16px;
 		text-align:right;
 		margin-top:0.3em;
 		margin-bottom:0.3em;
-		width:170px;
+		width:190px;
 	}
 
 /* EXPERIMENT INFORMATION */
@@ -142,6 +142,12 @@ div#exp-info-alts .alt-type {
 	margin-right:1em;
 	display:inline-block;
 	text-align:center;
+}
+
+div#exp-info-alts .alt-type,
+div#exp-info-alts .alt-type:hover {
+	background-color:#e0e0e0;
+	color:#444;
 }
 
 div#exp-info-alts .alt-type-winner {

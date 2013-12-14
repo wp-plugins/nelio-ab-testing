@@ -1,6 +1,6 @@
 .nelioab-option-disabled .nelioab-option {
 	color: #aaaaaa;
-	background: #eeeeee url( '../images/coming-soon.png' ) top right no-repeat;
+	background: #e8e8e8 url( '../images/coming-soon.png' ) top right no-repeat;
 }
 
 .nelioab-option-disabled .nelioab-option-image {
@@ -13,7 +13,7 @@
 	margin:2em;
 	width:220px;
 	height:220px;
-	background-color:#eeeeee;
+	background-color:#e8e8e8;
 	color:black;
 	font-size:1.5em;
 	text-align:center;
@@ -43,7 +43,7 @@
 	background-image: url( '../images/new-exp-page.png' );
 }
 
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 .nelioab-image-page {
 	background-image: url( '../images/2x/new-exp-page.png' );
 	background-size: 240px 120px;
@@ -54,7 +54,7 @@
 	background-image: url( '../images/new-exp-post.png' );
 }
 
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 .nelioab-image-post {
 	background-image: url( '../images/2x/new-exp-post.png' );
 	background-size: 240px 120px;
@@ -65,7 +65,7 @@
 	background-image: url( '../images/new-exp-css.png' );
 }
 
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 .nelioab-image-css {
 	background-image: url( '../images/2x/new-exp-css.png' );
 	background-size: 240px 120px;
@@ -76,7 +76,7 @@
 	background-image: url( '../images/new-exp-menu.png' );
 }
 
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 .nelioab-image-menu {
 	background-image: url( '../images/2x/new-exp-menu.png' );
 	background-size: 240px 120px;
@@ -87,7 +87,7 @@
 	background-image: url( '../images/new-exp-title.png' );
 }
 
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 .nelioab-image-title {
 	background-image: url( '../images/2x/new-exp-title.png' );
 	background-size: 240px 120px;
@@ -98,7 +98,7 @@
 	background-image: url( '../images/new-exp-theme.png' );
 }
 
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 .nelioab-image-theme {
 	background-image: url( '../images/2x/new-exp-theme.png' );
 	background-size: 240px 120px;
@@ -109,7 +109,7 @@
 	background-image: url( '../images/new-exp-widget.png' );
 }
 
-@media all and (-webkit-min-device-pixel-ratio: 1.25) {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 .nelioab-image-widget {
 	background-image: url( '../images/2x/new-exp-widget.png' );
 	background-size: 240px 120px;
@@ -130,7 +130,7 @@
 /* Disabled... */
 .nelioab-option-disabled .nelioab-option:hover {
 	color: #aaaaaa;
-	background-color: #eeeeee;
+	background-color:#e8e8e8;
 }
 
 .nelioab-option-disabled .nelioab-option:hover .nelioab-image {
