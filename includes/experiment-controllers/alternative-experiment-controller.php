@@ -117,26 +117,10 @@ class NelioABAlternativeExperimentController {
 	}
 
 	private function send_navigation() {
-		$dest_post_id = url_to_postid( $_SERVER['HTTP_REFERER'] );
+		$dest_post_id = $this->url_or_front_page_to_postid( $_SERVER['HTTP_REFERER'] );
 		$referer = '';
 		if ( isset( $_POST['referer'] ) )
 			$referer = $_POST['referer'];
-
-		// Checking if the source page was the Landing Page
-		// This is a special case, because it might be the case that the
-		// landing page is dynamically built using the last posts info.
-		$front_page_url = rtrim( get_bloginfo('url'), '/' );
-		$http_referer   = rtrim( $_SERVER['HTTP_REFERER'], '/' );
-		if ( $http_referer == $front_page_url ) {
-			$dest_post_id = get_option( 'page_on_front' );
-			if ( !$dest_post_id ) {
-				// We are dynamically building the front page...
-				$this->send_navigation_if_required(
-					NelioABAlternativeExperimentController::FRONT_PAGE__YOUR_LATEST_POSTS,
-					$referer );
-				die();
-			}
-		}
 
 		if ( isset( $_POST['nelioab_nav_to_external_page'] ) )
 			$this->send_navigation_if_required( $_POST['nelioab_nav_to_external_page'], $referer, false );
@@ -147,21 +131,24 @@ class NelioABAlternativeExperimentController {
 	}
 
 	private function check_requires_an_alternative() {
-		$post_id = url_to_postid( $_SERVER['HTTP_REFERER'] );
+		$post_id = $this->url_or_front_page_to_postid( $_SERVER['HTTP_REFERER'] );
 
-		// Checking if the source page was the Landing Page
-		$front_page_url = rtrim( get_bloginfo('url'), '/' );
-		$http_referer   = rtrim( $_SERVER['HTTP_REFERER'], '/' );
-		if ( $http_referer == $front_page_url )
-			$post_id = get_option( 'page_on_front' );
-
-		if ( $this->is_there_a_theme_alt_exp_with_origin( $post_id ) )
+		if ( $this->is_there_a_running_theme_alt_exp() )
 			return 'LOAD_ALT';
 
 		if ( $this->is_post_in_a_post_alt_exp( $post_id ) )
 			return 'LOAD_ALT';
 		else
 			return 'DO_NOT_LOAD_ALT';
+	}
+
+	private function is_there_a_running_theme_alt_exp() {
+		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+		foreach ( $running_exps as $exp )
+			if ( $exp->get_type() == NelioABExperiment::THEME_ALT_EXP )
+					return true;
+		return false;
 	}
 
 	private function is_there_a_theme_alt_exp_with_origin( $post_id ) {
@@ -513,19 +500,30 @@ class NelioABAlternativeExperimentController {
 		return NelioABUser::get_alternative_for_post_alt_exp( $post_id );
 	}
 
+	private function url_or_front_page_to_postid( $url ) {
+		$the_id = url_to_postid( $url );
+
+		// Checking if the source page was the Landing Page
+		// This is a special case, because it might be the case that the
+		// front page is dynamically built using the last posts info.
+		$front_page_url = rtrim( get_bloginfo('url'), '/' );
+		$proper_url     = rtrim( $url, '/' );
+		if ( $proper_url == $front_page_url ) {
+			$aux = get_option( 'page_on_front' );
+			if ( $aux )
+				$the_id = $aux;
+			if ( !$the_id )
+				$the_id = NelioABAlternativeExperimentController::FRONT_PAGE__YOUR_LATEST_POSTS;
+		}
+
+		return $the_id;
+	}
+
 	private function send_navigation_if_required( $dest_id, $referer_url, $is_internal = true ) {
 		// PREPARING DATA
 		// ---------------------------------
 		$referer_url = rtrim( $referer_url, '/' );
-		$src_id      = url_to_postid( $referer_url );
-
-		// Checking if the source page was the Landing Page
-		$front_page_url = rtrim( get_bloginfo('url'), '/' );
-		if ( $referer_url == $front_page_url ) {
-			$src_id = get_option( 'page_on_front' );
-			if ( !$src_id )
-				$src_id = NelioABAlternativeExperimentController::FRONT_PAGE__YOUR_LATEST_POSTS;
-		}
+		$src_id      = $this->url_or_front_page_to_postid( $referer_url );
 
 		// Checking if the source page was an alternative
 		$actual_src_id = $src_id;

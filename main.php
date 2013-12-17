@@ -19,19 +19,19 @@
 /*
  * Plugin Name: Nelio A/B Testing
  * Description: Optimize your site based on data, not opinions. With this plugin, you will be able to perform A/B testing (and more) on your wordpress site.
- * Version: 1.5.2
+ * Version: 1.5.4
  * Author: Nelio Software
  * Plugin URI: http://wp-abtesting.com
  * Text Domain: nelioab
  */
 
 // PLUGIN VERSION
-define( 'NELIOAB_PLUGIN_VERSION', '1.5.2' );
+define( 'NELIOAB_PLUGIN_VERSION', '1.5.4' );
 
 // Plugin dir name...
 define( 'NELIOAB_PLUGIN_NAME', 'Nelio A/B Testing' );
-define( 'NELIOAB_PLUGIN_DIR_NAME', 'nelio-ab-testing' );
-//define( 'NELIOAB_PLUGIN_DIR_NAME', basename( dirname( __FILE__ ) ) );
+//define( 'NELIOAB_PLUGIN_DIR_NAME', 'nelio-ab-testing' );
+define( 'NELIOAB_PLUGIN_DIR_NAME', basename( dirname( __FILE__ ) ) );
 
 // Defining a few important directories
 define( 'NELIOAB_ROOT_DIR', plugin_dir_path( __FILE__ ) );
@@ -68,8 +68,63 @@ require_once( NELIOAB_UTILS_DIR . '/cookies.php' );
 require_once( NELIOAB_DIR . '/controller.php' );
 require_once( NELIOAB_ADMIN_DIR . '/admin-controller.php' );
 
-// Clean all stuff when activating the plugin
+// Clean old stuff when activating the plugin
 require_once( NELIOAB_UTILS_DIR . '/cleaner.php' );
 register_activation_hook( __FILE__, 'nelioab_clean' );
+
+// Making sure all alternatives are hidden when the plugin is deactivated
+register_activation_hook( __FILE__, 'nelioab_activate_plugin' );
+register_deactivation_hook( __FILE__, 'nelioab_deactivate_plugin' );
+
+function nelioab_activate_plugin() {
+	// Showing previous page alternatives
+	$args = array(
+		'post_status'    => 'draft',
+		'post_type'      => 'nelioab_alt_page',
+		'posts_per_page' => -1,
+	);
+	$alternative_pages = get_posts( $args );
+	foreach ( $alternative_pages as $page ) {
+		$page->post_type = 'page';
+		wp_update_post( $page );
+	}
+
+	// Showing previous page alternatives
+	$args = array(
+		'post_status'    => 'draft',
+		'post_type'      => 'nelioab_alt_post',
+		'posts_per_page' => -1,
+	);
+	$alternative_posts = get_posts( $args );
+	foreach ( $alternative_posts as $post ) {
+		$post->post_type = 'post';
+		wp_update_post( $post );
+	}
+}
+
+function nelioab_deactivate_plugin() {
+	// Hiding alternative pages
+	$args = array(
+		'meta_key'       => '_is_nelioab_alternative',
+		'post_status'    => 'draft',
+	);
+	$alternative_pages = get_pages( $args );
+	foreach ( $alternative_pages as $page ) {
+		$page->post_type = 'nelioab_alt_page';
+		wp_update_post( $page );
+	}
+
+	// Hiding alternative posts
+	$args = array(
+		'meta_key'       => '_is_nelioab_alternative',
+		'post_status'    => 'draft',
+		'posts_per_page' => -1,
+	);
+	$alternative_posts = get_posts( $args );
+	foreach ( $alternative_posts as $post ) {
+		$post->post_type = 'nelioab_alt_post';
+		wp_update_post( $post );
+	}
+}
 
 ?>

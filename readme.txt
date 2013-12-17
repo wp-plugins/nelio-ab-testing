@@ -2,8 +2,8 @@
 Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
-Tested up to: 3.7
-Stable tag: 1.5.2
+Tested up to: 3.8
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -127,6 +127,14 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.5.4 =
+* Buf fix: compatibility issuse with JetPack and IE10 are now fixed
+
+= 1.5.3 =
+* Compatibility with WordPress 3.8
+* Alternative pages/post are no longer visible when disabling the plugin
+* Some other minor tweaks
 
 = 1.5.2 =
 * Improved quality for all graphical assets
@@ -266,5 +274,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.5.2 =
-Bug fix in the progress page and some minor tweaks.
+= 1.5.4 =
+Compatibility issuse with JetPack and IE10 are now fixed

@@ -91,9 +91,15 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function add_custom_styles() {
+			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			wp_register_style( 'nelioab_generic_css',
 				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-generic.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_generic_css' );
+			if ( NelioABWpHelper::is_at_least_version( 3.8 ) ) {
+				wp_register_style( 'nelioab_new_icons_css',
+					NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-icons.css', false, NELIOAB_PLUGIN_VERSION );
+				wp_enqueue_style( 'nelioab_new_icons_css' );
+			}
 		}
 
 		public function add_js_for_dialogs() {

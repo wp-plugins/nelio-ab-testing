@@ -1,0 +1,35 @@
+/* ------------------- */
+/*        PAGES        */
+/* ------------------- */
+
+#toplevel_page_nelioab-experiments div.wp-menu-image {
+	background-image: url('../images/menu-3.8.png');
+	background-position: 0px 0px;
+	width: 36px;
+	height: 30px;
+}
+
+#toplevel_page_nelioab-experiments:hover div.wp-menu-image {
+	background-position: 72px 0px !important;
+}
+
+#toplevel_page_nelioab-experiments.wp-has-current-submenu div.wp-menu-image,
+#toplevel_page_nelioab-experiments.wp-has-current-submenu:hover div.wp-menu-image {
+	background-position: 36px 0px !important;
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
+	#toplevel_page_nelioab-experiments div.wp-menu-image {
+		background-image: url('../images/2x/menu-3.8.png');
+		background-size: 108px 30px;
+	}
+}
+
+#toplevel_page_nelioab-experiments:hover div.wp-menu-image,
+#toplevel_page_nelioab-experiments.wp-has-current-submenu div.wp-menu-image,
+#toplevel_page_nelioab-experiments :hover div.wp-menu-image,
+#toplevel_page_nelioab-experiments .wp-has-current-submenu div.wp-menu-image,
+#toplevel_page_nelioab-experiments .current div.wp-menu-image {
+	background-position: 0px 0px;
+}
+
