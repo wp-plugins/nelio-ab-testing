@@ -64,6 +64,12 @@ function nelioab_load_alt($) {
 				nelioab_load_alt: 'true',
 			},
 			success: function(data) {
+				data = data
+					.replace(
+						/<script src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
+						'<!-- <script src="http://stats.wordpress.com/e-$1 -->\n' +
+						'\t<script>function st_go(a){} function linktracker_init(a,b){}</script>\n'
+					);
 				document.open();
 				document.write(data);
 				document.close();

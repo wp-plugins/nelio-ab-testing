@@ -91,11 +91,11 @@ div#info-summary {
 	}
 
 	#summary-numbers > .result {
-		font-size:16px;
+		font-size:17px;
 		text-align:right;
 		margin-top:0.3em;
 		margin-bottom:0.3em;
-		width:190px;
+		width:170px;
 	}
 
 /* EXPERIMENT INFORMATION */

@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,8 +25,8 @@ what matters to you: serving information to your visitors as quickly as
 possible.
 
 **Note:** Please keep in mind that [you will need an
-account](http://wp-abtesting.com/subscription-plans/) to use our plugin (the
-service includes a 15-day free trial period).
+account](http://wp-abtesting.com) to use our plugin (the service includes a
+15-day free trial period).
 
 
 = Features =
@@ -48,7 +48,7 @@ performed in Nelio's backend servers.
 
 **Before installing the plugin...**
 
-Sign up at our [Nelio A/B Testing service](http://wp-abtesting.com/subscription-plans/). Once you
+Sign up at our [Nelio A/B Testing service](http://wp-abtesting.com). Once you
 are registered, you will be sent an e-mail with your account information, which
 is necessary for using the plugin.
 
@@ -127,6 +127,9 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.5.4 =
+* Buf fix: compatibility issuse with JetPack and IE10 are now fixed
 
 = 1.5.3 =
 * Compatibility with WordPress 3.8
@@ -271,5 +274,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.5.3 =
-Compatibility with WordPress 3.8 (new look&feel) + some minor tweaks
+= 1.5.4 =
+Compatibility issuse with JetPack and IE10 are now fixed
