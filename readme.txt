@@ -129,7 +129,7 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 == Changelog ==
 
 = 1.5.5 =
-* InApp Quota Payment: you can now increase the available quota from within
+* Quota Management: you can now increase the available quota from within
 the plugin!
 
 = 1.5.4 =
