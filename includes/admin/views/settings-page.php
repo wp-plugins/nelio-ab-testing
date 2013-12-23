@@ -210,7 +210,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 					}
 					else {
 						if ( $this->user_info['subscription_plan'] == 0 ) {
-							printf( '%s <a href="%s">%s</a>',
+							printf( '%s<br /><a href="%s">%s</a>',
 								__( 'You are using the <b>Free Trial</b> version of ' .
 								    'Nelio A/B Testing.', 'nelioab' ),
 								$this->user_info['subscription_url'],
@@ -224,29 +224,40 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				?></p>
 
 				<?php
-				if ( isset( $this->user_info['total_quota'] ) ) { ?>
-					<p style="margin-top:0em;margin-left:3em;"><?php
-						printf( __( 'Your current plan permits up to %d page views per month.', 'nelioab' ),
-							$this->user_info['total_quota'] ); ?></p>
-				<?php
-				} ?>
+				$post_quota = '';
+				if ( isset( $this->user_info['total_quota'] ) )
+					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views ' .
+						'under test per month. If you need more quota, please consider buying additional ' .
+						'page views as you need them using the button below, or <a href="%s">contact ' .
+						'us for an update of your monthly quota</a>.', 'nelioab' ),
+						$this->user_info['total_quota'],
+						'mailto:info@wp-abtesting.com' );
 
-				<?php
 				if ( isset( $this->user_info['quota'] ) ) { ?>
-					<h3><?php _e( 'Available Quota', 'nelioab' ); ?>
-					<small>(<a href="http://wp-abtesting.com/faqs/what-is-a-tested-pageview"><?php
-						_e( 'Help', 'nelioab' );
-					?></a>)</small></h3>
+					<p style="margin-top:0em;margin-left:3em;max-width:600px;">
+					<b><?php _e( 'Available Quota:', 'nelioab' ); ?></b>
 					<?php
-						$the_quota   = $this->user_info['quota'];
-						$quota_color = '#00AA00';
-						if ( $the_quota < 1000 )
+						$the_total_quota = $this->user_info['total_quota'];
+						$the_quota       = $this->user_info['quota'];
+						$quota_color     = '#00AA00';
+						if ( $the_quota < ( $the_total_quota * 0.15 ) )
 							$quota_color = '#FF9532';
-						if ( $the_quota < 200 )
+						if ( $the_quota < ( $the_total_quota * 0.05 ) )
 							$quota_color = 'red';
 					?>
-					<p style="color:<?php echo $quota_color; ?>;margin-top:0em;margin-left:3em;font-size:120%;"><b><?php
-						echo $the_quota; ?></b></p>
+					<b><?php
+						printf( __( '<span %s>%d</span> Page Views' ),
+							"style='font-size:120%;color:$quota_color;'",
+							$the_quota ); ?></b>
+					<small>(<a href="http://wp-abtesting.com/faqs/what-is-a-tested-pageview"><?php
+						_e( 'Help', 'nelioab' );
+					?></a>)</small><?php echo $post_quota; ?></p>
+
+					<a style="margin-left:3em;margin-bottom:1.5em;" class="button" target="_blank"
+						href="http://sites.fastspring.com/nelio/product/nelioextrapageviewsforthepersonalserviceplan"><?php
+						_e( 'Buy More', 'nelioab' );
+					?></a>
+
 				<?php
 				} ?>
 
