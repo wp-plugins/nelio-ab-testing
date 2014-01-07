@@ -65,7 +65,7 @@ if( !class_exists( 'NelioABQuickExperiment' ) ) {
 			// Nothing to be done here
 		}
 
-		public function get_url_for_making_goal_persistent( $goal, $type ) {
+		public function get_exp_kind_url_fragment() {
 			// Nothing to be done here
 		}
 

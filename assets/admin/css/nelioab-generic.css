@@ -18,6 +18,9 @@
 #nelioab-experiment-list-table .wp-list-table .column-status {
 	width: 120px;
 	min-width: 120px;
+}
+
+#nelioab-experiment-list-table .wp-list-table .column-status a {
 	text-align: center;
 }
 

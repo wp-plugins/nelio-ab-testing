@@ -56,6 +56,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 
 		public function render() {
 			?>
+			<script type="text/javascript" src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/tablesorter.min.js'; ?>"></script>
 			<div class="wrap">
 				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
 				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>

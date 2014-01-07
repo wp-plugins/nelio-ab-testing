@@ -229,29 +229,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 				}
 				catch ( Exception $e ) {
 				}
-
 			}
-
-		}
-
-		public function get_url_for_making_goal_persistent( $goal, $goal_type_url ) {
-			if ( $goal->get_id() == -1 ) {
-				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/global/%1$s/goal/%2$s',
-					$this->get_id(), $goal_type_url
-				);
-			}
-			else {
-				if ( $goal->has_to_be_deleted() )
-					$action = 'delete';
-				else
-					$action = 'update';
-				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/goal/%2$s/%1$s/%3$s',
-					$goal->get_id(), $goal_type_url, $action
-				);
-			}
-			return $url;
 		}
 
 	}//NelioABThemeAlternativeExperiment

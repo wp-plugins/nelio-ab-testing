@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 1.5.4
+Stable tag: 1.5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,8 +25,8 @@ what matters to you: serving information to your visitors as quickly as
 possible.
 
 **Note:** Please keep in mind that [you will need an
-account](http://wp-abtesting.com) to use our plugin (the service includes a
-15-day free trial period).
+account](http://wp-abtesting.com/subscription-plans/) to use our plugin (the
+service includes a 15-day free trial period).
 
 
 = Features =
@@ -48,7 +48,7 @@ performed in Nelio's backend servers.
 
 **Before installing the plugin...**
 
-Sign up at our [Nelio A/B Testing service](http://wp-abtesting.com). Once you
+Sign up at our [Nelio A/B Testing service](http://wp-abtesting.com/subscription-plans/). Once you
 are registered, you will be sent an e-mail with your account information, which
 is necessary for using the plugin.
 
@@ -127,6 +127,15 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.5.6 =
+* UI Improvement: list of experiments is now sortable
+* Bug fix: when starting an experiment with multiple goals, the error "Too
+  few parameters" does no longer appear
+
+= 1.5.5 =
+* InApp Quota Payment: you can now increase the available quota from within
+the plugin!
 
 = 1.5.4 =
 * Buf fix: compatibility issuse with JetPack and IE10 are now fixed
@@ -274,5 +283,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.5.4 =
-Compatibility issuse with JetPack and IE10 are now fixed
+= 1.5.6 =
+Bug fixes and improvements. Increase the quota from within the plugin.

@@ -164,18 +164,40 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 			$this->goals    = array();
 		}
 
+		public function get_url_for_making_goal_persistent( $goal ) {
+			$exp_url_fragment = $this->get_exp_kind_url_fragment();
+			switch ( $goal->get_kind() ) {
+				case NelioABGoal::PAGE_ACCESSED_GOAL:
+				default:
+				$type = 'page-accessed';
+			}
+			if ( $goal->get_id() == -1 ) {
+				$url = sprintf(
+					NELIOAB_BACKEND_URL . '/exp/%1$s/%2$s/goal/%3$s',
+					$exp_url_fragment, $this->get_id(), $type
+				);
+			}
+			else {
+				if ( $goal->has_to_be_deleted() )
+					$action = 'delete';
+				else
+					$action = 'update';
+				$url = sprintf(
+					NELIOAB_BACKEND_URL . '/goal/%2$s/%1$s/%3$s',
+					$goal->get_id(), $type, $action
+				);
+			}
+			return $url;
+		}
+
 		public function make_goals_persistent() {
 			require_once( NELIOAB_MODELS_DIR . '/goals/goals-manager.php' );
 			$remaining_goals = array();
 			foreach ( $this->get_goals() as $goal ) {
-				switch ( $goal->get_kind() ) {
-					case NelioABGoal::PAGE_ACCESSED_GOAL:
-					default:
-					$type = 'page-accessed';
-				}
-				$url = $this->get_url_for_making_goal_persistent( $goal, $type );
+				$url = $this->get_url_for_making_goal_persistent( $goal );
 				if ( $goal->has_to_be_deleted() ) {
-					$result = NelioABBackend::remote_post( $url );
+					if ( $goal->get_id() != -1 )
+						$result = NelioABBackend::remote_post( $url );
 				}
 				else {
 					array_push( $remaining_goals, $goal );
@@ -255,7 +277,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 			$this->make_goals_persistent();
 		}
 
-		public abstract function get_url_for_making_goal_persistent( $goal, $type );
+		public abstract function get_exp_kind_url_fragment();
 		public abstract function save();
 		public abstract function remove();
 

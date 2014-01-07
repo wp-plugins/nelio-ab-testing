@@ -37,6 +37,10 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			$this->items = $items;
 		}
 
+		public function get_jquery_sortable_columns() {
+			return array();
+		}
+
 
 		/** ************************************************************************
 		 * Recommended. This method is called when the parent class can't find a method
@@ -158,6 +162,10 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			$this->prepare_pagination();
 		}
 
+		public function get_table_id() {
+			return false;
+		}
+
 		public function display_rows() {
 			$this->print_inline_edit_form();
 			parent::display_rows();
@@ -167,10 +175,13 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			parent::display_rows_or_placeholder();
 		}
 
-		// TODO: aixo hauria d'estar ben identificat (la var nelioabEditingItem,
-		// per si tinc mes d'una taula i tal...)
 		public function display() {
-			parent::display(); ?>
+			if ( $this->get_table_id() )
+				echo '<span style="display:none;" id="' . $this->get_table_id() . '"></span>';
+			parent::display();
+			// TODO: aixo hauria d'estar ben identificat (la var nelioabEditingItem,
+			// per si tinc mes d'una taula i tal...)
+			?>
 			<script>
 				var nelioabEditingItem = null;
 				function showInlineEdit( row ) {
@@ -215,11 +226,47 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 
 			</script>
 			<?php
+			// And now this is OK:
+			$id = $this->get_table_id();;
+			if ( $id ) {
+				$cols = $this->get_columns();
+				$sort = $this->get_jquery_sortable_columns();
+				$head = '';
+				$i = 0;
+				foreach ( $cols as $col => $val ) {
+					if ( !in_array( $col, $sort ) )
+						$head .= "$i:{sorter:false},";
+					++$i;
+				}
+				?>
+				<script>if (typeof jQuery !== 'undefined') {
+					jQuery("span#<?php echo $id; ?>").nextAll("table").first().
+						attr("id", "<?php echo $id; ?>");
+					jQuery("span#<?php echo $id; ?>").remove();
+					jQuery("table#<?php echo $id; ?>").
+					find("th").each(function() {
+						jQuery(this).html(
+							"<a><span>" + jQuery(this).text() + "</span>" +
+							"<span class='sorting-indicator'></span></a>");
+					});
+					jQuery("table#<?php echo $id; ?>").first().
+					tablesorter({
+						headers: {
+							<?php echo $head; ?>
+						},
+						cssAsc: 'sorted desc',
+						cssDesc: 'sorted asc',
+						cssHeader: 'sortable desc',
+						widgets: ['zebra'],
+						widgetZebra: { css: [ "non-alternate", "alternate" ] },
+					});
+				}</script><?php
+			}
 		}
 
 		// TODO: fix this operation AND documentation
 		// Mejor identificador para el inline-edit?
-		private function print_inline_edit_form() { ?>
+		protected function print_inline_edit_form() { ?>
 			<tr id="inline-edit" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page" style="display:none;">
 				<td colspan="<?php echo $this->get_column_count(); ?>" class="colspanchange">
 					<?php $this->inline_edit_form(); ?>
