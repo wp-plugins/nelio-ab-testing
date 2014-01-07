@@ -163,12 +163,13 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			);
 		}
 
-//		function get_sortable_columns(){
-//			return array(
-//				'name'        => __( 'Name', 'nelioab' ),
-//				'status'      => __( 'Status', 'nelioab' ),
-//			);
-//		}
+		public function get_table_id() {
+			return 'list-of-experiments-table';
+		}
+
+		public function get_jquery_sortable_columns() {
+			return array( 'name', 'status', 'creation' );
+		}
 
 		function get_display_functions() {
 			return array(
@@ -230,7 +231,10 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 		public function column_creation( $exp ) {
 			include_once( NELIOAB_UTILS_DIR . '/formatter.php' );
-			return NelioABFormatter::format_date( $exp->get_creation_date() );
+			$res = sprintf( '<span style="display:none;">%s</span>%s',
+				strtotime( $exp->get_creation_date() ),
+				NelioABFormatter::format_date( $exp->get_creation_date() ) );
+			return $res;
 		}
 
 		public function column_status( $exp ){
@@ -303,6 +307,10 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				'position:inherit;' .
 				'">%s</span></div>';
 			return sprintf( $style, $color, $label );
+		}
+
+		protected function print_inline_edit_form() {
+			// No inline edit form...
 		}
 
 	}// NelioABExperimentsTable

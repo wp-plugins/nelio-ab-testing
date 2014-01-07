@@ -98,6 +98,10 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 			$this->set_status( NelioABExperimentStatus::FINISHED );
 		}
 
+		public function get_exp_kind_url_fragment() {
+			return 'global';
+		}
+
 	}//NelioABGlobalAlternativeExperiment
 
 }

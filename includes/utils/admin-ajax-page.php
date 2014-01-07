@@ -50,6 +50,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 		}
 
 		public function render() {
+			?><script type="text/javascript" src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/tablesorter.min.js'; ?>"></script><?php
 			$is_data_pending_loader = 'display:none;';
 			$is_data_pending_data = 'display:visible;';
 			if ( $this->is_data_pending) {
