@@ -131,10 +131,10 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 = 1.5.6 =
 * UI Improvement: list of experiments is now sortable
 * Bug fix: when starting an experiment with multiple goals, the error "Too
-  few parameters" does no longer appear
+few parameters" does no longer appear
 
 = 1.5.5 =
-* InApp Quota Payment: you can now increase the available quota from within
+* Quota Management: you can now increase the available quota from within
 the plugin!
 
 = 1.5.4 =
