@@ -39,9 +39,8 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 		public function get_content_with_ajax_and_render( $controller_file, $controller_class ) {
 			$this->is_data_pending  = true;
 
-			$escaped_basedir = str_replace( '//', '/', NELIOAB_DIR );
-			$escaped_basedir = '/' . str_replace( '/', '\\/', $escaped_basedir ) . '/';
-			$controller_file = preg_replace( $escaped_basedir, '', $controller_file, 1);
+			$controller_file = str_replace( '\\', '\\\\"', $controller_file );
+			$controller_file = str_replace( '"', '\\"', $controller_file );
 
 			$this->controller_file  = $controller_file;
 			$this->controller_class = $controller_class;
