@@ -172,7 +172,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		public function generate_html_content() {
 			if ( isset( $_POST['filename'] ) && isset( $_POST['classname'] ) ) {
-				$file = NELIOAB_DIR . $_POST['filename'];
+				$file  = $_POST['filename'];
 				$class = $_POST['classname'];
 				require_once( $file );
 				call_user_func( array ( $class, 'generate_html_content' ) );
