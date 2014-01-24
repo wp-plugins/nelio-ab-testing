@@ -103,7 +103,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
 					$theme = NULL;
 					foreach ( $the_themes as $t ) {
-						if ( $t['Template'] == $alt->get_value() ) {
+						if ( $t['Stylesheet'] == $alt->get_value() ) {
 							$theme = $t;
 							break;
 						}

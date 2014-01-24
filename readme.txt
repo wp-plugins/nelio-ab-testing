@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 1.5.7
+Stable tag: 1.5.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -127,6 +127,9 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 
 == Changelog ==
+
+= 1.5.8 =
+* Bug fix: you can now create theme experiments with child themes
 
 = 1.5.7 =
 * Bug fix: fatal error on Windows machines
@@ -286,5 +289,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.5.7 =
-Critical bug fix on Windows machines.
+= 1.5.8 =
+Bug fix: you can now create theme experiments with child themes

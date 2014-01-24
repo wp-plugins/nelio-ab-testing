@@ -183,7 +183,7 @@ if( !class_exists( 'NelioABUser' ) ) {
 
 			$themes = wp_get_themes();
 			foreach ( $themes as $theme )
-				if ( $theme['Template'] == $alt->get_value() )
+				if ( $theme['Stylesheet'] == $alt->get_value() )
 					return $theme;
 
 			return wp_get_theme();
