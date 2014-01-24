@@ -122,7 +122,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			$view->set_wp_posts( $list_of_posts );
 
 			$current_theme = wp_get_theme();
-			$current_theme_id = $current_theme['Template'];
+			$current_theme_id = $current_theme['Stylesheet'];
 			$experiment->set_current_default_theme( $current_theme_id, $current_theme->offsetGet( 'Title' ) );
 			$view->set_current_theme(
 				$current_theme_id,
@@ -131,7 +131,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 				$current_theme->offsetGet( 'Author' ) );
 
 			foreach ( $themes as $theme ) {
-				$id = $theme['Template'];
+				$id = $theme['Stylesheet'];
 				if ( $id == $current_theme_id )
 					continue;
 				$view->add_theme(

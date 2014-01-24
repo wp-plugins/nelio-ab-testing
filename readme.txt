@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 1.5.6
+Stable tag: 1.5.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -128,10 +128,20 @@ alternatives quickly and easily, from scratch or from already-existing pages!
 
 == Changelog ==
 
+= 1.5.9 =
+* Bug fix: when creating theme experiments, the widgets of each theme are
+properly loaded.
+
+= 1.5.8 =
+* Bug fix: you can now create theme experiments with child themes
+
+= 1.5.7 =
+* Bug fix: fatal error on Windows machines
+
 = 1.5.6 =
 * UI Improvement: list of experiments is now sortable
 * Bug fix: when starting an experiment with multiple goals, the error "Too
-few parameters" does no longer appear
+  few parameters" does no longer appear
 
 = 1.5.5 =
 * Quota Management: you can now increase the available quota from within
@@ -283,5 +293,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.5.6 =
-Bug fixes and improvements. Increase the quota from within the plugin.
+= 1.5.9 =
+Theme experiments with child themes and use proper of proper widgets.
