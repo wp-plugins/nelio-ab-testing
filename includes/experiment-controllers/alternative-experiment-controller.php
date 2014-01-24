@@ -22,8 +22,11 @@ class NelioABAlternativeExperimentController {
 	private $alternative_post;
 	private $are_comments_from_original_loaded;
 
+	private $original_theme;
+
 	public function __construct() {
 		$this->check_parameters();
+		$this->original_theme = false;
 	}
 
 	public function hook_to_wordpress() {
@@ -192,9 +195,27 @@ class NelioABAlternativeExperimentController {
 		remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
 		remove_filter( 'template',   array( &$this, 'modify_template' ) );
 		$theme = NelioABUser::get_assigned_theme();
+		if ( !$this->original_theme )
+			$this->original_theme = wp_get_theme();
 		add_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
 		add_filter( 'template',   array( &$this, 'modify_template' ) );
 		return $theme['Template'];
+	}
+
+	public function fix_widgets_for_theme( $all_widgets ) {
+		require_once( NELIOAB_MODELS_DIR . '/user.php' );
+		$actual_theme = NelioABUser::get_assigned_theme();
+		$actual_theme_id = $actual_theme['Stylesheet'];
+
+		if ( !$this->original_theme['Stylesheet'] ||
+		     $this->original_theme['Stylesheet'] == $actual_theme_id )
+			return $all_widgets;
+
+		$aux = get_option( 'theme_mods_' . $actual_theme_id, array() );
+		$sidebars_widgets = $aux['sidebars_widgets']['data'];
+		if ( is_array( $sidebars_widgets ) && isset( $sidebars_widgets['array_version'] ) )
+			unset( $sidebars_widgets['array_version'] );
+		return $sidebars_widgets;
 	}
 
 	public function posts_results_intercept( $posts ) {

@@ -36,8 +36,9 @@ class NelioABController {
 			// Theme alt exp related
 			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
 				$aux = $this->get_alt_exp_controller();
-				add_filter( 'stylesheet', array( &$aux, 'modify_stylesheet' ) );
-				add_filter( 'template',   array( &$aux, 'modify_template' ) );
+				add_filter( 'stylesheet',       array( &$aux, 'modify_stylesheet' ) );
+				add_filter( 'template',         array( &$aux, 'modify_template' ) );
+				add_filter( 'sidebars_widgets', array( &$aux, 'fix_widgets_for_theme' ) );
 			}
 		}
 
