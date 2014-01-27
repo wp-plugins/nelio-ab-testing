@@ -13,10 +13,10 @@ based on data, not opinions.
 
 == Description ==
 
-[Nelio A/B Testing](http://wp-abtesting.com) is an optimization service for
-your WordPres site. It helps you define, manage, and keep track of A/B-testing
-experiments from within your WordPress' dashboard, creating a lovely,
-integrated, and well-known user experience.
+[Nelio A/B Testing](http://wp-abtesting.com) is a conversion optimization
+service for your WordPress site. It helps you define, manage, and keep track of
+A/B-testing experiments from within your WordPress' dashboard, creating a
+lovely, integrated, and well-known user experience.
 
 On the technical side, **any gathered information about experiments and
 statistical calculus are performed and stored in Nelio's backend servers**. As
