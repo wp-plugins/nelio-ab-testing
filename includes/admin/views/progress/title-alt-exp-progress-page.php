@@ -34,17 +34,17 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 			// THE ORIGINAL
 			// -----------------------------------------
 			$exp       = $this->exp;
-			$link      = get_permalink( $exp->get_original() );
+			$link      = get_permalink( $exp->get_originals_id() );
 			$ori_label = __( 'Original', 'nelioab' );
 
 			$edit_link = '';
 			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 				$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-					admin_url() . '/post.php?post=' . $exp->get_original() . '&action=edit',
+					admin_url() . '/post.php?post=' . $exp->get_originals_id() . '&action=edit',
 					__( 'Edit' ) );
 			}
 
-			if ( $this->is_winner( $exp->get_original() ) )
+			if ( $this->is_winner( $exp->get_originals_id() ) )
 				$set_as_winner = $this->winner_label;
 			else
 				$set_as_winner = '';
@@ -105,16 +105,14 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 			$exp = $this->exp;
 			?>
 			<p><?php
-				_e( 'You are about to override the original title with an alternative. ' .
-					'Do you want to continue?',
-					'nelioab' );
+				_e( 'You are about to override the original title with an alternative. Do you want to continue?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
 				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
 				$exp->get_id(); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo NelioABExperiment::TITLE_ALT_EXP; ?>" />
-				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_original(); ?>" />
+				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />
 				<input type="hidden" id="alternative" name="alternative" value="" />
 			</form>
 			<?php

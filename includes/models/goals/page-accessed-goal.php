@@ -187,11 +187,15 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 
 					$g->set_min_name( __( 'Unknown', 'nelioab' ) );
 					$g->set_max_name( __( 'Unknown', 'nelioab' ) );
-					foreach( $experiment->get_alternatives() as $alt ) {
-						if ( $alt->get_value() == $min_ver )
-							$g->set_min_name( $alt->get_name() );
-						if ( $alt->get_value() == $max_ver )
-							$g->set_max_name( $alt->get_name() );
+					$i = 1;
+					$alts = $experiment->get_alternatives();
+					for( $i = 0; $i < count( $alts ); ++$i ) {
+						$alt = $alts[$i];
+						$short_name = sprintf( __( 'Alternative %s', 'nelioab' ), ( $i + 1 ) );
+						if ( $alt->get_value() == $min_ver || $alt->get_id() == $min_ver )
+							$g->set_min_name( $short_name, $alt->get_name() );
+						if ( $alt->get_value() == $max_ver || $alt->get_id() == $max_ver )
+							$g->set_max_name( $short_name, $alt->get_name() );
 					}
 					if ( $experiment->get_originals_id() == $min_ver )
 						$g->set_min_name( __( 'Original', 'nelioab' ) );

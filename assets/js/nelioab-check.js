@@ -9,6 +9,10 @@ function nelioab_init() {
 	// Synchronize cookies
 	if ( !nelioab_sync_cookies_and_check_if_load_required(jQuery) ) {
 		nelioab_show_body();
+		jQuery(document).ready(function(){
+			if ( typeof( nelioabStartHeatmapTracking ) == "function" )
+				nelioabStartHeatmapTracking();
+		});
 		return;
 	}
 

@@ -38,12 +38,12 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 		protected function get_original_name() {
 			// Original title
 			$exp = $this->exp;
-			$this->ori = $exp->get_original_theme()->get_name();
+			$this->ori = $exp->get_original()->get_name();
 		}
 
 		protected function get_original_value() {
 			$exp = $this->exp;
-			return $exp->get_original_theme()->get_value();
+			return $exp->get_original()->get_value();
 		}
 
 		protected function print_js_function_for_post_data_overriding() { ?>
@@ -146,9 +146,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			$exp = $this->exp;
 			?>
 			<p><?php
-				_e( 'You are about to override the original theme with the alternative. ' .
-					'Do you want to continue?',
-					'nelioab' );
+				_e( 'You are about to override the original theme with the alternative. Do you want to continue?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
 				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .

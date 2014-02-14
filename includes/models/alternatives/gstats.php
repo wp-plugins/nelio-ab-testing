@@ -28,8 +28,10 @@ if( !class_exists( 'NelioABGTest' ) ) {
 		private $original;
 		private $min;
 		private $min_name;
+		private $min_short_name;
 		private $max;
 		private $max_name;
+		private $max_short_name;
 		private $gtest;
 		private $pvalue;
 		private $certainty;
@@ -64,7 +66,8 @@ if( !class_exists( 'NelioABGTest' ) ) {
 			return $this->min;
 		}
 
-		public function set_min_name( $min_name ) {
+		public function set_min_name( $min_short_name, $min_name = false ) {
+			$this->min_short_name = $min_short_name;
 			$this->min_name = $min_name;
 		}
 
@@ -76,7 +79,8 @@ if( !class_exists( 'NelioABGTest' ) ) {
 			return $this->max;
 		}
 
-		public function set_max_name( $max_name ) {
+		public function set_max_name( $max_short_name, $max_name = false ) {
+			$this->max_short_name = $max_short_name;
 			$this->max_name = $max_name;
 		}
 
@@ -96,6 +100,17 @@ if( !class_exists( 'NelioABGTest' ) ) {
 			return $this->certainty;
 		}
 
+		private function prepare_name( $name, $popup ) {
+			if ( $popup ) {
+				$popup = str_replace( '"', '\'\'', $popup );
+				$aux = "<span title=\"$popup\">$name</span>";
+			}
+			else {
+				$aux = $name;
+			}
+			return $aux;
+		}
+
 		public function to_string() {
 			switch( $this->type ) {
 				case NelioABGTest::NO_CLEAR_WINNER:
@@ -106,31 +121,23 @@ if( !class_exists( 'NelioABGTest' ) ) {
 
 				case NelioABGTest::DROP_VERSION:
 					return sprintf(
-						__( '«%1$s» beats «%2$s» with a %3$s%% confidence.',
-							'nelioab' ),
-							$this->max_name,
-							$this->min_name,
+						__( '«%1$s» beats «%2$s» with a %3$s%% confidence.', 'nelioab' ),
+							$this->prepare_name( $this->max_short_name, $this->max_name ),
+							$this->prepare_name( $this->min_short_name, $this->min_name ),
 							$this->certainty
 						);
 
 				case NelioABGTest::WINNER:
-					$string = __( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, ' .
-						'we can conclude that «%1$s» is the best alternative, but with a low ' .
-						'confidence value <small>(<a href="http://wp-abtesting.com/faqs/what-' .
-						'is-the-meaning-of-the-confidence-value-you-provide-together-with-' .
-						'the-results/">why is this important?</a>)</small>.',
-						'nelioab' );
+					$string = __( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, we can conclude that «%1$s» is the best alternative, but with a low confidence value <small>(<a href="http://wp-abtesting.com/faqs/what-is-the-meaning-of-the-confidence-value-you-provide-together-with-the-results/">why is this important?</a>)</small>.', 'nelioab' );
 					$aux = $this->certainty;
 					if ( is_string( $aux ) )
 						$aux = floatval( $aux );
 					if ( $aux >= 90 ) {
-						$string = __( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, ' .
-							'we can conclude that «%1$s» is the best alternative.',
-							'nelioab' );
+						$string = __( '«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, we can conclude that «%1$s» is the best alternative.', 'nelioab' );
 					}
 					return sprintf( $string,
-						$this->max_name,
-						$this->min_name,
+						$this->prepare_name( $this->max_short_name, $this->max_name ),
+						$this->prepare_name( $this->min_short_name, $this->min_name ),
 						$this->certainty
 					);
 

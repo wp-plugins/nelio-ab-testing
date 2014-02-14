@@ -29,18 +29,14 @@ if ( !class_exists( 'NelioABDeactivatedUserPage' ) ) {
 		}
 
 		protected function do_render() {
-			$style = 'font-size:130%%;color:grey;max-width:450px;line-height:150%%;';
+			$style = 'font-size:130%%;color:#555;max-width:450px;line-height:150%%;';
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'The user account has been deactivated. Normally, this occurs ' .
-					'once you unsubscribed from our Nelio A/B Testing service. If you ' .
-					'want to use the service, you may want to consider subscribing ' .
-					'to one of our packages again.', 'nelioab' )
+					__( 'The user account has been deactivated. Normally, this occurs once you unsubscribed from our Nelio A/B Testing service. If you want to use the service, you may want to consider subscribing to one of our packages again.', 'nelioab' )
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'Please, go to the settings page and check your subscription ' .
-					'details.', 'nelioab' )
+					__( 'Please, go to the settings page and check your subscription details.', 'nelioab' )
 				);
 
 			echo sprintf( "<br /><div style=\"text-align:center;$style\">%s</div>",

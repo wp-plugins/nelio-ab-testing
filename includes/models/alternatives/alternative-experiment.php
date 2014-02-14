@@ -29,6 +29,8 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 		private $appspot_alternatives;
 		private $local_alternatives;
 
+		private $track_heatmaps;
+
 		public function __construct( $id ) {
 			parent::__construct();
 			$this->id = $id;
@@ -38,6 +40,15 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			parent::clear();
 			$this->appspot_alternatives = array();
 			$this->local_alternatives = array();
+			$this->track_heatmaps = false;
+		}
+
+		public function track_heatmaps( $do_track ) {
+			$this->track_heatmaps = $do_track;
+		}
+
+		public function are_heatmaps_tracked() {
+			return $this->track_heatmaps;
 		}
 
 		public function get_appspot_alternatives() {
@@ -134,6 +145,7 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 		}
 
 		public abstract function discard_changes();
+		public abstract function get_original();
 		public abstract function get_originals_id();
 		protected abstract function determine_proper_status();
 

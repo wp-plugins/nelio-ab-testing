@@ -20,7 +20,9 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 	require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
 	require_once( NELIOAB_MODELS_DIR . '/quick-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/post-alternative-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/theme-alternative-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/heatmap-experiment.php' );
 
 	class NelioABExperimentsManager implements iNelioABDataManager {
 
@@ -76,73 +78,25 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/goals/goals-manager.php' );
 
 			// PAGE OR POST ALTERNATIVE EXPERIMENT
-			if ( $type == NelioABExperiment::POST_ALT_EXP ||
-				$type == NelioABExperiment::PAGE_ALT_EXP ||
-				$type == NelioABExperiment::PAGE_OR_POST_ALT_EXP
-			) {
-				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/post/' . $id );
-				$json_data = json_decode( $json_data['body'] );
+			switch( $type ) {
+				case NelioABExperiment::POST_ALT_EXP:
+				case NelioABExperiment::PAGE_ALT_EXP:
+				case NelioABExperiment::PAGE_OR_POST_ALT_EXP:
+					return NelioABPostAlternativeExperiment::load( $id );
 
-				$exp = new NelioABPostAlternativeExperiment( $json_data->key->id );
-				$exp->set_name( $json_data->name );
-				if ( isset( $json_data->testsTitleOnly ) )
-					$exp->set_to_test_title_only( $json_data->testsTitleOnly );
-				if ( isset( $json_data->description ) )
-					$exp->set_description( $json_data->description );
-				$exp->set_type_using_text( $json_data->kind );
-				$exp->set_original( $json_data->originalPost );
-				$exp->set_status( $json_data->status );
-				if ( isset( $json_data->goals ) )
-					foreach ( $json_data->goals as $goal )
-						NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+				case NelioABExperiment::CSS_ALT_EXP:
+					return NelioABCssAlternativeExperiment::load( $id );
 
-				$alternatives = array();
-				if ( isset( $json_data->alternatives ) ) {
-					foreach ( $json_data->alternatives as $json_alt ) {
-						$alt = new NelioABAlternative( $json_alt->key->id );
-						$alt->set_name( $json_alt->name );
-						$alt->set_value( $json_alt->value );
-						array_push ( $alternatives, $alt );
-					}
-				}
-				$exp->set_appspot_alternatives( $alternatives );
+				case NelioABExperiment::THEME_ALT_EXP:
+					return NelioABThemeAlternativeExperiment::load( $id );
 
-				return $exp;
+				case NelioABExperiment::HEATMAP_EXP:
+					return NelioABHeatmapExperiment::load( $id );
+
+				default: // NO EXPERIMENT FOUND
+					$err = NelioABErrCodes::EXPERIMENT_ID_NOT_FOUND;
+					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
 			}
-
-			// THEME ALTERNATIVE EXPERIMENT
-			if ( $type == NelioABExperiment::THEME_ALT_EXP ) {
-				$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/global/' . $id );
-				$json_data = json_decode( $json_data['body'] );
-
-				$exp = new NelioABThemeAlternativeExperiment( $json_data->key->id );
-				$exp->set_type_using_text( $json_data->kind );
-				$exp->set_name( $json_data->name );
-				if ( isset( $json_data->description ) )
-					$exp->set_description( $json_data->description );
-				$exp->set_status( $json_data->status );
-				if ( isset( $json_data->goals ) )
-					foreach ( $json_data->goals as $goal )
-						NelioABGoalsManager::load_goal_from_json( $exp, $goal );
-
-				$alternatives = array();
-				if ( isset( $json_data->alternatives ) ) {
-					foreach ( $json_data->alternatives as $json_alt ) {
-						$alt = new NelioABAlternative( $json_alt->key->id );
-						$alt->set_name( $json_alt->name );
-						$alt->set_value( $json_alt->value );
-						array_push ( $alternatives, $alt );
-					}
-				}
-				$exp->set_appspot_alternatives( $alternatives );
-
-				return $exp;
-			}
-
-			// NO EXPERIMENT FOUND
-			$err = NelioABErrCodes::EXPERIMENT_ID_NOT_FOUND;
-			throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-
 		}
 
 		public function remove_experiment_by_id( $id, $type ) {

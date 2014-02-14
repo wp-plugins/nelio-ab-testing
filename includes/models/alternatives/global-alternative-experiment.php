@@ -98,6 +98,56 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 			$this->set_status( NelioABExperimentStatus::FINISHED );
 		}
 
+		public function save() {
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+
+			// 1. UPDATE OR CREATE THE EXPERIMENT
+			$url = '';
+			if ( $this->get_id() < 0 ) {
+				$url = sprintf(
+					NELIOAB_BACKEND_URL . '/site/%s/exp/global',
+					NelioABSettings::get_site_id()
+				);
+			}
+			else {
+				$url = sprintf(
+					NELIOAB_BACKEND_URL . '/exp/global/%s/update',
+					$this->get_id()
+				);
+			}
+
+			if ( $this->get_status() != NelioABExperimentStatus::PAUSED &&
+			     $this->get_status() != NelioABExperimentStatus::RUNNING &&
+			     $this->get_status() != NelioABExperimentStatus::FINISHED &&
+			     $this->get_status() != NelioABExperimentStatus::TRASH )
+				$this->set_status( $this->determine_proper_status() );
+
+			$body = array(
+				'name'           => $this->get_name(),
+				'description'    => $this->get_description(),
+				'origin'         => $this->get_origins(),
+				'status'         => $this->get_status(),
+				'kind'           => $this->get_textual_type(),
+			);
+
+			$result = NelioABBackend::remote_post( $url, $body );
+
+			$exp_id = $this->get_id();
+			if ( $exp_id < 0 ) {
+				if ( is_wp_error( $result ) )
+					return;
+				$json = json_decode( $result['body'] );
+				$exp_id = $json->key->id;
+				$this->id = $exp_id;
+			}
+
+			// 1.1 SAVE GOALS
+			// -------------------------------------------------------------------------
+			$this->make_goals_persistent();
+
+			return $this->get_id();
+		}
+
 		public function get_exp_kind_url_fragment() {
 			return 'global';
 		}

@@ -33,12 +33,12 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 	 */
 	abstract class NelioABExperiment {
 
-		const UNKNOWN_TYPE          = -1;
-		const NO_TYPE_SET           =  0;
-		const POST_ALT_EXP          =  1;
-		const PAGE_ALT_EXP          =  2;
-		const CSS_ALT_EXP           =  3;
-		const THEME_ALT_EXP         =  4;
+		const UNKNOWN_TYPE  = -1;
+		const NO_TYPE_SET   =  0;
+		const POST_ALT_EXP  =  1;
+		const PAGE_ALT_EXP  =  2;
+		const CSS_ALT_EXP   =  3;
+		const THEME_ALT_EXP =  4;
 
 		// Used for returning from editing a post/page content
 		const PAGE_OR_POST_ALT_EXP  =  5;
@@ -47,6 +47,8 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		// When the experiment is running, we use the proper type
 		const TITLE_ALT_EXP = 6;
 
+		const HEATMAP_EXP =  7;
+
 		const UNKNOWN_TYPE_STR  = 'UnknownExperiment';
 		// NO_TYPE_SET_STR; Does not make sense
 		const POST_ALT_EXP_STR  = 'PostAlternativeExperiment';
@@ -54,6 +56,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		const CSS_ALT_EXP_STR   = 'CssGlobalAlternativeExperiment';
 		const THEME_ALT_EXP_STR = 'ThemeGlobalAlternativeExperiment';
 		// PAGE_OR_POST_ALT_EXP_STR; Does not make sense
+		const HEATMAP_EXP_STR   =  'HeatmapExperiment';
 
 		protected $id;
 		protected $goals;
@@ -76,7 +79,10 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		}
 
 		public function get_goals() {
-			return $this->goals;
+			if ( is_array( $this->goals ) )
+				return $this->goals;
+			else
+				return array();
 		}
 
 		public function add_goal( $goal ) {
@@ -97,6 +103,9 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 				case NelioABExperiment::THEME_ALT_EXP_STR:
 					$this->set_type( NelioABExperiment::THEME_ALT_EXP );
 					break;
+				case NelioABExperiment::HEATMAP_EXP_STR:
+					$this->set_type( NelioABExperiment::HEATMAP_EXP );
+					break;
 				default:
 					// This should never happen...
 					$this->set_type( NelioABExperiment::UNKNOWN_TYPE );
@@ -114,7 +123,10 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 					return NelioABExperiment::CSS_ALT_EXP_STR;
 				case NelioABExperiment::THEME_ALT_EXP:
 					return NelioABExperiment::THEME_ALT_EXP_STR;
+				case NelioABExperiment::HEATMAP_EXP:
+					return NelioABExperiment::HEATMAP_EXP_STR;
 				default:
+					// This should not happen...
 					return NelioABExperiment::UNKNOWN_TYPE_STR;
 			}
 		}
@@ -230,7 +242,6 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 			if ( $main_goal != NULL &&
 			     $main_goal->get_kind() == NelioABGoal::PAGE_ACCESSED_GOAL ) {
-
 				if ( count( $main_goal->get_pages() ) > 1 ) {
 					foreach ( $main_goal->get_pages() as $page ) {
 						$requires_persistance = true;
@@ -283,6 +294,8 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 		public abstract function start();
 		public abstract function stop();
+
+		public static abstract function load( $id );
 
 		public static function cmp_obj( $a, $b ) {
 			return strcmp( $a->get_name(), $b->get_name() );

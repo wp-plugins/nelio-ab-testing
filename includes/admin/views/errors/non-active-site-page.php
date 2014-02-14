@@ -29,18 +29,14 @@ if ( !class_exists( 'NelioABNonActiveSitePage' ) ) {
 		}
 
 		protected function do_render() {
-			$style = 'font-size:130%%;color:grey;max-width:450px;line-height:150%%;';
+			$style = 'font-size:130%%;color:#555;max-width:450px;line-height:150%%;';
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'Appearently, your account information is properly configured, but ' .
-					'this site has not been registered yet. In order to create, manage, and ' .
-					'execute experiments, you have to register the site to your account.',
-					'nelioab' )
+					__( 'Appearently, your account information is properly configured, but this site has not been registered yet. In order to create, manage, and execute experiments, you have to register the site to your account.', 'nelioab' )
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'Please, go to the settings page and make sure you register ' .
-					'this site to your account.', 'nelioab' )
+					__( 'Please, go to the settings page and make sure you register this site to your account.', 'nelioab' )
 				);
 
 			echo sprintf( "<br /><div style=\"text-align:center;$style\">%s</div>",

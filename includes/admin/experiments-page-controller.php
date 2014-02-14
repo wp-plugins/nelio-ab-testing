@@ -136,8 +136,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			}
 
 			try {
-				if ( $exp == NULL || !NelioABExperimentsPageController::can_experiment_be_started( $exp ) )
-					return;
+				if ( $exp == NULL ) {
+					$err = NelioABErrCodes::INVALID_EXPERIMENT;
+					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+				}
 				$exp->start();
 				NelioABExperimentsManager::update_running_experiments_cache( true );
 			}
@@ -145,6 +147,11 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 				global $nelioab_admin_controller;
 				switch ( $e->getCode() ) {
 					case NelioABErrCodes::MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC:
+					case NelioABErrCodes::HEATMAP_NOT_ALLOWED_IN_BASIC:
+						$nelioab_admin_controller->error_message = $e->getMessage();
+						return;
+
+					case NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED:
 						$nelioab_admin_controller->error_message = $e->getMessage();
 						return;
 
@@ -154,65 +161,6 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 				}
 
 			}
-		}
-
-		private static function can_experiment_be_started( $exp ) {
-			global $nelioab_admin_controller;
-
-			$exp_type = $exp->get_type();
-			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-
-			switch( $exp_type ) {
-
-				case NelioABExperiment::PAGE_ALT_EXP:
-					foreach( $running_exps as $running_exp ) {
-						if ( $running_exp->get_type() != NelioABExperiment::PAGE_ALT_EXP )
-							continue;
-						if ( $running_exp->get_original() == $exp->get_original() ) {
-							$nelioab_admin_controller->error_message = sprintf(
-								__( 'The experiment cannot be started, because there is another ' .
-									'experiment running that is testing the same page. Please, ' .
-									'stop the experiment named «%s» before starting the new one.',
-									'nelioab' ),
-								$running_exp->get_name() );
-							return false;
-						}
-					}
-					break;
-
-				case NelioABExperiment::POST_ALT_EXP:
-					foreach( $running_exps as $running_exp ) {
-						if ( $running_exp->get_type() != NelioABExperiment::POST_ALT_EXP )
-							continue;
-						if ( $running_exp->get_original() == $exp->get_original() ) {
-							$nelioab_admin_controller->error_message = sprintf(
-								__( 'The experiment cannot be started, because there is another ' .
-									'experiment running that is testing the same post. Please, ' .
-									'stop the experiment named «%s» before starting the new one.',
-									'nelioab' ),
-								$running_exp->get_name() );
-							return false;
-						}
-					}
-					break;
-
-				case NelioABExperiment::THEME_ALT_EXP:
-					foreach( $running_exps as $running_exp ) {
-						if ( $running_exp->get_type() == NelioABExperiment::THEME_ALT_EXP ) {
-							$nelioab_admin_controller->error_message = sprintf(
-								__( 'The experiment cannot be started, because there is another ' .
-									'A/B or Multivariate Theme Test named «%s» running. Please, ' .
-									'stop that experiment before starting the new one.',
-									'nelioab' ),
-								$running_exp->get_name() );
-							return false;
-						}
-					}
-					break;
-
-			}
-
-			return true;
 		}
 
 		public static function stop_experiment( $exp_id, $exp_type ) {

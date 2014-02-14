@@ -96,17 +96,13 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				<div id="ajax-loader" style="text-align:center;<?php echo $is_data_pending_loader; ?>">
 					<br /><br />
 
-					<div style="text-align:center;height:120px;margin-bottom:-50px;">
-						<div class="bubblingG">
-							<span id="bubblingG_1"></span>
-							<span id="bubblingG_2"></span>
-							<span id="bubblingG_3"></span>
-						</div>
+					<div style="text-align:center;height:50px;">
+						<div class="nelioab_spinner"></div>
 					</div>
-					<h2 style="color:grey;margin:0px;padding:0px;"><?php _e( 'Loading...', 'nelioab' ); ?></h2>
-					<p id="ajax-loader-label1" style="color:grey;margin:0px;padding:0px;"><?php _e( 'Please, wait a moment.', 'nelioab' ); ?></p>
-					<p id="ajax-loader-label2" style="color:grey;margin:0px;padding:0px;display:none;"><?php _e( 'Keep waiting...', 'nelioab' ); ?></p>
-					<p id="ajax-loader-label3" style="color:grey;margin:0px;padding:0px;display:none;"><?php _e( 'Internet connection seems very slow.', 'nelioab' ); ?></p>
+					<h2 style="color:#555;margin:0px;padding:0px;"><?php _e( 'Loading...', 'nelioab' ); ?></h2>
+					<p id="ajax-loader-label1" style="color:#777;margin:0px;padding:0px;"><?php _e( 'Please, wait a moment.', 'nelioab' ); ?></p>
+					<p id="ajax-loader-label2" style="color:#777;margin:0px;padding:0px;display:none;"><?php _e( 'Keep waiting...', 'nelioab' ); ?></p>
+					<p id="ajax-loader-label3" style="color:#777;margin:0px;padding:0px;display:none;"><?php _e( 'Internet connection seems very slow.', 'nelioab' ); ?></p>
 				</div>
 				<div id="poststuff" class="metabox-hold" style="<?php echo $is_data_pending_data; ?>">
 					<div id="ajax-data"><?php
@@ -186,9 +182,25 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 					};
 
 					// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-					jQuery.post(ajaxurl, data, function(response) {
-						jQuery("#poststuff > #ajax-data").html(response);
-						nelioabHideSpinnerAndShowContent();
+					jQuery.ajax({
+						type: 'POST',
+						url:  ajaxurl,
+						data: data,
+						success: function(response){
+							jQuery("#poststuff > #ajax-data").html(response);
+							nelioabHideSpinnerAndShowContent();
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							jQuery("#ajax-loader").html(
+							"<?php
+								printf( "<img src='%s' alt='%s' />",
+									NELIOAB_ASSETS_URL . '/admin/images/error-icon.png?' . NELIOAB_PLUGIN_VERSION,
+									__( 'Funny image to graphically notify of an error.', 'nelioab' )
+         				); ?>" +
+							"<h2 style='color:#555;margin:0px;padding:0px;'><?php
+								_e( 'Oops! There was an AJAX-related error.' );
+							?></h2>");
+						}
 					});
 
 					jQuery("#ajax-loader-label2").hide().delay(10000).fadeIn('fast');

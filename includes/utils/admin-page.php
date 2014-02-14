@@ -22,14 +22,12 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		protected $title;
 		protected $title_action;
 		protected $icon_id;
-		protected $uses_two_columns;
 		protected $message;
 
 		public function __construct( $title = '' ) {
 			$this->title            = $title;
 			$this->title_action     = '';
 			$this->icon_id          = 'icon-options-general';
-			$this->uses_two_columns = false;
 			$this->message          = false;
 		}
 
@@ -43,10 +41,6 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 
 		public function set_icon( $icon_id ) {
 			$this->icon_id = $icon_id;
-		}
-
-		public function enable_two_columns( $uses ) {
-			$this->uses_two_columns = $uses;
 		}
 
 		protected abstract function do_render();
@@ -67,11 +61,8 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 						$this->print_errors();
 				?>
 				<br />
-				<div id="poststuff" class="metabox-hold <?php
-				if ( $this->uses_two_columns )
-					echo 'has-right-sidebar'
-				?>"><?php
-					$this->do_render(); ?>
+				<div id="poststuff">
+					<?php $this->do_render(); ?>
 					<br />
 					<div class="actions"><?php
 						$this->print_page_buttons(); ?>

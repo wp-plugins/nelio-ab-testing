@@ -96,14 +96,3 @@ function nelioab_nav_to_external_page($, external_page_link) {
 		},
 	});
 }
-
-function nelioab_prepare_outlinks($, href) {
-	$("a").each(function() {
-		if ( $(this).attr('href') == href ) {
-			$(this).click(function() {
-				nelioab_nav_to_external_page($,href);
-			});
-		}
-	});
-}
-

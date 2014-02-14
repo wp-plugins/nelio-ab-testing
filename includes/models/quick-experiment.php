@@ -69,6 +69,10 @@ if( !class_exists( 'NelioABQuickExperiment' ) ) {
 			// Nothing to be done here
 		}
 
+		public static function load( $id ) {
+			return new NelioABQuickExperiment( $id );
+		}
+
 	}//NelioABPostAlternativeExperiment
 
 }

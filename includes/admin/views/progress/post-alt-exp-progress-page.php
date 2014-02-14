@@ -42,7 +42,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		protected function get_original_name() {
 			// Original title
 			$exp = $this->exp;
-			$aux = get_post( $exp->get_original() );
+			$aux = get_post( $exp->get_originals_id() );
 			$this->ori = sprintf( __( 'id is %s', 'nelioab' ), $aux->ID );
 			$this->is_ori_page = true;
 			if ( $aux ) {
@@ -54,7 +54,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		}
 
 		protected function get_original_value() {
-			return $this->exp->get_original();
+			return $this->exp->get_originals_id();
 		}
 
 		protected function print_js_function_for_post_data_overriding() { ?>
@@ -101,27 +101,57 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			}
 		}
 
+
+		protected function print_alternatives_block() {
+			echo '<table id="alternatives-in-progress">';
+			$this->print_the_original_alternative();
+			$this->print_the_real_alternatives();
+			echo '</table>';
+		}
+
+
+		private function make_link_for_heatmap( $exp, $id ) {
+			$url = sprintf( admin_url() . '?nelioab-page=heatmap-viewer&id=%1$s&exp_type=%2$s&post=%3$s',
+				$exp->get_id(), $exp->get_type(), $id );
+			return sprintf( ' <a href="%1$s">%2$s</a>', $url,
+				__( 'View Heatmap', 'nelioab' ) );
+		}
+
+
+		private function make_link_for_edit( $id ) {
+			return sprintf( ' <a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>',
+				admin_url() . '/post.php?post=' . $id . '&action=edit',
+				__( 'Edit' ) );
+		}
+
+
 		protected function print_the_original_alternative() {
 			// THE ORIGINAL
 			// -----------------------------------------
 			$exp       = $this->exp;
-			$link      = get_permalink( $exp->get_original() );
+			$link      = get_permalink( $exp->get_originals_id() );
 			$ori_label = __( 'Original', 'nelioab' );
 
-			$edit_link = '';
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-				$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-					admin_url() . '/post.php?post=' . $exp->get_original() . '&action=edit',
-					__( 'Edit' ) );
+			$action_links = array();
+			if ( $exp->are_heatmaps_tracked() )
+				array_push( $action_links, $this->make_link_for_heatmap( $exp, $exp->get_originals_id() ) );
+			switch ( $exp->get_status() ) {
+				case NelioABExperimentStatus::RUNNING:
+					array_push( $action_links, $this->make_link_for_edit( $exp->get_originals_id() ) );
+					break;
 			}
 
-			if ( $this->is_winner( $exp->get_original() ) )
+			if ( $this->is_winner( $exp->get_originals_id() ) )
 				$set_as_winner = $this->winner_label;
 			else
 				$set_as_winner = '';
 
-			echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span><a href="%s" target="_blank">%s</a>%s</li>',
-				$set_as_winner, $ori_label, $link, $this->ori, $edit_link );
+			echo sprintf( '<tr>' .
+				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
+				'<td><a href="%s" target="_blank">%s</a><br />' .
+				'<small>%s&nbsp;</small></td>' .
+				'</tr>',
+				$set_as_winner, $ori_label, $link, $this->ori, implode( ' | ', $action_links ) );
 		}
 
 		protected function print_the_real_alternatives() {
@@ -129,32 +159,24 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			// -----------------------------------------
 			$exp = $this->exp;
 			$i   = 0;
+
+			$action_links = array();
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
-				$link      = get_permalink( $alt->get_value() );
-				$edit_link = '';
+				$link = get_permalink( $alt->get_value() );
 
-				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-					$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-						admin_url() . '/post.php?post=' . $alt->get_value() . '&action=edit',
-						__( 'Edit' ) );
-				}
-
-				$winner_button = '';
-				if ( $this->is_winner( $alt->get_value() ) )
-					$winner_button = '-primary';
-
-				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
-					$edit_link = sprintf(
-						' <small id="success-%4$s" style="display:none;">(%1$s)</small>' .
-						'<img id="loading-%4$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
-						'<span class="apply-link"><a class="button%3$s" ' .
-						'style="font-size:96%%;padding-left:5px;padding-right:5px;margin-left:1em;" '.
-						'href="javascript:nelioab_confirm_overriding(%4$s);">%5$s</a></span></li>',
-						__( 'Done!', 'nelioab' ),
-						NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
-						$winner_button,
-						$alt->get_value(), __( 'Apply', 'nelioab' ) );
+				if ( $exp->are_heatmaps_tracked() )
+					array_push( $action_links, $this->make_link_for_heatmap( $exp, $alt->get_value() ) );
+				switch ( $exp->get_status() ) {
+					case NelioABExperimentStatus::RUNNING:
+						array_push( $action_links, $this->make_link_for_edit( $alt->get_value() ) );
+						break;
+					case NelioABExperimentStatus::FINISHED:
+						$aux = sprintf(
+							' <a href="javascript:nelioab_confirm_overriding(%s);">%s</a>',
+							$alt->get_value(), __( 'Apply', 'nelioab' ) );
+						array_push( $action_links, $aux );
+						break;
 				}
 
 				if ( $this->is_winner( $alt->get_value() ) )
@@ -163,8 +185,12 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					$set_as_winner = '';
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
-				echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span><a href="%s" target="_blank">%s</a>%s',
-					$set_as_winner, $alt_label, $link, $alt->get_name(), $edit_link );
+				echo sprintf( '<tr>' .
+					'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
+					'<td><a href="%s" target="_blank">%s</a><br />' .
+					'<small>%s&nbsp;</small></td>' .
+					'</tr>',
+					$set_as_winner, $alt_label, $link, $alt->get_name(), implode( ' | ', $action_links ) );
 
 			}
 		}
@@ -175,14 +201,10 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			?>
 			<p><?php
 				if ( $this->is_ori_page ) {
-					_e( 'You are about to override the original page with the content of ' .
-						'an alternative. Please, remember this operation cannot be undone!',
-						'nelioab' );
+					_e( 'You are about to override the original page with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
 				}
 				else {
-					_e( 'You are about to override the original post with the content of ' .
-						'an alternative. Please, remember this operation cannot be undone!',
-						'nelioab' );
+					_e( 'You are about to override the original post with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
 				}
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
@@ -190,7 +212,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 				$exp->get_id(); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
-				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_original(); ?>" />
+				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />
 				<input type="hidden" id="alternative" name="alternative" value="" />
 				<p><input type="checkbox" id="copy_content" name="copy_content" checked="checked" disabled="disabled" /><?php
 					_e( 'Override title and content', 'nelioab' ); ?></p>

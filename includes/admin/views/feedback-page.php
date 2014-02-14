@@ -32,27 +32,15 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 				<h2><?php _e( 'Together, we\'ll build a better service!', 'nelioab' ); ?></h2>
 
 				<p><?php
-					_e( 'We\'re honoured you\'re using our service. We hope ' .
-					    'Nelio A/B Testing is meeting your expectations. Together, ' .
-					    'we\'ll get your site to the next level!',
-						'nelioab' );
+					_e( 'We\'re honoured you\'re using our service. We hope Nelio A/B Testing is meeting your expectations. Together, we\'ll get your site to the next level!', 'nelioab' );
 				?></p>
 
 				<p><?php
-					_e( 'If you\'re happy with our service, please help us ' .
-					    '<b>spread the word and let others know about your ' .
-					    'experience with Nelio A/B Testing</b>!',
-						'nelioab' );
+					_e( 'If you\'re happy with our service, please help us <b>spread the word and let others know about your experience with Nelio A/B Testing</b>!', 'nelioab' );
 				?></p>
 
 				<p><?php
-					_e( 'As a token of appreciation, we will be ' .
-					    'happy to add to your quota 1000 more pageviews per ' .
-					    'month for your efforts (plus an additional 100 for ' .
-					    'each retweet / reshare you get from your followers, ' .
-					    'up to a maximum of a second additional 1000 ' .
-					    'pageviews extension).',
-						'nelioab' );
+					_e( 'As a token of appreciation, we will be happy to add to your quota 1000 more pageviews per month for your efforts (plus an additional 100 for each retweet / reshare you get from your followers, up to a maximum of a second additional 1000 pageviews extension).', 'nelioab' );
 				?></p>
 
 			</div>
@@ -83,8 +71,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 
 			<p><?php
 				printf(
-					__( 'And, please, don\'t forget to <a href="%s" target="_blank">rate '.
-					    'the plugin in the WordPress Plugin Directory</a>!', 'nelioab' ),
+					__( 'And, please, don\'t forget to <a href="%s" target="_blank">rate the plugin in the WordPress Plugin Directory</a>!', 'nelioab' ),
 					'http://wordpress.org/plugins/nelio-ab-testing/' );
 			?></p>
 
@@ -111,16 +98,11 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 				<h2><?php _e( 'Your opinion matters!', 'nelioab' ); ?></h2>
 
 				<p><?php
-					_e( 'Would you like to request a new feature? Do you have ' .
-					    'any doubt using our service? Have you encountered ' .
-					    'any problems?',
-						'nelioab' );
+					_e( 'Would you like to request a new feature? Do you have any doubt using our service? Have you encountered any problems?', 'nelioab' );
 				?></p>
 
 				<p><?php
-					_e( 'Please, <b>do not hesitate to contact us ' .
-					    'and tell what you are thinking!</b>',
-						'nelioab' );
+					_e( 'Please, <b>do not hesitate to contact us and tell what you are thinking!</b>', 'nelioab' );
 				?></p>
 
 			</div>

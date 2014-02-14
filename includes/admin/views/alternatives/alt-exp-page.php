@@ -434,9 +434,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 						<a href="http://wp-abtesting.com/inquiry-subscription-plans/"><span
 							class="nelioab-inline-asset nelioab-warning"
 							title="<?php
-								_e( 'In order to use experiments with more than one goal, you ' .
-									'first have to upgrade your subscription plan.',
-									'nelioab' );
+								_e( 'In order to use experiments with more than one goal, you first have to upgrade your subscription plan.', 'nelioab' );
 							?>"></span></a>
 					</span>
 				</span>

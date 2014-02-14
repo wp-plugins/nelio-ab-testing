@@ -3,45 +3,48 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 1.5.9
+Stable tag: 2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Nelio A/B Testing is a WordPress service that helps you optimize your site
-based on data, not opinions.
-
+Nelio A/B Testing is a WordPress service that optimizes the conversion rate of
+your site.
 
 == Description ==
 
 [Nelio A/B Testing](http://wp-abtesting.com) is a conversion optimization
 service for your WordPress site. It helps you define, manage, and keep track of
-A/B-testing experiments from within your WordPress' dashboard, creating a
-lovely, integrated, and well-known user experience.
+A/B-testing experiments from within your WordPress dashboard, creating a
+lovely, integrated, and familiar user experience. Since we designed the tool
+specifically for WordPress, you will have complete control on what you test:
+pages, posts, themes, titles… and many more that will be available soon!
 
-On the technical side, **any gathered information about experiments and
-statistical calculus are performed and stored in Nelio's backend servers**. As
-a result, the load in your WordPress server does not increase and can focus on
-what matters to you: serving information to your visitors as quickly as
-possible.
-
-**Note:** Please keep in mind that [you will need an
+**Note** Please keep in mind that [you will need an
 account](http://wp-abtesting.com/subscription-plans/) to use our plugin (the
-service includes a 15-day free trial period).
+service includes a 14-day free trial period).
 
 
 = Features =
 
-* A/B and multivariate test of WordPress pages (title, content, page style,
-page theme options...)
-* A/B and multivariate test of WordPress posts (title, content, page style,
-post theme options...)
-* Select one or more alternative themes among the installed ones and test
-which one works better!
-* Fresh information about the evolution of the experiment every day
-* Nice graphics about visitors, conversions, improvements, ...
-* Definition, management, and tracking of experiments integrated in WordPress
-* Gathered information about experiments and statistical calculus stored and
-performed in Nelio's backend servers.
+* **There's no need to learn an external tool!** The definition, management,
+and tracking of experiments is beautifully integrated in WordPress. Nelio A/B
+Testing provides a lovely user interface that simplifies the process of
+creating alternatives and applying the winning ones.
+* **Nelio A/B Testing is a powerful A/B Testing tool.** Test alternatives for
+your pages and posts or modify the look and feel of your website testing
+different themes or tweaking the CSS files.
+* **But it is also more than that!** Understand more about your website and
+your customers using our Heatmaps feature. Use them to know the spots in which
+your users pay more attention!
+* **Understand what's going on with your site.** Get fresh information about
+the evolution of the experiment every day, with nice graphics about visitors
+and conversions. Detailed statistical information is also available if you want
+it. Otherwise, the plugin summarizes the key information for you.
+* **Don't worry about your server performance.** Gathered information about
+experiments and statistical calculus are stored and performed in Nelio's
+backend servers.
+* **A plan for everybody.** Our subscription plans are suited for everybody and
+can be adapted to tailor your needs.
 
 
 == Installation ==
@@ -83,50 +86,63 @@ Guide](http://wp-abtesting.com/getting-started-guide/) to cover the basics.
 
 == Frequently Asked Questions ==
 
-= Why do I need an A/B testing native WordPress solution? =
+= Why should I use an A/B Testing Solution specifically designed for
+WordPress? =
 
-* **Easier learning curve.** No need to learn yet another tool. Everything
-(from the creation of tests to the visualization of the results) is done from
-the WordPress dashboard using the same interface you’re already familiar with.
-* **Automatic improvement of the WP site.** A native WordPress solution is able
-to automatically evolve your WordPress site. For instance, it can update the
-site to reflect the winner alternative as soon as the results are statistically
-significant. Instead, with a generic tool, once you have the winner, you´ll
-need to back to WordPress and manually modify the posts to implement the
-changes yourself.
+* **Smooth learning curve.** There is no need to learn yet another tool.
+Everything (from the creation of tests to the visualization of the results) is
+done from the WordPress dashboard you are familiar with, resulting in a
+well-known, perfectly integrated user interface.
+* **Evolve your WordPress site easily.** A native WordPress solution automates
+and simplifies the evolution of your site. Consider, for example, applying the
+winner alternative in your site as soon as the results are statistically
+significant. With a native solution, this is as easy as clicking one single
+button. With a generic tool, on the other hand, you would have to manually
+modify the page so that it integrates the changes you created in the (winning)
+alternative.
 * **Fine-grained testing.** The "testing unit" in a generic tool is the web
-page since this the HTML of the page is the only thing those tools have access
-to. Instead a native WordPress solution can access all your WordPress
-components, including the menu, your widget configuration, theme,… so you can
-choose to test a combination of these components (e.g. testing two different
-menus across the site) instead a specific page.
-* **More control.** What about showing the tests only to (un)registered users?
-Or users with a certain role? This kind of control on the testing process can
-only be done when the AB Testing tool has access to the internals of your
-WordPress installation.
+page, since the HTML of the page is the only thing those tools have access to.
+A native WordPress solution, however, permits you to test any WordPress
+specific component, such as posts, pages, CSS, themes, child themes, and many
+more coming!
 
 
-= More questions? Take a look at our site!=
+= More questions? Take a look at our site! =
 
 We keep an [up-to-date FAQs page in our site](http://wp-abtesting.com/faqs/).
 
 
 == Screenshots ==
 
-1. **Relevant info with a quick glance**. When you have an experiment running,
+1. **Relevant info with a quick glance.** When you have an experiment running,
 you can see how it is performing in the Results of the Experiment page.
-2. **Data made easy**. Additional graphics help you understand what is going
+2. **Data made easy.** Additional graphics help you understand what is going
 on.
-3. **Experiment Management**. Manage your experiments without leaving
+3. **Experiment Management.** Manage your experiments without leaving
 WordPress: creation, deletion, and monitoring!
-4. **Experiment Creation**. Creating new experiments has never been so easy!
+4. **Experiment Creation.** Creating new experiments has never been so easy!
 Just set a name, a description, and the page you want to test!
-5. **Alternatives are Regular Pages**. For each page to test, you can create
+5. **Alternatives are Regular Pages.** For each page to test, you can create
 alternatives quickly and easily, from scratch or from already-existing pages!
-6. **Multisite support**. You can use our service in multiple sites.
+6. **Account details.** View your account information and access your directly
+from the plugin.
+7. **Use our plugin in more than one site.** You can use our plugin and service
+on more than one site. Very useful for staging and production environments!
+8. **Different types of experiments.** Our product let's you test different
+aspects of your WordPress site; just select what you want to test and create
+the experiment!
+9. **Heatmaps.** Our service let's you analyse the hottest areas of any page
+on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 2.0 =
+* **New Feature!** Heatmaps and Clickmaps of your customers
+* **New Feature!** A/B Test CSS modifications
+* Improved Settings page (account and registered sites management)
+* Translated to Spanish
+* Some minor tweaks
 
 = 1.5.9 =
 * Bug fix: when creating theme experiments, the widgets of each theme are
@@ -141,7 +157,7 @@ properly loaded.
 = 1.5.6 =
 * UI Improvement: list of experiments is now sortable
 * Bug fix: when starting an experiment with multiple goals, the error "Too
-  few parameters" does no longer appear
+few parameters" does no longer appear
 
 = 1.5.5 =
 * Quota Management: you can now increase the available quota from within
@@ -293,5 +309,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 1.5.9 =
-Theme experiments with child themes and use proper of proper widgets.
+= 2.0 =
+Heatmap and CSS Experiments are now available

@@ -52,8 +52,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				);
 				echo '<h2>';
 				echo sprintf(
-					__( 'Hey! It looks like you have not defined any experiment...<br />' .
-					'<a href="%s">Create one now</a>!', 'nelioab' ),
+					__( 'Hey! It looks like you have not defined any experiment...<br /><a href="%s">Create one now</a>!', 'nelioab' ),
 					'admin.php?page=nelioab-add-experiment' );
 				echo '</h2>';
 				echo '</center>';
@@ -180,9 +179,11 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		function column_name( $exp ) {
 
 			$edit_url     = '<a href="?page=nelioab-experiments&action=edit&id=%1$s&exp_type=%2$s">%3$s</a>';
-			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s">%3$s</a>';
 			$url          = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s">%4$s</a>';
 			$url_dialog   = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s" onclick="javascript:if(isInvalidClick(%5$s)){return false;}">%4$s</a>';
+			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s">%3$s</a>';
+			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP )
+				$progress_url = '<a href="?nelioab-page=heatmap-viewer&id=%1$s&exp_type=%2$s">%3$s</a>';
 
 			$actions = array();
 			switch( $exp->get_status() ) {
@@ -281,6 +282,9 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 				case NelioABExperiment::CSS_ALT_EXP:
 					return sprintf( $img, 'css', __( 'CSS', 'nelioab' ) );
+
+				case NelioABExperiment::HEATMAP_EXP:
+					return sprintf( $img, 'heatmap', __( 'Heatmap', 'nelioab' ) );
 
 				// case NelioABExperiment::WIDGET_ALT_EXP:
 				// 	return sprintf( $img, 'widget', __( 'Widget', 'nelioab' ) );
