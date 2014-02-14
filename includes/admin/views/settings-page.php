@@ -93,10 +93,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 				<?php
 					if ( !$this->is_email_valid ) {
-						_e( '<p>Don\'t you have an account yet? ' .
-							'<a href="http://wp-abtesting.com/subscription-plans/">' .
-							'Subscribe now!</a></p>',
-							'nelioab' );
+						_e( '<p>Don\'t you have an account yet? <a href="http://wp-abtesting.com/subscription-plans/">Subscribe now!</a></p>', 'nelioab' );
 						echo '<br /><br />';
 					}
 				?>
@@ -118,9 +115,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 							'callback'  => array( &$this, 'print_reg_num_field' ),
 							'mandatory' => true ),
 						array (
-							'label'     => __( 'I have read and accept the ' .
-						                  '<a href="http://wp-abtesting.com/terms-conditions" target="_blank">Terms and Conditions</a> ' .
-						                  'of this service.', 'nelioab' ),
+							'label'     => __( 'I have read and accept the <a href="http://wp-abtesting.com/terms-conditions" target="_blank">Terms and Conditions</a> of this service.', 'nelioab' ),
 							'id'        => 'settings_tac',
 							'mandatory' => true,
 							'checkbox'  => true,
@@ -147,11 +142,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 				if ( $print_plans ) {
 					$this->set_message(
-						__( 'Haven\'t you subscribed to any of our plans? <b>'.
-							'<a href="http://wp-abtesting.com/subscription-plans/" target="_blank">' .
-							'Check them out and choose the one that best fits you</a></b>! ' .
-							'All our plans come with a <b>15-day free trial period</b>.',
-							'nelioab' ) );
+						__( 'Haven\'t you subscribed to any of our plans? <b><a href="http://wp-abtesting.com/subscription-plans/" target="_blank">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>15-day free trial period</b>.', 'nelioab' ) );
 				}
 			?>
 			<h2 style="margin-bottom:0px;padding-bottom:0px;"><?php
@@ -192,14 +183,13 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 			if ( !$this->tac || !$is_status_defined ) {
 				echo '<p>' .
-					__( 'Please, fill in all required fields in order to ' .
-					'view your account details and use our service.',
-					'nelioab' ) . '</p>';
+					__( 'Please, fill in all required fields in order to view your account details and use our service.', 'nelioab' ) . '</p>';
 			}
 			else { ?>
 
 				<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
 				<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
+
 				<h3><?php _e( 'Subscription Details', 'nelioab' ); ?></h3>
 				<p style="margin-top:0em;margin-left:3em;"><?php
 					if ( !isset( $this->user_info['subscription_url'] ) ) {
@@ -211,12 +201,21 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 					else {
 						if ( $this->user_info['subscription_plan'] == 0 ) {
 							printf( '%s<br /><a href="%s">%s</a>',
-								__( 'You are using the <b>Free Trial</b> version of ' .
-								    'Nelio A/B Testing.', 'nelioab' ),
+								__( 'You are using the <b>Free Trial</b> version of Nelio A/B Testing.', 'nelioab' ),
 								$this->user_info['subscription_url'],
 								__( 'Subscribe now and continue using our service!', 'nelioab' ) );
 						}
 						else {
+							switch ( $this->user_info['subscription_plan'] ) {
+								case NelioABSettings::BASIC_SUBSCRIPTION_PLAN:
+									_e( 'You are subscribed to our <b>Basic Plan</b>.', 'nelioab' );
+									echo '<br />';
+									break;
+								case NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
+									_e( 'You are subscribed to our <b>Professional Plan</b>.', 'nelioab' );
+									echo '<br />';
+									break;
+							}
 							printf( '<a href="%s">%s</a>', $this->user_info['subscription_url'],
 								__( 'Check your subscription details.', 'nelioab' ) );
 						}
@@ -226,10 +225,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				<?php
 				$post_quota = '';
 				if ( isset( $this->user_info['total_quota'] ) )
-					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views ' .
-						'under test per month. If you need more quota, please consider buying additional ' .
-						'page views as you need them using the button below, or <a href="%s">contact ' .
-						'us for an update of your monthly quota</a>.', 'nelioab' ),
+					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please consider buying additional page views as you need them using the button below, or <a href="%s">contact us for an update of your monthly quota</a>.', 'nelioab' ),
 						$this->user_info['total_quota'],
 						'mailto:info@wp-abtesting.com' );
 
@@ -264,67 +260,44 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				<?php if ( $this->is_email_valid && $this->is_reg_num_valid && $this->tac ) { ?>
 
 					<?php
-					$other_sites = array();
-					$this_url    = get_option( 'siteurl' );
-					foreach( $this->sites as $site )
-						if ( $site->get_url() != $this_url )
-							array_push( $other_sites, $site ); ?>
+					if ( $this->error_retrieving_registered_sites ) { ?>
+						<h3><?php _e( 'Registered Sites', 'nelioab' ); ?></h3><?php
 
-					<h3><?php _e( 'Registered Sites', 'nelioab' ); ?></h3>
-
-					<?php
-					if ( $this->error_retrieving_registered_sites ) {
 
 						?><p style="margin-top:0em;margin-left:3em;"><?php
-							echo __( 'There was an error while retrieving the list of all ' .
-								'registered sites to this account. ',
-								'nelioab' );
+							echo __( 'There was an error while retrieving the list of all registered sites to this account.', 'nelioab' );
 
 						if ( NelioABSettings::has_a_configured_site() ) {
-								echo __( 'Nonetheless, please note this site is registered to your ' .
-									'account, which means you can still use use all plugin\'s ' .
-									'functionalities.',
-									'nelioab' );
+								echo __( 'Nonetheless, please note this site is registered to your account, which means you can still use all plugin\'s functionalities.', 'nelioab' );
 						}
 
 						?></p><?php
 
 					}
 					else {
+						$print_table = true;
+						$sites = array();
+
 						switch( $this->current_site_status ) {
-							case NelioABSite::NON_MATCHING_URLS:
+							case NelioABSite::NON_MATCHING_URLS: ?>
+								<h3><?php _e( 'Registered Sites', 'nelioab' ); ?></h3><?php
 								$this->print_site_non_matching();
+								$print_table = false;
 								break;
 
 							case NelioABSite::ACTIVE:
-								$this->print_site_ok();
+								$this->print_table_of_registered_sites();
 								break;
 
 							default:
-								// Nothing to be done
-						} ?>
+								?> <h3><?php _e( 'This Site is Not Registered', 'nelioab' ); ?></h3> <?php
+								$can_register = count( $this->sites ) < $this->max_sites;
+								if ( $can_register )
+									$this->print_site_should_be_registered();
+								else
+									$this->print_site_cannot_be_registered();
 
-						<?php
-						if ( count( $other_sites ) > 0 ) { ?>
-							<ul style="margin-left:3em;margin-top:0px;">
-							<?php
-							foreach( $other_sites as $site )
-								echo sprintf( '<li> - <a href="%s" target="_blank">%s</a></li>',
-									$site->get_url(), $site->get_url() );
-							?>
-							</ul>
-						<?php
-						} ?>
-
-						<?php
-						switch( $this->current_site_status ) {
-							case NelioABSite::NOT_REGISTERED:
-							case NelioABSite::INVALID_ID:
-								$this->print_site_to_be_registered();
-								break;
-
-							default:
-								// Nothing to be done
+								$this->print_table_of_registered_sites();
 						} ?>
 
 						<form id="nelioab_registration_form" method="post">
@@ -363,40 +336,20 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			echo '<p>Error #001 - Non matching URLs.<br />Please, report this error to Nelio using the Feedback form.</p>';
 		}
 
-		private function print_site_ok() {
-			echo '<ul style="margin:0em 0em 0em 3em;">';
-			printf( '<li> - <b>%s</b> <small>(%s)</small></li>',
-				get_option( 'siteurl' ), $this->cancel_registration_link() );
-			echo '</ul>';
-//			echo sprintf( "<p style=\"$this->p_style\">%s</p>\n",
-//				__( 'This site is currently registered in your account.', 'nelioab' )
-//			);
-//
-//			$this->print_registration_buttons( false, true );
+		private function print_site_should_be_registered() {
+			$style = 'style="' . $this->p_style . 'margin-left:3em;font-size:120%%;line-height:1.3em;"';
+			echo sprintf( "<p $style>%s <strong><a href=\"%s\">%s</a></strong></p>\n",
+				__( 'This site is not yet registered to your account.', 'nelioab' ),
+				$this->do_registration_link(),
+				__( 'Register it now!', 'nelioab' ) );
 		}
 
-		private function print_site_to_be_registered() {
-			$can_register = count( $this->sites ) < $this->max_sites;
-			$explanation  = '';
-
-			if ( $can_register ) {
-				$explanation = $this->do_registration_link();
-			}
-			else {
-				$explanation = sprintf( "%s</p><p style=\"$this->p_style margin-left:3em;font-size:120%%;line-height:1.3em;\">%s",
-					__( 'In order to use our service, you have to register it. Unfortunately, you already ' .
-						'reached the maximum number of sites allowed by your current subscription.', 'nelioab' ),
-					sprintf( __( 'Please, either <a href="%s"><b>upgrade your <i>Nelio A/B Testing</i> subscription</b></a> so ' .
-						'that you can register and manage more sites, or <b>access one of the other sites to cancel its ' .
-						'subscription</b> and try again. Keep in mind that canceling the registration of a site will ' .
-						'cause permanent loss of all experiments associated to that site.', 'nelioab' ),
-						'http://wp-abtesting.com/inquiry-subscription-plans' )
-				);
-			}
-
-			echo sprintf( "<p style=\"$this->p_style margin-left:3em;font-size:120%%;line-height:1.3em;\">%s</p>\n",
-				sprintf( __( 'Oops! This site is <b>not</b> registered in your account. %s', 'nelioab' ),
-					$explanation )
+		private function print_site_cannot_be_registered() {
+			$style = 'style="' . $this->p_style . 'margin-left:3em;font-size:120%%;line-height:1.3em;"';
+			echo sprintf( "<p $style>%s</p><p $style>%s</p>\n",
+				__( 'It looks like this site is not connected to you account. In order to use our service in this site, first you have to register it. Unfortunately, you already reached the maximum number of sites allowed by your current subscription plan (see the table below).', 'nelioab' ),
+				sprintf( __( 'Please, <a href="%s"><b>upgrade your <i>Nelio A/B Testing</i> subscription</b></a> so that you can register and manage more sites, or <b>access one of the other sites to cancel its subscription</b> and try again. Keep in mind that canceling the registration of a site may cause permanent loss of all experiments associated to that site.', 'nelioab' ),
+					'http://wp-abtesting.com/inquiry-subscription-plans' )
 			);
 		}
 
@@ -404,20 +357,146 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			$register_js = 'javascript:' .
 				'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'register\');' .
 				'jQuery(\'#nelioab_registration_form\').submit();';
-			return sprintf( '<b><a href="%s">%s</a></b>',
-				$register_js, __( 'Register this site now!', 'nelioab' ) );
+			return $register_js;
 		}
 
 		private function cancel_registration_link() {
 			$cancel_js = 'javascript:' .
 				'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'cancel\');' .
 				'jQuery(\'#nelioab_registration_form\').submit();';
-			return sprintf( '<a href="%s">%s</a>',
-				$cancel_js, __( 'Cancel Registration', 'nelioab' ) );
+			return $cancel_js;
+		}
+
+		private function print_table_of_registered_sites() {
+			$sites = array();
+
+			$other_sites = array();
+			$this_url    = get_option( 'siteurl' );
+			foreach( $this->sites as $site )
+				if ( $site->get_url() != $this_url )
+					array_push( $other_sites, $site );
+
+			if( $this->current_site_status == NelioABSite::ACTIVE ) {
+				array_push( $sites, array(
+						'this_site'   => true,
+						'name'        => $this_url,
+						'cancel_link' => $this->cancel_registration_link()
+					) );
+			}
+
+			foreach ( $other_sites as $site )
+				array_push( $sites, array(
+						'this_site' => false,
+						'name'      => $site->get_url(),
+						'goto_link' => $site->get_url()
+					) );
+
+			for ( $i = count( $sites ); $i < $this->max_sites; ++$i )
+				array_push( $sites, array(
+						'this_site' => false,
+						'name'      => __( 'Empty Slot', 'nelioab' )
+					) );
+
+			echo '<div id="registered-sites-table" style="margin-left:2em;">';
+			$aux = new NelioABRegisteredSitesTable( $sites );
+			$aux->prepare_items();
+			$aux->display();
+			echo '</div>';
 		}
 
 	}//NelioABSettingsPage
 
+
+	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
+	class NelioABRegisteredSitesTable extends NelioABAdminTable {
+		
+		function __construct( $items ){
+   	   parent::__construct( array(
+				'singular'  => __( 'registered site', 'nelioab' ),
+				'plural'    => __( 'registered sites', 'nelioab' ),
+				'ajax'      => false
+			)	);
+			$this->set_items( $items );
+		}
+
+		public function get_columns() {
+			return array(
+				'name' => __( 'Registered Sites', 'nelioab' ),
+			);
+		}
+
+		public function column_name( $site ) {
+			if ( $site['this_site'] )
+				return $this->make_this_site( $site );
+			else
+				return $this->make_other_site( $site );
+		}
+
+		private function make_this_site( $site ) {
+			$name = $this->beautify_url( $site['name'] );
+			$name = sprintf( $name, '#000000', '#909090' );
+			$name = '<span class="row-title">' . 
+				'<strong style="font-weight:bold;">' . $name . '</strong> ' .
+				'<strong style="font-variant:small-caps;">(' . __( 'this site', 'neliab' ) . ')</strong> ' .
+				'</span>';
+			$actions = $this->row_actions( array(
+					'delete' => '<a href="' . $site['cancel_link'] . '">Cancel Registration</a>'
+				) );
+
+			return $name . $actions;
+		}
+
+		private function make_other_site( $site ) {
+			if ( isset( $site['goto_link'] ) ) {
+				$name = $this->beautify_url( $site['name'] );
+				$name = sprintf( $name, '#404040', '#AAAAAA' );
+				$name = '<span class="row-title" style="font-weight:normal;">' . $name . '</span>';
+				$actions = $this->row_actions( array(
+						'edit-content' => '<a href="' . $site['goto_link'] . '">Go to this site</a>'
+					) );
+			}
+			else {
+				$style   = 'color:#AAAAAA;font-weight:normal;font-style:italic;';
+				$name    = '<span class="row-title" style="' . $style . '">' . $site['name'] . '</span>';
+				$actions = $this->row_actions( array( 'none' => '&nbsp;' ) );
+			}
+
+			return $name . $actions;
+		}
+
+		private function beautify_url( $url ) {
+			$result = '<span style="color:%2$s">';
+			if ( strpos( $url, 'http://' ) === 0 ) {
+				$result .= 'http://</span>';
+				$url = substr( $url, 7 );
+			}
+			else if ( strpos( $url, 'https://' ) === 0 ) {
+				$result .= 'https://</span>';
+				$url = substr( $url, 8 );
+			}
+			$result .= '<span style="color:%1$s">';
+
+			$first_slash = strpos( $url, '/' );
+			if ( $first_slash ) {
+				$result .= substr( $url, 0, $first_slash );
+				$result .= '</span><span style="color:%2$s">';
+				$result .= substr( $url, $first_slash );
+				$result .= '</span>';
+			}
+			else {
+				$result .= substr( $url, 0, strlen( $url ) );
+				$result .= '</span><span style="color:%2$s"></span>';
+			}
+
+			return $result;
+		}
+
+		public function print_column_headers( $with_id = true ) {
+			if ( $with_id )
+				parent::print_column_headers();
+		}
+
+	}//NelioABRegisteredSitesTable
 }
 
 

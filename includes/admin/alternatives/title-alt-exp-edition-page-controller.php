@@ -115,7 +115,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			$view->force_direct( $force_direct );
 
 			// Experiment information
-			$view->set_original_id( $experiment->get_original() );
+			$view->set_original_id( $experiment->get_originals_id() );
 			$view->set_experiment_id( $experiment->get_id() );
 			$view->set_experiment_name( $experiment->get_name() );
 			$view->set_experiment_descr( $experiment->get_description() );

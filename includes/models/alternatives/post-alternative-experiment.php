@@ -33,6 +33,13 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		public function clear() {
 			parent::clear();
 			$this->ori = -1;
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			$plan = NelioABSettings::get_subscription_plan();
+			$pro  = NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN;
+			if ( $plan < $pro )
+				$this->track_heatmaps( false );
+			else
+				$this->track_heatmaps( true );
 		}
 
 		public function get_original() {
@@ -40,7 +47,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		}
 
 		public function get_originals_id() {
-			return $this->get_original();
+			return $this->ori;
 		}
 
 		public function set_to_test_title_only( $only ) {
@@ -153,7 +160,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( count( $this->get_alternatives() ) <= 0 )
 				return NelioABExperimentStatus::DRAFT;
 
-			if ( $this->get_original() < 0 )
+			if ( $this->get_originals_id() < 0 )
 				return NelioABExperimentStatus::DRAFT;
 
 			if ( count( $this->get_goals() ) == 0 )
@@ -195,10 +202,11 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			$body = array(
 				'name'           => $this->get_name(),
 				'description'    => $this->get_description(),
-				'originalPost'   => $this->get_original(),
+				'originalPost'   => $this->get_originals_id(),
 				'status'         => $this->get_status(),
 				'kind'           => $this->get_textual_type(),
 				'testsTitleOnly' => $this->tests_title_only(),
+				'showHeatmap'    => $this->are_heatmaps_tracked(),
 			);
 
 			$result = NelioABBackend::remote_post( $url, $body );
@@ -318,8 +326,28 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( $this->get_status() == NelioABExperimentStatus::RUNNING )
 				return;
 
+			// Checking whether the experiment can be started or not...
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
-			$ori = get_post( $this->get_original() );
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+			foreach ( $running_exps as $running_exp ) {
+				if ( $running_exp->get_type() == $this->get_type() &&
+				     $running_exp->get_originals_id() == $this->get_originals_id() ) {
+					if ( $this->get_type() == NelioABExperiment::PAGE_ALT_EXP )
+						$err_str = sprintf(
+							__( 'The experiment cannot be started, because there is another experiment running that is testing the same page. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+							$running_exp->get_name() );
+					else
+						$err_str = sprintf(
+							__( 'The experiment cannot be started, because there is another experiment running that is testing the same post. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+							$running_exp->get_name() );
+					throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+				}
+			}
+
+			// If everything is OK, we can start it!
+
+			$ori = get_post( $this->get_originals_id() );
 			if ( $ori ) {
 				foreach ( $this->get_alternatives() as $alt ) {
 					$alt_post = get_post( $alt->get_value() );
@@ -360,6 +388,41 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				$value = $this->get_id() . ',' . $this->get_status();
 				update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
 			}
+		}
+
+		public static function load( $id ) {
+			$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/post/' . $id );
+			$json_data = json_decode( $json_data['body'] );
+
+			$exp = new NelioABPostAlternativeExperiment( $json_data->key->id );
+			$exp->set_name( $json_data->name );
+			if ( isset( $json_data->testsTitleOnly ) )
+				$exp->set_to_test_title_only( $json_data->testsTitleOnly );
+			if ( isset( $json_data->description ) )
+				$exp->set_description( $json_data->description );
+			$exp->set_type_using_text( $json_data->kind );
+			$exp->set_original( $json_data->originalPost );
+			$exp->set_status( $json_data->status );
+			$exp->track_heatmaps( false );
+			if ( isset( $json_data->showHeatmap ) && $json_data->showHeatmap  )
+				$exp->track_heatmaps( $json_data->showHeatmap );
+
+			if ( isset( $json_data->goals ) )
+				foreach ( $json_data->goals as $goal )
+					NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+
+			$alternatives = array();
+			if ( isset( $json_data->alternatives ) ) {
+				foreach ( $json_data->alternatives as $json_alt ) {
+					$alt = new NelioABAlternative( $json_alt->key->id );
+					$alt->set_name( $json_alt->name );
+					$alt->set_value( $json_alt->value );
+					array_push ( $alternatives, $alt );
+				}
+			}
+			$exp->set_appspot_alternatives( $alternatives );
+
+			return $exp;
 		}
 
 	}//NelioABPostAlternativeExperiment

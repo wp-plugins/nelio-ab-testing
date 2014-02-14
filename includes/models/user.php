@@ -50,7 +50,7 @@ if( !class_exists( 'NelioABUser' ) ) {
 				     $data->get_type() != NelioABExperiment::PAGE_ALT_EXP ) {
 					continue;
 				}
-				if ( $data->get_original() == $post_id ) {
+				if ( $data->get_originals_id() == $post_id ) {
 					$exp = $data;
 					break;
 				}
@@ -67,7 +67,7 @@ if( !class_exists( 'NelioABUser' ) ) {
 				$alternatives   = $exp->get_alternatives();
 				$num_of_options = count( $alternatives );
 				$option         = mt_rand( 0, $num_of_options );
-				$alt_post       = $exp->get_original();
+				$alt_post       = $exp->get_originals_id();
 				if ( $option != $num_of_options ) {
 					$alt_post = $alternatives[$option];
 					$alt_post = $alt_post->get_value();
@@ -124,7 +124,7 @@ if( !class_exists( 'NelioABUser' ) ) {
 			return $alt_post;
 		}
 
-		public static function get_alternative_for_theme_alt_exp() {
+		public static function get_alternative_for_global_alt_exp( $type ) {
 			global $NELIOAB_COOKIES;
 
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
@@ -132,7 +132,7 @@ if( !class_exists( 'NelioABUser' ) ) {
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			$exp = NULL;
 			foreach ( $running_exps as $data ) {
-				if ( $data->get_type() == NelioABExperiment::THEME_ALT_EXP ) {
+				if ( $data->get_type() == $type ) {
 					$exp = $data;
 					break;
 				}
@@ -150,7 +150,7 @@ if( !class_exists( 'NelioABUser' ) ) {
 				$num_of_options = count( $alternatives );
 				$option         = mt_rand( 0, $num_of_options );
 
-				$aux    = $exp->get_original_theme();
+				$aux    = $exp->get_original();
 				$alt_id = $aux->get_id();
 				if ( $option != $num_of_options ) {
 					$aux    = $exp->get_alternatives();
@@ -165,8 +165,8 @@ if( !class_exists( 'NelioABUser' ) ) {
 
 			$alt_id = $NELIOAB_COOKIES[$cookie_name];
 
-			if ( $exp->get_original_theme()->get_id() == $alt_id )
-				return $exp->get_original_theme();
+			if ( $exp->get_original()->get_id() == $alt_id )
+				return $exp->get_original();
 
 			foreach ( $exp->get_alternatives() as $candidate )
 				if ( $candidate->get_id() == $alt_id )
@@ -176,7 +176,8 @@ if( !class_exists( 'NelioABUser' ) ) {
 		}
 
 		public static function get_assigned_theme() {
-			$alt = NelioABUser::get_alternative_for_theme_alt_exp();
+			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+			$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
 
 			if ( !$alt )
 				return wp_get_theme();

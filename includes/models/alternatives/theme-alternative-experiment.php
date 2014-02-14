@@ -33,12 +33,12 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			)	);
 		}
 
-		public function get_original_theme() {
+		public function get_original() {
 			return $this->original_appspot_theme;
 		}
 
 		public function get_originals_id() {
-			return $this->get_original_theme()->get_id();
+			return $this->get_original()->get_id();
 		}
 
 		protected function determine_proper_status() {
@@ -110,53 +110,37 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			return false;
 		}
 
+		public function start() {
+			// Checking whether the experiment can be started or not...
+			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+			foreach ( $running_exps as $running_exp ) {
+				switch ( $running_exp->get_type() ) {
+					case NelioABExperiment::THEME_ALT_EXP:
+						$err_str = sprintf(
+							__( 'The experiment cannot be started, because there is a theme experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+							$running_exp->get_name() );
+						throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+					case NelioABExperiment::CSS_ALT_EXP:
+						if ( in_array( $this->get_post_id(), $this->get_origins() ) || in_array( -1, $this->get_origins() ) ) {
+							$err_str = sprintf(
+								__( 'The experiment cannot be started, because there is a CSS experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+								$running_exp->get_name() );
+							throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+						}
+					case NelioABExperiment::HEATMAP_EXP:
+						$err_str = __( 'The experiment cannot be started, because there is one (or more) heatmap experiments running. Please make sure to stop any running heatmap experiment before starting the new one.', 'nelioab' );
+						throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+				}
+			}
+			// If everything is OK, we can start it!
+			parent::start();
+		}
+
 		public function save() {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-
-			// 1. UPDATE OR CREATE THE EXPERIMENT
-			$url = '';
-			if ( $this->get_id() < 0 ) {
-				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/site/%s/exp/global',
-					NelioABSettings::get_site_id()
-				);
-			}
-			else {
-				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/exp/global/%s/update',
-					$this->get_id()
-				);
-			}
-
-			if ( $this->get_status() != NelioABExperimentStatus::PAUSED &&
-			     $this->get_status() != NelioABExperimentStatus::RUNNING &&
-			     $this->get_status() != NelioABExperimentStatus::FINISHED &&
-			     $this->get_status() != NelioABExperimentStatus::TRASH )
-				$this->set_status( $this->determine_proper_status() );
-
-			$body = array(
-				'name'           => $this->get_name(),
-				'description'    => $this->get_description(),
-				'origin'         => $this->get_origins(),
-				'status'         => $this->get_status(),
-				'kind'           => $this->get_textual_type(),
-			);
-
-			$result = NelioABBackend::remote_post( $url, $body );
-
-			$exp_id = $this->get_id();
-			if ( $exp_id < 0 ) {
-				if ( is_wp_error( $result ) )
-					return;
-				$json = json_decode( $result['body'] );
-				$exp_id = $json->key->id;
-				$this->id = $exp_id;
-			}
-
-			// 1.1 SAVE GOALS
-			// -------------------------------------------------------------------------
-			$this->make_goals_persistent();
-
+			$exp_id = parent::save();
 
 			// 2. UPDATE THE ALTERNATIVES
 			// -------------------------------------------------------------------------
@@ -230,6 +214,34 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 				catch ( Exception $e ) {
 				}
 			}
+		}
+
+		public static function load( $id ) {
+			$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/global/' . $id );
+			$json_data = json_decode( $json_data['body'] );
+
+			$exp = new NelioABThemeAlternativeExperiment( $json_data->key->id );
+			$exp->set_type_using_text( $json_data->kind );
+			$exp->set_name( $json_data->name );
+			if ( isset( $json_data->description ) )
+				$exp->set_description( $json_data->description );
+			$exp->set_status( $json_data->status );
+			if ( isset( $json_data->goals ) )
+				foreach ( $json_data->goals as $goal )
+					NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+
+			$alternatives = array();
+			if ( isset( $json_data->alternatives ) ) {
+				foreach ( $json_data->alternatives as $json_alt ) {
+					$alt = new NelioABAlternative( $json_alt->key->id );
+					$alt->set_name( $json_alt->name );
+					$alt->set_value( $json_alt->value );
+					array_push ( $alternatives, $alt );
+				}
+			}
+			$exp->set_appspot_alternatives( $alternatives );
+
+			return $exp;
 		}
 
 	}//NelioABThemeAlternativeExperiment

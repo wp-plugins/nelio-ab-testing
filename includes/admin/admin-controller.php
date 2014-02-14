@@ -43,6 +43,23 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			add_filter( 'init', array( $this, 'init' ) );
 		}
 
+		protected function process_special_pages() {
+			if ( !isset( $_GET['nelioab-page'] ) )
+				return;
+
+			switch( $_GET['nelioab-page'] ) {
+				case 'heatmap-viewer':
+					require_once( NELIOAB_ADMIN_DIR . '/views/content/heatmaps.php' );
+					die();
+				case 'save-css':
+					update_option( 'nelioab_css_' . $_GET['nelioab_preview_css'], $_POST['content'] );
+					$url = get_option('home');
+					$url = add_query_arg( $_GET, $url );
+					header( "Location: $url" ) ;
+					die();
+			}
+		}
+
 		public function init() {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
@@ -62,6 +79,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			if ( !current_user_can( 'level_8' ) )
 				return;
 
+			$this->process_special_pages();
+
 			// Iconography
 			add_action( 'admin_head', array( $this, 'add_custom_styles' ) );
 
@@ -80,24 +99,24 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		public function add_css_for_creation_page() {
 			wp_register_style( 'nelioab_new_exp_selection_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-exp-selection.css', false, NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-exp-selection.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_new_exp_selection_css' );
 		}
 
 		public function add_css_for_themes() {
 			wp_register_style( 'nelioab_theme_exp_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-theme-exp.css', false, NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-theme-exp.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_theme_exp_css' );
 		}
 
 		public function add_custom_styles() {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			wp_register_style( 'nelioab_generic_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-generic.css', false, NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-generic.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_generic_css' );
 			if ( NelioABWpHelper::is_at_least_version( 3.8 ) ) {
 				wp_register_style( 'nelioab_new_icons_css',
-					NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-icons.css', false, NELIOAB_PLUGIN_VERSION );
+					NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-icons.min.css', false, NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_style( 'nelioab_new_icons_css' );
 			}
 		}
@@ -107,7 +126,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			wp_enqueue_script( 'jquery-ui-dialog' );
 			wp_enqueue_style( 'jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/smoothness/jquery-ui.css' );
 			wp_register_style( 'nelioab_dialog_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-dialog.css', false, NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-dialog.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_dialog_css' );
 		}
 
@@ -117,20 +136,20 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Custom CSS for GRAPHICS and RESULTS (experiment progress)
 			wp_register_style( 'nelioab_progress_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/progress.css', false, NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/css/progress.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_progress_css' );
 
 			wp_register_style( 'nelioab_tab_type_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-tab-type.css', false, NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-tab-type.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_tab_type_css' );
 
 			// Custom JS for GRAPHICS (conversion experiment progress)
 			wp_enqueue_script( 'nelioab_highcharts',
-				NELIOAB_ADMIN_ASSETS_URL . '/js/highcharts.js?' . NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/js/highcharts.min.js?' . NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_script( 'nelioab_exporting',
-				NELIOAB_ADMIN_ASSETS_URL . '/js/exporting.js?' . NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/js/exporting.min.js?' . NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_script( 'nelioab_graphic_functions',
-				NELIOAB_ADMIN_ASSETS_URL . '/js/graphic-functions.js?' . NELIOAB_PLUGIN_VERSION );
+				NELIOAB_ADMIN_ASSETS_URL . '/js/graphic-functions.min.js?' . NELIOAB_PLUGIN_VERSION );
 		}
 
 		public function exclude_alternative_posts_and_pages( $query ) {
@@ -281,15 +300,15 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// OTHER PAGES (not included in the menu)
 
-			// // CSS Editing
-			// // ----------------------------------------------------------------------
-			// require_once( NELIOAB_ADMIN_DIR . '/views/content/css-edit.php' );
-			// add_submenu_page( NULL,
-			// 	__( 'CSS Edit', 'nelioab' ),
-			// 	__( 'CSS Edit', 'nelioab' ),
-			// 	'manage_options',
-			// 	'nelioab-css-edit',
-			// 	array( 'NelioABCssEditPage', 'build' ) );
+			// CSS Editing
+			// ----------------------------------------------------------------------
+			require_once( NELIOAB_ADMIN_DIR . '/views/content/css-edit.php' );
+			add_submenu_page( NULL,
+				__( 'CSS Edit', 'nelioab' ),
+				__( 'CSS Edit', 'nelioab' ),
+				'manage_options',
+				'nelioab-css-edit',
+				array( 'NelioABCssEditPage', 'build' ) );
 
 		}
 

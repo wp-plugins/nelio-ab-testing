@@ -448,77 +448,70 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					<div id="exp-info-alts">
 						<h3><?php _e( 'Alternatives', 'nelioab' ); ?></h3>
 
-						<ul>
-							<?php
-							if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
-								<script>
-								function nelioab_confirm_editing() {
-									return confirm( "<?php
-										_e( 'Editing an alternative while the experiment is running ' .
-										'may invalidate the results of the experiment. ' .
-										'Do you really want to continue?', 'nelioab' );
-									?>" );
-								}
-								</script>
-							<?php
-							} ?>
-
-							<?php
-							if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) { ?>
-								<script>
-								<?php
-								$this->print_js_function_for_post_data_overriding();
-								?>
-
-								function nelioab_show_the_dialog_for_overriding(id) {
-									$ = jQuery;
-									$(function() {
-										$("#dialog-modal").dialog({
-											title: '<?php echo __( 'Override Original', 'nelioab' ); ?>',
-											resizable: false,
-											width: 500,
-											modal: true,
-											buttons: {
-												"OK": function() {
-													$(this).dialog("close");
-													nelioab_do_override(id);
-												},
-												"Cancel": function() {
-													$(this).dialog("close");
-												}
-											}
-										});
-									});
-								}
-
-								function nelioab_do_override(id) {
-									jQuery(".apply-link").each(function() {
-										jQuery(this).fadeOut(100);
-									});
-
-									jQuery("#loading-" + id).delay(120).fadeIn();
-
-									jQuery.ajax({
-										url: jQuery("#apply_alternative").attr("action"),
-										type: 'post',
-										data: jQuery('#apply_alternative').serialize(),
-										success: function(data) {
-											jQuery("#loading-" + id).fadeOut(250);
-											jQuery("#success-" + id).delay(500).fadeIn(200);
-										}
-									});
-								}
-								</script>
-
-							<?php
+						<?php
+						if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
+							<script>
+							function nelioab_confirm_editing() {
+								return confirm( "<?php
+									_e( 'Editing an alternative while the experiment is running may invalidate the results of the experiment. Do you really want to continue?', 'nelioab' );
+								?>" );
 							}
-
-							$this->print_the_original_alternative();
-							$this->print_the_real_alternatives();
-							?>
-						</ul>
+							</script>
+						<?php
+						} ?>
 
 						<?php
+						if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) { ?>
+							<script>
+							<?php
+							$this->print_js_function_for_post_data_overriding();
+							?>
+
+							function nelioab_show_the_dialog_for_overriding(id) {
+								$ = jQuery;
+								$(function() {
+									$("#dialog-modal").dialog({
+										title: '<?php echo __( 'Override Original', 'nelioab' ); ?>',
+										resizable: false,
+										width: 500,
+										modal: true,
+										buttons: {
+											"OK": function() {
+												$(this).dialog("close");
+												nelioab_do_override(id);
+											},
+											"Cancel": function() {
+												$(this).dialog("close");
+											}
+										}
+									});
+								});
+							}
+
+							function nelioab_do_override(id) {
+								jQuery(".apply-link").each(function() {
+									jQuery(this).fadeOut(100);
+								});
+
+								jQuery("#loading-" + id).delay(120).fadeIn();
+
+								jQuery.ajax({
+									url: jQuery("#apply_alternative").attr("action"),
+									type: 'post',
+									data: jQuery('#apply_alternative').serialize(),
+									success: function(data) {
+										jQuery("#loading-" + id).fadeOut(250);
+										jQuery("#success-" + id).delay(500).fadeIn(200);
+									}
+								});
+							}
+							</script>
+
+						<?php
+						}
+
+						$this->print_alternatives_block();
+
 						if ( $this->exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
 							<div style="margin-top:1em;">
 								<script>
@@ -584,13 +577,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 					<p><?php
 					if ( $exp->get_status() == NelioABExperimentStatus::RUNNING )
-						_e( 'NelioAB is using the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for ' .
-							'computing the results of this experiment. In the following, you may see the details: ',
-							'nelioab' );
+						_e( 'NelioAB is using the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for computing the results of this experiment. In the following, you may see the details: ', 'nelioab' );
 					else
-						_e( 'NelioAB used the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for ' .
-							'computing the results of this experiment. In the following, you may see the details: ',
-							'nelioab' );
+						_e( 'NelioAB used the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for computing the results of this experiment. In the following, you may see the details: ', 'nelioab' );
 					?></p>
 
 					<?php
@@ -617,11 +606,17 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			}
 			// Otherwise, show a message stating that no data is available yet
 			else {
-				printf( '<p style="color:grey;font-size:120%%;">%s</p>',
-					__( 'Oops! There are no results available yet. ' .
-						'Please, check again later.', 'nelioab' ) );
+				printf( '<p style="color:#555;font-size:120%%;">%s</p>',
+					__( 'Oops! There are no results available yet. Please, check again later.', 'nelioab' ) );
 			}
 
+		}
+
+		protected function print_alternatives_block() {
+			echo '<ul>';
+			$this->print_the_original_alternative();
+			$this->print_the_real_alternatives();
+			echo '</ul>';
 		}
 
 		abstract protected function print_experiment_details_title();

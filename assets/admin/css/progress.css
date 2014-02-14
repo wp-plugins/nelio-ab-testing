@@ -1,3 +1,13 @@
+/* TABLE OF ALTERNATIVES FOR POST EXPERIMENTS */
+
+table#alternatives-in-progress tr td:last-child {
+	min-width:350px;
+}
+
+table#alternatives-in-progress tr td:last-child small a { text-decoration:none; }
+table#alternatives-in-progress tr td:last-child > small { visibility:hidden; }
+table#alternatives-in-progress tr td:last-child:hover> small { visibility:visible; }
+
 /*INFO GRAPHICS */
 .nelioab-timeline-graphic {
 	height:260px;
@@ -150,7 +160,8 @@ div#exp-info-alts .alt-type:hover {
 	color:#444;
 }
 
-div#exp-info-alts .alt-type-winner {
+div#exp-info-alts .alt-type-winner,
+div#exp-info-alts .alt-type-winner:hover {
 	background-color: #2F7ED8;
 	color: white;
 }

@@ -358,18 +358,14 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 
 		public function extra_tablenav( $which ) {
 			if ( $which == 'top' ){
-				$text = __( 'Please, <b>add one or more</b> alternatives to the Original Page ' .
-					'using the buttons above.',
-					'nelioab' );
+				$text = __( 'Please, <b>add one or more</b> alternatives to the Original Page using the buttons above.', 'nelioab' );
 				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					$text = __( 'Please, <b>add one or more</b> alternatives to the Original Post ' .
-						'using the buttons above.',
-						'nelioab' );
+					$text = __( 'Please, <b>add one or more</b> alternatives to the Original Post using the buttons above.', 'nelioab' );
 				echo $text;
 			}
 		}
 
-		protected function get_edit_code( $alt ){
+		protected function get_edit_code( $alt ) {
 			return sprintf(
 				'<a style="cursor:pointer;" onClick="javascript:' .
 					'jQuery(\'#content_to_edit\').attr(\'value\', %s);' .

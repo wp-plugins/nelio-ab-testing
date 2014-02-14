@@ -216,16 +216,30 @@ if( !class_exists( 'NelioABSettings' ) ) {
 					$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
 					$json = NelioABBackend::remote_get( $url );
 					$json = json_decode( $json['body'] );
+					NelioABSettings::set_account_as_active();
 					update_option( 'nelioab_subscription_plan', $json->subscriptionPlan );
 					update_option( 'nelioab_last_check_user_settings', $now );
 				}
 				catch ( Exception $e ) {
 					if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER )
-						throw $e;
+						NelioABSettings::set_account_as_active( false );
 				}
 			}
 
+			if ( !NelioABSettings::is_account_active() ) {
+				$err = NelioABErrCodes::DEACTIVATED_USER;
+				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+			}
+
 			return true;
+		}
+
+		public static function is_account_active() {
+			return get_option( 'nelioab_is_account_active', false );
+		}
+
+		public static function set_account_as_active( $active = true ) {
+			update_option( 'nelioab_is_account_active', $active );
 		}
 
 		public static function get_registered_sites_information() {
@@ -268,7 +282,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				);
 				try {
 					$json_data = NelioABBackend::remote_post(
-						sprintf( NELIOAB_BACKEND_URL . '/site/%s', $id ),
+						sprintf( NELIOAB_BACKEND_URL . '/site/%s/update', $id ),
 						$params
 					);
 					NelioABSettings::set_site_url( $url );

@@ -90,8 +90,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			if ( count( $themes ) < 2 ) {
 				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
 				$view = new NelioABErrorPage(
-					__( 'There is only one theme available.<br />Please, install one or more ' .
-						'themes to create an experiment of this type.', 'nelioab' ) );
+					__( 'There is only one theme available.<br />Please, install one or more themes to create an experiment of this type.', 'nelioab' ) );
 				return $view;
 			}
 

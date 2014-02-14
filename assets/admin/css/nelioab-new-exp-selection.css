@@ -116,6 +116,18 @@
 } }
 
 
+.nelioab-image-heatmap {
+	background: url( '../images/new-exp-heatmap.png' );
+	background-image: url( '../images/new-exp-heatmap.png' );
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
+.nelioab-image-heatmap {
+	background-image: url( '../images/2x/new-exp-heatmap.png' );
+	background-size: 240px 120px;
+} }
+
+
 /* HOVERING */
 
 .nelioab-option:hover {

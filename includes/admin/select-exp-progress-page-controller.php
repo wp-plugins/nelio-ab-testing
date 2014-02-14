@@ -107,6 +107,13 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 					require_once( NELIOAB_ADMIN_DIR . '/progress/theme-alt-exp-progress-page-controller.php' );
 					return 'NelioABThemeAltExpProgressPageController';
 
+				case NelioABExperiment::CSS_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/progress/css-alt-exp-progress-page-controller.php' );
+					return 'NelioABCssAltExpProgressPageController';
+
+				case NelioABExperiment::HEATMAP_EXP:
+					// Nothing to be done in here...
+
 				default:
 					require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );

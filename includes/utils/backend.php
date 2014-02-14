@@ -159,15 +159,18 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 		// Error codes corresponding to package details
 		const MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC = 100;
+		const HEATMAP_NOT_ALLOWED_IN_BASIC         = 101;
 
 		// These are "private" error codes
-		const BACKEND_NOT_AVAILABLE      = -1;
-		const BACKEND_NO_SITE_CONFIGURED = -2;
-		const BACKEND_UNKNOWN_ERROR      = -3;
-		const ERROR_404                  = -4;
-		const NON_ACCEPTED_TAC           = -5;
-		const STATUS_204                 = -6;
-		const UNKNOWN_ERROR              = -7;
+		const BACKEND_NOT_AVAILABLE        = -1;
+		const BACKEND_NO_SITE_CONFIGURED   = -2;
+		const BACKEND_UNKNOWN_ERROR        = -3;
+		const ERROR_404                    = -4;
+		const NON_ACCEPTED_TAC             = -5;
+		const STATUS_204                   = -6;
+		const UNKNOWN_ERROR                = -7;
+		const NO_HEATMAPS_AVAILABLE        = -8;
+		const EXPERIMENT_CANNOT_BE_STARTED = -9;
 
 		public static function to_string( $err ) {
 			switch( $err ) {
@@ -203,7 +206,10 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				case NelioABErrCodes::DEACTIVATED_USER:
 					return __( 'User account has been deactivated.', 'nelioab' );
 				case NelioABErrCodes::EXPERIMENT_ID_NOT_FOUND:
-					return __( 'Experiment not found.', 'nelioab' );
+					return __( 'Experiment not found.', 'nelioab' ) . '<br />' .
+						'<small><a href="'. admin_url() . 'admin.php?page=nelioab-experiments">' .
+						__( 'Go to my list of experiments...', 'nelioab' ) .
+						'</a></small>';
 				case NelioABErrCodes::INVALID_GOAL:
 					return __( 'Goal not found.', 'nelioab' );
 
@@ -211,11 +217,14 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				// Error codes corresponding to package details
 				case NelioABErrCodes::MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC:
 					return sprintf(
-						__( 'Oops! The experiment cannot be started because it defines more than ' .
-						'one goal page. Please, modify your experiment so that it includes one ' .
-						'goal page only or <a href="%s">upgrade your Nelio A/B subscription ' .
-						'package</a>.', 'nelioab' ),
+						__( 'Oops! The experiment cannot be started because it defines more than one goal page. Please, modify your experiment so that it includes one goal page only or <a href="%s">upgrade your Nelio A/B Testing subscription package</a>.', 'nelioab' ),
 						'http://wp-abtesting.com/inquiry-subscription-plans/' );
+
+				case NelioABErrCodes::HEATMAP_NOT_ALLOWED_IN_BASIC:
+					return sprintf(
+						__( 'Oops! Your current subscription plan does not permit you to use Heatmap Experiments. Please, consider <a href="%s">upgrading your Nelio A/B subscription package</a>.', 'nelioab' ),
+						'http://wp-abtesting.com/inquiry-subscription-plans/' );
+
 
 
 				// Private errors
@@ -229,8 +238,12 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'Terms and conditions are not accepted.', 'nelioab' );
 				case NelioABErrCodes::STATUS_204:
 					return __( 'Backend is not accessible.<br />Please, try again in just a few moments.', 'nelioab' );
+				case NelioABErrCodes::NO_HEATMAPS_AVAILABLE:
+					return __( 'Be patient... We are still collecting the data for your heatmaps.', 'nelioab' );
 				case NelioABErrCodes::UNKNOWN_ERROR:
 					return __( 'An unknown error has occurred.', 'nelioab' );
+				case NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED:
+					return __( 'Experiment cannot be started.', 'nelioab' );
 				case NelioABErrCodes::BACKEND_UNKNOWN_ERROR:
 				default:
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );

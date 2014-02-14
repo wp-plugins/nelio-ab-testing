@@ -87,3 +87,15 @@
 	background-size: 32px 32px;
 } }
 
+.tab-type-heatmap {
+	background:       url( '../images/tab-type-heatmap.png' );
+	background-image: url( '../images/tab-type-heatmap.png' );
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
+.tab-type-heatmap {
+	background:       url( '../images/2x/tab-type-heatmap.png' );
+	background-image: url( '../images/2x/tab-type-heatmap.png' );
+	background-size: 32px 32px;
+} }
+
