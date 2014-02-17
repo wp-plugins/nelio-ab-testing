@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,9 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
+= 2.0.2 =
+* Bug fix: AJAX-related error when starting a Heatmap experiment
+
 = 2.0.1 =
 * Some minor tweaks
 
@@ -149,7 +152,7 @@ on your site so that you can understand your customers better.
 
 = 1.5.9 =
 * Bug fix: when creating theme experiments, the widgets of each theme are
-properly loaded.
+properly loaded
 
 = 1.5.8 =
 * Bug fix: you can now create theme experiments with child themes
@@ -312,5 +315,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 2.0.1 =
+= 2.0.2 =
 Heatmap and CSS Experiments. More feedback for AJAX-related errors.

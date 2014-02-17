@@ -134,7 +134,7 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 							$running_exp->get_name() );
 						throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
 					case NelioABExperiment::CSS_ALT_EXP:
-						if ( in_array( $this->get_post_id(), $this->get_origins() ) || in_array( -1, $this->get_origins() ) ) {
+						if ( in_array( $this->get_post_id(), $running_exp->get_origins() ) || in_array( -1, $running_exp->get_origins() ) ) {
 							$err_str = sprintf(
 								__( 'The experiment cannot be started, because there is a running CSS experiment that may be changing the appearence of the tested page. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
 								$running_exp->get_name() );
