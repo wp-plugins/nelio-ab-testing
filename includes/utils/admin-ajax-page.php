@@ -199,7 +199,12 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
          				); ?>" +
 							"<h2 style='color:#555;margin:0px;padding:0px;'><?php
 								_e( 'Oops! There was an AJAX-related error.' );
-							?></h2>");
+							?></h2>" +
+							"<div style='color:#999;text-align:left;max-width:600px;margin:auto;'>" +
+								"<br /><br /><b>Details:</b><br />" +
+								"<u>Class</u>: " + data.classname + "<br />" +
+								"<u>File</u>: " + data.filename + "<br />" +
+							"</div>");
 						}
 					});
 

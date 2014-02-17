@@ -221,8 +221,10 @@ if( !class_exists( 'NelioABSettings' ) ) {
 					update_option( 'nelioab_last_check_user_settings', $now );
 				}
 				catch ( Exception $e ) {
-					if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER )
+					if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER ) {
 						NelioABSettings::set_account_as_active( false );
+						update_option( 'nelioab_last_check_user_settings', $now );
+					}
 				}
 			}
 
