@@ -39,12 +39,19 @@ class NelioABHeatmapExperimentController {
 	public function hook_to_wordpress() {
 		wp_enqueue_script( 'jquery' );
 		add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_scripts' ) );
-		add_filter( 'the_content', array( &$this, 'add_heatmap_info' ) );
 	}
 
 	public function load_nelioab_scripts() {
 		wp_enqueue_script( 'nelioab_sync_heatmaps',
 			NELIOAB_ASSETS_URL . '/js/nelioab-sync-heatmaps.min.js?' . NELIOAB_PLUGIN_VERSION );
+		if ( $this->has_post_a_heatmap_experiment() ||
+		     $this->is_post_in_an_ab_experiment_with_heatmaps() ) {
+			global $nelioab_controller;
+			$post_id = $nelioab_controller->url_or_front_page_to_postid( $nelioab_controller->get_current_url() );
+			?><script>var nelioab__hm_post_id = "<?php echo $post_id; ?>";</script><?php echo "\n";
+			wp_enqueue_script( 'nelioab_track_heatmaps',
+				NELIOAB_ASSETS_URL . '/js/nelioab-heatmap-tracker.min.js?' . NELIOAB_PLUGIN_VERSION );
+		}
 	}
 
 	private function has_post_a_heatmap_experiment() {
@@ -76,25 +83,6 @@ class NelioABHeatmapExperimentController {
 			}
 		}
 		return false;
-	}
-
-	public function add_heatmap_info( $content ) {
-		if ( $this->heatmap_info_added )
-			return $content;
-
-		if ( !$this->has_post_a_heatmap_experiment() &&
-		     !$this->is_post_in_an_ab_experiment_with_heatmaps() )
-			return $content;
-
-		$this->heatmap_info_added = true;
-
-		global $nelioab_controller;
-		$post_id = $nelioab_controller->url_or_front_page_to_postid( $nelioab_controller->get_current_url() );
-		$content .= '<span id="hm-post-id" style="display:none;">' . $post_id . '</span>';
-		$content .= sprintf( '<script type="text/javascript" src="%s"></script>',
-			NELIOAB_ASSETS_URL . '/js/nelioab-heatmap-tracker.min.js?' . NELIOAB_PLUGIN_VERSION );
-
-		return $content;
 	}
 
 	public function save_heatmap_info_into_cache() {

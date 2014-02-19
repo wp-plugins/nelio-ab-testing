@@ -244,7 +244,7 @@ class NelioABAlternativeExperimentController {
 			$this->is_embedded_css_js_printed = true;
 			return $content;
 		}
-		$css = $this->prepare_css_as_js( $alt->get_value );
+		$css = $this->prepare_css_as_js( $alt->get_value() );
 		$this->is_embedded_css_js_printed = true;
 
 		return $css . $content;
