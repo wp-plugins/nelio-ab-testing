@@ -17,7 +17,6 @@
 
 class NelioABAlternativeExperimentController {
 
-	private $is_embedded_css_js_printed;
 	private $alternative_post;
 	private $are_comments_from_original_loaded;
 
@@ -25,7 +24,6 @@ class NelioABAlternativeExperimentController {
 
 	public function __construct() {
 		$this->original_theme = false;
-		$this->is_embedded_css_js_printed = false;
 	}
 
 	public function hook_to_wordpress() {
@@ -50,7 +48,7 @@ class NelioABAlternativeExperimentController {
 			add_filter( 'post_link',           array( &$this, 'use_originals_post_link' ) );
 			add_filter( 'page_link',           array( &$this, 'use_originals_post_link' ) );
 			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
-			add_filter( 'the_content',         array( &$this, 'include_css_alternative_fragments_if_any' ) );
+			add_action( 'wp_enqueue_scripts',  array( &$this, 'include_css_alternative_fragments_if_any' ) );
 			add_filter( 'the_content',         array( &$this, 'print_script_for_external_links' ) );
 
 			// Support with other plugins
@@ -232,22 +230,15 @@ class NelioABAlternativeExperimentController {
 			NELIOAB_ASSETS_URL . '/js/tapas.min.js?' . NELIOAB_PLUGIN_VERSION );
 	}
 
-	public function include_css_alternative_fragments_if_any ( $content ) {
+	public function include_css_alternative_fragments_if_any() {
 		if ( !is_main_query() ) return;
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 
-		if ( $this->is_embedded_css_js_printed )
-			return $content;
-
 		$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::CSS_ALT_EXP );
-		if ( !$alt ) {
-			$this->is_embedded_css_js_printed = true;
-			return $content;
-		}
-		$css = $this->prepare_css_as_js( $alt->get_value );
-		$this->is_embedded_css_js_printed = true;
+		if ( !$alt )
+			return;
 
-		return $css . $content;
+		echo $this->prepare_css_as_js( $alt->get_value() );
 	}
 
 	public function print_script_for_external_links( $content ) {
@@ -290,7 +281,9 @@ class NelioABAlternativeExperimentController {
 					if ( $page->is_external() ) {
 						$url = $page->get_reference();
 						$url = str_replace( '"', '', $url );
-						array_push( $hrefs, '"' . $url . '"' );
+						$url = '"' . $url . '"';
+						if ( !in_array( $url, $hrefs ) )
+							array_push( $hrefs, $url );
 					}
 				}
 			}
@@ -304,6 +297,7 @@ class NelioABAlternativeExperimentController {
 		$script  = "\n\n";
 		$script .= "<script>\n";
 		$script .= "jQuery(document).bind( 'byebye', function(e,href) {\n";
+		$script .= "   href = href.replace(/\/+$/, '');\n";
 		$script .= "   var hrefs = [ $hrefs ];\n";
 		$script .= "   for ( i=0; i<hrefs.length; ++i ) {\n";
 		$script .= "      if ( hrefs[i] == href ) {;\n";
@@ -450,7 +444,7 @@ class NelioABAlternativeExperimentController {
 		return "$title";
 	}
 
-	private function is_post_in_a_post_alt_exp( $post_id ) {
+	public function is_post_in_a_post_alt_exp( $post_id ) {
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
@@ -512,7 +506,7 @@ class NelioABAlternativeExperimentController {
 		return false;
 	}
 
-	private function get_post_alternative( $post_id ) {
+	public function get_post_alternative( $post_id ) {
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		return NelioABUser::get_alternative_for_post_alt_exp( $post_id );
 	}
@@ -544,23 +538,24 @@ class NelioABAlternativeExperimentController {
 		if ( isset( $_GET['nelioab_preview_css'] ) )
 			$css_id = $_GET['nelioab_preview_css'];
 		$css = get_option( 'nelioab_css_' . $css_id, false );
-		return $this->prepare_css_as_js( $css ) . $content;
+		return $this->prepare_css_as_js( $css ) .
+			"<script>document.getElementsByTagName('head')[0].appendChild(nelioab_cssExpNode);</script>" .
+			$content;
 	}
 
 	private function prepare_css_as_js( $code ) {
-		if ( !$code ) return '';
-
 		$code = preg_replace( '!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $code );
+		$code = preg_replace( '/\s+/', ' ', $code );
+		$code = preg_replace( '/ *([{};]) */', '\1', $code );
 		$code = str_replace( ': ', ':', $code );
 		$code = str_replace( '\\', '\\\\', $code );
 		$code = str_replace( '"', '\\"', $code );
-		$code = str_replace( array( "\r\n", "\r", "\n", "\t", '  ', '    ', '    ' ), '', $code );
+		$code = str_replace( array( "\r\n", "\r", "\n" ), '', $code );
 
-		$css = "<script type='text/javascript'>\n";
+		$css  = "<script type='text/javascript'>\n";
 		$css .= "  nelioab_cssExpNode = document.createElement('style');\n";
 		$css .= "  nelioab_cssExpNode.setAttribute('type', 'text/css');\n";
 		$css .= "  nelioab_cssExpNode.innerHTML = \"$code\";\n";
-		$css .= "  document.getElementsByTagName('head')[0].appendChild(nelioab_cssExpNode);\n";
 		$css .= "</script>\n";
 
 		return $css;
