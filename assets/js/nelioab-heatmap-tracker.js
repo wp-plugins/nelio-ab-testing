@@ -143,6 +143,8 @@ function nelioabStartHeatmapTracking() {
 		if ( e.pageX == undefined || e.pageY == undefined ) return;
 		var target = jQuery(e.target);
 
+		path = target.getFullPath();
+
 		var pl = target.css('padding-left');   if ( pl == undefined ) pl = "0";
 		var pr = target.css('padding-right');  if ( pr == undefined ) pr = "0";
 		var pt = target.css('padding-top');    if ( pt == undefined ) pt = "0";
@@ -158,14 +160,53 @@ function nelioabStartHeatmapTracking() {
 		var posX = e.pageX - target.offset().left - pl;
 		var posY = e.pageY - target.offset().top - pt;
 
-		path = target.getFullPath();
-		nx = (posX/width).toFixed(2);
-		ny = (posY/height).toFixed(2);
-		if ( nx == Infinity || nx == NaN ) nx = "0.00";
-		if ( ny == Infinity || ny == NaN ) ny = "0.00";
+		nx = normalizer( posX, width );
+		ny = normalizer( posY, height );
+		if ( nx == Infinity || nx == NaN ) nx = "0";
+		if ( ny == Infinity || ny == NaN ) ny = "0";
 
 		if (isclick) nelioab_actual_data_click.addDataPoint(path, nx, ny);
 		nelioab_actual_data.addDataPoint(path, nx, ny);
+	};
+
+	var normalizer = function( position, length ) {
+		if ( length <= 50 )
+			return "0.5";
+
+		if ( length <= 500 ) {
+			var result = (position/length).toFixed(1);
+			if ( length <= 150 ) {
+				if ( result == "0.0" || result == "0.1" || result == "0.2" || result == "0.3" )
+					return "0.2";
+				else if ( result == "0.4" || result == "0.5" || result == "0.6" )
+					return "0.5";
+				else
+					return "0.8";
+			}
+			return result;
+		}
+
+		var result = (position/length).toFixed(3);
+		var cent = parseInt(result.substring(3,4));
+		if ( length <= 800 ) {
+			if ( cent <= 5 ) cent = "5";
+			else cent = "";
+			return result.substring(0,3) + cent;
+		}
+		else if ( length <= 1500 ) {
+			if ( cent == 0 ) cent = "";
+			else if ( cent <= 2 ) cent = "2";
+			else if ( cent <= 5 ) cent = "5";
+			else if ( cent <= 7 ) cent = "7";
+			else cent = "9";
+			return result.substring(0,3) + cent;
+		}
+		else if ( length <= 5000 ) {
+			return result.replace(/0?.$/, '');
+		}
+		else {
+			return result.replace(/0+$/, '');
+		}
 	};
 
 	body.mousemove(function(e) {

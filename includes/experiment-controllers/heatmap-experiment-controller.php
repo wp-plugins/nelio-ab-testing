@@ -47,7 +47,7 @@ class NelioABHeatmapExperimentController {
 		if ( $this->has_post_a_heatmap_experiment() ||
 		     $this->is_post_in_an_ab_experiment_with_heatmaps() ) {
 			global $nelioab_controller;
-			$post_id = $nelioab_controller->url_or_front_page_to_postid( $nelioab_controller->get_current_url() );
+			$post_id = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $nelioab_controller->get_current_url() );
 			?><script>var nelioab__hm_post_id = "<?php echo $post_id; ?>";</script><?php echo "\n";
 			wp_enqueue_script( 'nelioab_track_heatmaps',
 				NELIOAB_ASSETS_URL . '/js/nelioab-heatmap-tracker.min.js?' . NELIOAB_PLUGIN_VERSION );

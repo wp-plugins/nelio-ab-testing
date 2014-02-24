@@ -45,7 +45,7 @@ class NelioABController {
 		if ( isset( $_POST['nelioab_sync_heatmaps'] ) )
 			add_action( 'plugins_loaded', array( &$aux, 'send_heatmap_info_if_required' ) );
 		if ( isset( $_GET['nelioab_preview_css'] ) )
-			add_action( 'the_content',   array( &$this->controllers['alt-exp'], 'preview_css' ) );
+			add_action( 'the_content',    array( &$this->controllers['alt-exp'], 'preview_css' ) );
 	}
 
 	public function init() {
@@ -124,7 +124,7 @@ class NelioABController {
 		$alt_exp_con = $this->controllers['alt-exp'];
 		$nav = $alt_exp_con->prepare_navigation_object( $dest_id, $referer_url, $is_internal );
 
-		if ( !$this->is_relevant( $nav ) )
+		if ( $is_internal && !$this->is_relevant( $nav ) )
 			return;
 
 		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
@@ -208,6 +208,14 @@ class NelioABController {
 		}
 
 		return $the_id;
+	}
+
+	public function url_or_front_page_to_actual_postid_considering_alt_exps( $url ) {
+		$post_id = url_to_postid( $url );
+		$aux = $this->controllers['alt-exp'];
+		if ( $aux->is_post_in_a_post_alt_exp( $post_id ) )
+			$post_id = $aux->get_post_alternative( $post_id );
+		return $post_id;
 	}
 
 	public function init_admin_stuff() {
