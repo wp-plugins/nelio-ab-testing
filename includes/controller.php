@@ -211,7 +211,7 @@ class NelioABController {
 	}
 
 	public function url_or_front_page_to_actual_postid_considering_alt_exps( $url ) {
-		$post_id = url_to_postid( $url );
+		$post_id = $this->url_or_front_page_to_postid( $url );
 		$aux = $this->controllers['alt-exp'];
 		if ( $aux->is_post_in_a_post_alt_exp( $post_id ) )
 			$post_id = $aux->get_post_alternative( $post_id );

@@ -21,7 +21,6 @@ class NelioABHeatmapController {
 		if ( isset( $_GET['nelioab_show_heatmap'] ) ) {
 			add_action( 'wp_print_scripts', array( &$this, 'show_heatmap' ) );
 			add_filter( 'show_admin_bar', '__return_false' );
-			add_filter( 'user_has_cap', array( &$this, 'make_user_regular' ), 10, 3 );
 		}
 	}
 
