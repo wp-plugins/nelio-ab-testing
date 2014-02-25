@@ -1,9 +1,9 @@
 === Nelio AB Testing ===
 Contributors: nelio
-Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion
+Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 2.0
+Stable tag: 2.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,23 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
+= 2.0.5 =
+* Bug fix: you can now see the Heatmaps of the alternatives of a page/post
+split testing experiment.
+
+= 2.0.4 =
+* Bug fix: CSS experiments in the "Latest Posts" page are now working
+* Improved Heatmap tracking algorithm
+
+= 2.0.3 =
+* Bug fix: Heatmap tracking of "Latest Posts" page is now working
+
+= 2.0.2 =
+* Bug fix: AJAX-related error when starting a Heatmap experiment
+
+= 2.0.1 =
+* Some minor tweaks
+
 = 2.0 =
 * **New Feature!** Heatmaps and Clickmaps of your customers
 * **New Feature!** A/B Test CSS modifications
@@ -146,7 +163,7 @@ on your site so that you can understand your customers better.
 
 = 1.5.9 =
 * Bug fix: when creating theme experiments, the widgets of each theme are
-properly loaded.
+properly loaded
 
 = 1.5.8 =
 * Bug fix: you can now create theme experiments with child themes
@@ -290,7 +307,7 @@ pages).
 
 = 1.0.4 =
 * Bug fix: titles are no longer wrapped using SPAN tags. We now use a jQuery
-  replaceText function
+replaceText function
 
 = 1.0.3 =
 * Bug fix: no more redirections using PHP's "header" function
@@ -309,5 +326,5 @@ pages).
 
 == Upgrade Notice ==
 
-= 2.0 =
-Heatmap and CSS Experiments are now available
+= 2.0.5 =
+Heatmaps working for A/B testing of pages and posts.
