@@ -42,13 +42,10 @@ nelioab_hmdata_for_elem.prototype = {
 			data[x] = [];
 		if(!data[x][y])
 			data[x][y] = 0;
-		// if count parameter is set increment by count otherwise by 1
-		data[x][y]+=(arguments.length<3)?1:arguments[2];
+		data[x][y] += 1;
 		// do we have a new maximum?
-		if(this.max < data[x][y]){
-			// max changed, we need to save the new max
+		if(this.max < data[x][y])
 			this.max = data[x][y];
-		}
 	},
 	exportDataSet: function(){
 		var data = this.data;

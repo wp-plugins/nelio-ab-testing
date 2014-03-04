@@ -118,11 +118,11 @@
 				}
 			}
 			function switchHeatmap() {
-				window.frames['content'].clearHeatmapObject();
+				document.getElementById('content').contentWindow.clearHeatmapObject();
 				setTimeout('doSwitchHeatmap()', 400);
 			}
 			function doSwitchHeatmap() {
-				var nelioabHeatmapObject = window.frames['content'].createHeatmapObject();
+				var nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject();
 				switch( nelioab__current_type ) {
 					case 'mobile':
 						if ( nelioab__phone.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone, nelioab__phone);
@@ -216,7 +216,7 @@
 				var data = [];
 				for( var path in src.data ) {
 					var partial_hm = src.data[path];
-					var elem = jQuery(path, frames["content"].document);
+					var elem = jQuery(path, document.getElementById('content').contentWindow.document);
 
 					var pl = elem.css('padding-left');   if ( pl == undefined ) pl = "0";
 					var pr = elem.css('padding-right');  if ( pr == undefined ) pr = "0";

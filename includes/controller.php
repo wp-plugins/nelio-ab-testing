@@ -219,7 +219,7 @@ class NelioABController {
 	}
 
 	public function init_admin_stuff() {
-		if ( !current_user_can( 'level_8' ) )
+		if ( !current_user_can( 'delete_users' ) )
 			return;
 
 		$dir = NELIOAB_DIR . '/experiment-controllers';
@@ -236,7 +236,7 @@ class NelioABController {
 			return;
 
 		// ... or an ADMIN
-		if ( current_user_can( 'level_8' ) )
+		if ( current_user_can( 'delete_users' ) )
 			return;
 
 		$this->check_parameters();

@@ -144,7 +144,9 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function modify_stylesheet( $stylesheet ) {
-		if ( current_user_can( 'level_8' ) )
+		// WARNING: I check whether the function exists, because there are some (random)
+		// times in which calling "current_user_can" results in a fatal error :-S
+		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
 			return;
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
@@ -156,7 +158,9 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function modify_template( $template ) {
-		if ( current_user_can( 'level_8' ) )
+		// WARNING: I check whether the function exists, because there are some (random)
+		// times in which calling "current_user_can" results in a fatal error :-S
+		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
 			return;
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
