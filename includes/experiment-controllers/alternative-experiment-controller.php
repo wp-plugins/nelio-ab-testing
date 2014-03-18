@@ -426,7 +426,8 @@ class NelioABAlternativeExperimentController {
 
 						var oriTitle = "\t \t \t" + decodeURIComponent(aux[0]) + "\t \t \t";
 						var altTitle = decodeURIComponent(aux[1]);
-						if ( $("*").replaceText(oriTitle, altTitle) )
+						var regexp   = new RegExp( oriTitle );
+						if ( $("*").replaceText( regexp, altTitle ) )
 							substitutions.push( { 'exp':exp, 'actual_post':post } );
 					} catch (e) {} }
 				}
