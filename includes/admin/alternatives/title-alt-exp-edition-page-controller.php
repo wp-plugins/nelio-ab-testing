@@ -64,7 +64,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			}
 			else {
 				$experiment = new NelioABPostAlternativeExperiment( -1 );
-				$experiment->set_to_test_title_only( true );
+				$experiment->set_type( NelioABExperiment::TITLE_ALT_EXP );
 				$experiment->clear();
 			}
 
@@ -91,42 +91,18 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			// If everything is OK, we keep going!
 			// ---------------------------------------------------
 
-			// By default, we set the force direct to true...
-			$force_direct = true;
-			if ( !isset( $_POST['force_direct'] ) ) {
-				// If the variable is not set, we have to check if it is
-				// because it has been disabled or because it is the first
-				// time we access the page
-				$force_direct = !isset( $_POST['is_force_direct_submitted'] );
-
-				// Finally, we check what the experiment has to say about
-				// forcing direct conversions...
-				foreach ( $experiment->get_goals() as $goal ) {
-					foreach ( $goal->get_pages() as $page ) {
-						$force_direct = !$page->accepts_indirect_navigations();
-						break;
-					}
-					break;
-				}
-			}
-
 			// Creating the view
 			$view = $this->create_view();
-			$view->force_direct( $force_direct );
 
 			// Experiment information
 			$view->set_original_id( $experiment->get_originals_id() );
 			$view->set_experiment_id( $experiment->get_id() );
 			$view->set_experiment_name( $experiment->get_name() );
 			$view->set_experiment_descr( $experiment->get_description() );
-			$goals = $experiment->get_goals();
-			if ( count( $goals ) > 0 )
-				$view->set_goal( $goals[0] );
-			else
-				$view->set_goal( new NelioABPageAccessedGoal( $experiment ) );
 			$view->set_alternatives( $experiment->get_alternatives() );
 			$view->set_encoded_appspot_alternatives( $experiment->encode_appspot_alternatives() );
 			$view->set_encoded_local_alternatives( $experiment->encode_local_alternatives() );
+			$view->set_goal( new NelioABPageAccessedGoal( $experiment ) );
 
 			$view->set_wp_pages( $list_of_pages );
 			$view->set_wp_posts( $list_of_posts );
@@ -164,7 +140,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 
 		public function build_experiment_from_post_data() {
 			$exp = new NelioABPostAlternativeExperiment( $_POST['exp_id'] );
-			$exp->set_to_test_title_only( true );
+			$exp->set_type( NelioABExperiment::TITLE_ALT_EXP );
 			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
 			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
 			$exp->set_original( $_POST['exp_original'] );
@@ -172,11 +148,11 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			$exp->load_encoded_appspot_alternatives( $_POST['appspot_alternatives'] );
 			$exp->load_encoded_local_alternatives( $_POST['local_alternatives'] );
 
-			$force_direct = isset( $_POST['force_direct'] );
-			$exp_goal = $this->build_goal_from_post_data( $exp );
-			foreach ( $exp_goal->get_pages() as $page )
-				$page->set_indirect_navigations_enabled( !$force_direct );
-			$exp->add_goal( $exp_goal );
+			$goal = new NelioABPageAccessedGoal( $exp );
+			$page = new NelioABPageDescription( $_POST['exp_original'] );
+			$page->set_indirect_navigations_enabled( true );
+			$goal->add_page( $page );
+			$exp->add_goal( $goal );
 
 			global $nelioab_admin_controller;
 			$nelioab_admin_controller->data = $exp;

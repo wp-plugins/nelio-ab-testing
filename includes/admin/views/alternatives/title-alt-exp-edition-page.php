@@ -33,8 +33,6 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			$this->show_new_form   = false;
 			$this->original_id     = -1;
 			$this->alternatives    = array();
-			// Enabling selector for indirect goals
-			$this->force_direct_selector_enabled = true;
 		}
 
 		public function set_original_id( $id ) {
@@ -71,11 +69,6 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 					'id'        => 'exp_original',
 					'callback'  => array ( &$this, 'print_ori_field' ),
 					'mandatory' => true ),
-				array (
-					'label'     => __( 'Goal Pages and Posts', 'nelioab' ),
-					'id'        => 'exp_goal',
-					'callback'  => array ( &$this, 'print_goal_field' ),
-					'mandatory' => true ),
 			);
 		}
 
@@ -104,14 +97,10 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 				var $ = jQuery;
 
 				// Global form
-				oriChanged(jQuery);
 				checkSubmit(jQuery);
 				checkNewAlt(jQuery);
 				$("#exp_name").bind( "change paste keyup", function() { checkSubmit(jQuery); } );
 				$("#exp_original").bind( "change", function() { checkSubmit(jQuery); } );
-				$("#exp_original").bind( "change", function() { oriChanged(jQuery); } );
-				$("#exp_goal").bind( "change", function() { checkSubmit(jQuery); } );
-				$("#active_goals").bind('NelioABGoalsChanged', function() { checkSubmit(jQuery); } );
 
 				// Alternatives
 				if ($("#exp_original").attr("value") != -1)
@@ -154,9 +143,6 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 						return false;
 				} catch ( e ) {}
 
-				if ( !is_there_one_goal_at_least() )
-					return false;
-
 				return true;
 			}
 
@@ -189,39 +175,6 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 					if (altSaveFunction != null)
 						jQuery("#new-alt-form a.save")[0].onclick = altSaveFunction;
 				} catch (e) {}
-			}
-
-			function oriChanged($) {
-				// Make the previous origin available for selection by...
-				// ------------------------------------------------------------
-				// 1. Simulating they are all available again
-				jQuery("#aux_goal_options option").each(function() {
-					id = jQuery(this).attr('value');
-					if ( jQuery("#active_goals #active_goal-" + id).length == 0 )
-						make_option_available_again(jQuery(this));
-				});
-				// 2. Making "already" goals non selectable
-				jQuery("#active_goals input.wordpress-goal").each(function() {
-					remove_option_for_addition(jQuery(this).attr('value'));
-				});
-
-
-				// Now, make the current option available not selectable
-				// ------------------------------------------------------------
-				ori = $("#exp_original").attr("value");
-				if (ori == -1)
-					return;
-
-				if ( jQuery("#active_goals input[value=" + ori + "]").length != 0 ) {
-					var aux = jQuery("#active_goals input[value=" + ori + "]");
-					aux = aux.parent().attr('id').split('-')[1];
-					remove_goal(aux);
-				}
-				else {
-					remove_option_for_addition(ori);
-				}
-
-				checkSubmit(jQuery);
 			}
 
 			function validateAlternative() {

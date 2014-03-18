@@ -83,9 +83,6 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 			}
 
 			$type = $experiment->get_type();
-			if ( $type == NelioABExperiment::PAGE_ALT_EXP || $type == NelioABExperiment::POST_ALT_EXP )
-				if ( $experiment->tests_title_only() )
-					$type = NelioABExperiment::TITLE_ALT_EXP;
 			$controller = NelioABSelectExpProgressPageController::get_controller( $type );
 			call_user_func( array( $controller, 'generate_html_content' ) );
 		}

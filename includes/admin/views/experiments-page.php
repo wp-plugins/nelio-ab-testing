@@ -266,16 +266,13 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
 
 				case NelioABExperiment::PAGE_ALT_EXP:
-					if ( $exp->tests_title_only() )
-						return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
-					else
-						return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+					return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
 
 				case NelioABExperiment::POST_ALT_EXP:
-					if ( $exp->tests_title_only() )
-						return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
-					else
-						return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
+					return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
+
+				case NelioABExperiment::TITLE_ALT_EXP:
+					return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
 
 				case NelioABExperiment::THEME_ALT_EXP:
 					return sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
