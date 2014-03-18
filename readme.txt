@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 2.0.6
+Stable tag: 2.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,7 +79,7 @@ left labeled "Nelio A/B Testing".
 left labeled "Nelio A/B Testing".
 
 
-** I successfully installed the plugin. What should I do now? **
+**I successfully installed the plugin. What should I do now?**
 
 If you have successfully installed our plugin using one of the aforementioned
 methods, now it is just time to use it! Take a look at our [Getting Started
@@ -88,8 +88,7 @@ Guide](http://wp-abtesting.com/getting-started-guide/) to cover the basics.
 
 == Frequently Asked Questions ==
 
-= Why should I use an A/B Testing Solution specifically designed for
-WordPress? =
+= Why should I use an A/B Testing Solution specifically designed for WordPress? =
 
 * **Smooth learning curve.** There is no need to learn yet another tool.
 Everything (from the creation of tests to the visualization of the results) is
@@ -138,6 +137,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 2.0.7 =
+* **New Feature!** Title experiments have been improved. Originally, title
+experiments were a shortcut of page/post experiments, where only titles
+where changed. Now, however, you now test which title gets more visitors
+into the tested post; i.e. the goal page is the post itself!
+* Some minor improvements
 
 = 2.0.6 =
 * Bug fix: Heatmaps work properly with latest Chrome version
@@ -332,5 +338,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.0.6 =
-Heatmaps visualization work in latest versions of Chrome.
+= 2.0.7 =
+Improved title experiments. Test which title gets more "readers"

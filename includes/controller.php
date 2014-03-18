@@ -40,12 +40,14 @@ class NelioABController {
 		$aux = new NelioABHeatmapExperimentController();
 		$this->controllers['hm'] = $aux;
 
+		if ( isset( $_GET['nelioab_preview_css'] ) )
+			add_action( 'the_content',    array( &$this->controllers['alt-exp'], 'preview_css' ) );
+		if ( isset( $_POST['nelioab_send_alt_titles_info'] ) )
+			add_action( 'init', array( &$this->controllers['alt-exp'], 'send_alt_titles_info' ) );
 		if ( isset( $_POST['nelioab_send_heatmap_info'] ) )
 			add_action( 'plugins_loaded', array( &$aux, 'save_heatmap_info_into_cache' ) );
 		if ( isset( $_POST['nelioab_sync_heatmaps'] ) )
 			add_action( 'plugins_loaded', array( &$aux, 'send_heatmap_info_if_required' ) );
-		if ( isset( $_GET['nelioab_preview_css'] ) )
-			add_action( 'the_content',    array( &$this->controllers['alt-exp'], 'preview_css' ) );
 	}
 
 	public function init() {
@@ -127,6 +129,11 @@ class NelioABController {
 		if ( $is_internal && !$this->is_relevant( $nav ) )
 			return;
 
+		$this->send_navigation_object( $nav );
+	}
+
+	public function send_navigation_object( $nav ) {
+
 		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
@@ -166,7 +173,7 @@ class NelioABController {
 		}
 	}
 
-	private function is_relevant( $nav ) {
+	public function is_relevant( $nav ) {
 
 		$aux = $this->controllers['alt-exp'];
 		if ( $aux->is_relevant( $nav ) )

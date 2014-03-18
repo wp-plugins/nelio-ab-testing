@@ -43,10 +43,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		// Used for returning from editing a post/page content
 		const PAGE_OR_POST_ALT_EXP  =  5;
 
-		// This type is internal and it is only used while the experiment is created
-		// When the experiment is running, we use the proper type
 		const TITLE_ALT_EXP = 6;
-
 		const HEATMAP_EXP =  7;
 
 		const UNKNOWN_TYPE_STR  = 'UnknownExperiment';
@@ -56,7 +53,8 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		const CSS_ALT_EXP_STR   = 'CssGlobalAlternativeExperiment';
 		const THEME_ALT_EXP_STR = 'ThemeGlobalAlternativeExperiment';
 		// PAGE_OR_POST_ALT_EXP_STR; Does not make sense
-		const HEATMAP_EXP_STR   =  'HeatmapExperiment';
+		const TITLE_ALT_EXP_STR = 'TitleAlternativeExperiment';
+		const HEATMAP_EXP_STR   = 'HeatmapExperiment';
 
 		protected $id;
 		protected $goals;
@@ -97,6 +95,9 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 				case NelioABExperiment::PAGE_ALT_EXP_STR:
 					$this->set_type( NelioABExperiment::PAGE_ALT_EXP );
 					break;
+				case NelioABExperiment::TITLE_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::TITLE_ALT_EXP );
+					break;
 				case NelioABExperiment::CSS_ALT_EXP_STR:
 					$this->set_type( NelioABExperiment::CSS_ALT_EXP );
 					break;
@@ -119,6 +120,8 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 					return NelioABExperiment::POST_ALT_EXP_STR;
 				case NelioABExperiment::PAGE_ALT_EXP:
 					return NelioABExperiment::PAGE_ALT_EXP_STR;
+				case NelioABExperiment::TITLE_ALT_EXP:
+					return NelioABExperiment::TITLE_ALT_EXP_STR;
 				case NelioABExperiment::CSS_ALT_EXP:
 					return NelioABExperiment::CSS_ALT_EXP_STR;
 				case NelioABExperiment::THEME_ALT_EXP:

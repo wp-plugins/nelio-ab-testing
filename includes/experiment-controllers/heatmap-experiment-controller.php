@@ -75,6 +75,8 @@ class NelioABHeatmapExperimentController {
 			if ( $exp->get_type() == NelioABExperiment::POST_ALT_EXP ||
 			     $exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ||
 			     $exp->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
+				if ( !$exp->are_heatmaps_tracked() )
+					continue;
 				if ( $exp->get_originals_id() == $post_id )
 					return true;
 				foreach ( $exp->get_alternatives() as $alt )
