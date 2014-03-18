@@ -125,6 +125,27 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		}
 
 
+		protected function get_action_links( $exp, $alt_id ) {
+			$action_links = array();
+			if ( $exp->are_heatmaps_tracked() )
+				array_push( $action_links, $this->make_link_for_heatmap( $exp, $alt_id ) );
+			switch ( $exp->get_status() ) {
+				case NelioABExperimentStatus::RUNNING:
+					array_push( $action_links, $this->make_link_for_edit( $alt_id ) );
+					break;
+				case NelioABExperimentStatus::FINISHED:
+					if ( $alt_id == $exp->get_originals_id() )
+						break;
+					$aux = sprintf(
+						' <a href="javascript:nelioab_confirm_overriding(%s);">%s</a>',
+						$alt_id, __( 'Apply', 'nelioab' ) );
+					array_push( $action_links, $aux );
+					break;
+			}
+			return $action_links;
+		}
+
+
 		protected function print_the_original_alternative() {
 			// THE ORIGINAL
 			// -----------------------------------------
@@ -132,14 +153,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			$link      = get_permalink( $exp->get_originals_id() );
 			$ori_label = __( 'Original', 'nelioab' );
 
-			$action_links = array();
-			if ( $exp->are_heatmaps_tracked() )
-				array_push( $action_links, $this->make_link_for_heatmap( $exp, $exp->get_originals_id() ) );
-			switch ( $exp->get_status() ) {
-				case NelioABExperimentStatus::RUNNING:
-					array_push( $action_links, $this->make_link_for_edit( $exp->get_originals_id() ) );
-					break;
-			}
+			$action_links = $this->get_action_links( $exp, $exp->get_originals_id() );
 
 			if ( $this->is_winner( $exp->get_originals_id() ) )
 				$set_as_winner = $this->winner_label;
@@ -154,30 +168,18 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 				$set_as_winner, $ori_label, $link, $this->ori, implode( ' | ', $action_links ) );
 		}
 
+
 		protected function print_the_real_alternatives() {
 			// REAL ALTERNATIVES
 			// -----------------------------------------
 			$exp = $this->exp;
 			$i   = 0;
 
-			$action_links = array();
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
 				$link = get_permalink( $alt->get_value() );
 
-				if ( $exp->are_heatmaps_tracked() )
-					array_push( $action_links, $this->make_link_for_heatmap( $exp, $alt->get_value() ) );
-				switch ( $exp->get_status() ) {
-					case NelioABExperimentStatus::RUNNING:
-						array_push( $action_links, $this->make_link_for_edit( $alt->get_value() ) );
-						break;
-					case NelioABExperimentStatus::FINISHED:
-						$aux = sprintf(
-							' <a href="javascript:nelioab_confirm_overriding(%s);">%s</a>',
-							$alt->get_value(), __( 'Apply', 'nelioab' ) );
-						array_push( $action_links, $aux );
-						break;
-				}
+				$action_links = $this->get_action_links( $exp, $alt->get_value() );
 
 				if ( $this->is_winner( $alt->get_value() ) )
 					$set_as_winner = $this->winner_label;
@@ -191,7 +193,6 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					'<small>%s&nbsp;</small></td>' .
 					'</tr>',
 					$set_as_winner, $alt_label, $link, $alt->get_name(), implode( ' | ', $action_links ) );
-
 			}
 		}
 

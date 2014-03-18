@@ -22,17 +22,27 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 	class NelioABPostAlternativeExperiment extends NelioABAlternativeExperiment {
 
 		private $ori;
-		private $tests_title_only;
 
 		public function __construct( $id ) {
 			parent::__construct( $id );
 			$this->set_type( NelioABExperiment::NO_TYPE_SET );
-			$this->tests_title_only = false;
 		}
 
 		public function clear() {
 			parent::clear();
 			$this->ori = -1;
+			$this->track_heatmaps_according_to_plan();
+		}
+
+		public function set_type( $type ) {
+			parent::set_type( $type );
+			if ( $type == NelioABExperiment::TITLE_ALT_EXP )
+				$this->track_heatmaps( false );
+			else
+				$this->track_heatmaps_according_to_plan();
+		}
+
+		private function track_heatmaps_according_to_plan() {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			$plan = NelioABSettings::get_subscription_plan();
 			$pro  = NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN;
@@ -48,14 +58,6 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 		public function get_originals_id() {
 			return $this->ori;
-		}
-
-		public function set_to_test_title_only( $only ) {
-			$this->tests_title_only = $only;
-		}
-
-		public function tests_title_only() {
-			return $this->tests_title_only;
 		}
 
 		public function set_original( $ori ) {
@@ -163,12 +165,13 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( $this->get_originals_id() < 0 )
 				return NelioABExperimentStatus::DRAFT;
 
-			if ( count( $this->get_goals() ) == 0 )
-				return NelioABExperimentStatus::DRAFT;
-
-			foreach ( $this->get_goals() as $goal )
-				if ( !$goal->is_ready() )
+			if ( $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
+				if ( count( $this->get_goals() ) == 0 )
 					return NelioABExperimentStatus::DRAFT;
+				foreach ( $this->get_goals() as $goal )
+					if ( !$goal->is_ready() )
+						return NelioABExperimentStatus::DRAFT;
+			}
 
 			return NelioABExperimentStatus::READY;
 		}
@@ -205,7 +208,6 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				'originalPost'   => $this->get_originals_id(),
 				'status'         => $this->get_status(),
 				'kind'           => $this->get_textual_type(),
-				'testsTitleOnly' => $this->tests_title_only(),
 				'showHeatmap'    => $this->are_heatmaps_tracked(),
 			);
 
@@ -331,16 +333,22 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			foreach ( $running_exps as $running_exp ) {
-				if ( $running_exp->get_type() == $this->get_type() &&
-				     $running_exp->get_originals_id() == $this->get_originals_id() ) {
-					if ( $this->get_type() == NelioABExperiment::PAGE_ALT_EXP )
+				if ( $running_exp->get_originals_id() == $this->get_originals_id() ) {
+					if ( $running_exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ) {
 						$err_str = sprintf(
 							__( 'The experiment cannot be started, because there is another experiment running that is testing the same page. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
 							$running_exp->get_name() );
-					else
+					}
+					else if ( $running_exp->get_type() == NelioABExperiment::POST_ALT_EXP ) {
 						$err_str = sprintf(
 							__( 'The experiment cannot be started, because there is another experiment running that is testing the same post. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
 							$running_exp->get_name() );
+					}
+					else /* if ( $running_exp->get_type() == NelioABExperiment::TITLE_ALT_EXP ) */ {
+						$err_str = sprintf(
+							__( 'The experiment cannot be started, because there is another experiment that is testing the title of the same page. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+							$running_exp->get_name() );
+					}
 					throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
 				}
 			}
@@ -348,7 +356,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			// If everything is OK, we can start it!
 
 			$ori = get_post( $this->get_originals_id() );
-			if ( $ori ) {
+			if ( $ori && $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
 				foreach ( $this->get_alternatives() as $alt ) {
 					$alt_post = get_post( $alt->get_value() );
 					if ( $alt_post ) {
@@ -396,8 +404,6 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			$exp = new NelioABPostAlternativeExperiment( $json_data->key->id );
 			$exp->set_name( $json_data->name );
-			if ( isset( $json_data->testsTitleOnly ) )
-				$exp->set_to_test_title_only( $json_data->testsTitleOnly );
 			if ( isset( $json_data->description ) )
 				$exp->set_description( $json_data->description );
 			$exp->set_type_using_text( $json_data->kind );

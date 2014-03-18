@@ -85,6 +85,12 @@ if ( !class_exists( 'NelioABSettingsPageController' ) ) {
 				$user_info['status']            = $json->status;
 				$user_info['total_quota']       = intval( $json->quotaPerMonth );
 				$user_info['quota']             = intval( $json->quota + $json->quotaExtra );
+
+				// TODO: fix agency info
+				$user_info['agency']            = false;
+				$user_info['agencyname']        = 'Nelio Software';
+				$user_info['agencymail']        = 'cusomters@neliosoftware.com';
+
 			}
 			catch ( Exception $e ) {
 			}

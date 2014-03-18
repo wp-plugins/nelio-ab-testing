@@ -74,6 +74,15 @@ function nelioab_load_alt($) {
 						'<!-- <script src="http://stats.wordpress.com/e-$1 -->\n' +
 						'\t<script>function st_go(a){} function linktracker_init(a,b){}</script>\n'
 					);
+				data = data
+					.replace(
+						/<\/head>/,
+						'<script>try { if ( nelioab_cssExpNode !== undefined )' +
+						'document.getElementsByTagName("head")[0].' +
+						'appendChild(nelioab_cssExpNode);' +
+						'} catch ( e ) {}' +
+						'</script>\n</head>'
+					);
 				document.open();
 				document.write(data);
 				document.close();

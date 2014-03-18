@@ -22,23 +22,11 @@ if( !class_exists( 'NelioABQuickExperiment' ) ) {
 	final class NelioABQuickExperiment extends NelioABExperiment {
 
 		private $type;
-		private $tests_title_only;
 
 		public function __construct( $id ) {
 			parent::__construct();
 			$this->id   = $id;
 			$this->type = -1;
-
-			// This boolean is only used for Post Experiments...
-			$this->tests_title_only = false;
-		}
-
-		public function set_to_test_title_only( $only ) {
-			$this->tests_title_only = $only;
-		}
-
-		public function tests_title_only() {
-			return $this->tests_title_only;
 		}
 
 		public function get_type() {
