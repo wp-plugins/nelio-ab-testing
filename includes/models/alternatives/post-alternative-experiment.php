@@ -333,6 +333,12 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			foreach ( $running_exps as $running_exp ) {
+
+				if ( $running_exp->get_type() != NelioABExperiment::PAGE_ALT_EXP &&
+				     $running_exp->get_type() != NelioABExperiment::POST_ALT_EXP &&
+				     $running_exp->get_type() != NelioABExperiment::TITLE_ALT_EXP )
+					continue;
+
 				if ( $running_exp->get_originals_id() == $this->get_originals_id() ) {
 					if ( $running_exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ) {
 						$err_str = sprintf(
