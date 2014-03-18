@@ -140,9 +140,9 @@ on your site so that you can understand your customers better.
 
 = 2.0.7 =
 * **New Feature!** Title experiments have been improved. Originally, title
-experiments were a shortcut of page/post experiments, where only titles
-where changed. Now, however, you now test which title gets more visitors
-into the tested post; i.e. the goal page is the post itself!
+experiments were a shortcut of page/post experiments, where only titles were
+changed. Now, however, you test which title gets more visitors into the tested
+post; i.e. the goal page is the post itself!
 * Some minor improvements
 
 = 2.0.6 =
