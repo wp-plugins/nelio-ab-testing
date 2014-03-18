@@ -206,29 +206,53 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 								__( 'Subscribe now and continue using our service!', 'nelioab' ) );
 						}
 						else {
-							switch ( $this->user_info['subscription_plan'] ) {
-								case NelioABSettings::BASIC_SUBSCRIPTION_PLAN:
-									_e( 'You are subscribed to our <b>Basic Plan</b>.', 'nelioab' );
-									echo '<br />';
-									break;
-								case NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
-									_e( 'You are subscribed to our <b>Professional Plan</b>.', 'nelioab' );
-									echo '<br />';
-									break;
+							if ( ! $this->user_info['agency'] ) {
+								switch ( $this->user_info['subscription_plan'] ) {
+									case NelioABSettings::BASIC_SUBSCRIPTION_PLAN:
+										_e( 'You are subscribed to our <b>Basic Plan</b>.', 'nelioab' );
+										echo '<br />';
+										break;
+									case NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
+										_e( 'You are subscribed to our <b>Professional Plan</b>.', 'nelioab' );
+										echo '<br />';
+										break;
+								}
+								printf( '<a href="%s">%s</a>', $this->user_info['subscription_url'],
+									__( 'Check your subscription details.', 'nelioab' ) );
 							}
-							printf( '<a href="%s">%s</a>', $this->user_info['subscription_url'],
-								__( 'Check your subscription details.', 'nelioab' ) );
+							else {
+								switch ( $this->user_info['subscription_plan'] ) {
+									case NelioABSettings::BASIC_SUBSCRIPTION_PLAN:
+										printf( __( 'You are subscribed to our <b>Basic Plan</b>, thanks to %s.', 'nelioab' ),
+											$this->user_info['agencyname'] );
+										echo '<br />';
+										break;
+									case NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
+										printf( __( 'You are subscribed to our <b>Professional Plan</b>, thanks to %s.', 'nelioab' ),
+											$this->user_info['agencyname'] );
+										echo '<br />';
+										break;
+								}
+							}
 						}
 					}
 				?></p>
 
 				<?php
 				$post_quota = '';
-				if ( isset( $this->user_info['total_quota'] ) )
-					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please consider buying additional page views as you need them using the button below, or <a href="%s">contact us for an update of your monthly quota</a>.', 'nelioab' ),
-						$this->user_info['total_quota'],
-						'mailto:info@wp-abtesting.com' );
-
+				if ( !$this->user_info['agency'] ) {
+					if ( isset( $this->user_info['total_quota'] ) )
+						$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please consider buying additional page views as you need them using the button below, or <a href="%s">contact us for an update of your monthly quota</a>.', 'nelioab' ),
+							$this->user_info['total_quota'],
+							'mailto:info@wp-abtesting.com' );
+				}
+				else {
+					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please contact <a href="%s">%s</a>.', 'nelioab' ),
+							$this->user_info['total_quota'],
+							$this->user_info['agencymail'],
+							$this->user_info['agencyname'] );
+				}
+	
 				if ( isset( $this->user_info['quota'] ) ) { ?>
 					<p style="margin-top:0em;margin-left:3em;max-width:600px;">
 					<b><?php _e( 'Available Quota:', 'nelioab' ); ?></b>
@@ -247,15 +271,18 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 							$the_quota ); ?></b>
 					<small>(<a href="http://wp-abtesting.com/faqs/what-is-a-tested-pageview"><?php
 						_e( 'Help', 'nelioab' );
-					?></a>)</small><?php echo $post_quota; ?></p>
-
-					<a style="margin-left:3em;margin-bottom:1.5em;" class="button" target="_blank"
-						href="http://sites.fastspring.com/nelio/product/nelioextrapageviewsforthepersonalserviceplan"><?php
-						_e( 'Buy More', 'nelioab' );
-					?></a>
-
-				<?php
+					?></a>)</small><?php echo $post_quota; ?></p><?php
+	
+				if ( !$this->user_info['agency'] ) { ?>
+						<a style="margin-left:3em;margin-bottom:1.5em;" class="button" target="_blank"
+							href="http://sites.fastspring.com/nelio/product/nelioextrapageviewsforthepersonalserviceplan"><?php
+							_e( 'Buy More', 'nelioab' );
+						?></a>
+	
+					<?php
+					}
 				} ?>
+
 
 				<?php if ( $this->is_email_valid && $this->is_reg_num_valid && $this->tac ) { ?>
 

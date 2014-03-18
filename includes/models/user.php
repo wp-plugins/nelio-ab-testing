@@ -47,7 +47,8 @@ if( !class_exists( 'NelioABUser' ) ) {
 			$exp = null;
 			foreach ( $running_exps as $data ) {
 				if ( $data->get_type() != NelioABExperiment::POST_ALT_EXP &&
-				     $data->get_type() != NelioABExperiment::PAGE_ALT_EXP ) {
+				     $data->get_type() != NelioABExperiment::PAGE_ALT_EXP &&
+			        $data->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
 					continue;
 				}
 				if ( $data->get_originals_id() == $post_id ) {
@@ -108,15 +109,17 @@ if( !class_exists( 'NelioABUser' ) ) {
 							$alternative = $alt;
 
 					if ( $alternative ) {
+						$exp_id = $exp->get_id();
 						$alt_title = rawurlencode( $alternative->get_name() );
-						nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title" );
+						nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title:$exp_id" );
 					}
 				}
 				else {
 					$post = get_post( $alt_post );
 					if ( $post ) {
+						$exp_id = $exp->get_id();
 						$alt_title = rawurlencode( $post->post_title );
-						nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title" );
+						nelioab_setrawcookie( $cookie_name, "$ori_title:$alt_title:$exp_id" );
 					}
 				}
 			}

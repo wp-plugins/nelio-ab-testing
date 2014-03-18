@@ -30,29 +30,6 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 			_e( 'Details of the Title Experiment', 'nelioab' );
 		}
 
-		protected function print_the_original_alternative() {
-			// THE ORIGINAL
-			// -----------------------------------------
-			$exp       = $this->exp;
-			$link      = get_permalink( $exp->get_originals_id() );
-			$ori_label = __( 'Original', 'nelioab' );
-
-			$edit_link = '';
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-				$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-					admin_url() . '/post.php?post=' . $exp->get_originals_id() . '&action=edit',
-					__( 'Edit' ) );
-			}
-
-			if ( $this->is_winner( $exp->get_originals_id() ) )
-				$set_as_winner = $this->winner_label;
-			else
-				$set_as_winner = '';
-
-			echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span><a href="%s" target="_blank">%s</a>%s</li>',
-				$set_as_winner, $ori_label, $link, $this->ori, $edit_link );
-		}
-
 		protected function print_js_function_for_post_data_overriding() { ?>
 			function nelioab_confirm_overriding(id, title) {
 				jQuery("#apply_alternative #alternative").attr("value",title);
@@ -61,32 +38,37 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 			<?php
 		}
 
+
+		protected function get_action_links( $exp, $alt_id ) {
+			if ( $alt_id == $exp->get_originals_id() )
+				return parent::get_action_links( $exp, $alt_id );
+			if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
+				$alternative = false;
+				foreach( $exp->get_alternatives() as $alt )
+					if ( $alt->get_value() == $alt_id )
+						$alternative = $alt;
+				$name = $alternative->get_name();
+				$name = str_replace( "\\", "\\\\", $name );
+				$name = str_replace( "'", "\\'", $name );
+				$aux = sprintf(
+					' <a href="javascript:nelioab_confirm_overriding(%s, \'%s\');">%s</a>',
+					$alt_id, $name, __( 'Apply', 'nelioab' ) );
+				return array( $aux );
+			}
+			return array();
+		}
+
+
 		protected function print_the_real_alternatives() {
 			// REAL ALTERNATIVES
 			// -----------------------------------------
 			$exp = $this->exp;
 			$i   = 0;
+
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
-				$edit_link = '';
 
-				$winner_button = '';
-				if ( $this->is_winner( $alt->get_value() ) )
-					$winner_button = '-primary';
-
-				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
-					$edit_link = sprintf(
-						' <small id="success-%4$s" style="display:none;">(%1$s)</small>' .
-						'<img id="loading-%4$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
-						'<span class="apply-link"><a class="button%3$s" ' .
-						'style="font-size:96%%;padding-left:5px;padding-right:5px;margin-left:1em;" '.
-						'href="javascript:nelioab_confirm_overriding(%4$s, \'%5$s\');">%6$s</a></span></li>',
-						__( 'Done!', 'nelioab' ),
-						NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
-						$winner_button, $alt->get_value(),
-						urlencode( $alt->get_name() ),
-						__( 'Apply', 'nelioab' ) );
-				}
+				$action_links = $this->get_action_links( $exp, $alt->get_value() );
 
 				if ( $this->is_winner( $alt->get_value() ) )
 					$set_as_winner = $this->winner_label;
@@ -94,11 +76,15 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 					$set_as_winner = '';
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
-				echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s%s',
-					$set_as_winner, $alt_label, $alt->get_name(), $edit_link );
-
+				echo sprintf( '<tr>' .
+					'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
+					'<td>%s<br />' .
+					'<small>%s&nbsp;</small></td>' .
+					'</tr>',
+					$set_as_winner, $alt_label, $alt->get_name(), implode( ' | ', $action_links ) );
 			}
 		}
+
 
 		protected function print_dialog_content() {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );

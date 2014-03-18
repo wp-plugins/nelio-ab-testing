@@ -76,9 +76,6 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 			}
 
 			$type = $experiment->get_type();
-			if ( $type == NelioABExperiment::PAGE_ALT_EXP || $type == NelioABExperiment::POST_ALT_EXP )
-				if ( $experiment->tests_title_only() )
-					$type = NelioABExperiment::TITLE_ALT_EXP;
 			$controller = NelioABSelectExpEditionPageController::get_controller( $type );
 			call_user_func( array( $controller, 'generate_html_content' ) );
 		}

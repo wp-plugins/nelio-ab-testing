@@ -76,7 +76,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 
 			// If the current user is NOT admin, do not show the plugin
-			if ( !current_user_can( 'level_8' ) )
+			if ( !current_user_can( 'delete_users' ) )
 				return;
 
 			$this->process_special_pages();
@@ -165,8 +165,9 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					'post_status'    => 'draft',
 				);
 				$alternative_pages = get_pages( $args );
-				foreach ( $alternative_pages as $page )
-					array_push( $alt_ids, $page->ID );
+				if ( is_array( $alternative_pages ) )
+					foreach ( $alternative_pages as $page )
+						array_push( $alt_ids, $page->ID );
 
 				// Hiding alternative posts
 				$args = array(
@@ -175,8 +176,9 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					'posts_per_page' => -1,
 				);
 				$alternative_pages = get_posts( $args );
-				foreach ( $alternative_pages as $page )
-					array_push( $alt_ids, $page->ID );
+				if ( is_array( $alternative_pages ) )
+					foreach ( $alternative_pages as $page )
+						array_push( $alt_ids, $page->ID );
 
 				add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 

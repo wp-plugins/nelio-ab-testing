@@ -34,6 +34,10 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 			$this->pages = array();
 		}
 
+		public function clear_pages() {
+			$this->pages = array();
+		}
+
 		public function get_pages() {
 			return $this->pages;
 		}

@@ -53,8 +53,6 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				foreach ( $json_data->items as $json_exp ) {
 					$exp = new NelioABQuickExperiment( $json_exp->key->id );
 					$exp->set_type_using_text( $json_exp->kind );
-					if ( isset( $json_exp->testsTitleOnly ) )
-						$exp->set_to_test_title_only( $json_exp->testsTitleOnly );
 					$exp->set_name( $json_exp->name );
 					if ( isset( $json_exp->description ) )
 						$exp->set_description( $json_exp->description );
@@ -82,6 +80,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
 				case NelioABExperiment::PAGE_OR_POST_ALT_EXP:
+				case NelioABExperiment::TITLE_ALT_EXP:
 					return NelioABPostAlternativeExperiment::load( $id );
 
 				case NelioABExperiment::CSS_ALT_EXP:
