@@ -83,6 +83,8 @@ function nelioab_load_alt($) {
 						'} catch ( e ) {}' +
 						'</script>\n</head>'
 					);
+				var aux = window.setTimeout(function() {}, 0);
+				while (aux--) window.clearTimeout(aux);
 				document.open();
 				document.write(data);
 				document.close();
