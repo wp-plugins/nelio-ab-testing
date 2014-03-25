@@ -37,15 +37,6 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_form_name( 'nelioab_edit_heatmap_exp_form' );
-
-			$plan = NelioABSettings::get_subscription_plan();
-			$pro  = NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN;
-			if ( $plan < $pro ) {
-				global $nelioab_admin_controller;
-				$nelioab_admin_controller->message = sprintf(
-					__( 'Your current subscription plan does not permit you to use Heatmap Experiments&mdash;you are free to create it, but you will not be able to start it. Please, consider <a href="%s">upgrading your Nelio A/B Testing subscription package</a> so that you can benefit from Heatmaps.', 'nelioab' ),
-					'http://wp-abtesting.com/inquiry-subscription-plans/' );
-			}
 		}
 
 		public function get_form_name() {

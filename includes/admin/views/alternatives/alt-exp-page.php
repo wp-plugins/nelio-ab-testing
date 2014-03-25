@@ -140,23 +140,10 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 		}
 
 
-		public function print_goal_field() {
-			include_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			$plan = NelioABSettings::get_subscription_plan();
-			$pro  = NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN;
-			?>
+		public function print_goal_field() { ?>
 			<script>
 
 				// FUNCTIONS TO ADD A WORDPRESS GOAL
-
-				function show_goals_warning_if_necessary() {
-					if ( <?php echo $plan; ?> < <?php echo $pro; ?> ) {
-						if ( jQuery("#active_goals li").length > 2 )
-							jQuery("#goals-warning").fadeIn(200);
-						else
-							jQuery("#goals-warning").fadeOut(200);
-					}
-				}
 
 				function add_goal() {
 					var id = jQuery("#goal_options").attr('value');
@@ -168,8 +155,6 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 					else {
 						add_wordpress_goal();
 					}
-
-					show_goals_warning_if_necessary();
 				}
 
 				function add_wordpress_goal() {
@@ -297,7 +282,6 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 					jQuery("#active_goal-" + id).delay(300, function() {
 						jQuery(this).remove();
 						jQuery("#active_goals").trigger('NelioABGoalsChanged');
-						show_goals_warning_if_necessary();
 						if ( is_there_one_goal_at_least() )
 							jQuery("#no_active_goals").hide();
 						else
@@ -348,7 +332,6 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 				}
 
 				jQuery(document).ready(function() {
-					show_goals_warning_if_necessary();
 					jQuery("#active_goals input.wordpress-goal").each(function() {
 						id = jQuery(this).attr('value');
 						try {

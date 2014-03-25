@@ -19,7 +19,16 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 	abstract class NelioABBackend {
 
-		public static function remote_post_raw( $url, $params ) {
+		public static function remote_post_raw( $url, $params, $skip_status_check = false ) {
+			if ( !$skip_status_check ) {
+				require_once( NELIOAB_MODELS_DIR . '/user.php' );
+				try {
+					$aux = NelioABSettings::check_user_settings();
+				}
+				catch ( Exception $e ) {
+					throw $e;
+				}
+			}
 			if ( !isset( $params['timeout'] ) )
 				$params['timeout'] = 30;
 			$result = wp_remote_post( $url, $params );
@@ -27,7 +36,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			return $result;
 		}
 
-		public static function remote_post( $url, $params = array() ) {
+		public static function remote_post( $url, $params = array(), $skip_status_check = false ) {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
 			$wrapped_params = array();
@@ -46,11 +55,11 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				'body'    => json_encode( $wrapped_params ),
          );
 
-			return NelioABBackend::remote_post_raw( $url, $json_params );
+			return NelioABBackend::remote_post_raw( $url, $json_params, $skip_status_check );
 		}
 
-		public static function remote_get( $url, $params = array() ) {
-			return NelioABBackend::remote_post( $url, $params );
+		public static function remote_get( $url, $skip_status_check = false ) {
+			return NelioABBackend::remote_post( $url, array(), $skip_status_check );
 		}
 
 		public static function make_credential( $skip_check = false ) {
@@ -100,7 +109,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/update',
 						NelioABSettings::get_site_id()
 						);
-					$aux = NelioABBackend::remote_post_raw( $url, $json_params );
+					$aux = NelioABBackend::remote_post_raw( $url, $json_params, true );
 					NelioABSettings::set_site_url( get_option( 'siteurl' ) );
 				}
 				catch ( Exception $e ) {

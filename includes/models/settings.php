@@ -64,7 +64,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 
 				$json_data = NelioABBackend::remote_post_raw(
 					NELIOAB_BACKEND_URL . '/customer/validate',
-					$params );
+					$params, true );
 
 				$json_data = json_decode( $json_data['body'] );
 			}
@@ -214,7 +214,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			if ( ( $last_check + $offset ) < $now ) {
 				try {
 					$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
-					$json = NelioABBackend::remote_get( $url );
+					$json = NelioABBackend::remote_get( $url, true );
 					$json = json_decode( $json['body'] );
 					NelioABSettings::set_account_as_active();
 					update_option( 'nelioab_subscription_plan', $json->subscriptionPlan );
@@ -249,14 +249,15 @@ if( !class_exists( 'NelioABSettings' ) ) {
 
 			// Set max number of sites
 			$url = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
-			$json_data = NelioABBackend::remote_get( $url );
+			$json_data = NelioABBackend::remote_get( $url, true );
 			$json_data = json_decode( $json_data['body'] );
 			$res->set_max_sites( $json_data->allowedSites );
 
 			// Retrieve information about each site
-			$json_data = NelioABBackend::remote_get(
-				sprintf( NELIOAB_BACKEND_URL . '/customer/%s/site', NelioABSettings::get_customer_id() )
-			);
+			$json_data = NelioABBackend::remote_get( sprintf(
+				NELIOAB_BACKEND_URL . '/customer/%s/site',
+				NelioABSettings::get_customer_id()
+			), true );
 
 			$json_data = json_decode( $json_data['body'] );
 
@@ -283,10 +284,10 @@ if( !class_exists( 'NelioABSettings' ) ) {
 					'url' => $url,
 				);
 				try {
-					$json_data = NelioABBackend::remote_post(
-						sprintf( NELIOAB_BACKEND_URL . '/site/%s/update', $id ),
-						$params
-					);
+					$json_data = NelioABBackend::remote_post( sprintf(
+						NELIOAB_BACKEND_URL . '/site/%s/update',
+						$id
+					), $params, true );
 					NelioABSettings::set_site_url( $url );
 				}
 				catch ( Exception $e ) {}
@@ -302,7 +303,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				$json_data = NelioABBackend::remote_post( sprintf(
 					NELIOAB_BACKEND_URL . '/customer/%s/site/activate',
 					NelioABSettings::get_customer_id()
-				), $params );
+				), $params, true );
 
 				$json_data = json_decode( $json_data['body'] );
 				NelioABSettings::set_has_a_configured_site( true );
@@ -322,7 +323,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				$json_data = NelioABBackend::remote_post( sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/deactivate',
 					NelioABSettings::get_site_id()
-				)	);
+				), array(), true );
 			}
 			catch ( Exception $e ) {
 				throw $e;
