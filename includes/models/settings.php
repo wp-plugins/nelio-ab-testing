@@ -349,6 +349,20 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			return ( ( $the_past + $offset ) < $now );
 		}
 
+		public function is_upgrade_message_visible() {
+			if ( NelioABSettings::get_subscription_plan() != NelioABSettings::BASIC_SUBSCRIPTION_PLAN )
+				return false;
+			$result = get_option( 'nelioab_hide_upgrade_message', false );
+			if ( !$result )
+				return true;
+			else
+				return false;
+		}
+
+		public function hide_upgrade_message() {
+			update_option( 'nelioab_hide_upgrade_message', NELIOAB_PLUGIN_VERSION );
+		}
+
 	}//NelioABSettings
 
 

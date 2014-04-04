@@ -53,8 +53,6 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 			}
 
 
-			?><h2></h2><?php
-
 			// CSS
 			$this->do_box(
 				__( 'New Heatmap Experiment<br />for Page or Post', 'nelioab' ),
@@ -66,9 +64,9 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 				'css', $url . NelioABExperiment::CSS_ALT_EXP );
 
 			// MENU
-			$this->do_box(
-				__( 'New A/B Menu Test<br />', 'nelioab' ),
-				'menu'/*, $url . NelioABExperiment::MENU_ALT_EXP*/ );
+//			$this->do_box(
+//				__( 'New A/B Menu Test<br />', 'nelioab' ),
+//				'menu'/*, $url . NelioABExperiment::MENU_ALT_EXP*/ );
 
 			// WIDGET
 			$this->do_box(
