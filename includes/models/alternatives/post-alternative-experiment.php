@@ -31,22 +31,12 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		public function clear() {
 			parent::clear();
 			$this->ori = -1;
-			$this->track_heatmaps_according_to_plan();
+			$this->track_heatmaps( true );
 		}
 
 		public function set_type( $type ) {
 			parent::set_type( $type );
 			if ( $type == NelioABExperiment::TITLE_ALT_EXP )
-				$this->track_heatmaps( false );
-			else
-				$this->track_heatmaps_according_to_plan();
-		}
-
-		private function track_heatmaps_according_to_plan() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			$plan = NelioABSettings::get_subscription_plan();
-			$pro  = NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN;
-			if ( $plan < $pro )
 				$this->track_heatmaps( false );
 			else
 				$this->track_heatmaps( true );
