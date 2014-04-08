@@ -142,7 +142,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 				if ( $print_plans ) {
 					$this->set_message(
-						__( 'Haven\'t you subscribed to any of our plans? <b><a href="http://wp-abtesting.com/subscription-plans/" target="_blank">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>15-day free trial period</b>.', 'nelioab' ) );
+						__( 'Haven\'t you subscribed to any of our plans? <b><a href="http://wp-abtesting.com/subscription-plans/" target="_blank">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>14-day free trial period</b>.', 'nelioab' ) );
 				}
 			?>
 			<h2 style="margin-bottom:0px;padding-bottom:0px;"><?php
@@ -210,15 +210,22 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 								switch ( $this->user_info['subscription_plan'] ) {
 									case NelioABSettings::BASIC_SUBSCRIPTION_PLAN:
 										_e( 'You are subscribed to our <b>Basic Plan</b>.', 'nelioab' );
-										echo '<br />';
 										break;
 									case NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
 										_e( 'You are subscribed to our <b>Professional Plan</b>.', 'nelioab' );
-										echo '<br />';
 										break;
 								}
-								printf( '<a href="%s">%s</a>', $this->user_info['subscription_url'],
+								echo ' ';
+								printf( '<small><a href="%s">%s</a></small>', $this->user_info['subscription_url'],
 									__( 'Check your subscription details.', 'nelioab' ) );
+								if ( $this->user_info['subscription_plan'] == NelioABSettings::BASIC_SUBSCRIPTION_PLAN ) {
+									echo '<br />';
+									printf(
+										'<a href="%2$s">%1$s</a>',
+										__( 'Upgrade to our Professional Plan.', 'nelioab' ),
+										'mailto:info@wp-abtesting.com?subject=Request%20-%20Upgrade%20to%20Professional%20Plan'
+									);
+								}
 							}
 							else {
 								switch ( $this->user_info['subscription_plan'] ) {

@@ -46,7 +46,14 @@ class NelioABHeatmapController {
 				nelioabHeatmapObject.cleanup();
 			} catch(e) {}
 		}
-		function createHeatmapObject() {
+		function createHeatmapObject( w, h ) {
+			jQuery("body").width("100%");
+			if ( w == undefined ) w = 1024;
+			if ( h == undefined ) h = 768;
+			w = Math.max(jQuery(document).width(), w)
+			h = Math.max(jQuery(document).height(), h)
+			jQuery("body").width(w);
+			jQuery("body").height(h);
 			// heatmap configuration
 			var gradient = {
 				0.0: "rgba(000,000,255,0)",

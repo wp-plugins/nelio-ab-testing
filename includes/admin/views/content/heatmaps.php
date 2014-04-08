@@ -122,9 +122,13 @@
 				setTimeout('doSwitchHeatmap()', 400);
 			}
 			function doSwitchHeatmap() {
-				var nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject();
+				var nelioabHeatmapObject;
+				var key = '#' + nelioab__current_type;
 				switch( nelioab__current_type ) {
 					case 'mobile':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__phone.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone, nelioab__phone);
 						if ( nelioab__phone_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone_click, nelioab__phone_click );
 						if ( nelioab__show_clicks ) {
@@ -137,6 +141,9 @@
 						}
 						break;
 					case 'tablet':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__tablet.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet, nelioab__tablet);
 						if ( nelioab__tablet_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet_click, nelioab__tablet_click );
 						if ( nelioab__show_clicks ) {
@@ -149,6 +156,9 @@
 						}
 						break;
 					case 'desktop':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__desktop.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop, nelioab__desktop);
 						if ( nelioab__desktop_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop_click, nelioab__desktop_click );
 						if ( nelioab__show_clicks ) {
@@ -161,6 +171,9 @@
 						}
 						break;
 					case 'hd':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__hd.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd, nelioab__hd);
 						if ( nelioab__hd_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd_click, nelioab__hd_click );
 						if ( nelioab__show_clicks ) {
@@ -173,6 +186,7 @@
 						}
 						break;
 					default:
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject();
 						nelioabHeatmapObject.store.setDataSet( nelioab__nodata );
 				}
 				nelioabSwitchToClickEnabled = true;
@@ -319,7 +333,7 @@
 </head>
 
 <body>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
+	<script src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/jquery4hm.min.js'; ?>"></script>
 
 	<div id="toolbar" data-resizer="basic">
 		<ul id="devices">

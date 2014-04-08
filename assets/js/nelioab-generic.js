@@ -59,14 +59,22 @@ function delete_cookie( name ) {
 
 var nelioab_styleNode;
 function nelioab_hide_body() {
-	nelioab_styleNode = document.createElement("style");
+	nelioab_styleNode = document.createElement('style');
 	nelioab_styleNode.setAttribute("type", "text/css");
-	nelioab_styleNode.innerHTML = "body {display: none;}";
+	var text = "body {display: none;}";
+	if (nelioab_styleNode.styleSheet) {
+		// IE
+		nelioab_styleNode.styleSheet.cssText = "";
+	} else {
+		// Other browsers
+		var textnode = document.createTextNode(text);
+		nelioab_styleNode.appendChild(textnode);
+	}
 	document.getElementsByTagName('head')[0].appendChild(nelioab_styleNode);
 }
 
 function nelioab_show_body() {
-	nelioab_styleNode.innerHTML = "";
+	document.getElementsByTagName('head')[0].removeChild(nelioab_styleNode);
 }
 
 function nelioab_nav($) {

@@ -39,10 +39,6 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 					_e( 'If you\'re happy with our service, please help us <b>spread the word and let others know about your experience with Nelio A/B Testing</b>!', 'nelioab' );
 				?></p>
 
-				<p><?php
-					_e( 'As a token of appreciation, we will be happy to add to your quota 1000 more pageviews per month for your efforts (plus an additional 100 for each retweet / reshare you get from your followers, up to a maximum of a second additional 1000 pageviews extension).', 'nelioab' );
-				?></p>
-
 			</div>
 
 			<!-- SHARING -->

@@ -28,7 +28,14 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			$this->title            = $title;
 			$this->title_action     = '';
 			$this->icon_id          = 'icon-options-general';
-			$this->message          = false;
+
+			$this->message = false;
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			if ( NelioABSettings::is_upgrade_message_visible() )
+				$this->message = sprintf(
+					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
+					'mailto:info@wp-abtesting.com?subject=Request%20-%20Upgrade%20to%20Professional%20Plan'
+				);
 		}
 
 		public function set_message( $message ) {
@@ -123,16 +130,28 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			global $nelioab_admin_controller;
 			$message = $nelioab_admin_controller->message;
 			$aux_class = '';
-			if ( !isset( $message ) || $message == NULL || strlen( $message ) == 0 )
-				$display = 'none';
-			else
+			if ( !isset( $message ) || $message == NULL || strlen( $message ) == 0 ) {
+				if ( !$this->message )
+					$display = 'none';
+			}
+			else {
 				$aux_class = 'to-be-shown';
+			}
 			?>
 			<div id="message-div"
 				class="updated below-h2 <?php echo $aux_class; ?>"
 				style="display:<?php echo $display; ?>">
 					<?php $this->print_message_content(); ?>
-			</div><?php
+			</div>
+			<script type="text/javascript" >
+			function dismissUpgradeNotice() {
+				var data = { action: 'dismiss_upgrade_notice' };
+				jQuery.post(ajaxurl, data, function(response) {
+					jQuery("#message-div").fadeOut();
+				});
+			}
+			</script>
+			<?php
 		}
 
 		protected function print_message_content() {

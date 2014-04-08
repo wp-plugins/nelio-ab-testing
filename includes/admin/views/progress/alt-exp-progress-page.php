@@ -607,7 +607,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			// Otherwise, show a message stating that no data is available yet
 			else {
 				printf( '<p style="color:#555;font-size:120%%;">%s</p>',
-					__( 'Oops! There are no results available yet. Please, check again later.', 'nelioab' ) );
+					__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results.', 'nelioab' ) );
 			}
 
 		}
