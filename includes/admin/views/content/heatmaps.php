@@ -333,7 +333,7 @@
 </head>
 
 <body>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
+	<script src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/jquery4hm.min.js'; ?>"></script>
 
 	<div id="toolbar" data-resizer="basic">
 		<ul id="devices">

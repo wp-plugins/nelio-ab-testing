@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2014-04-04 09:51:13+00:00\n"
-"PO-Revision-Date: 2014-04-04 11:53+0100\n"
+"POT-Creation-Date: 2014-04-07 08:02:15+00:00\n"
+"PO-Revision-Date: 2014-04-07 10:04+0100\n"
 "Last-Translator: David Aguilera <david.aguilera@neliosoftware.com>\n"
 "Language-Team: Spanish <david.aguilera@neliosoftware.com>\n"
 "Language: es\n"
@@ -670,27 +670,26 @@ msgid "Error"
 msgstr "Error"
 
 #: includes/admin/views/errors/invalid-config-page.php:26
-#: includes/admin/views/errors/invalid-config-page.php:33
 msgid "Welcome!"
 msgstr "¡Bienvenido!"
 
-#: includes/admin/views/errors/invalid-config-page.php:36
+#: includes/admin/views/errors/invalid-config-page.php:35
 msgid "Thank you very much for installing <b>Nelio A/B Testing</b> by <i>Nelio Software</i>. We are very excited you chose our solution for optimizing your site."
 msgstr "Muchas gracias por instalar <b>Nelio A/B Testing</b>. Nos encanta que haya decidido usar nuestra solución para optimizar su site."
 
-#: includes/admin/views/errors/invalid-config-page.php:40
+#: includes/admin/views/errors/invalid-config-page.php:39
 msgid "In order to use our service, please make sure you have already configured the plugin properly. In order to do so, just click the button below to access the plugin's settings page and fill in the required fields. These include your <i>e-mail</i> and your <i>Product Registration Number</i>. Finally, do not forget to register this site to your account!"
 msgstr "Para poder empezar a usar el servicio, asegúrese que ha configurado el plugin correctamente. Para ello, haga click en el botón que encontrará al final de la página para acceder a la configuración del plugin y rellene los campos necesarios. Éstos incluyen su <i>e-mail</i> y su <i>número de registro</i>. ¡Y, por cierto, no olvide registrar este site a su cuenta!"
 
-#: includes/admin/views/errors/invalid-config-page.php:44
+#: includes/admin/views/errors/invalid-config-page.php:43
 msgid "If, on the other hand, you have not subscribed to any of our plans yet, please <a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 14-day free trial period</b>."
 msgstr "Si, por un lado, aún no se ha suscrito a ninguno de nuestros planes, <a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">écheles un vistazo y seleccione el que mejor se adapte a sus necesidades</a>. Además, no olvide que <b>todos nuestros planes incluyen un período de pruebas gratuíto de dos semanas</b>."
 
-#: includes/admin/views/errors/invalid-config-page.php:48
+#: includes/admin/views/errors/invalid-config-page.php:47
 msgid "<b>Optimize your site based on real data</b>, not opinions!"
 msgstr "<b>¡Optimice su sitio basándose en datos reales</b>, no en opiniones!"
 
-#: includes/admin/views/errors/invalid-config-page.php:53
+#: includes/admin/views/errors/invalid-config-page.php:52
 msgid "Configure now"
 msgstr "Configurar ahora"
 
@@ -1007,8 +1006,8 @@ msgid "Last Update: %s"
 msgstr "Última actualización: %s"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:610
-msgid "Oops! There are no results available yet. Please, check again later."
-msgstr "¡Vaya! Aún no hay resultados disponibles. Por favor, inténtelo más tarde."
+msgid "There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results."
+msgstr "Todavía no tenemos los resultados listos. Por favor, tenga pacienca hasta que dispongamos de más datos. Recuerde que los primeros resultados pueden tardar hasta dos horas en aparecer."
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:749
 #: includes/admin/views/progress/alt-exp-progress-page.php:843
@@ -1633,7 +1632,7 @@ msgid "Oops! There was an AJAX-related error."
 msgstr "¡Vaya! Se ha producido un error en la comunicación AJAX."
 
 #: includes/utils/admin-page.php:36
-msgid "<b><a href=\"%s\">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more site</b>, and benefit from our <b>consulting services</b>. <small><a id=\"dismiss-upgrade-notice\" href=\"#\">Dismiss</a></small>"
+msgid "<b><a href=\"%s\">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class=\"dismiss-upgrade-notice\" href=\"#\" onClick=\"javascript:dismissUpgradeNotice();\">Dismiss</a></small>"
 msgstr "<b><a href=\"%s\">Pásese a nuestro Plan Profesional</a></b> y disfrute más y mejor de todas las características de Nelio A/B Testing: controle a <b>más visitantes</b>, use el servicio en <b>más <i>sites</i></b> y aproveche nuestros <b>servicios de consultoría</b>. <small><a id=\"dismiss-upgrade-notice\" href=\"#\">Descartar</a></small>"
 
 #: includes/utils/admin-page.php:188
@@ -1759,6 +1758,10 @@ msgstr "No se puede iniciar el experimento."
 #: includes/utils/backend.php:258
 msgid "An unknown error occurred while accessing the backend."
 msgstr "Se ha producido un error desconocido mientras se accedía al backend."
+
+#~ msgid "Oops! There are no results available yet. Please, check again later."
+#~ msgstr ""
+#~ "¡Vaya! Aún no hay resultados disponibles. Por favor, inténtelo más tarde."
 
 #~ msgid "New A/B Menu Test<br />"
 #~ msgstr "Nuevo Test A/B de Menús<br />"

@@ -7,20 +7,10 @@ function nelioab_init() {
 	nelioab_hide_body();
 
 	// Synchronize cookies
-	if ( !nelioab_sync_cookies_and_check_if_load_required(jQuery) ) {
-		nelioab_show_body();
-		jQuery(document).ready(function(){
-			if ( typeof( nelioabStartHeatmapTracking ) == "function" )
-				nelioabStartHeatmapTracking();
-		});
-		return;
-	}
-
-	// Load alt
-	nelioab_load_alt(jQuery);
+	nelioab_sync_cookies_and_load_alternative_if_required(jQuery);
 }
 
-function nelioab_sync_cookies_and_check_if_load_required($) {
+function nelioab_sync_cookies_and_load_alternative_if_required($) {
 	var are_cookies_sync = false;
 	var is_load_alt_required = false;
 
@@ -49,50 +39,59 @@ function nelioab_sync_cookies_and_check_if_load_required($) {
 			is_load_alt_required = ( json.load_alt == 'LOAD_ALT' );
 			if ( !is_load_alt_required )
 				nelioab_nav($);
+
+			if ( are_cookies_sync && is_load_alt_required ) {
+				nelioab_load_alt(jQuery);
+			}
+			else {
+				nelioab_show_body();
+				jQuery(document).ready(function(){
+					if ( typeof( nelioabStartHeatmapTracking ) == "function" )
+						nelioabStartHeatmapTracking();
+				});
+			}
 		}
 		catch(e) {
 		}
 	});
-
-	return are_cookies_sync && is_load_alt_required;
 }
 
 function nelioab_load_alt($) {
-	$(document).ready(function() {
-		$.ajax({
-			type:  'POST',
-			async: false,
-			url:   window.location.href,
-			data: {
-				nelioab_cookies:  nelioab_get_local_cookies(),
-				nelioab_load_alt: 'true',
-			},
-			success: function(data) {
-				data = data
-					.replace(
-						/<script src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
-						'<!-- <script src="http://stats.wordpress.com/e-$1 -->\n' +
-						'\t<script>function st_go(a){} function linktracker_init(a,b){}</script>\n'
-					);
-				data = data
-					.replace(
-						/<\/head>/,
-						'<script>try { if ( nelioab_cssExpNode !== undefined )' +
-						'document.getElementsByTagName("head")[0].' +
-						'appendChild(nelioab_cssExpNode);' +
-						'} catch ( e ) {}' +
-						'</script>\n</head>'
-					);
+	$.ajax({
+		type:  'POST',
+		async: false,
+		url:   window.location.href,
+		data: {
+			nelioab_cookies:  nelioab_get_local_cookies(),
+			nelioab_load_alt: 'true',
+		},
+		success: function(data) {
+			data = data
+				.replace(
+					/<script src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
+					'<!-- <script src="http://stats.wordpress.com/e-$1 -->\n' +
+					'\t<script>function st_go(a){} function linktracker_init(a,b){}</script>\n'
+				);
+			data = data
+				.replace(
+					/<\/head>/,
+					'<script>try { if ( nelioab_cssExpNode !== undefined )' +
+					'document.getElementsByTagName("head")[0].' +
+					'appendChild(nelioab_cssExpNode);' +
+					'} catch ( e ) {}' +
+					'</script>\n</head>'
+				);
+			$(window).load(function() {
 				var aux = window.setTimeout(function() {}, 0);
 				while (aux--) window.clearTimeout(aux);
 				document.open();
 				document.write(data);
 				document.close();
-			},
-			error: function(data) {
-				nelioab_show_body();
-			}
-		});
+			});
+		},
+		error: function(data) {
+			nelioab_show_body();
+		}
 	});
 }
 

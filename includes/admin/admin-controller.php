@@ -48,9 +48,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				return;
 
 			switch( $_GET['nelioab-page'] ) {
-				case 'heatmap-viewer':
-					require_once( NELIOAB_ADMIN_DIR . '/views/content/heatmaps.php' );
-					die();
 				case 'save-css':
 					update_option( 'nelioab_css_' . $_GET['nelioab_preview_css'], $_POST['content'] );
 					$url = get_option('home');
@@ -124,7 +121,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		public function add_js_for_dialogs() {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-dialog' );
-			wp_enqueue_style( 'jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/smoothness/jquery-ui.css' );
+			wp_enqueue_style( 'jquery-style',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/jquery-ui.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_register_style( 'nelioab_dialog_css',
 				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-dialog.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_dialog_css' );
@@ -391,7 +389,12 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					</div>
 					<div style="float:right;margin-top:1em;margin-right:1em;">
 					<div id="preview-action">
-						<?php $preview_link = esc_url( apply_filters( 'preview_post_link', add_query_arg( 'preview', 'true' ) ) ); ?>
+						<?php
+							$preview_link = admin_url();
+							$preview_link = add_query_arg( array(
+								'preview' => 'true',
+								'post'    => $_GET['post'] ), $preview_link );
+						?>
 						<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a>
 						<input type="hidden" name="wp-preview" id="wp-preview" value="" />
 					</div>

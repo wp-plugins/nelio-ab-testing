@@ -33,7 +33,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			if ( NelioABSettings::is_upgrade_message_visible() )
 				$this->message = sprintf(
-					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more site</b>, and benefit from our <b>consulting services</b>. <small><a id="dismiss-upgrade-notice" href="#">Dismiss</a></small>', 'nelioab' ),
+					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
 					'mailto:info@wp-abtesting.com?subject=Request%20-%20Upgrade%20to%20Professional%20Plan'
 				);
 		}
@@ -144,12 +144,12 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 					<?php $this->print_message_content(); ?>
 			</div>
 			<script type="text/javascript" >
-				jQuery('#dismiss-upgrade-notice').click(function() {
-					var data = { action: 'dismiss_upgrade_notice' };
-					jQuery.post(ajaxurl, data, function(response) {
-						jQuery("#message-div").fadeOut();
-					});
+			function dismissUpgradeNotice() {
+				var data = { action: 'dismiss_upgrade_notice' };
+				jQuery.post(ajaxurl, data, function(response) {
+					jQuery("#message-div").fadeOut();
 				});
+			}
 			</script>
 			<?php
 		}

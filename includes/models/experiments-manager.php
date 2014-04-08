@@ -113,8 +113,8 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 			$last_update = get_option( 'nelioab_running_experiments_date', 0 );
 			$now = mktime();
-			// If the last update was less than an hour ago, it's OK
-			if ( $now - $last_update < 3600 )
+			// If the last update was less than fifteen minutes ago, it's OK
+			if ( $now - $last_update < 900 )
 				return;
 
 			// If we are forcing the update, or the last update is too old, we
@@ -122,14 +122,10 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			try {
 				$result = NelioABExperimentsManager::get_running_experiments();
 				update_option( 'nelioab_running_experiments', $result );
+				update_option( 'nelioab_running_experiments_date', $now );
 
 				// UPDATE TO VERSION 1.2
 				update_option( 'nelioab_running_experiments_cache_uses_objects', true );
-
-				$exps_in_cache = NelioABExperimentsManager::get_running_experiments_from_cache();
-				if ( count( $result ) == 0 && count( $exps_in_cache ) > 0 )
-					update_option( 'nelioab_running_experiments_date', mktime() );
-
 			}
 			catch ( Exception $e ) {
 				// If we could not retrieve the running experiments, we cannot update
@@ -140,12 +136,10 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 		public static function get_running_experiments_from_cache() {
 			require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 			if ( self::$running_experiments == NULL ) {
-				self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
 				// UPDATE TO VERSION 1.2: make sure we have objects...
-				if ( !get_option( 'nelioab_running_experiments_cache_uses_objects', false ) ) {
+				if ( !get_option( 'nelioab_running_experiments_cache_uses_objects', false ) )
 					NelioABExperimentsManager::update_running_experiments_cache( true );
-					self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
-				}
+				self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
 			}
 			return self::$running_experiments;
 		}

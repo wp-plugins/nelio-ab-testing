@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2014-04-04 09:51:13+00:00\n"
+"POT-Creation-Date: 2014-04-07 08:02:15+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -687,18 +687,17 @@ msgid "Error"
 msgstr ""
 
 #: includes/admin/views/errors/invalid-config-page.php:26
-#: includes/admin/views/errors/invalid-config-page.php:33
 msgid "Welcome!"
 msgstr ""
 
-#: includes/admin/views/errors/invalid-config-page.php:36
+#: includes/admin/views/errors/invalid-config-page.php:35
 msgid ""
 "Thank you very much for installing <b>Nelio A/B Testing</b> by <i>Nelio "
 "Software</i>. We are very excited you chose our solution for optimizing your "
 "site."
 msgstr ""
 
-#: includes/admin/views/errors/invalid-config-page.php:40
+#: includes/admin/views/errors/invalid-config-page.php:39
 msgid ""
 "In order to use our service, please make sure you have already configured "
 "the plugin properly. In order to do so, just click the button below to "
@@ -707,7 +706,7 @@ msgid ""
 "Finally, do not forget to register this site to your account!"
 msgstr ""
 
-#: includes/admin/views/errors/invalid-config-page.php:44
+#: includes/admin/views/errors/invalid-config-page.php:43
 msgid ""
 "If, on the other hand, you have not subscribed to any of our plans yet, "
 "please <a href=\"http://wp-abtesting.com/subscription-plans/\" target="
@@ -715,11 +714,11 @@ msgid ""
 "mind <b>all our plans come with a 14-day free trial period</b>."
 msgstr ""
 
-#: includes/admin/views/errors/invalid-config-page.php:48
+#: includes/admin/views/errors/invalid-config-page.php:47
 msgid "<b>Optimize your site based on real data</b>, not opinions!"
 msgstr ""
 
-#: includes/admin/views/errors/invalid-config-page.php:53
+#: includes/admin/views/errors/invalid-config-page.php:52
 msgid "Configure now"
 msgstr ""
 
@@ -1066,7 +1065,9 @@ msgid "Last Update: %s"
 msgstr ""
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:610
-msgid "Oops! There are no results available yet. Please, check again later."
+msgid ""
+"There are no results available yet. Please, be patient until we collect more "
+"data. It might take up to two hours to get your first results."
 msgstr ""
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:749
@@ -1757,8 +1758,9 @@ msgstr ""
 msgid ""
 "<b><a href=\"%s\">Upgrade to our Professional Plan</a></b> and get the most "
 "out of Nelio A/B Testing: track <b>more visitors</b>, use the service on "
-"<b>more site</b>, and benefit from our <b>consulting services</b>. <small><a "
-"id=\"dismiss-upgrade-notice\" href=\"#\">Dismiss</a></small>"
+"<b>more sites</b>, and benefit from our <b>consulting services</b>. "
+"<small><a class=\"dismiss-upgrade-notice\" href=\"#\" onClick=\"javascript:"
+"dismissUpgradeNotice();\">Dismiss</a></small>"
 msgstr ""
 
 #: includes/utils/admin-page.php:188

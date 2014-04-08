@@ -111,7 +111,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 
 		private function make_link_for_heatmap( $exp, $id ) {
-			$url = sprintf( admin_url() . '?nelioab-page=heatmap-viewer&id=%1$s&exp_type=%2$s&post=%3$s',
+			$url = sprintf( home_url() . '/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME . '/heatmaps.php?id=%1$s&exp_type=%2$s&post=%3$s',
 				$exp->get_id(), $exp->get_type(), $id );
 			return sprintf( ' <a href="%1$s">%2$s</a>', $url,
 				__( 'View Heatmap', 'nelioab' ) );

@@ -30,7 +30,6 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 
 		protected function do_render() {
 			$style = 'font-size:130%%;color:#555;max-width:450px;line-height:150%%;';
-			echo sprintf( '<h2 style="font-size:180%%">%s</h2>', __( 'Welcome!', 'nelioab' ) );
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
 					__( 'Thank you very much for installing <b>Nelio A/B Testing</b> by <i>Nelio Software</i>. We are very excited you chose our solution for optimizing your site.', 'nelioab' )
