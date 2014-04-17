@@ -133,10 +133,19 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		}
 
 		/**
-		 *
+		 * Returns whether this WordPress installation is, at least, the queried version
 		 */
 		public static function is_at_least_version( $version ) {
 			return $version <= floatval( get_bloginfo( 'version' ) );
+		}
+
+		/**
+		 * Returns site_url, but using http instead of (maybe) https.
+		 */
+		public static function get_unsecured_site_url() {
+			$url = site_url();
+			$url = preg_replace( '/^https/', 'http', $url );
+			return $url;
 		}
 
 	}//NelioABWpHelper

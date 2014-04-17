@@ -172,7 +172,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					aux = $("#exp_name").attr("value");
 					if ( aux == undefined )
 						return false;
-					aux = aux.trim();
+					aux = $.trim( aux );
 					if ( aux.length == 0 )
 						return false;
 				} catch ( e ) {}
@@ -198,7 +198,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					aux = $("#new_alt_name").attr("value");
 					if ( aux == undefined )
 						return false;
-					aux = aux.trim();
+					aux = $.trim( aux );
 					if ( aux.length == 0 )
 						return false;
 				} catch ( e ) {}
@@ -277,7 +277,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					location.href,
 					jQuery("#<?php echo $this->form_name; ?>").serialize()
 				).success(function(data) {
-					data = data.trim();
+					data = jQuery.trim( data );
 					if ( data.indexOf("[SUCCESS]") == 0) {
 						location.href = data.replace("[SUCCESS]", "");
 					}
@@ -306,8 +306,16 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 
 
 		public function print_ori_field() { ?>
-			<select id="exp_original" style="width:300px;"
-				name="exp_original" class="required" value="<?php echo $this->original_id; ?>"><?php
+			<script>
+				function preview_original() {
+					var p = jQuery("#exp_original").attr("value");
+					if (p != -1)
+						window.open("<?php echo home_url(); ?>/?p=" + p, "_blank");
+				}
+			</script>
+			<select id="exp_original" style="width:280px;"
+				name="exp_original" class="required" value="<?php echo $this->original_id; ?>">
+			<?php
 			$aux = $this->wp_pages;
 			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
 				$aux = $this->wp_posts;
@@ -324,6 +332,8 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			}
 			?>
 			</select>
+			<a class="button" style="text-align:center;"
+				href="javascript:preview_original()"><?php _e( 'Preview', 'nelioab' ); ?></a>
 			<span class="description" style="display:block;"><?php
 				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
 					_e( 'This is the post for which alternatives will be created.', 'nelioab' );

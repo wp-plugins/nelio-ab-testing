@@ -30,7 +30,6 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 
 		protected function do_render() {
 			$style = 'font-size:130%%;color:#555;max-width:450px;line-height:150%%;';
-			echo sprintf( '<h2 style="font-size:180%%">%s</h2>', __( 'Welcome!', 'nelioab' ) );
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
 					__( 'Thank you very much for installing <b>Nelio A/B Testing</b> by <i>Nelio Software</i>. We are very excited you chose our solution for optimizing your site.', 'nelioab' )
@@ -41,7 +40,7 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'If, on the other hand, you have not subscribed to any of our plans yet, please <a href="http://wp-abtesting.com/subscription-plans/" target="_blank">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 15-day free trial period</b>.', 'nelioab' )
+					__( 'If, on the other hand, you have not subscribed to any of our plans yet, please <a href="http://wp-abtesting.com/subscription-plans/" target="_blank">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 14-day free trial period</b>.', 'nelioab' )
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",

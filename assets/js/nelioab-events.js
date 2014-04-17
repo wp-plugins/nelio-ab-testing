@@ -9,7 +9,10 @@ jQuery.fn.extend({
 			var clazz = elem.attr('class');
 			if ( !elem.is('body') ) {
 				if ( typeof id != 'undefined' )    name += '#' + id;
-				if ( typeof clazz != 'undefined' ) name += '.' + clazz.split(/[\s\n]+/).join('.');
+				if ( typeof clazz != 'undefined' ) {
+					clazz = jQuery.trim( clazz );
+					name += '.' + clazz.split(/[\s\n]+/).join('.');
+				}
 			}
 			var siblings = elem.parent().children(name);
 			if (siblings.length > 1) name += ':eq(' + siblings.index(node) + ')';

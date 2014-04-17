@@ -30,38 +30,28 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 		public function do_render() {
 			$url = admin_url() . 'admin.php?page=nelioab-add-experiment&experiment-type=';
 
-			// ---------------------------------------------------------------------------
-			?><h2 style="font-size:180%;margin-bottom:0px;"><?php
-			_e( 'Basic Experiment Types', 'nelioab' );
-			?></h2><?php
-			// ---------------------------------------------------------------------------
-
 			// TITLE ONLY
 			$this->do_box(
-				__( 'New A/B or Multivariate<br />Test for Page/Post Titles', 'nelioab' ),
+				__( 'New A/B Test<br />for Page or Post Titles', 'nelioab' ),
 				'title', $url . NelioABExperiment::TITLE_ALT_EXP );
 
 			// PAGE
 			$this->do_box(
-				__( 'New A/B or Multivariate<br />Test for Pages', 'nelioab' ),
+				__( 'New A/B Test<br />for Pages', 'nelioab' ),
 				'page', $url . NelioABExperiment::PAGE_ALT_EXP );
 
 			// POST
 			$this->do_box(
-				__( 'New A/B or Multivariate<br />Test for Posts', 'nelioab' ),
+				__( 'New A/B Test<br />for Posts', 'nelioab' ),
 				'post', $url . NelioABExperiment::POST_ALT_EXP );
 
 			// THEMES (enabled starting at version 3.4)
 			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
 				$this->do_box(
-					__( 'New A/B or Multivariate<br />Theme Test', 'nelioab' ),
+					__( 'New A/B Theme Test<br />', 'nelioab' ),
 					'theme', $url . NelioABExperiment::THEME_ALT_EXP );
 			}
 
-
-			?><h2 style="font-size:180%;margin-bottom:0px;padding-top:2em;"><?php
-			_e( 'Professional Experiment Types', 'nelioab' );
-			?></h2><?php
 
 			// CSS
 			$this->do_box(
@@ -70,17 +60,17 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 
 			// CSS
 			$this->do_box(
-				__( 'New A/B or Multivariate<br />CSS Test', 'nelioab' ),
+				__( 'New A/B CSS Test<br />', 'nelioab' ),
 				'css', $url . NelioABExperiment::CSS_ALT_EXP );
 
 			// MENU
-			$this->do_box(
-				__( 'New A/B or Multivariate<br />Menu Test', 'nelioab' ),
-				'menu'/*, $url . NelioABExperiment::MENU_ALT_EXP*/ );
+//			$this->do_box(
+//				__( 'New A/B Menu Test<br />', 'nelioab' ),
+//				'menu'/*, $url . NelioABExperiment::MENU_ALT_EXP*/ );
 
 			// WIDGET
 			$this->do_box(
-				__( 'New A/B or Multivariate<br />Widget Test', 'nelioab' ),
+				__( 'New A/B Widget Test<br />', 'nelioab' ),
 				'widget'/*, $url . NelioABExperiment::WIDGET_ALT_EXP*/ );
 
 		}

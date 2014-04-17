@@ -189,7 +189,7 @@ class NelioABController {
 	public function get_current_url() {
 		$url = 'http';
 		if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == "on" )
-			$pageURL .= 's';
+			$url .= 's';
 		$url .= '://';
 		if ( isset( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != '80')
 			$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];

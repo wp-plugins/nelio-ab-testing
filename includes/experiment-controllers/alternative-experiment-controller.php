@@ -416,8 +416,8 @@ class NelioABAlternativeExperimentController {
 					var cookie = theCookies[i];
 					if (cookie == undefined)
 						continue;
-					var cookieName = cookie.substr(0, cookie.indexOf('=')).trim();
-					var cookieVal  = cookie.substr(cookie.indexOf('=')+1, cookie.length).trim();
+					var cookieName = jQuery.trim( cookie.substr(0, cookie.indexOf('=')) );
+					var cookieVal  = jQuery.trim( cookie.substr(cookie.indexOf('=')+1, cookie.length) );
 
 					if (cookieName.indexOf("<?php echo NelioABSettings::cookie_prefix(); ?>title_") == 0) { try {
 						var aux  = cookieVal.split(":");
