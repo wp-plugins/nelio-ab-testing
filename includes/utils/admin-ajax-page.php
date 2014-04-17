@@ -135,17 +135,17 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 						jQuery("#poststuff").fadeIn(200);
 						var aux;
 
-						aux = jQuery("#error-message-box-delayed").html().trim();
+						aux = jQuery.trim( jQuery("#error-message-box-delayed").html() );
 						if ( aux.length > 0 ) {
 							jQuery("#error-message-div").addClass("to-be-shown");
 							jQuery("#error-message-div").html( aux );
 						}
-						aux = jQuery("#message-box-delayed").html().trim();
+						aux = jQuery.trim( jQuery("#message-box-delayed").html() );
 						if ( aux.length > 0 ) {
 							jQuery("#message-div").addClass("to-be-shown");
 							jQuery("#message-div").html( aux );
 						}
-						aux = jQuery("#errors-box-delayed").html().trim();
+						aux = jQuery.trim( jQuery("#errors-box-delayed").html() );
 						if ( aux.length > 0 ) {
 							jQuery("#errors-div").addClass("to-be-shown");
 							jQuery("#errors-div").html( aux );

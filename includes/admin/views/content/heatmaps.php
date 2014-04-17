@@ -1,4 +1,12 @@
 <?php
+
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+	$show_back_link = false;
+	if ( isset( $_GET['exp_type'] ) )
+		if ( $_GET['exp_type'] == NelioABExperiment::PAGE_ALT_EXP ||
+		     $_GET['exp_type'] == NelioABExperiment::POST_ALT_EXP )
+			$show_back_link = true;
+
 	if ( isset( $_POST['load_from_appengine'] ) ) {
 		try {
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -351,7 +359,15 @@
 			<li>|</li>
 			<li><a id="view-clicks" style="font-size:12px;"><?php echo __( 'View Clickmap', 'nelioab' ); ?></a></li>
 			<li>|</li>
-			<li><a style="font-size:12px;" href="<?php echo admin_url() . 'admin.php?page=nelioab-experiments'; ?>"><?php echo __( 'Return to my list of experiments', 'nelioab' ); ?></a></li>
+			<li><a style="font-size:12px;" href="<?php echo admin_url() . 'admin.php?page=nelioab-experiments'; ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
+			<?php
+			if ( $show_back_link ) {
+				$link = '%1$s?page=nelioab-experiments&action=progress&id=%2$s&exp_type=%3$s';
+				?>
+				<li>|</li>
+				<li><a style="font-size:12px;" href="<?php printf( $link, admin_url(), $_GET['id'], $_GET['exp_type'] ); ?>"><?php echo __( 'Back', 'nelioab' ); ?></a></li>
+			<?php
+			} ?>
 		</ul>
 	</div>
 

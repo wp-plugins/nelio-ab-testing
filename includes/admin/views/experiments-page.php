@@ -182,8 +182,10 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$url          = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s">%4$s</a>';
 			$url_dialog   = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s" onclick="javascript:if(isInvalidClick(%5$s)){return false;}">%4$s</a>';
 			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s">%3$s</a>';
-			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP )
-				$progress_url = '<a href="' . home_url() . '/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME . '/heatmaps.php?id=%1$s&exp_type=%2$s">%3$s</a>';
+			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP ) {
+				include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+				$progress_url = '<a href="' . NelioABWPHelper::get_unsecured_site_url() . '/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME . '/heatmaps.php?id=%1$s&exp_type=%2$s">%3$s</a>';
+			}
 
 			$actions = array();
 			switch( $exp->get_status() ) {

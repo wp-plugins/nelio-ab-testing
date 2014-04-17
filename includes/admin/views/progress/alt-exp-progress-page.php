@@ -500,8 +500,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									type: 'post',
 									data: jQuery('#apply_alternative').serialize(),
 									success: function(data) {
-										jQuery("#loading-" + id).fadeOut(250);
-										jQuery("#success-" + id).delay(500).fadeIn(200);
+										jQuery("#loading-" + id).delay(120).fadeOut(250);
+										jQuery("#success-" + id).delay(500).fadeIn(200).delay(10000).fadeOut(200);
 									}
 								});
 							}
@@ -522,7 +522,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 											'%s/admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
 											admin_url(), $this->exp->get_id(), $this->exp->get_type() ); ?>",
 										function(data) {
-											data = data.trim();
+											data = jQuery.trim( data );
 											if ( data.indexOf("[SUCCESS]") == 0) {
 												location.href = data.replace("[SUCCESS]", "");
 											}

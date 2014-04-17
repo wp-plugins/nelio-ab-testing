@@ -1,3 +1,5 @@
+var nelioab_heatmap_session_id = nelioab_get_cookie_by_name('nelioab_userid') + '-' + new Date().getTime();
+
 function nelioab_hmdata() {
 	this.data = {};
 	this.max = 0;
@@ -31,7 +33,7 @@ nelioab_hmdata.prototype = {
 		var exportData = {};
 		for ( var k in this.data )
 			exportData[k] = data[k].exportDataSet();
-		return { max:this.max, data:exportData };
+		return { max:this.max, data:exportData, session:nelioab_heatmap_session_id };
 	},
 };
 
@@ -280,35 +282,75 @@ function nelioabStartHeatmapTracking() {
 	jQuery(document).bind( 'byebye', function( e, href ) {
 		if ( href instanceof String && href.indexOf( "#" ) == 0 ) return;
 		add(e, true);
-		sendHeatmapDataToWordpress();
+		sendHeatmapDataToWordpress( true );
 	});
 
 	window.onunload = window.onbeforeunload = ( function() {
-		sendHeatmapDataToWordpress();
+		sendHeatmapDataToWordpress( true );
 	} );
 
+	var nextCallInMillis = 5000;
+	function dataSendingTimeout() {
+		setTimeout( function() {
+			sendHeatmapDataToWordpress( false );
+		}, nextCallInMillis );
+		if ( nextCallInMillis <= 60000 )
+			nextCallInMillis += 5000;
+	}
+	dataSendingTimeout();
+
 	var isDataSentOrBeingSent = false;
-	function sendHeatmapDataToWordpress() {
+	function sendHeatmapDataToWordpress( lastSending ) {
 		if ( isDataSentOrBeingSent ) return;
-		isDataSentOrBeingSent = true;
+		if ( lastSending )
+			isDataSentOrBeingSent = true;
+
+		// Swap data
+		var phone_data = nelioab_phone_data;
+		nelioab_phone_data = new nelioab_hmdata();
+		var tablet_data = nelioab_tablet_data;
+		nelioab_tablet_data = new nelioab_hmdata();
+		var desktop_data = nelioab_desktop_data;
+		nelioab_desktop_data = new nelioab_hmdata();
+		var hd_data = nelioab_hd_data;
+		nelioab_hd_data = new nelioab_hmdata();
+
+		var phone_data_click = nelioab_phone_data_click;
+		nelioab_phone_data_click = new nelioab_hmdata();
+		var tablet_data_click = nelioab_tablet_data_click;
+		nelioab_tablet_data_click = new nelioab_hmdata();
+		var desktop_data_click = nelioab_desktop_data_click;
+		nelioab_desktop_data_click = new nelioab_hmdata();
+		var hd_data_click = nelioab_hd_data_click;
+		nelioab_hd_data_click = new nelioab_hmdata();
+
+		nelioab_actual_data = nelioab_selectDatastore(jQuery(window).width());
+		nelioab_actual_data_click = nelioab_selectClickDatastore(jQuery(window).width());
+
 		// Send Heatmap Data to WordPress
-		jQuery.ajax({
-			type: 'POST',
-			async: false,
-			url:	window.location.href,
-			data: {
-				'nelioab_send_heatmap_info': 'true',
-				'phone-data':   JSON.stringify(nelioab_phone_data.exportDataSet()),
-				'tablet-data':  JSON.stringify(nelioab_tablet_data.exportDataSet()),
-				'desktop-data': JSON.stringify(nelioab_desktop_data.exportDataSet()),
-				'hd-data':      JSON.stringify(nelioab_hd_data.exportDataSet()),
-				'phone-data-click':   JSON.stringify(nelioab_phone_data_click.exportDataSet()),
-				'tablet-data-click':  JSON.stringify(nelioab_tablet_data_click.exportDataSet()),
-				'desktop-data-click': JSON.stringify(nelioab_desktop_data_click.exportDataSet()),
-				'hd-data-click':      JSON.stringify(nelioab_hd_data_click.exportDataSet()),
-				'hm-post-id': nelioab__hm_post_id,
-			},
-		});
+		if ( phone_data.max + tablet_data.max + desktop_data.max + hd_data.max +
+		     phone_data_click.max + tablet_data_click.max + desktop_data_click.max + hd_data_click.max > 0 ) {
+			jQuery.ajax({
+				type: 'POST',
+				async: false,
+				url:	window.location.href,
+				data: {
+					'nelioab_send_heatmap_info': 'true',
+					'phone-data':         JSON.stringify( phone_data.        exportDataSet() ),
+					'tablet-data':        JSON.stringify( tablet_data.       exportDataSet() ),
+					'desktop-data':       JSON.stringify( desktop_data.      exportDataSet() ),
+					'hd-data':            JSON.stringify( hd_data.           exportDataSet() ),
+					'phone-data-click':   JSON.stringify( phone_data_click.  exportDataSet() ),
+					'tablet-data-click':  JSON.stringify( tablet_data_click. exportDataSet() ),
+					'desktop-data-click': JSON.stringify( desktop_data_click.exportDataSet() ),
+					'hd-data-click':      JSON.stringify( hd_data_click.     exportDataSet() ),
+					'hm-post-id': nelioab__hm_post_id,
+				},
+			});
+		}
+
+		if ( !lastSending )
+			dataSendingTimeout();
 	}
 
 	jQuery(window).resize(function(e) {

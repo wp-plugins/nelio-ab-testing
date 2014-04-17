@@ -111,7 +111,8 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 
 		private function make_link_for_heatmap( $exp, $id ) {
-			$url = sprintf( home_url() . '/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME . '/heatmaps.php?id=%1$s&exp_type=%2$s&post=%3$s',
+			include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+			$url = sprintf( NelioABWPHelper::get_unsecured_site_url() . '/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME . '/heatmaps.php?id=%1$s&exp_type=%2$s&post=%3$s',
 				$exp->get_id(), $exp->get_type(), $id );
 			return sprintf( ' <a href="%1$s">%2$s</a>', $url,
 				__( 'View Heatmap', 'nelioab' ) );
@@ -137,7 +138,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					if ( $alt_id == $exp->get_originals_id() )
 						break;
 					$aux = sprintf(
-						' <a href="javascript:nelioab_confirm_overriding(%s);">%s</a>',
+						' <a href="javascript:nelioab_confirm_overriding(%1$s);">%2$s</a>',
 						$alt_id, __( 'Apply', 'nelioab' ) );
 					array_push( $action_links, $aux );
 					break;
@@ -162,12 +163,11 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 			echo sprintf( '<tr>' .
 				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
-				'<td><a href="%s" target="_blank">%s</a><br />' .
+				'<td><strong><a href="%s" target="_blank">%s</a></strong><br />' .
 				'<small>%s&nbsp;</small></td>' .
 				'</tr>',
 				$set_as_winner, $ori_label, $link, $this->ori, implode( ' | ', $action_links ) );
 		}
-
 
 		protected function print_the_real_alternatives() {
 			// REAL ALTERNATIVES
@@ -188,12 +188,19 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
 				echo sprintf( '<tr>' .
-					'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
-					'<td><a href="%s" target="_blank">%s</a><br />' .
-					'<small>%s&nbsp;</small></td>' .
+					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
+					'<td><strong><a href="%3$s" target="_blank">%4$s</a></strong> ' .
+					'<img id="loading-%5$s" style="display:none;width:1em;margin-top:-1em;" src="%6$s" />' .
+					'<strong><small id="success-%5$s" style="display:none;">%7$s</small></strong><br />' .
+					'<small>%8$s&nbsp;</small></td>' .
 					'</tr>',
-					$set_as_winner, $alt_label, $link, $alt->get_name(), implode( ' | ', $action_links ) );
+					$set_as_winner, $alt_label,
+					$link, $alt->get_name(),
+					$alt->get_value(), NELIOAB_ASSETS_URL . '/images/loading-small.gif',
+					__( '(Done!)', 'nelioab' ),
+					implode( ' | ', $action_links ) );
 			}
+
 		}
 
 		protected function print_dialog_content() {

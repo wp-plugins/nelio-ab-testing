@@ -70,7 +70,7 @@ function nelioab_load_alt($) {
 				.replace(
 					/<script src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
 					'<!-- <script src="http://stats.wordpress.com/e-$1 -->\n' +
-					'\t<script>function st_go(a){} function linktracker_init(a,b){}</script>\n'
+					'\t<script>function st_go(a){} function linktracker_init(a,b){}</scr'+'ipt>\n'
 				);
 			data = data
 				.replace(
@@ -79,7 +79,7 @@ function nelioab_load_alt($) {
 					'document.getElementsByTagName("head")[0].' +
 					'appendChild(nelioab_cssExpNode);' +
 					'} catch ( e ) {}' +
-					'</script>\n</head>'
+					'</scr'+'ipt>\n</head>'
 				);
 			$(window).load(function() {
 				var aux = window.setTimeout(function() {}, 0);

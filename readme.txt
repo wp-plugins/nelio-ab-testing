@@ -2,8 +2,8 @@
 Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
-Tested up to: 3.8
-Stable tag: 2.0.12
+Tested up to: 3.9
+Stable tag: 2.0.13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,18 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 2.0.13 =
+* Tested with version 3.9
+* Added "Preview" buttons for the original and goal pages when creating/editing
+an experiment.
+* Added a "Back" button when viewing Heatmaps, so that the user can now go
+back and forth between the progress of a experiment and the heatmaps of its
+alternatives
+* Improved user interface in "the Progress of the experiment" page, making the
+possible actions visible at all times
+* Improved Heatmap tracking scripts
+* Bug fix: compatibility issues with older versions of IE
 
 = 2.0.12 =
 * Bug fix: improvements on the admin interface (SSL support)
@@ -351,5 +363,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.0.12 =
-Bug fixes and performance improvements.
+= 2.0.13 =
+Compatible with 3.9, includes user interface and performance improvements.

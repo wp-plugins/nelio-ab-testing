@@ -128,7 +128,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 					aux = $("#exp_name").attr("value");
 					if ( aux == undefined )
 						return false;
-					aux = aux.trim();
+					aux = $.trim( aux );
 					if ( aux.length == 0 )
 						return false;
 				} catch ( e ) {}
@@ -151,7 +151,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 					aux = $("#new_alt_name").attr("value");
 					if ( aux == undefined )
 						return false;
-					aux = aux.trim();
+					aux = $.trim( aux );
 					if ( aux.length == 0 )
 						return false;
 				} catch ( e ) {}
@@ -197,7 +197,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 					location.href,
 					jQuery("#<?php echo $this->form_name; ?>").serialize()
 				).success(function(data) {
-					data = data.trim();
+					data = jQuery.trim( data );
 					if ( data.indexOf("[SUCCESS]") == 0) {
 						location.href = data.replace("[SUCCESS]", "");
 					}
@@ -244,6 +244,13 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 
 
 		public function print_ori_field() { ?>
+			<script>
+				function preview_original() {
+					var p = jQuery("#exp_original").attr("value");
+					if (p != -1)
+						window.open("<?php echo home_url(); ?>/?p=" + p, "_blank");
+				}
+			</script>
 			<select id="exp_original" style="width:300px;"
 				name="exp_original" class="required" value="<?php echo $this->original_id; ?>"><?php
 
@@ -275,6 +282,8 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 
 			?>
 			</select>
+			<a class="button" style="text-align:center;"
+				href="javascript:preview_original()"><?php _e( 'Preview', 'nelioab' ); ?></a>
 			<span class="description" style="display:block;"><?php
 				_e( 'This is the page (or post) whose title you want to test.', 'nelioab' );
 			?> <small><a href="http://wp-abtesting.com/faqs/what-is-the-original-pagepost-of-an-experiment" target="_blank"><?php

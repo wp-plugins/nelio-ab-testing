@@ -115,7 +115,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 					aux = $("#exp_name").attr("value");
 					if ( aux == undefined )
 						return false;
-					aux = aux.trim();
+					aux = $.trim( aux );
 					if ( aux.length == 0 )
 						return false;
 				} catch ( e ) {}
@@ -140,7 +140,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 					location.href,
 					jQuery("#<?php echo $this->form_name; ?>").serialize()
 				).success(function(data) {
-					data = data.trim();
+					data = jQuery.trim( data );
 					if ( data.indexOf("[SUCCESS]") == 0) {
 						location.href = data.replace("[SUCCESS]", "");
 					}

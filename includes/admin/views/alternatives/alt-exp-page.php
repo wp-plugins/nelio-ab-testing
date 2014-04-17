@@ -130,7 +130,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 		}
 
 		public function print_descr_field() { ?>
-			<textarea id="exp_descr" style="width:300px;" maxlength="450"
+			<textarea id="exp_descr" style="width:280px;" maxlength="450"
 				name="exp_descr" cols="45" rows="3"><?php echo $this->experiment_descr; ?></textarea>
 			<span class="description" style="display:block;"><?php
 					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
@@ -142,6 +142,12 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 
 		public function print_goal_field() { ?>
 			<script>
+
+				function preview_goal() {
+					var p = jQuery("#goal_options").attr("value");
+					if (p > 0)
+						window.open("<?php echo home_url(); ?>/?p=" + p, "_blank");
+				}
 
 				// FUNCTIONS TO ADD A WORDPRESS GOAL
 
@@ -343,7 +349,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 
 			</script>
 			<div id="goal_options_default_selector">
-				<select id="goal_options" style="width:240px !important;" class="required">
+				<select id="goal_options" style="width:280px !important;" class="required">
 					<option id="select_goal_label" value="-1"><?php _e( 'Select and add goal...', 'nelioab' ); ?></option>
 					<optgroup label="<?php _e( 'External Page' ); ?>">
 						<option id="external-page" value="external-page"><?php
@@ -388,7 +394,9 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 					}
 					?>
 				</select>
-				<a class="button" style="width:55px;text-align:center;"
+				<a class="button" style="text-align:center;"
+					href="javascript:preview_goal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
+				<a class="button" style="text-align:center;"
 					href="javascript:add_goal()"><?php _e( 'Add', 'nelioab' ); ?></a>
 			</div>
 			<div id="external-page-form" style="display:none;">
