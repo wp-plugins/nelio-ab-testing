@@ -8,10 +8,13 @@ jQuery.fn.extend({
 			var id    = elem.attr('id');
 			var clazz = elem.attr('class');
 			if ( !elem.is('body') ) {
-				if ( typeof id != 'undefined' )    name += '#' + id;
+				if ( typeof id != 'undefined' && id.length > 0 ) {
+					name += '#' + id;
+				}
 				if ( typeof clazz != 'undefined' ) {
 					clazz = jQuery.trim( clazz );
-					name += '.' + clazz.split(/[\s\n]+/).join('.');
+					if ( clazz.length > 0 )
+						name += '.' + clazz.split(/[\s\n]+/).join('.');
 				}
 			}
 			var siblings = elem.parent().children(name);

@@ -515,7 +515,7 @@ class NelioABAlternativeExperimentController {
 		return "\t \t \t$title\t \t \t";
 	}
 
-	public function fix_title_for_landing_page( $title, $sep ) {
+	public function fix_title_for_landing_page( $title, $sep = false ) {
 		global $post;
 		if ( $this->is_post_alternative( $post->ID ) ) {
 			$front_page_id = get_option( 'page_on_front' );
