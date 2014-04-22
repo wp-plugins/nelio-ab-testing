@@ -87,23 +87,30 @@ class NelioABHeatmapExperimentController {
 		return false;
 	}
 
+	private function decode_heatmap( $hm ) {
+		if ( isset( $hm ) && is_string( $hm ) && strlen( $hm ) > 0 )
+			return json_decode( stripslashes( $hm ) );
+		else
+			return json_decode( '{max:0}' );
+	}
+
 	public function save_heatmap_info_into_cache() {
 		$post_id = '' . $_POST['hm-post-id'];
 
 		$reg_data   = array();
 		$click_data = array();
 
-		$reg_data['phone']   = json_decode( $_POST['phone-data'] );
-		$reg_data['tablet']  = json_decode( $_POST['tablet-data'] );
-		$reg_data['desktop'] = json_decode( $_POST['desktop-data'] );
-		$reg_data['hd']      = json_decode( $_POST['hd-data'] );
+		$reg_data['phone']   = $this->decode_heatmap( $_POST['phone-data'] );
+		$reg_data['tablet']  = $this->decode_heatmap( $_POST['tablet-data'] );
+		$reg_data['desktop'] = $this->decode_heatmap( $_POST['desktop-data'] );
+		$reg_data['hd']      = $this->decode_heatmap( $_POST['hd-data'] );
 
-		$click_data['phone']   = json_decode( $_POST['phone-data-click'] );
-		$click_data['tablet']  = json_decode( $_POST['tablet-data-click'] );
-		$click_data['desktop'] = json_decode( $_POST['desktop-data-click'] );
-		$click_data['hd']      = json_decode( $_POST['hd-data-click'] );
+		$click_data['phone']   = $this->decode_heatmap( $_POST['phone-data-click'] );
+		$click_data['tablet']  = $this->decode_heatmap( $_POST['tablet-data-click'] );
+		$click_data['desktop'] = $this->decode_heatmap( $_POST['desktop-data-click'] );
+		$click_data['hd']      = $this->decode_heatmap( $_POST['hd-data-click'] );
 
-		$data = array( 'post_id' => $post_id, 'normal' => $reg_data, 'click' => $click_data, 'timestamp' => time() ); // BORRAR TIMESTAMP
+		$data = array( 'post_id' => $post_id, 'normal' => $reg_data, 'click' => $click_data );
 
 		$heatmaps_cache = get_option( 'nelioab_heatmaps_cache', array() );
 		array_push( $heatmaps_cache, $data );
@@ -128,16 +135,15 @@ class NelioABHeatmapExperimentController {
 			$post_id    = $data['post_id'];
 			$reg_data   = $data['normal'];
 			$click_data = $data['click'];
-			$timestamp  = $data['timestamp']; // BORRAR TIMESTAMP
 
 			foreach ( $reg_data as $res => $val ) {
 				if ( $val->max <= 0 ) continue;
 				$object = array(
+					'session'    => $val->session,
 					'value'      => json_encode( $val ),
 					'resolution' => $res, 
 					'post'       => $post_id,
 					'isClick'    => false,
-					'timestamp'  => $timestamp, // BORRAR TIMESTAMP
 				);
 				$wrapped_params = array();
 				$wrapped_params['credential'] = $credential;
@@ -156,11 +162,11 @@ class NelioABHeatmapExperimentController {
 			foreach ( $click_data as $res => $val ) {
 				if ( $val->max <= 0 ) continue;
 				$object = array(
+					'session'    => $val->session,
 					'value'      => json_encode( $val ),
 					'resolution' => $res, 
 					'post'       => $post_id,
 					'isClick'    => true,
-					'timestamp'  => $timestamp, // BORRAR TIMESTAMP
 				);
 				$wrapped_params = array();
 				$wrapped_params['credential'] = $credential;

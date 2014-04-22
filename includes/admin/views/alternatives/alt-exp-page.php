@@ -130,7 +130,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 		}
 
 		public function print_descr_field() { ?>
-			<textarea id="exp_descr" style="width:300px;" maxlength="450"
+			<textarea id="exp_descr" style="width:280px;" maxlength="450"
 				name="exp_descr" cols="45" rows="3"><?php echo $this->experiment_descr; ?></textarea>
 			<span class="description" style="display:block;"><?php
 					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
@@ -140,23 +140,16 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 		}
 
 
-		public function print_goal_field() {
-			include_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			$plan = NelioABSettings::get_subscription_plan();
-			$pro  = NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN;
-			?>
+		public function print_goal_field() { ?>
 			<script>
 
-				// FUNCTIONS TO ADD A WORDPRESS GOAL
-
-				function show_goals_warning_if_necessary() {
-					if ( <?php echo $plan; ?> < <?php echo $pro; ?> ) {
-						if ( jQuery("#active_goals li").length > 2 )
-							jQuery("#goals-warning").fadeIn(200);
-						else
-							jQuery("#goals-warning").fadeOut(200);
-					}
+				function preview_goal() {
+					var p = jQuery("#goal_options").attr("value");
+					if (p > 0)
+						window.open("<?php echo home_url(); ?>/?p=" + p, "_blank");
 				}
+
+				// FUNCTIONS TO ADD A WORDPRESS GOAL
 
 				function add_goal() {
 					var id = jQuery("#goal_options").attr('value');
@@ -168,8 +161,6 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 					else {
 						add_wordpress_goal();
 					}
-
-					show_goals_warning_if_necessary();
 				}
 
 				function add_wordpress_goal() {
@@ -297,7 +288,6 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 					jQuery("#active_goal-" + id).delay(300, function() {
 						jQuery(this).remove();
 						jQuery("#active_goals").trigger('NelioABGoalsChanged');
-						show_goals_warning_if_necessary();
 						if ( is_there_one_goal_at_least() )
 							jQuery("#no_active_goals").hide();
 						else
@@ -348,7 +338,6 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 				}
 
 				jQuery(document).ready(function() {
-					show_goals_warning_if_necessary();
 					jQuery("#active_goals input.wordpress-goal").each(function() {
 						id = jQuery(this).attr('value');
 						try {
@@ -360,7 +349,7 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 
 			</script>
 			<div id="goal_options_default_selector">
-				<select id="goal_options" style="width:240px !important;" class="required">
+				<select id="goal_options" style="width:280px !important;" class="required">
 					<option id="select_goal_label" value="-1"><?php _e( 'Select and add goal...', 'nelioab' ); ?></option>
 					<optgroup label="<?php _e( 'External Page' ); ?>">
 						<option id="external-page" value="external-page"><?php
@@ -405,7 +394,9 @@ if ( !class_exists( 'NelioABAltExpPage' ) ) {
 					}
 					?>
 				</select>
-				<a class="button" style="width:55px;text-align:center;"
+				<a class="button" style="text-align:center;"
+					href="javascript:preview_goal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
+				<a class="button" style="text-align:center;"
 					href="javascript:add_goal()"><?php _e( 'Add', 'nelioab' ); ?></a>
 			</div>
 			<div id="external-page-form" style="display:none;">

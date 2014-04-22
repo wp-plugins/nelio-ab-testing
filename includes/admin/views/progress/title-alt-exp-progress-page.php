@@ -77,11 +77,17 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
 				echo sprintf( '<tr>' .
-					'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
-					'<td>%s<br />' .
-					'<small>%s&nbsp;</small></td>' .
+					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
+					'<td><strong>%3$s</strong> ' .
+					'<img id="loading-%4$s" style="display:none;width:1em;margin-top:-1em;" src="%5$s" />' .
+					'<strong><small id="success-%4$s" style="display:none;">%6$s</small></strong><br />' .
+					'<small>%7$s&nbsp;</small></td>' .
 					'</tr>',
-					$set_as_winner, $alt_label, $alt->get_name(), implode( ' | ', $action_links ) );
+					$set_as_winner, $alt_label,
+					$alt->get_name(),
+					$alt->get_value(), NELIOAB_ASSETS_URL . '/images/loading-small.gif',
+					__( '(Done!)', 'nelioab' ),
+					implode( ' | ', $action_links ) );
 			}
 		}
 

@@ -416,8 +416,8 @@ class NelioABAlternativeExperimentController {
 					var cookie = theCookies[i];
 					if (cookie == undefined)
 						continue;
-					var cookieName = cookie.substr(0, cookie.indexOf('=')).trim();
-					var cookieVal  = cookie.substr(cookie.indexOf('=')+1, cookie.length).trim();
+					var cookieName = jQuery.trim( cookie.substr(0, cookie.indexOf('=')) );
+					var cookieVal  = jQuery.trim( cookie.substr(cookie.indexOf('=')+1, cookie.length) );
 
 					if (cookieName.indexOf("<?php echo NelioABSettings::cookie_prefix(); ?>title_") == 0) { try {
 						var aux  = cookieVal.split(":");
@@ -515,7 +515,7 @@ class NelioABAlternativeExperimentController {
 		return "\t \t \t$title\t \t \t";
 	}
 
-	public function fix_title_for_landing_page( $title, $sep ) {
+	public function fix_title_for_landing_page( $title, $sep = false ) {
 		global $post;
 		if ( $this->is_post_alternative( $post->ID ) ) {
 			$front_page_id = get_option( 'page_on_front' );
