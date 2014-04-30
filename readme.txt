@@ -7,8 +7,8 @@ Stable tag: 2.0.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Nelio A/B Testing is a WordPress service that optimizes the conversion rate of
-your site.
+A/B testing and conversion rate optimization designed specifically for
+WordPress.
 
 == Description ==
 
