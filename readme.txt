@@ -7,7 +7,7 @@ Stable tag: 2.0.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A/B testing and conversion rate optimization designed specifically for
+A/B testing and conversion rate optimization service designed specifically for
 WordPress.
 
 == Description ==
