@@ -32,49 +32,40 @@ table#alternatives-in-progress tr td:last-child small a { text-decoration:none; 
 
 /* STATUSES */
 
+#info-summary .status-icon {
+	width:16px;
+	height:16px;
+	display:inline-block;
+	margin-bottom:-2px;
+	background-size: 32px 16px;
+}
+
+#info-summary .status-colorblind {
+	background-position-x: 16px;
+}
+
 #info-summary .status-star {
-	background:       url( '../images/star.png' );
 	background-image: url( '../images/star.png' );
-	width:20px;
-	height:20px;
-	display:inline-block;
-	margin-bottom:-4px;
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-star {
-	background:       url( '../images/2x/star.png' );
 	background-image: url( '../images/2x/star.png' );
-	background-size: 20px 20px;
 } }
 
 #info-summary .status-clock {
-	background:       url( '../images/clock.png' );
 	background-image: url( '../images/clock.png' );
-	width:20px;
-	height:20px;
-	display:inline-block;
-	margin-bottom:-4px;
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-clock {
-	background:       url( '../images/2x/clock.png' );
 	background-image: url( '../images/2x/clock.png' );
-	background-size: 20px 20px;
 } }
 
 #info-summary .status-tick {
-	background:       url( '../images/tick.png' );
 	background-image: url( '../images/tick.png' );
-	width:20px;
-	height:20px;
-	display:inline-block;
-	margin-bottom:-4px;
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-tick {
-	background:       url( '../images/2x/tick.png' );
 	background-image: url( '../images/2x/tick.png' );
-	background-size: 20px 20px;
 } }
 
 /* END OF STATUSES */

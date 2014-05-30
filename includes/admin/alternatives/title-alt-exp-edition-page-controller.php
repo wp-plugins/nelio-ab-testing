@@ -75,7 +75,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			// ...pages...
 			$list_of_pages = get_pages();
 			$options_for_posts = array(
-				'posts_per_page' => -1,
+				'posts_per_page' => 150,
 				'orderby'        => 'title',
 				'order'          => 'asc' );
 			$list_of_posts = get_posts( $options_for_posts );

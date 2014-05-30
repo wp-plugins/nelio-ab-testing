@@ -66,7 +66,7 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
@@ -75,7 +75,7 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/exp/hm',
-					NelioABSettings::get_site_id()
+					NelioABAccountSettings::get_site_id()
 				);
 			}
 			else {

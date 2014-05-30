@@ -17,7 +17,7 @@
 
 if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
-	include_once( NELIOAB_MODELS_DIR . '/settings.php' );
+	include_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
