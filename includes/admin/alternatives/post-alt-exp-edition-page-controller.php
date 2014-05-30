@@ -91,7 +91,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 
 			// ...posts...
 			$options_for_posts = array(
-				'posts_per_page' => -1,
+				'posts_per_page' => 150,
 				'orderby'        => 'title',
 				'order'          => 'asc' );
 			$list_of_posts = get_posts( $options_for_posts );
@@ -175,7 +175,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 		}
 
 		public function add_alternative_copying_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			global $nelioab_admin_controller;
 			$this->build_experiment_from_post_data();

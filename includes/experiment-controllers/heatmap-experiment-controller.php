@@ -45,7 +45,7 @@ class NelioABHeatmapExperimentController {
 		wp_enqueue_script( 'nelioab_sync_heatmaps',
 			NELIOAB_ASSETS_URL . '/js/nelioab-sync-heatmaps.min.js?' . NELIOAB_PLUGIN_VERSION );
 		if ( $this->has_post_a_heatmap_experiment() ||
-		     $this->is_post_in_an_ab_experiment_with_heatmaps() ) {
+		   ( $this->is_post_in_an_ab_experiment_with_heatmaps() && isset( $_POST['nelioab_load_alt'] ) ) ) {
 			global $nelioab_controller;
 			$post_id = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $nelioab_controller->get_current_url() );
 			?><script>var nelioab__hm_post_id = "<?php echo $post_id; ?>";</script><?php echo "\n";
@@ -87,23 +87,30 @@ class NelioABHeatmapExperimentController {
 		return false;
 	}
 
+	private function decode_heatmap( $hm ) {
+		if ( isset( $hm ) && is_string( $hm ) && strlen( $hm ) > 0 )
+			return json_decode( stripslashes( $hm ) );
+		else
+			return json_decode( '{max:0}' );
+	}
+
 	public function save_heatmap_info_into_cache() {
 		$post_id = '' . $_POST['hm-post-id'];
 
 		$reg_data   = array();
 		$click_data = array();
 
-		$reg_data['phone']   = json_decode( $_POST['phone-data'] );
-		$reg_data['tablet']  = json_decode( $_POST['tablet-data'] );
-		$reg_data['desktop'] = json_decode( $_POST['desktop-data'] );
-		$reg_data['hd']      = json_decode( $_POST['hd-data'] );
+		$reg_data['phone']   = $this->decode_heatmap( $_POST['phone-data'] );
+		$reg_data['tablet']  = $this->decode_heatmap( $_POST['tablet-data'] );
+		$reg_data['desktop'] = $this->decode_heatmap( $_POST['desktop-data'] );
+		$reg_data['hd']      = $this->decode_heatmap( $_POST['hd-data'] );
 
-		$click_data['phone']   = json_decode( $_POST['phone-data-click'] );
-		$click_data['tablet']  = json_decode( $_POST['tablet-data-click'] );
-		$click_data['desktop'] = json_decode( $_POST['desktop-data-click'] );
-		$click_data['hd']      = json_decode( $_POST['hd-data-click'] );
+		$click_data['phone']   = $this->decode_heatmap( $_POST['phone-data-click'] );
+		$click_data['tablet']  = $this->decode_heatmap( $_POST['tablet-data-click'] );
+		$click_data['desktop'] = $this->decode_heatmap( $_POST['desktop-data-click'] );
+		$click_data['hd']      = $this->decode_heatmap( $_POST['hd-data-click'] );
 
-		$data = array( 'post_id' => $post_id, 'normal' => $reg_data, 'click' => $click_data, 'timestamp' => time() ); // BORRAR TIMESTAMP
+		$data = array( 'post_id' => $post_id, 'normal' => $reg_data, 'click' => $click_data );
 
 		$heatmaps_cache = get_option( 'nelioab_heatmaps_cache', array() );
 		array_push( $heatmaps_cache, $data );
@@ -119,25 +126,24 @@ class NelioABHeatmapExperimentController {
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 		$credential = NelioABBackend::make_credential();
 
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/hm',
-			NelioABSettings::get_site_id() );
+			NelioABAccountSettings::get_site_id() );
 
 		foreach ( $heatmaps_cache as $data ) {
 
 			$post_id    = $data['post_id'];
 			$reg_data   = $data['normal'];
 			$click_data = $data['click'];
-			$timestamp  = $data['timestamp']; // BORRAR TIMESTAMP
 
 			foreach ( $reg_data as $res => $val ) {
 				if ( $val->max <= 0 ) continue;
 				$object = array(
+					'session'    => $val->session,
 					'value'      => json_encode( $val ),
 					'resolution' => $res, 
 					'post'       => $post_id,
 					'isClick'    => false,
-					'timestamp'  => $timestamp, // BORRAR TIMESTAMP
 				);
 				$wrapped_params = array();
 				$wrapped_params['credential'] = $credential;
@@ -156,11 +162,11 @@ class NelioABHeatmapExperimentController {
 			foreach ( $click_data as $res => $val ) {
 				if ( $val->max <= 0 ) continue;
 				$object = array(
+					'session'    => $val->session,
 					'value'      => json_encode( $val ),
 					'resolution' => $res, 
 					'post'       => $post_id,
 					'isClick'    => true,
-					'timestamp'  => $timestamp, // BORRAR TIMESTAMP
 				);
 				$wrapped_params = array();
 				$wrapped_params['credential'] = $credential;

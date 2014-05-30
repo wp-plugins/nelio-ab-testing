@@ -366,7 +366,12 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							$lights_img = 'status-tick';
 							$lights_label = __( 'There is a clear winner, with a confidence greater than 90%', 'nelioab' );
 						}
-					?><div class="<?php echo $lights_img; ?>"
+					?><div class="status-icon <?php
+						echo $lights_img;
+						require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+						if ( NelioABSettings::use_colorblind_palette() )
+							echo ' status-colorblind';
+					?>"
 						title="<?php echo $lights_label; ?>"></div> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
 					<div class="inside">
 
@@ -500,8 +505,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									type: 'post',
 									data: jQuery('#apply_alternative').serialize(),
 									success: function(data) {
-										jQuery("#loading-" + id).fadeOut(250);
-										jQuery("#success-" + id).delay(500).fadeIn(200);
+										jQuery("#loading-" + id).delay(120).fadeOut(250);
+										jQuery("#success-" + id).delay(500).fadeIn(200).delay(10000).fadeOut(200);
 									}
 								});
 							}
@@ -522,7 +527,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 											'%s/admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
 											admin_url(), $this->exp->get_id(), $this->exp->get_type() ); ?>",
 										function(data) {
-											data = data.trim();
+											data = jQuery.trim( data );
 											if ( data.indexOf("[SUCCESS]") == 0) {
 												location.href = data.replace("[SUCCESS]", "");
 											}
@@ -607,7 +612,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			// Otherwise, show a message stating that no data is available yet
 			else {
 				printf( '<p style="color:#555;font-size:120%%;">%s</p>',
-					__( 'Oops! There are no results available yet. Please, check again later.', 'nelioab' ) );
+					__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results.', 'nelioab' ) );
 			}
 
 		}

@@ -1,4 +1,12 @@
 <?php
+
+	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+	$show_back_link = false;
+	if ( isset( $_GET['exp_type'] ) )
+		if ( $_GET['exp_type'] == NelioABExperiment::PAGE_ALT_EXP ||
+		     $_GET['exp_type'] == NelioABExperiment::POST_ALT_EXP )
+			$show_back_link = true;
+
 	if ( isset( $_POST['load_from_appengine'] ) ) {
 		try {
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -122,9 +130,13 @@
 				setTimeout('doSwitchHeatmap()', 400);
 			}
 			function doSwitchHeatmap() {
-				var nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject();
+				var nelioabHeatmapObject;
+				var key = '#' + nelioab__current_type;
 				switch( nelioab__current_type ) {
 					case 'mobile':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__phone.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone, nelioab__phone);
 						if ( nelioab__phone_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone_click, nelioab__phone_click );
 						if ( nelioab__show_clicks ) {
@@ -137,6 +149,9 @@
 						}
 						break;
 					case 'tablet':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__tablet.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet, nelioab__tablet);
 						if ( nelioab__tablet_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet_click, nelioab__tablet_click );
 						if ( nelioab__show_clicks ) {
@@ -149,6 +164,9 @@
 						}
 						break;
 					case 'desktop':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__desktop.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop, nelioab__desktop);
 						if ( nelioab__desktop_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop_click, nelioab__desktop_click );
 						if ( nelioab__show_clicks ) {
@@ -161,6 +179,9 @@
 						}
 						break;
 					case 'hd':
+						var size = jQuery(key).attr('data-viewport').split('x');
+						var w=size[0], h=size[1];
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__hd.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd, nelioab__hd);
 						if ( nelioab__hd_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd_click, nelioab__hd_click );
 						if ( nelioab__show_clicks ) {
@@ -173,6 +194,7 @@
 						}
 						break;
 					default:
+						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject();
 						nelioabHeatmapObject.store.setDataSet( nelioab__nodata );
 				}
 				nelioabSwitchToClickEnabled = true;
@@ -319,7 +341,7 @@
 </head>
 
 <body>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
+	<script src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/jquery4hm.min.js'; ?>"></script>
 
 	<div id="toolbar" data-resizer="basic">
 		<ul id="devices">
@@ -337,7 +359,15 @@
 			<li>|</li>
 			<li><a id="view-clicks" style="font-size:12px;"><?php echo __( 'View Clickmap', 'nelioab' ); ?></a></li>
 			<li>|</li>
-			<li><a style="font-size:12px;" href="<?php echo admin_url() . 'admin.php?page=nelioab-experiments'; ?>"><?php echo __( 'Return to my list of experiments', 'nelioab' ); ?></a></li>
+			<li><a style="font-size:12px;" href="<?php echo admin_url() . 'admin.php?page=nelioab-experiments'; ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
+			<?php
+			if ( $show_back_link ) {
+				$link = '%1$s?page=nelioab-experiments&action=progress&id=%2$s&exp_type=%3$s';
+				?>
+				<li>|</li>
+				<li><a style="font-size:12px;" href="<?php printf( $link, admin_url(), $_GET['id'], $_GET['exp_type'] ); ?>"><?php echo __( 'Back', 'nelioab' ); ?></a></li>
+			<?php
+			} ?>
 		</ul>
 	</div>
 

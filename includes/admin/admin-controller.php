@@ -48,9 +48,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				return;
 
 			switch( $_GET['nelioab-page'] ) {
-				case 'heatmap-viewer':
-					require_once( NELIOAB_ADMIN_DIR . '/views/content/heatmaps.php' );
-					die();
 				case 'save-css':
 					update_option( 'nelioab_css_' . $_GET['nelioab_preview_css'], $_POST['content'] );
 					$url = get_option('home');
@@ -61,13 +58,13 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function init() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// Some relevant global warnings
 			// -----------------------------
 
 			// No more quota
-			if ( !NelioABSettings::has_quota_left() ) {
+			if ( !NelioABAccountSettings::has_quota_left() ) {
 				array_push( $this->global_warnings,
 					__( '<b>Warning!</b> There is no more quota available.', 'nelioab' ) );
 			}
@@ -86,9 +83,13 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Some hooks
 			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
-			add_action( 'admin_menu', array( $this, 'create_nelioab_settings_pages' ) );
+
+			add_action( 'admin_menu', array( $this, 'create_nelioab_admin_pages' ) );
+				require_once( NELIOAB_ADMIN_DIR . '/views/settings-page.php' );
+				add_action( 'admin_init', array( 'NelioABSettingsPage', 'register_settings' ) );
+
 			add_action( 'admin_menu', array( $this, 'configure_edit_nelioab_alternative' ) );
-			add_action( 'pre_update_option_siteurl', array( 'NelioABSettings', 'update_registered_sites_if_required' ) );
+			add_action( 'pre_update_option_siteurl', array( 'NelioABAccountSettings', 'update_registered_sites_if_required' ) );
 
 			// AJAX functions
 			add_action( 'wp_ajax_get_html_content', array( $this, 'generate_html_content' ) ) ;
@@ -124,7 +125,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		public function add_js_for_dialogs() {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-dialog' );
-			wp_enqueue_style( 'jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/smoothness/jquery-ui.css' );
+			wp_enqueue_style( 'jquery-style',
+				NELIOAB_ADMIN_ASSETS_URL . '/css/jquery-ui.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_register_style( 'nelioab_dialog_css',
 				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-dialog.min.css', false, NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_dialog_css' );
@@ -208,10 +210,10 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		 *
 		 * @since 0.1
 		 */
-		public function create_nelioab_settings_pages() {
+		public function create_nelioab_admin_pages() {
 
-			// WHEN USING THE DASHBOARD, RECOVER: $nelioab_menu = 'nelioab-admin-pages';
 			$nelioab_menu = 'nelioab-experiments';
+			//$nelioab_menu = 'nelioab-dashboard';
 
 			// Main menu
 			// ----------------------------------------------------------------------
@@ -224,15 +226,15 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'div' );
 
 
-//			// Dashboard page
-//			// ----------------------------------------------------------------------
-//			require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
-//			add_submenu_page( $nelioab_menu,
-//				__( 'Dashboard', 'nelioab' ),
-//				__( 'Dashboard', 'nelioab' ),
-//				'manage_options',
-//				'nelioab-admin-pages',
-//				array( 'NelioABDashboardPageController', 'build' ) );
+			// Dashboard page
+			// ----------------------------------------------------------------------
+			// require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
+			// add_submenu_page( $nelioab_menu,
+			// 	__( 'Dashboard', 'nelioab' ),
+			// 	__( 'Dashboard', 'nelioab' ),
+			// 	'manage_options',
+			// 	'nelioab-dashboard',
+			// 	array( 'NelioABDashboardPageController', 'build' ) );
 
 
 			// Experiments pages (depending on the action, we show one or another)
@@ -281,6 +283,16 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$page_to_build );
 
 
+			require_once( NELIOAB_ADMIN_DIR . '/account-page-controller.php' );
+			add_submenu_page( $nelioab_menu,
+				__( 'My Account', 'nelioab' ),
+				__( 'My Account', 'nelioab' ),
+				'manage_options',
+				'nelioab-account',
+				array( 'NelioABAccountPageController', 'build' ) );
+
+			// Feedback page
+			// ----------------------------------------------------------------------
 			require_once( NELIOAB_ADMIN_DIR . '/settings-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
 				__( 'Settings', 'nelioab' ),
@@ -288,6 +300,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'manage_options',
 				'nelioab-settings',
 				array( 'NelioABSettingsPageController', 'build' ) );
+
 
 			// Feedback page
 			// ----------------------------------------------------------------------
@@ -391,7 +404,12 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					</div>
 					<div style="float:right;margin-top:1em;margin-right:1em;">
 					<div id="preview-action">
-						<?php $preview_link = esc_url( apply_filters( 'preview_post_link', add_query_arg( 'preview', 'true' ) ) ); ?>
+						<?php
+							$preview_link = admin_url();
+							$preview_link = add_query_arg( array(
+								'preview' => 'true',
+								'post'    => $_GET['post'] ), $preview_link );
+						?>
 						<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a>
 						<input type="hidden" name="wp-preview" id="wp-preview" value="" />
 					</div>

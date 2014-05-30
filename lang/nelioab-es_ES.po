@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2014-03-18 08:19:44+00:00\n"
-"PO-Revision-Date: 2014-03-18 09:28+0100\n"
+"POT-Creation-Date: 2014-04-07 08:02:15+00:00\n"
+"PO-Revision-Date: 2014-04-07 10:04+0100\n"
 "Last-Translator: David Aguilera <david.aguilera@neliosoftware.com>\n"
 "Language-Team: Spanish <david.aguilera@neliosoftware.com>\n"
 "Language: es\n"
@@ -179,68 +179,68 @@ msgid "This site is no longer registered to your account."
 msgstr "Este site ya no está registrado en vuestra cuenta."
 
 #: includes/admin/views/alternatives/alt-exp-page.php:105
-#: includes/admin/views/others/heatmap-exp-edition-page.php:98
+#: includes/admin/views/others/heatmap-exp-edition-page.php:89
 msgid "Basic Information"
 msgstr "Información básica"
 
 #: includes/admin/views/alternatives/alt-exp-page.php:126
-#: includes/admin/views/others/heatmap-exp-edition-page.php:204
+#: includes/admin/views/others/heatmap-exp-edition-page.php:195
 msgid "Set a meaningful, descriptive name for the experiment."
 msgstr "Use un nombre claro y descriptivo para el experimento."
 
 #: includes/admin/views/alternatives/alt-exp-page.php:128
 #: includes/admin/views/alternatives/alt-exp-page.php:138
-#: includes/admin/views/alternatives/alt-exp-page.php:500
-#: includes/admin/views/alternatives/alt-exp-page.php:511
+#: includes/admin/views/alternatives/alt-exp-page.php:483
+#: includes/admin/views/alternatives/alt-exp-page.php:494
 #: includes/admin/views/alternatives/alternatives-table.php:135
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:333
 #: includes/admin/views/alternatives/title-alt-exp-edition-page.php:281
-#: includes/admin/views/others/heatmap-exp-edition-page.php:206
-#: includes/admin/views/others/heatmap-exp-edition-page.php:216
-#: includes/admin/views/settings-page.php:273
+#: includes/admin/views/others/heatmap-exp-edition-page.php:197
+#: includes/admin/views/others/heatmap-exp-edition-page.php:207
+#: includes/admin/views/settings-page.php:280
 msgid "Help"
 msgstr "Ayuda"
 
 #: includes/admin/views/alternatives/alt-exp-page.php:136
-#: includes/admin/views/others/heatmap-exp-edition-page.php:214
+#: includes/admin/views/others/heatmap-exp-edition-page.php:205
 msgid "In a few words, describe what this experiment aims to test."
 msgstr "Describa, en pocas palabras, qué pretende probar con el experimento."
 
-#: includes/admin/views/alternatives/alt-exp-page.php:199
-#: includes/admin/views/alternatives/alt-exp-page.php:475
+#: includes/admin/views/alternatives/alt-exp-page.php:184
+#: includes/admin/views/alternatives/alt-exp-page.php:458
 msgid "remove"
 msgstr "borrar"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:364
+#: includes/admin/views/alternatives/alt-exp-page.php:347
 msgid "Select and add goal..."
 msgstr "Seleccionar y añadir objetivo..."
 
-#: includes/admin/views/alternatives/alt-exp-page.php:365
+#: includes/admin/views/alternatives/alt-exp-page.php:348
 msgid "External Page"
 msgstr "Página externa"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:367
+#: includes/admin/views/alternatives/alt-exp-page.php:350
 msgid "Select this option to add an external page"
 msgstr "Añadir una página externa"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:373
+#: includes/admin/views/alternatives/alt-exp-page.php:356
 #: includes/admin/views/content/css-edit.php:156
-#: includes/admin/views/others/heatmap-exp-edition-page.php:240
+#: includes/admin/views/others/heatmap-exp-edition-page.php:231
 msgid "WordPress Pages"
 msgstr "Páginas de WordPress"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:391
+#: includes/admin/views/alternatives/alt-exp-page.php:374
 #: includes/admin/views/content/css-edit.php:173
-#: includes/admin/views/others/heatmap-exp-edition-page.php:259
+#: includes/admin/views/others/heatmap-exp-edition-page.php:250
 msgid "WordPress Posts"
 msgstr "Entradas de WordPress"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:409
-#: includes/admin/views/alternatives/alt-exp-page.php:420
+#: includes/admin/views/alternatives/alt-exp-page.php:392
+#: includes/admin/views/alternatives/alt-exp-page.php:403
 msgid "Add"
 msgstr "Añadir"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:413
+#: includes/admin/views/alternatives/alt-exp-page.php:396
 #: includes/admin/views/alternatives/alternatives-table.php:37
 #: includes/admin/views/alternatives/alternatives-table.php:85
 #: includes/admin/views/alternatives/alternatives-table.php:129
@@ -252,35 +252,35 @@ msgstr "Añadir"
 msgid "Name"
 msgstr "Nombre"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:415
+#: includes/admin/views/alternatives/alt-exp-page.php:398
 msgid "URL"
 msgstr "URL"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:422
+#: includes/admin/views/alternatives/alt-exp-page.php:405
 #: includes/admin/views/alternatives/alternatives-table.php:153
 #: includes/admin/views/alternatives/title-alt-exp-edition-page.php:429
 #: includes/utils/admin-table.php:277
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:437
+#: includes/admin/views/alternatives/alt-exp-page.php:420
 msgid "In order to use experiments with more than one goal, you first have to upgrade your subscription plan."
 msgstr "Para poder utilizar experimentos con más de objetivo debe actualizar su plan de suscripción."
 
-#: includes/admin/views/alternatives/alt-exp-page.php:441
+#: includes/admin/views/alternatives/alt-exp-page.php:424
 msgid "Selected Goals:"
 msgstr "Objetivos seleccionados:"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:450
+#: includes/admin/views/alternatives/alt-exp-page.php:433
 #: includes/admin/views/progress/alt-exp-progress-page.php:386
 msgid "None"
 msgstr "Ninguno"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:498
+#: includes/admin/views/alternatives/alt-exp-page.php:481
 msgid "These are the pages (or posts) you want your users to end up visiting."
 msgstr "Estas son las páginas (o entradas) que desea que sus usuarios visiten."
 
-#: includes/admin/views/alternatives/alt-exp-page.php:509
+#: includes/admin/views/alternatives/alt-exp-page.php:492
 msgid "Count conversions on direct navigations only."
 msgstr "Contabilizar conversiones únicamente para navegaciones directas."
 
@@ -333,7 +333,7 @@ msgstr "Crear"
 #: includes/admin/views/alternatives/title-alt-exp-creation-page.php:36
 #: includes/admin/views/alternatives/title-alt-exp-edition-page.php:240
 #: includes/admin/views/others/heatmap-exp-creation-page.php:36
-#: includes/admin/views/others/heatmap-exp-edition-page.php:195
+#: includes/admin/views/others/heatmap-exp-edition-page.php:186
 msgctxt "nelioab"
 msgid "Cancel"
 msgstr "Cancelar"
@@ -369,7 +369,7 @@ msgstr "Nueva alternativa CSS"
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:297
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:200
 #: includes/admin/views/alternatives/title-alt-exp-edition-page.php:235
-#: includes/admin/views/others/heatmap-exp-edition-page.php:190
+#: includes/admin/views/others/heatmap-exp-edition-page.php:181
 msgctxt "action"
 msgid "Update"
 msgstr "Actualizar"
@@ -537,14 +537,14 @@ msgid "Preview with..."
 msgstr "Previsualizar con..."
 
 #: includes/admin/views/content/css-edit.php:146
-#: includes/admin/views/others/heatmap-exp-edition-page.php:228
+#: includes/admin/views/others/heatmap-exp-edition-page.php:219
 msgid "Dynamic Front Page"
 msgstr "Página frontal dinámica"
 
 #: includes/admin/views/content/css-edit.php:150
 #: includes/admin/views/content/css-edit.php:151
-#: includes/admin/views/others/heatmap-exp-edition-page.php:234
-#: includes/admin/views/others/heatmap-exp-edition-page.php:235
+#: includes/admin/views/others/heatmap-exp-edition-page.php:225
+#: includes/admin/views/others/heatmap-exp-edition-page.php:226
 msgid "Your latest posts"
 msgstr "Tus últimas entradas"
 
@@ -560,91 +560,91 @@ msgid "View Heatmap"
 msgstr "Mostrar Heatmap"
 
 #: includes/admin/views/content/heatmaps.php:81
-#: includes/admin/views/content/heatmaps.php:338
+#: includes/admin/views/content/heatmaps.php:352
 msgid "View Clickmap"
 msgstr "Mostrar Clickmap"
 
-#: includes/admin/views/content/heatmaps.php:186
+#: includes/admin/views/content/heatmaps.php:200
 msgid "Clickmap built using data from only one user"
 msgid_plural "Clickmap built using data from %s page views"
 msgstr[0] "Clickmap basado en los datos de un único usuario"
 msgstr[1] "Clickmap basado en los datos de %s visitas a página"
 
-#: includes/admin/views/content/heatmaps.php:192
+#: includes/admin/views/content/heatmaps.php:206
 msgid "Heatmap built using data from only one user"
 msgid_plural "Heatmap built using data from %s page views"
 msgstr[0] "Heatmap basado en los datos de un único usuario"
 msgstr[1] "Heatmap basado en los datos de %s visitas a página"
 
-#: includes/admin/views/content/heatmaps.php:286
-#: includes/admin/views/content/heatmaps.php:296
+#: includes/admin/views/content/heatmaps.php:300
+#: includes/admin/views/content/heatmaps.php:310
 msgid "Smartphone"
 msgstr "Smartphone"
 
-#: includes/admin/views/content/heatmaps.php:287
+#: includes/admin/views/content/heatmaps.php:301
 msgid "Smartphone (no Clickmap available)"
 msgstr "Smartphone (Heatmaps no disponibles)"
 
-#: includes/admin/views/content/heatmaps.php:288
-#: includes/admin/views/content/heatmaps.php:298
+#: includes/admin/views/content/heatmaps.php:302
+#: includes/admin/views/content/heatmaps.php:312
 msgid "Tablet"
 msgstr "Tablet"
 
-#: includes/admin/views/content/heatmaps.php:289
+#: includes/admin/views/content/heatmaps.php:303
 msgid "Tablet (no Clickmap available)"
 msgstr "Tablet (Heatmaps no disponibles)"
 
-#: includes/admin/views/content/heatmaps.php:290
-#: includes/admin/views/content/heatmaps.php:300
+#: includes/admin/views/content/heatmaps.php:304
+#: includes/admin/views/content/heatmaps.php:314
 msgid "Laptop Monitor"
 msgstr "Pantalla de portátil"
 
-#: includes/admin/views/content/heatmaps.php:291
+#: includes/admin/views/content/heatmaps.php:305
 msgid "Laptop Monitor (no Clickmap available)"
 msgstr "Pantalla de portátil (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:292
-#: includes/admin/views/content/heatmaps.php:302
+#: includes/admin/views/content/heatmaps.php:306
+#: includes/admin/views/content/heatmaps.php:316
 msgid "Regular Desktop Monitor"
 msgstr "Pantalla normal"
 
-#: includes/admin/views/content/heatmaps.php:293
+#: includes/admin/views/content/heatmaps.php:307
 msgid "Regular Desktop Monitor (no Clickmap available)"
 msgstr "Pantalla normal (Clickmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:297
-#: includes/admin/views/content/heatmaps.php:326
+#: includes/admin/views/content/heatmaps.php:311
+#: includes/admin/views/content/heatmaps.php:340
 msgid "Smartphone (no Heatmap available)"
 msgstr "Smartphone (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:299
-#: includes/admin/views/content/heatmaps.php:328
+#: includes/admin/views/content/heatmaps.php:313
+#: includes/admin/views/content/heatmaps.php:342
 msgid "Tablet (no Heatmap available)"
 msgstr "Tablet (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:301
-#: includes/admin/views/content/heatmaps.php:330
+#: includes/admin/views/content/heatmaps.php:315
+#: includes/admin/views/content/heatmaps.php:344
 msgid "Laptop Monitor (no Heatmap available)"
 msgstr "Pantalla de portátil (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:303
-#: includes/admin/views/content/heatmaps.php:332
+#: includes/admin/views/content/heatmaps.php:317
+#: includes/admin/views/content/heatmaps.php:346
 msgid "Regular Desktop Monitor (no Heatmap available)"
 msgstr "Pantalla normal (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:313
+#: includes/admin/views/content/heatmaps.php:327
 msgid "Nelio AB Testing &mdash; Heatmaps Viewer"
 msgstr "Nelio AB Testing &mdash; Visor de Heatmaps"
 
-#: includes/admin/views/content/heatmaps.php:336
+#: includes/admin/views/content/heatmaps.php:350
 msgid "Heatmap built using data from %s page views"
 msgstr "Heatmap basado en los datos de %s visitas a página"
 
-#: includes/admin/views/content/heatmaps.php:340
+#: includes/admin/views/content/heatmaps.php:354
 msgid "Return to my list of experiments"
 msgstr "Volver a mi lista de experimentos"
 
-#: includes/admin/views/content/heatmaps.php:348
+#: includes/admin/views/content/heatmaps.php:362
 msgid "Please, wait a moment<br /> while we are retrieving the heatmaps..."
 msgstr "Por favor, espere un momento<br />mientras obtenemos los heatmaps..."
 
@@ -670,27 +670,26 @@ msgid "Error"
 msgstr "Error"
 
 #: includes/admin/views/errors/invalid-config-page.php:26
-#: includes/admin/views/errors/invalid-config-page.php:33
 msgid "Welcome!"
 msgstr "¡Bienvenido!"
 
-#: includes/admin/views/errors/invalid-config-page.php:36
+#: includes/admin/views/errors/invalid-config-page.php:35
 msgid "Thank you very much for installing <b>Nelio A/B Testing</b> by <i>Nelio Software</i>. We are very excited you chose our solution for optimizing your site."
 msgstr "Muchas gracias por instalar <b>Nelio A/B Testing</b>. Nos encanta que haya decidido usar nuestra solución para optimizar su site."
 
-#: includes/admin/views/errors/invalid-config-page.php:40
+#: includes/admin/views/errors/invalid-config-page.php:39
 msgid "In order to use our service, please make sure you have already configured the plugin properly. In order to do so, just click the button below to access the plugin's settings page and fill in the required fields. These include your <i>e-mail</i> and your <i>Product Registration Number</i>. Finally, do not forget to register this site to your account!"
 msgstr "Para poder empezar a usar el servicio, asegúrese que ha configurado el plugin correctamente. Para ello, haga click en el botón que encontrará al final de la página para acceder a la configuración del plugin y rellene los campos necesarios. Éstos incluyen su <i>e-mail</i> y su <i>número de registro</i>. ¡Y, por cierto, no olvide registrar este site a su cuenta!"
 
-#: includes/admin/views/errors/invalid-config-page.php:44
-msgid "If, on the other hand, you have not subscribed to any of our plans yet, please <a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 15-day free trial period</b>."
+#: includes/admin/views/errors/invalid-config-page.php:43
+msgid "If, on the other hand, you have not subscribed to any of our plans yet, please <a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 14-day free trial period</b>."
 msgstr "Si, por un lado, aún no se ha suscrito a ninguno de nuestros planes, <a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">écheles un vistazo y seleccione el que mejor se adapte a sus necesidades</a>. Además, no olvide que <b>todos nuestros planes incluyen un período de pruebas gratuíto de dos semanas</b>."
 
-#: includes/admin/views/errors/invalid-config-page.php:48
+#: includes/admin/views/errors/invalid-config-page.php:47
 msgid "<b>Optimize your site based on real data</b>, not opinions!"
 msgstr "<b>¡Optimice su sitio basándose en datos reales</b>, no en opiniones!"
 
-#: includes/admin/views/errors/invalid-config-page.php:53
+#: includes/admin/views/errors/invalid-config-page.php:52
 msgid "Configure now"
 msgstr "Configurar ahora"
 
@@ -813,59 +812,51 @@ msgstr "Nos encanta que use nuestro servicio y esperamos que Nelio A/B Testing e
 msgid "If you're happy with our service, please help us <b>spread the word and let others know about your experience with Nelio A/B Testing</b>!"
 msgstr "Si está contento con el servicio, <b>¡difunda sus experiencias y facilite que otros conozcan Nelio A/B Testing!</b>"
 
-#: includes/admin/views/feedback-page.php:43
-msgid "As a token of appreciation, we will be happy to add to your quota 1000 more pageviews per month for your efforts (plus an additional 100 for each retweet / reshare you get from your followers, up to a maximum of a second additional 1000 pageviews extension)."
-msgstr "Como muestra de agradecimiento, aumentaremos su cuota en 1.000 visitas a página por mes (más otras 100 adicionales por cada retweet/compartir que tenga de sus seguidores, hasta un máximo de otras 1.000 visitas a página)."
-
-#: includes/admin/views/feedback-page.php:74
+#: includes/admin/views/feedback-page.php:70
 msgid "And, please, don't forget to <a href=\"%s\" target=\"_blank\">rate the plugin in the WordPress Plugin Directory</a>!"
 msgstr "Y, por favor, no olvide <a href=\"%s\" target=\"_blank\">puntuar nuestro plugin en el directorio oficial de plugins para WordPress</a>."
 
-#: includes/admin/views/feedback-page.php:98
+#: includes/admin/views/feedback-page.php:94
 msgid "Your opinion matters!"
 msgstr "¡Su opinión es importante!"
 
-#: includes/admin/views/feedback-page.php:101
+#: includes/admin/views/feedback-page.php:97
 msgid "Would you like to request a new feature? Do you have any doubt using our service? Have you encountered any problems?"
 msgstr "¿Echa de menos alguna funcionalidad? ¿Tiene dificultades para usar el producto? ¿Ha encontrado algún problema?"
 
-#: includes/admin/views/feedback-page.php:105
+#: includes/admin/views/feedback-page.php:101
 msgid "Please, <b>do not hesitate to contact us and tell what you are thinking!</b>"
 msgstr "Por favor, <b>no dude en contactarnos y díganos qué está pensando</b>."
 
-#: includes/admin/views/feedback-page.php:114
+#: includes/admin/views/feedback-page.php:110
 msgid "Contact with Nelio"
 msgstr "Contacte con Nelio"
 
-#: includes/admin/views/feedback-page.php:117
+#: includes/admin/views/feedback-page.php:113
 msgid "Share your thoughts with us"
 msgstr "Comparta sus sugerencias con nosotros"
 
-#: includes/admin/views/feedback-page.php:129
+#: includes/admin/views/feedback-page.php:125
 msgid "Send Comment"
 msgstr "Enviar comentario"
 
-#: includes/admin/views/feedback-page.php:134
+#: includes/admin/views/feedback-page.php:130
 msgid "Sending..."
 msgstr "Enviando..."
 
-#: includes/admin/views/feedback-page.php:136
+#: includes/admin/views/feedback-page.php:132
 msgid "There was an error while sending your comment. Please, try again."
 msgstr "Ha habido un error durante el envío. Por favor, inténtelo otra vez."
 
-#: includes/admin/views/feedback-page.php:137
+#: includes/admin/views/feedback-page.php:133
 msgid "Comment successfully sent."
 msgstr "Comentario enviado correctamente."
 
-#: includes/admin/views/others/heatmap-exp-edition-page.php:46
-msgid "Your current subscription plan does not permit you to use Heatmap Experiments&mdash;you are free to create it, but you will not be able to start it. Please, consider <a href=\"%s\">upgrading your Nelio A/B Testing subscription package</a> so that you can benefit from Heatmaps."
-msgstr "Su plan de suscripción actual no le permite utilizar experimentos de Heatmaps (puede crearlos, pero no podrá usarlos). Si desea seguir con ellos, considere <a href=\"%s\">actualizar su plan de suscripción al servicio</a>."
-
-#: includes/admin/views/others/heatmap-exp-edition-page.php:168
+#: includes/admin/views/others/heatmap-exp-edition-page.php:159
 msgid "Page/Post"
 msgstr "Página/Entrada"
 
-#: includes/admin/views/others/heatmap-exp-edition-page.php:224
+#: includes/admin/views/others/heatmap-exp-edition-page.php:215
 msgid "Select a page or post..."
 msgstr "Seleccione una página o entrada..."
 
@@ -1015,8 +1006,8 @@ msgid "Last Update: %s"
 msgstr "Última actualización: %s"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:610
-msgid "Oops! There are no results available yet. Please, check again later."
-msgstr "¡Vaya! Aún no hay resultados disponibles. Por favor, inténtelo más tarde."
+msgid "There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results."
+msgstr "Todavía no tenemos los resultados listos. Por favor, tenga pacienca hasta que dispongamos de más datos. Recuerde que los primeros resultados pueden tardar hasta dos horas en aparecer."
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:749
 #: includes/admin/views/progress/alt-exp-progress-page.php:843
@@ -1328,44 +1319,32 @@ msgid "with respect to the original title"
 msgstr "respecto al título original"
 
 #: includes/admin/views/select-exp-creation-page.php:35
-msgid "Basic Experiment Types"
-msgstr "Experimentos del Plan Básico"
+msgid "New A/B Test<br />for Page or Post Titles"
+msgstr "Nuevo Test A/B <br />de Título de Página o Entrada"
 
-#: includes/admin/views/select-exp-creation-page.php:41
-msgid "New A/B or Multivariate<br />Test for Page/Post Titles"
-msgstr "Test A/B o multivariado<br />de Título de Página o Entrada"
+#: includes/admin/views/select-exp-creation-page.php:40
+msgid "New A/B Test<br />for Pages"
+msgstr "Nuevo Test A/B<br />para Páginas"
 
-#: includes/admin/views/select-exp-creation-page.php:46
-msgid "New A/B or Multivariate<br />Test for Pages"
-msgstr "Test A/B o multivariado<br />para Páginas"
+#: includes/admin/views/select-exp-creation-page.php:45
+msgid "New A/B Test<br />for Posts"
+msgstr "Nuevo Test A/B<br />para Entradas"
 
 #: includes/admin/views/select-exp-creation-page.php:51
-msgid "New A/B or Multivariate<br />Test for Posts"
-msgstr "Test A/B o Multivariado<br />para Entradas"
+msgid "New A/B Theme Test<br />"
+msgstr "Nuevo Test A/B de Temas<br />"
 
-#: includes/admin/views/select-exp-creation-page.php:57
-msgid "New A/B or Multivariate<br />Theme Test"
-msgstr "Test A/B o multivariado<br />para Temas"
-
-#: includes/admin/views/select-exp-creation-page.php:63
-msgid "Professional Experiment Types"
-msgstr "Experimentos del Plan Profesional"
-
-#: includes/admin/views/select-exp-creation-page.php:68
+#: includes/admin/views/select-exp-creation-page.php:58
 msgid "New Heatmap Experiment<br />for Page or Post"
 msgstr "Experimento<br />de Heatmaps"
 
+#: includes/admin/views/select-exp-creation-page.php:63
+msgid "New A/B CSS Test<br />"
+msgstr "Nuevo Test A/B de CSS<br />"
+
 #: includes/admin/views/select-exp-creation-page.php:73
-msgid "New A/B or Multivariate<br />CSS Test"
-msgstr "Test A/B o multivariado<br />de CSS"
-
-#: includes/admin/views/select-exp-creation-page.php:78
-msgid "New A/B or Multivariate<br />Menu Test"
-msgstr "Test A/B o multivariado<br />para Menús"
-
-#: includes/admin/views/select-exp-creation-page.php:83
-msgid "New A/B or Multivariate<br />Widget Test"
-msgstr "Test A/B o multivariado<br />de Widgets"
+msgid "New A/B Widget Test<br />"
+msgstr "Nuevo Test A/B de Widgets<br />"
 
 #: includes/admin/views/settings-page.php:96
 msgid "<p>Don't you have an account yet? <a href=\"http://wp-abtesting.com/subscription-plans/\">Subscribe now!</a></p>"
@@ -1392,7 +1371,7 @@ msgid "Access"
 msgstr "Acceder"
 
 #: includes/admin/views/settings-page.php:145
-msgid "Haven't you subscribed to any of our plans? <b><a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>15-day free trial period</b>."
+msgid "Haven't you subscribed to any of our plans? <b><a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>14-day free trial period</b>."
 msgstr "¿Aún no se ha suscrito a ninguno de nuestros planes? <b><a href=\"http://wp-abtesting.com/subscription-plans/\" target=\"_blank\">¡Écheles un vistazo y suscríbase al que mejor cumpla con sus necesidades!</a></b> Todos nuestros planes incluyen un <b>periodo de pruebas gratuito de dos semanas</b>."
 
 #: includes/admin/views/settings-page.php:152
@@ -1443,97 +1422,101 @@ msgstr "¡Suscríbase ahora y continúe usando nuestro servicio!"
 msgid "You are subscribed to our <b>Basic Plan</b>."
 msgstr "Está suscrito a nuestro <b>Plan Básico</b>."
 
-#: includes/admin/views/settings-page.php:216
+#: includes/admin/views/settings-page.php:215
 msgid "You are subscribed to our <b>Professional Plan</b>."
 msgstr "Está suscrito a nuestro <b>Plan Profesional</b>."
 
-#: includes/admin/views/settings-page.php:221
+#: includes/admin/views/settings-page.php:220
 msgid "Check your subscription details."
 msgstr "Compruebe los detalles de su sucripción."
 
-#: includes/admin/views/settings-page.php:226
+#: includes/admin/views/settings-page.php:225
+msgid "Upgrade to our Professional Plan."
+msgstr "Actualícese a nuestro <b>Plan Profesional</b>."
+
+#: includes/admin/views/settings-page.php:233
 msgid "You are subscribed to our <b>Basic Plan</b>, thanks to %s."
 msgstr "Está suscrito a nuestro <b>Plan Básico</b> gracias a %s."
 
-#: includes/admin/views/settings-page.php:231
+#: includes/admin/views/settings-page.php:238
 msgid "You are subscribed to our <b>Professional Plan</b>, thanks to %s."
 msgstr "Está suscrito a nuestro <b>Plan Profesional</b> gracias a %s."
 
-#: includes/admin/views/settings-page.php:245
+#: includes/admin/views/settings-page.php:252
 msgid "<br />Your current plan permits up to %d page views under test per month. If you need more quota, please consider buying additional page views as you need them using the button below, or <a href=\"%s\">contact us for an update of your monthly quota</a>."
 msgstr "<br />Su plan actual permite hasta %d visitas a página por mes. Si necesita más cuota puede comprar visitas a página adicionales con el siguiente botón o <a href=\"%s\">contactando con nosotros</a>."
 
-#: includes/admin/views/settings-page.php:250
+#: includes/admin/views/settings-page.php:257
 msgid "<br />Your current plan permits up to %d page views under test per month. If you need more quota, please contact <a href=\"%s\">%s</a>."
 msgstr "<br />Su plan actual permite hasta %d visitas a página por mes. Si necesita más cuota, por favor contacte con <a href=\"%s\">%s</a>."
 
-#: includes/admin/views/settings-page.php:258
+#: includes/admin/views/settings-page.php:265
 msgid "Available Quota:"
 msgstr "Cuota disponible:"
 
-#: includes/admin/views/settings-page.php:269
+#: includes/admin/views/settings-page.php:276
 msgid "<span %s>%d</span> Page Views"
 msgstr "<span %s>%d</span> Visitas a página"
 
-#: includes/admin/views/settings-page.php:279
+#: includes/admin/views/settings-page.php:286
 msgid "Buy More"
 msgstr "Comprar más"
 
-#: includes/admin/views/settings-page.php:291
-#: includes/admin/views/settings-page.php:310
-#: includes/admin/views/settings-page.php:451
+#: includes/admin/views/settings-page.php:298
+#: includes/admin/views/settings-page.php:317
+#: includes/admin/views/settings-page.php:458
 msgid "Registered Sites"
 msgstr "Sites registrados"
 
-#: includes/admin/views/settings-page.php:295
+#: includes/admin/views/settings-page.php:302
 msgid "There was an error while retrieving the list of all registered sites to this account."
 msgstr "Ha habido un error mientras se obtenía la lista de sites registrados en esta cuenta."
 
-#: includes/admin/views/settings-page.php:298
+#: includes/admin/views/settings-page.php:305
 msgid "Nonetheless, please note this site is registered to your account, which means you can still use all plugin's functionalities."
 msgstr "En cualquier caso, puede seguir usando el servicio con normalidad, puesto que el site está correctamente registrado en su cuenta."
 
-#: includes/admin/views/settings-page.php:320
+#: includes/admin/views/settings-page.php:327
 msgid "This Site is Not Registered"
 msgstr "Este site no está registrado"
 
-#: includes/admin/views/settings-page.php:354
+#: includes/admin/views/settings-page.php:361
 msgid "OK"
 msgstr "OK"
 
-#: includes/admin/views/settings-page.php:357
+#: includes/admin/views/settings-page.php:364
 msgid "INVALID"
 msgstr "INVÁLIDO"
 
-#: includes/admin/views/settings-page.php:369
+#: includes/admin/views/settings-page.php:376
 msgid "This site is not yet registered to your account."
 msgstr "Este site no está registrado a su cuenta."
 
-#: includes/admin/views/settings-page.php:371
+#: includes/admin/views/settings-page.php:378
 msgid "Register it now!"
 msgstr "¡Registrarlo ahora!"
 
-#: includes/admin/views/settings-page.php:377
+#: includes/admin/views/settings-page.php:384
 msgid "It looks like this site is not connected to you account. In order to use our service in this site, first you have to register it. Unfortunately, you already reached the maximum number of sites allowed by your current subscription plan (see the table below)."
 msgstr "Parece que el site no está registrado en su cuenta. Para poder usar el servicio debe registrarlo. Por desgracia, ya ha registrado el máximo número de sites que su plan actual permite (vea la tabla inferior)."
 
-#: includes/admin/views/settings-page.php:378
+#: includes/admin/views/settings-page.php:385
 msgid "Please, <a href=\"%s\"><b>upgrade your <i>Nelio A/B Testing</i> subscription</b></a> so that you can register and manage more sites, or <b>access one of the other sites to cancel its subscription</b> and try again. Keep in mind that canceling the registration of a site may cause permanent loss of all experiments associated to that site."
 msgstr "Por favor, <a href=\"%s\"><b>actualice su suscripció a <i>Nelio A/B Testing</i></b></a> para poder registrar y gestionar más sites o, si lo prefiere, <b>acceda a alguno de los otros sites registrados y desvincúlelo de su cuenta</b>. Recuerde que cancelar el registro de un site a su cuenta puede resultar en la pérdida de todos los experimentos que pudiera tener."
 
-#: includes/admin/views/settings-page.php:424
+#: includes/admin/views/settings-page.php:431
 msgid "Empty Slot"
 msgstr "Vacío"
 
-#: includes/admin/views/settings-page.php:442
+#: includes/admin/views/settings-page.php:449
 msgid "registered site"
 msgstr "site registrado"
 
-#: includes/admin/views/settings-page.php:443
+#: includes/admin/views/settings-page.php:450
 msgid "registered sites"
 msgstr "sites registrados"
 
-#: includes/admin/views/settings-page.php:467
+#: includes/admin/views/settings-page.php:474
 msgid "this site"
 msgstr "este site"
 
@@ -1577,15 +1560,15 @@ msgstr "«%1$s» gana a «%2$s» con una confianza del %3$s%%. Por consiguiente,
 msgid "There was an error while processing the statistics."
 msgstr "Ha habido un error mientras se procesaban las estadísticas."
 
-#: includes/models/alternatives/post-alternative-experiment.php:339
+#: includes/models/alternatives/post-alternative-experiment.php:335
 msgid "The experiment cannot be started, because there is another experiment running that is testing the same page. Please, stop the experiment named «%s» before starting the new one."
 msgstr "El experimento no se puede iniciar porque hay otro experimento en marcha que está testeando la misma página. Por favor, detenga el experimento «%s» antes de empezar el nuevo."
 
-#: includes/models/alternatives/post-alternative-experiment.php:344
+#: includes/models/alternatives/post-alternative-experiment.php:340
 msgid "The experiment cannot be started, because there is another experiment running that is testing the same post. Please, stop the experiment named «%s» before starting the new one."
 msgstr "El experimento no se puede iniciar porque hay otro experimento en marcha que está testeando la misma entrada. Por favor, detenga el experimento «%s» antes de empezar el nuevo."
 
-#: includes/models/alternatives/post-alternative-experiment.php:349
+#: includes/models/alternatives/post-alternative-experiment.php:345
 msgid "The experiment cannot be started, because there is another experiment that is testing the title of the same page. Please, stop the experiment named «%s» before starting the new one."
 msgstr "El experimento no se puede iniciar porque hay otro experimento en marcha que está testeando el título de la misma página. Por favor, detenga el experimento «%s» antes de empezar el nuevo."
 
@@ -1648,7 +1631,11 @@ msgstr "La conexión a internet parece muy lenta."
 msgid "Oops! There was an AJAX-related error."
 msgstr "¡Vaya! Se ha producido un error en la comunicación AJAX."
 
-#: includes/utils/admin-page.php:169
+#: includes/utils/admin-page.php:36
+msgid "<b><a href=\"%s\">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class=\"dismiss-upgrade-notice\" href=\"#\" onClick=\"javascript:dismissUpgradeNotice();\">Dismiss</a></small>"
+msgstr "<b><a href=\"%s\">Pásese a nuestro Plan Profesional</a></b> y disfrute más y mejor de todas las características de Nelio A/B Testing: controle a <b>más visitantes</b>, use el servicio en <b>más <i>sites</i></b> y aproveche nuestros <b>servicios de consultoría</b>. <small><a id=\"dismiss-upgrade-notice\" href=\"#\">Descartar</a></small>"
+
+#: includes/utils/admin-page.php:188
 msgid "The following errors have been encountered:"
 msgstr "Se han encontrado los siguientes errores:"
 
@@ -1656,121 +1643,167 @@ msgstr "Se han encontrado los siguientes errores:"
 msgid "Error displaying column `%s'."
 msgstr "Error mostrando la columna `%s'."
 
-#: includes/utils/backend.php:179
+#: includes/utils/backend.php:188
 msgid "Invalid product registration number."
 msgstr "Número de registro inválido."
 
-#: includes/utils/backend.php:181
+#: includes/utils/backend.php:190
 msgid "Invalid site."
 msgstr "Site inválido."
 
-#: includes/utils/backend.php:183
+#: includes/utils/backend.php:192
 msgid "This site is not active."
 msgstr "El site no está activo."
 
-#: includes/utils/backend.php:185
+#: includes/utils/backend.php:194
 msgid "This account has reached the maximum allowed number of registered sites."
 msgstr "La cuenta ha alcanzado el número máximo de sites registrados."
 
-#: includes/utils/backend.php:187
+#: includes/utils/backend.php:196
 msgid "There is no more quota available."
 msgstr "No hay más cuota disponible."
 
-#: includes/utils/backend.php:189
+#: includes/utils/backend.php:198
 msgid "Subscription has not been paid yet."
 msgstr "La suscripción está pendiente de pago."
 
-#: includes/utils/backend.php:191
+#: includes/utils/backend.php:200
 msgid "Invalid e-mail."
 msgstr "E-mail inválido."
 
-#: includes/utils/backend.php:193
+#: includes/utils/backend.php:202
 msgid "This e-mail is already registered."
 msgstr "Este e-mail ya está registrado."
 
-#: includes/utils/backend.php:195
+#: includes/utils/backend.php:204
 msgid "Too few parameters."
 msgstr "Faltan parámetros."
 
-#: includes/utils/backend.php:197
+#: includes/utils/backend.php:206
 msgid "The URL of the site is invalid."
 msgstr "La URL del site es inválida."
 
-#: includes/utils/backend.php:199
+#: includes/utils/backend.php:208
 msgid "Invalid parameters."
 msgstr "Parámetros inválidos."
 
-#: includes/utils/backend.php:201
+#: includes/utils/backend.php:210
 msgid "Invalid experiment."
 msgstr "Experimento inválido."
 
-#: includes/utils/backend.php:203
+#: includes/utils/backend.php:212
 msgid "Invalid alternative."
 msgstr "Alternativa inválida."
 
-#: includes/utils/backend.php:205
+#: includes/utils/backend.php:214
 msgid "Results for this experiment are not yet available."
 msgstr "Los resultados del experimento aún no están disponibles."
 
-#: includes/utils/backend.php:207
+#: includes/utils/backend.php:216
 msgid "User account has been deactivated."
 msgstr "Cuenta de usuario desactivada."
 
-#: includes/utils/backend.php:209
+#: includes/utils/backend.php:218
 msgid "Experiment not found."
 msgstr "No se encuentra el experimento."
 
-#: includes/utils/backend.php:211
+#: includes/utils/backend.php:220
 msgid "Go to my list of experiments..."
 msgstr "Ir a mi lista de experimentos..."
 
-#: includes/utils/backend.php:214
+#: includes/utils/backend.php:223
 msgid "Goal not found."
 msgstr "Objetivo no encontrado."
 
-#: includes/utils/backend.php:220
+#: includes/utils/backend.php:229
 msgid "Oops! The experiment cannot be started because it defines more than one goal page. Please, modify your experiment so that it includes one goal page only or <a href=\"%s\">upgrade your Nelio A/B Testing subscription package</a>."
 msgstr "¡Vaya! El experimento no se ha podido iniciar porque define más de una página objetivo. Por favor, modifíquelo para que sólo tenga una o <a href=\"%s\">actualice su suscripción a Nelio A/B Testing</a>."
 
-#: includes/utils/backend.php:225
+#: includes/utils/backend.php:234
 msgid "Oops! Your current subscription plan does not permit you to use Heatmap Experiments. Please, consider <a href=\"%s\">upgrading your Nelio A/B subscription package</a>."
 msgstr "¡Vaya! Su plan de suscripción actual no permite usar experimentos de Heatmaps. Por favor, <a href=\"%s\">actualice su suscripción a Nelio A/B Testing</a> para habilitarlos."
 
-#: includes/utils/backend.php:232
+#: includes/utils/backend.php:241
 msgid "Backend is not available."
 msgstr "El backend no está disponible."
 
-#: includes/utils/backend.php:234
+#: includes/utils/backend.php:243
 msgid "No site has been configured."
 msgstr "No se ha configurado ningún site."
 
-#: includes/utils/backend.php:236
+#: includes/utils/backend.php:245
 msgid "Error 404 when accessing an endpoint."
 msgstr "Error 404 mientras se accedía al endpoint."
 
-#: includes/utils/backend.php:238
+#: includes/utils/backend.php:247
 msgid "Terms and conditions are not accepted."
 msgstr "Los términos y condiciones no han sido aceptados."
 
-#: includes/utils/backend.php:240
+#: includes/utils/backend.php:249
 msgid "Backend is not accessible.<br />Please, try again in just a few moments."
 msgstr "El backend no esta disponible.<br />Por favor, vuelva a intentarlo en unos momentos."
 
-#: includes/utils/backend.php:242
+#: includes/utils/backend.php:251
 msgid "Be patient... We are still collecting the data for your heatmaps."
 msgstr "¿Por qué tanta prisa? Aún estamos recogiendo datos para preparar los heatmaps."
 
-#: includes/utils/backend.php:244
+#: includes/utils/backend.php:253
 msgid "An unknown error has occurred."
 msgstr "Se ha producido un error desconocido."
 
-#: includes/utils/backend.php:246
+#: includes/utils/backend.php:255
 msgid "Experiment cannot be started."
 msgstr "No se puede iniciar el experimento."
 
-#: includes/utils/backend.php:249
+#: includes/utils/backend.php:258
 msgid "An unknown error occurred while accessing the backend."
 msgstr "Se ha producido un error desconocido mientras se accedía al backend."
+
+#~ msgid "Oops! There are no results available yet. Please, check again later."
+#~ msgstr ""
+#~ "¡Vaya! Aún no hay resultados disponibles. Por favor, inténtelo más tarde."
+
+#~ msgid "New A/B Menu Test<br />"
+#~ msgstr "Nuevo Test A/B de Menús<br />"
+
+#~ msgid ""
+#~ "As a token of appreciation, we will be happy to add to your quota 1000 "
+#~ "more pageviews per month for your efforts (plus an additional 100 for "
+#~ "each retweet / reshare you get from your followers, up to a maximum of a "
+#~ "second additional 1000 pageviews extension)."
+#~ msgstr ""
+#~ "Como muestra de agradecimiento, aumentaremos su cuota en 1.000 visitas a "
+#~ "página por mes (más otras 100 adicionales por cada retweet/compartir que "
+#~ "tenga de sus seguidores, hasta un máximo de otras 1.000 visitas a página)."
+
+#~ msgid ""
+#~ "Your current subscription plan does not permit you to use Heatmap "
+#~ "Experiments&mdash;you are free to create it, but you will not be able to "
+#~ "start it. Please, consider <a href=\"%s\">upgrading your Nelio A/B "
+#~ "Testing subscription package</a> so that you can benefit from Heatmaps."
+#~ msgstr ""
+#~ "Su plan de suscripción actual no le permite utilizar experimentos de "
+#~ "Heatmaps (puede crearlos, pero no podrá usarlos). Si desea seguir con "
+#~ "ellos, considere <a href=\"%s\">actualizar su plan de suscripción al "
+#~ "servicio</a>."
+
+#~ msgid "Basic Experiment Types"
+#~ msgstr "Experimentos del Plan Básico"
+
+#~ msgid "New A/B or Multivariate<br />Theme Test"
+#~ msgstr "Test A/B o multivariado<br />para Temas"
+
+#~ msgid "Professional Experiment Types"
+#~ msgstr "Experimentos del Plan Profesional"
+
+#~ msgid "New A/B or Multivariate<br />CSS Test"
+#~ msgstr "Test A/B o multivariado<br />de CSS"
+
+#~ msgid "New A/B or Multivariate<br />Menu Test"
+#~ msgstr "Test A/B o multivariado<br />para Menús"
+
+#~ msgid "New A/B or Multivariate<br />Widget Test"
+#~ msgstr "Test A/B o multivariado<br />de Widgets"
 
 #~ msgid "This page resolution was used only once"
 

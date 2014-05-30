@@ -52,9 +52,9 @@ class NelioABController {
 
 	public function init() {
 		// If the user has been disabled... get out of here
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		try {
-			$aux = NelioABSettings::check_user_settings();
+			$aux = NelioABAccountSettings::check_user_settings();
 		}
 		catch ( Exception $e ) {
 			if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER )
@@ -79,8 +79,12 @@ class NelioABController {
 
 	private function check_parameters() {
 
-		if ( isset( $_POST['nelioab_nav'] ) )
+		if ( isset( $_POST['nelioab_nav'] ) ) {
 			$this->send_navigation();
+			$alt_con = $this->controllers['alt-exp'];
+			$alt_con->update_current_winner_for_running_experiments();
+			die();
+		}
 
 		// Check if we are syncing cookies...
 		if ( isset( $_POST['nelioab_sync'] ) ) {
@@ -115,12 +119,10 @@ class NelioABController {
 			$this->send_navigation_if_required( $_POST['nelioab_nav_to_external_page'], $referer, false );
 		else if ( $dest_post_id )
 			$this->send_navigation_if_required( $dest_post_id, $referer );
-
-		die();
 	}
 
 	private function send_navigation_if_required( $dest_id, $referer_url, $is_internal = true ) {
-		if ( !NelioABSettings::has_quota_left() && !NelioABSettings::is_quota_check_required() )
+		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
 			return;
 
 		$alt_exp_con = $this->controllers['alt-exp'];
@@ -134,12 +136,12 @@ class NelioABController {
 
 	public function send_navigation_object( $nav ) {
 
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 		$url = sprintf(
 			NELIOAB_BACKEND_URL . '/site/%s/nav',
-			NelioABSettings::get_site_id()
+			NelioABAccountSettings::get_site_id()
 		);
 
 		$wrapped_params = array();
@@ -157,14 +159,14 @@ class NelioABController {
 		for ( $attemp=0; $attemp < 5; ++$attemp ) {
 			try {
 				$result = NelioABBackend::remote_post_raw( $url, $data );
-				NelioABSettings::set_has_quota_left( true );
+				NelioABAccountSettings::set_has_quota_left( true );
 				break;
 			}
 			catch ( Exception $e ) {
 				// If the navigation could not be sent, it may be the case because
 				// there is no more quota available
 				if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
-					NelioABSettings::set_has_quota_left( false );
+					NelioABAccountSettings::set_has_quota_left( false );
 					break;
 				}
 				// If there was another error... we just keep trying (attemp) up to 5
@@ -189,7 +191,7 @@ class NelioABController {
 	public function get_current_url() {
 		$url = 'http';
 		if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == "on" )
-			$pageURL .= 's';
+			$url .= 's';
 		$url .= '://';
 		if ( isset( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != '80')
 			$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];

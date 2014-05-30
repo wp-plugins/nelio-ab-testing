@@ -15,6 +15,7 @@
  */
 
 
+require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 class NelioABAlternativeExperimentController {
 
 	private $alternative_post;
@@ -70,6 +71,20 @@ class NelioABAlternativeExperimentController {
 		add_filter( 'the_title', array( &$this, 'change_title_on_abtesting' ),  10, 2 );
 		add_filter( 'wp_title',  array( &$this, 'fix_title_for_landing_page' ), 10, 2 );
 		add_action( 'wp_head',   array( &$this, 'add_js_to_replace_titles' ) );
+	}
+
+	public function update_current_winner_for_running_experiments() {
+		$now = mktime();
+		$last_update = get_option( 'nelioab_last_winners_update', 0 );
+		if ( $now - $last_update < 1800 )
+			return;
+		update_option( 'nelioab_last_winners_update', $now );
+
+		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+		foreach ( $running_exps as $exp )
+			$exp->update_winning_alternative_from_appengine();
+		NelioABExperimentsManager::update_running_experiments_cache( true, $running_exps );
 	}
 
 	public function sync_cookies() {
@@ -301,15 +316,17 @@ class NelioABAlternativeExperimentController {
 		$hrefs   = implode( ', ', $hrefs );
 		$script  = "\n\n";
 		$script .= "<script>\n";
-		$script .= "jQuery(document).bind( 'byebye', function(e,href) {\n";
-		$script .= "   href = href.replace(/\/+$/, '');\n";
-		$script .= "   var hrefs = [ $hrefs ];\n";
-		$script .= "   for ( i=0; i<hrefs.length; ++i ) {\n";
-		$script .= "      if ( hrefs[i] == href ) {;\n";
-		$script .= "         nelioab_nav_to_external_page(jQuery,href);\n";
-		$script .= "         break;\n";
+		$script .= "jQuery(document).ready( function() {\n";
+		$script .= "   jQuery(document).bind( 'byebye', function(e,href) {\n";
+		$script .= "      href = href.replace(/\/+$/, '');\n";
+		$script .= "      var hrefs = [ $hrefs ];\n";
+		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
+		$script .= "         if ( hrefs[i] == href ) {\n";
+		$script .= "            nelioab_nav_to_external_page(jQuery,href);\n";
+		$script .= "            break;\n";
+		$script .= "         }\n";
 		$script .= "      }\n";
-		$script .= "   }\n";
+		$script .= "   });\n";
 		$script .= "});\n";
 		$script .= "</script>\n";
 
@@ -404,7 +421,7 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function add_js_to_replace_titles() {
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		?>
 
 		<script type="text/javascript">
@@ -416,8 +433,8 @@ class NelioABAlternativeExperimentController {
 					var cookie = theCookies[i];
 					if (cookie == undefined)
 						continue;
-					var cookieName = cookie.substr(0, cookie.indexOf('=')).trim();
-					var cookieVal  = cookie.substr(cookie.indexOf('=')+1, cookie.length).trim();
+					var cookieName = jQuery.trim( cookie.substr(0, cookie.indexOf('=')) );
+					var cookieVal  = jQuery.trim( cookie.substr(cookie.indexOf('=')+1, cookie.length) );
 
 					if (cookieName.indexOf("<?php echo NelioABSettings::cookie_prefix(); ?>title_") == 0) { try {
 						var aux  = cookieVal.split(":");
@@ -455,8 +472,8 @@ class NelioABAlternativeExperimentController {
 		if ( !isset( $_POST['replaced_title_exps'] ) )
 			die();
 
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-		if ( !NelioABSettings::has_quota_left() && !NelioABSettings::is_quota_check_required() )
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
 			return;
 
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
@@ -481,11 +498,11 @@ class NelioABAlternativeExperimentController {
 			}
 		}
 
-		NelioABSettings::set_has_quota_left( true );
+		NelioABAccountSettings::set_has_quota_left( true );
 		foreach( $relevant_title_exps as $rte ) {
 			try {
 				$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/exp/%s/titleview',
-					NelioABSettings::get_site_id(),
+					NelioABAccountSettings::get_site_id(),
 					$rte->exp );
 				$body = array(
 					'user'    => '' . NelioABUser::get_id(),
@@ -495,7 +512,7 @@ class NelioABAlternativeExperimentController {
 			}
 			catch ( Exception $e ) {
 				if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
-					NelioABSettings::set_has_quota_left( false );
+					NelioABAccountSettings::set_has_quota_left( false );
 					break;
 				}
 				// else: bad luck, because navigation is lost
@@ -511,11 +528,11 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function change_title_on_abtesting( $title, $id = -1 ) {
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		return "\t \t \t$title\t \t \t";
 	}
 
-	public function fix_title_for_landing_page( $title, $sep ) {
+	public function fix_title_for_landing_page( $title, $sep = false ) {
 		global $post;
 		if ( $this->is_post_alternative( $post->ID ) ) {
 			$front_page_id = get_option( 'page_on_front' );

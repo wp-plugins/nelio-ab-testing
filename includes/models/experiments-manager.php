@@ -32,7 +32,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 		private $are_experiments_loaded;
 
 		public function __construct() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$this->experiments            = array();
 			$this->are_experiments_loaded = false;
 		}
@@ -44,7 +44,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$json_data = NelioABBackend::remote_get( sprintf(
 				NELIOAB_BACKEND_URL . '/site/%s/exp',
-				NelioABSettings::get_site_id()
+				NelioABAccountSettings::get_site_id()
 			) );
 
 			$json_data = json_decode( $json_data['body'] );
@@ -107,29 +107,28 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			return $this->get_experiments();
 		}
 
-		public static function update_running_experiments_cache( $force_update = false ) {
+		public static function update_running_experiments_cache( $force_update = false, $running_exps = false ) {
 			if ( $force_update )
 				update_option( 'nelioab_running_experiments_date', 0 );
 
 			$last_update = get_option( 'nelioab_running_experiments_date', 0 );
 			$now = mktime();
-			// If the last update was less than an hour ago, it's OK
-			if ( $now - $last_update < 3600 )
+			// If the last update was less than fifteen minutes ago, it's OK
+			if ( $now - $last_update < 900 )
 				return;
 
 			// If we are forcing the update, or the last update is too old, we
 			// perform a new update.
 			try {
-				$result = NelioABExperimentsManager::get_running_experiments();
+				if ( $running_exps )
+					$result = $running_exps;
+				else
+					$result = NelioABExperimentsManager::get_running_experiments();
 				update_option( 'nelioab_running_experiments', $result );
+				update_option( 'nelioab_running_experiments_date', $now );
 
 				// UPDATE TO VERSION 1.2
 				update_option( 'nelioab_running_experiments_cache_uses_objects', true );
-
-				$exps_in_cache = NelioABExperimentsManager::get_running_experiments_from_cache();
-				if ( count( $result ) == 0 && count( $exps_in_cache ) > 0 )
-					update_option( 'nelioab_running_experiments_date', mktime() );
-
 			}
 			catch ( Exception $e ) {
 				// If we could not retrieve the running experiments, we cannot update
@@ -140,12 +139,10 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 		public static function get_running_experiments_from_cache() {
 			require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 			if ( self::$running_experiments == NULL ) {
-				self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
 				// UPDATE TO VERSION 1.2: make sure we have objects...
-				if ( !get_option( 'nelioab_running_experiments_cache_uses_objects', false ) ) {
+				if ( !get_option( 'nelioab_running_experiments_cache_uses_objects', false ) )
 					NelioABExperimentsManager::update_running_experiments_cache( true );
-					self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
-				}
+				self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
 			}
 			return self::$running_experiments;
 		}
@@ -164,6 +161,19 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			}
 
 			return $result;
+		}
+
+		public static function get_running_experiments_summary() {
+			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+			$json_data = NelioABBackend::remote_get( sprintf(
+				NELIOAB_BACKEND_URL . '/site/%s/exp/summary',
+				NelioABAccountSettings::get_site_id()
+			) );
+
+			$json_data = json_decode( $json_data['body'] );
+
+			// TODO: build the proper objects here
+			return $json_data;
 		}
 
 	}//NelioABExperimentsManager

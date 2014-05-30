@@ -63,28 +63,15 @@
 /*        PAGES        */
 /* ------------------- */
 
-/* TODO: recover when using dashboard
-#toplevel_page_nelioab-admin-pages div.wp-menu-image {
-	background-image: url('../images/menu.png');
-	background-position: 0px -32px;
-}
-
-#toplevel_page_nelioab-admin-pages:hover div.wp-menu-image,
-#toplevel_page_nelioab-admin-pages.wp-has-current-submenu div.wp-menu-image,
-#toplevel_page_nelioab-admin-pages :hover div.wp-menu-image,
-#toplevel_page_nelioab-admin-pages .wp-has-current-submenu div.wp-menu-image,
-#toplevel_page_nelioab-admin-pages .current div.wp-menu-image {
-	background-position: 0px 0px;
-}
-*/
-
-#toplevel_page_nelioab-experiments div.wp-menu-image {
+#toplevel_page_nelioab-experiments div.wp-menu-image,
+#toplevel_page_nelioab-dashboard div.wp-menu-image {
 	background-image: url('../images/menu.png');
 	background-position: 0px -32px;
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
-	#toplevel_page_nelioab-experiments div.wp-menu-image {
+	#toplevel_page_nelioab-experiments div.wp-menu-image,
+	#toplevel_page_nelioab-dashboard div.wp-menu-image {
 		background-image: url('../images/2x/menu.png');
 		background-size: 30px 64px;
 	}
@@ -94,7 +81,12 @@
 #toplevel_page_nelioab-experiments.wp-has-current-submenu div.wp-menu-image,
 #toplevel_page_nelioab-experiments :hover div.wp-menu-image,
 #toplevel_page_nelioab-experiments .wp-has-current-submenu div.wp-menu-image,
-#toplevel_page_nelioab-experiments .current div.wp-menu-image {
+#toplevel_page_nelioab-experiments .current div.wp-menu-image,
+#toplevel_page_nelioab-dashboard:hover div.wp-menu-image,
+#toplevel_page_nelioab-dashboard.wp-has-current-submenu div.wp-menu-image,
+#toplevel_page_nelioab-dashboard :hover div.wp-menu-image,
+#toplevel_page_nelioab-dashboard .wp-has-current-submenu div.wp-menu-image,
+#toplevel_page_nelioab-dashboard .current div.wp-menu-image {
 	background-position: 0px 0px;
 }
 

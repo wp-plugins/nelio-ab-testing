@@ -5,8 +5,6 @@ table#alternatives-in-progress tr td:last-child {
 }
 
 table#alternatives-in-progress tr td:last-child small a { text-decoration:none; }
-table#alternatives-in-progress tr td:last-child > small { visibility:hidden; }
-table#alternatives-in-progress tr td:last-child:hover> small { visibility:visible; }
 
 /*INFO GRAPHICS */
 .nelioab-timeline-graphic {
@@ -34,49 +32,40 @@ table#alternatives-in-progress tr td:last-child:hover> small { visibility:visibl
 
 /* STATUSES */
 
+#info-summary .status-icon {
+	width:16px;
+	height:16px;
+	display:inline-block;
+	margin-bottom:-2px;
+	background-size: 32px 16px;
+}
+
+#info-summary .status-colorblind {
+	background-position-x: 16px;
+}
+
 #info-summary .status-star {
-	background:       url( '../images/star.png' );
 	background-image: url( '../images/star.png' );
-	width:20px;
-	height:20px;
-	display:inline-block;
-	margin-bottom:-4px;
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-star {
-	background:       url( '../images/2x/star.png' );
 	background-image: url( '../images/2x/star.png' );
-	background-size: 20px 20px;
 } }
 
 #info-summary .status-clock {
-	background:       url( '../images/clock.png' );
 	background-image: url( '../images/clock.png' );
-	width:20px;
-	height:20px;
-	display:inline-block;
-	margin-bottom:-4px;
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-clock {
-	background:       url( '../images/2x/clock.png' );
 	background-image: url( '../images/2x/clock.png' );
-	background-size: 20px 20px;
 } }
 
 #info-summary .status-tick {
-	background:       url( '../images/tick.png' );
 	background-image: url( '../images/tick.png' );
-	width:20px;
-	height:20px;
-	display:inline-block;
-	margin-bottom:-4px;
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
 #info-summary .status-tick {
-	background:       url( '../images/2x/tick.png' );
 	background-image: url( '../images/2x/tick.png' );
-	background-size: 20px 20px;
 } }
 
 /* END OF STATUSES */
@@ -148,10 +137,14 @@ div#exp-info-alts {
 
 div#exp-info-alts .alt-type {
 	font-size:90%;
-	width:7em;
+	width:8em;
 	margin-right:1em;
 	display:inline-block;
 	text-align:center;
+	padding-top: 1em;
+	padding-bottom: 1em;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 div#exp-info-alts .alt-type,
