@@ -75,10 +75,10 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			// ...pages...
 			$list_of_pages = get_pages();
 			$options_for_posts = array(
-				'posts_per_page' => 150,
-				'orderby'        => 'title',
-				'order'          => 'asc' );
+				'posts_per_page' => 150 );
 			$list_of_posts = get_posts( $options_for_posts );
+			require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
+			NelioABArrays::sort_posts( $list_of_posts );
 
 			if ( count( $list_of_pages ) == 0 && count( $list_of_posts ) == 0) {
 				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );

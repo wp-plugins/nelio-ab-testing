@@ -78,10 +78,10 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 
 			$list_of_pages = get_pages();
 			$options_for_posts = array(
-				'posts_per_page' => -1,
-				'orderby'        => 'title',
-				'order'          => 'asc' );
+				'posts_per_page' => 150 );
 			$list_of_posts = get_posts( $options_for_posts );
+			require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
+			NelioABArrays::sort_posts( $list_of_posts );
 
 			$is_there_a_static_front_page = get_option( 'page_on_front', 0 ) > 0;
 			$view->show_latest_posts_option( !$is_there_a_static_front_page );

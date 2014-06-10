@@ -134,10 +134,10 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 									<?php
 											$wp_pages = get_pages();
 											$options_for_posts = array(
-												'posts_per_page' => 150,
-												'orderby'        => 'title',
-												'order'          => 'asc' );
+												'posts_per_page' => 150 );
 											$wp_posts = get_posts( $options_for_posts );
+											require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
+											NelioABArrays::sort_posts( $list_of_posts );
 
 									?>
 									<select id="goal_options" style="width:240px !important;" class="required">

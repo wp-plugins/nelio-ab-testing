@@ -3,12 +3,12 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A/B testing and conversion rate optimization service designed specifically for
-WordPress.
+A/B Testing, conversion rate optimization, and beautiful Heatmaps specifically
+designed for WordPress.
 
 
 == Description ==
@@ -141,6 +141,11 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 2.1.1 =
+* Bug fix in experiment creation: if you have many published posts, you can
+now select among the most recent ones (instead of the alphabetically-ordered
+first ones).
 
 = 2.1.0 =
 * **Greedy Algorithm.** Do you want to exploit the winning alternative? Now
@@ -382,5 +387,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.1.0 =
-Greedy algorithm for prioritizing winning alternative and graphical improvements
+= 2.1.1 =
+Bug fix in experiment creation
