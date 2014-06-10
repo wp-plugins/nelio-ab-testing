@@ -29,6 +29,8 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 		private $appspot_alternatives;
 		private $local_alternatives;
 
+		private $winning_alternative;
+
 		private $track_heatmaps;
 
 		public function __construct( $id ) {
@@ -41,6 +43,7 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			$this->appspot_alternatives = array();
 			$this->local_alternatives = array();
 			$this->track_heatmaps = false;
+			$this->winning_alternative = false;
 		}
 
 		public function track_heatmaps( $do_track ) {
@@ -71,6 +74,13 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 					array_push( $result, $alt );
 
 			return $result;
+		}
+
+		public function get_alternative_by_id( $id ) {
+			foreach ( $this->get_alternatives() as $alt )
+				if ( $alt->get_id() == $id )
+					return $alt;
+			return false;
 		}
 
 		public function untrash() {
@@ -144,9 +154,34 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			}
 		}
 
+		public function update_winning_alternative_from_appengine() {
+			$this->winning_alternative = false;
+			try {
+				require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+				$json_data = NelioABBackend::remote_get( sprintf(
+					NELIOAB_BACKEND_URL . '/exp/%s/%s/winner',
+					$this->get_exp_kind_url_fragment(), $this->get_id()
+				) );
+				$json_data = json_decode( $json_data['body'] );
+				if ( isset( $json_data->winner ) && $json_data->winner != 'NO_WINNER' )
+					$this->set_winning_alternative_using_id( $json_data->winner );
+			}
+			catch ( Exception $e ) {
+			}
+		}
+
+		protected function set_winning_alternative( $alt ) {
+			$this->winning_alternative = $alt;
+		}
+
+		public function get_winning_alternative() {
+			return $this->winning_alternative;
+		}
+
 		public abstract function discard_changes();
 		public abstract function get_original();
 		public abstract function get_originals_id();
+		public abstract function set_winning_alternative_using_id( $id );
 		protected abstract function determine_proper_status();
 
 	}//NelioABAlternativeExperiment

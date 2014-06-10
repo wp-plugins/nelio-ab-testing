@@ -32,7 +32,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 		private $are_experiments_loaded;
 
 		public function __construct() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$this->experiments            = array();
 			$this->are_experiments_loaded = false;
 		}
@@ -44,7 +44,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$json_data = NelioABBackend::remote_get( sprintf(
 				NELIOAB_BACKEND_URL . '/site/%s/exp',
-				NelioABSettings::get_site_id()
+				NelioABAccountSettings::get_site_id()
 			) );
 
 			$json_data = json_decode( $json_data['body'] );
@@ -107,7 +107,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			return $this->get_experiments();
 		}
 
-		public static function update_running_experiments_cache( $force_update = false ) {
+		public static function update_running_experiments_cache( $force_update = false, $running_exps = false ) {
 			if ( $force_update )
 				update_option( 'nelioab_running_experiments_date', 0 );
 
@@ -120,7 +120,10 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			// If we are forcing the update, or the last update is too old, we
 			// perform a new update.
 			try {
-				$result = NelioABExperimentsManager::get_running_experiments();
+				if ( $running_exps )
+					$result = $running_exps;
+				else
+					$result = NelioABExperimentsManager::get_running_experiments();
 				update_option( 'nelioab_running_experiments', $result );
 				update_option( 'nelioab_running_experiments_date', $now );
 
@@ -158,6 +161,19 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			}
 
 			return $result;
+		}
+
+		public static function get_running_experiments_summary() {
+			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+			$json_data = NelioABBackend::remote_get( sprintf(
+				NELIOAB_BACKEND_URL . '/site/%s/exp/summary',
+				NelioABAccountSettings::get_site_id()
+			) );
+
+			$json_data = json_decode( $json_data['body'] );
+
+			// TODO: build the proper objects here
+			return $json_data;
 		}
 
 	}//NelioABExperimentsManager
