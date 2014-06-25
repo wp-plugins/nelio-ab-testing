@@ -71,6 +71,7 @@
 			$url = get_permalink( $post_id );
 		if ( !$url )
 			$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
+		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
 		?>
 		<div id="phantom" style="width:0px;height:0px;"></div>
 		<div id="wrapper" style="width:100%;height:100%;">
