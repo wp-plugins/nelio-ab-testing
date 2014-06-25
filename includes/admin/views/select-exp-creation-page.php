@@ -69,9 +69,9 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 //				'menu'/*, $url . NelioABExperiment::MENU_ALT_EXP*/ );
 
 			// WIDGET
-			$this->do_box(
-				__( 'New A/B Widget Test<br />', 'nelioab' ),
-				'widget'/*, $url . NelioABExperiment::WIDGET_ALT_EXP*/ );
+//			$this->do_box(
+//				__( 'New A/B Widget Test<br />', 'nelioab' ),
+//				'widget'/*, $url . NelioABExperiment::WIDGET_ALT_EXP*/ );
 
 		}
 

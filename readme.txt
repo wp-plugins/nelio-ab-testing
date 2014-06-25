@@ -3,21 +3,24 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.0.14
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A/B testing and conversion rate optimization service designed specifically for
-WordPress.
+A/B Testing, conversion rate optimization, and beautiful Heatmaps specifically
+designed for WordPress.
+
 
 == Description ==
 
 [Nelio A/B Testing](http://wp-abtesting.com) is a conversion optimization
 service for your WordPress site. It helps you define, manage, and keep track of
-A/B-testing experiments from within your WordPress dashboard, creating a
-lovely, integrated, and familiar user experience. Since we designed the tool
-specifically for WordPress, you will have complete control on what you test:
-pages, posts, themes, titles… and many more that will be available soon!
+**A/B-testing experiments**, combined with powerful and beautiful **Heatmaps**.
+Get everything you need from within your WordPress dashboard, where you'll
+benefit from a lovely, integrated, and familiar user experience. Since we
+designed the tool specifically for WordPress, you will have complete control on
+what you test: pages, posts, themes, titles… and many more that will be
+available in future releases!
 
 **Note** Please keep in mind that [you will need an
 account](http://wp-abtesting.com/subscription-plans/) to use our plugin (the
@@ -35,9 +38,10 @@ creating alternatives and applying the winning ones.
 * **Nelio A/B Testing is a powerful A/B Testing tool.** Test alternatives for
 your pages and posts or modify the look and feel of your website testing
 different themes or tweaking the CSS files.
-* **But it is also more than that!** Understand more about your website and
-your customers using our Heatmaps feature. Use them to know the spots in which
-your users pay more attention!
+* **Heatmaps as the perfect companion for A/B Testing** Understand more about
+your website and your customers using our Heatmaps feature. Use Heatmaps to
+know the spots in which your users pay more attention or to discover what they
+are ignoring!
 * **Understand what's going on with your site.** Get fresh information about
 the evolution of the experiment every day, with nice graphics about visitors
 and conversions. Detailed statistical information is also available if you want
@@ -137,6 +141,27 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 2.1.2 =
+* Bug fix: AJAX error on windows installations does no longer appear.
+* Improvement: tracking conversions to external goals is now faster and more
+reliable.
+* Some minor changes and bug fixes for specific installations.
+
+= 2.1.1 =
+* Bug fix in experiment creation: if you have many published posts, you can
+now select among the most recent ones (instead of the alphabetically-ordered
+first ones).
+
+= 2.1.0 =
+* **Greedy Algorithm.** Do you want to exploit the winning alternative? Now
+you can! Use a greedy algorithm to increase the chances of your visitors to
+see the winning alternative of your experiment
+* **New Settings Page**. Our plugin includes a new Settings page where you
+can tune a few parameters of the plugin. This are the first steps towards a
+more customizable plugin!
+* Graphical improvements
+* Minor bug fixes
 
 = 2.0.14 =
 * Bug fix: title tag does no longer show a _notice_ on certain installations
@@ -368,5 +393,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.0.14 =
-Small bug fixes with Titles and Heatmaps.
+= 2.1.2 =
+Bug fixes on Windows installations and some minor changes.

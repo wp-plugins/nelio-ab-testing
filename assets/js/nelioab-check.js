@@ -81,6 +81,13 @@ function nelioab_load_alt($) {
 					'} catch ( e ) {}' +
 					'</scr'+'ipt>\n</head>'
 				);
+			data = data
+				.replace(
+					/<\/body>/,
+					'<script>' +
+					'jQuery(document).ready(function(){jQuery(window).trigger("load");});' +
+					'</scr'+'ipt>\n</body>'
+				);
 			$(window).load(function() {
 				var aux = window.setTimeout(function() {}, 0);
 				while (aux--) window.clearTimeout(aux);

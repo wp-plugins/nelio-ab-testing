@@ -139,7 +139,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$exp_id = parent::save();
 
 			// 2. UPDATE THE ALTERNATIVES
