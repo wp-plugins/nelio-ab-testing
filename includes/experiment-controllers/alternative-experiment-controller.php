@@ -317,9 +317,17 @@ class NelioABAlternativeExperimentController {
 		$script  = "\n\n";
 		$script .= "<script>\n";
 		$script .= "jQuery(document).ready( function() {\n";
+		$script .= "   var hrefs = [ $hrefs ];\n";
+		$script .= "   jQuery('a').click(function() {\n";
+		$script .= "      href = jQuery(this).attr('href').replace(/\/+$/, '');\n";
+		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
+		$script .= "         if ( hrefs[i] == href ) {\n";
+		$script .= "            jQuery(this).attr('target','_blank');\n";
+		$script .= "         }\n";
+		$script .= "      }\n";
+		$script .= "   });\n";
 		$script .= "   jQuery(document).bind( 'byebye', function(e,href) {\n";
 		$script .= "      href = href.replace(/\/+$/, '');\n";
-		$script .= "      var hrefs = [ $hrefs ];\n";
 		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
 		$script .= "         if ( hrefs[i] == href ) {\n";
 		$script .= "            nelioab_nav_to_external_page(jQuery,href);\n";

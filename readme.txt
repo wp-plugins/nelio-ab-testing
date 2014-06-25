@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -141,6 +141,12 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 2.1.2 =
+* Bug fix: AJAX error on windows installations does no longer appear.
+* Improvement: tracking conversions to external goals is now faster and more
+reliable.
+* Some minor changes and bug fixes for specific installations.
 
 = 2.1.1 =
 * Bug fix in experiment creation: if you have many published posts, you can
@@ -387,5 +393,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.1.1 =
-Bug fix in experiment creation
+= 2.1.2 =
+Bug fixes on Windows installations and some minor changes.
