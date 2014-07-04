@@ -114,10 +114,8 @@ if( !class_exists( 'NelioABGoal' ) ) {
 
 		public abstract function get_results();
 		public abstract function is_ready();
-		public static abstract function decode_from_appengine( $exp, $json );
 
 	}//NelioABGoal
 
 }
 
-?>

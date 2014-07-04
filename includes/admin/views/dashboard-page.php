@@ -20,14 +20,24 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 	class NelioABDashboardPage extends NelioABAdminAjaxPage {
 
+		private $summary;
+
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
+			$this->add_title_action( __( 'New Experiment', 'nelioab' ), '?page=nelioab-add-experiment' );
+			$this->summary = '';
 		}
 
-		protected function do_render() { ?>
-			<p>Dashboard stuff goes here.</p>
-			<?php
+		public function set_summary( $summary ) {
+			$this->summary = $summary;
+		}
+
+		public function do_render() {
+			echo '<p>TODO</p>';
+			echo '<pre>';
+			print_r( $this->summary );
+			echo '</pre>';
 		}
 
 	}//NelioABDashboardPage

@@ -45,7 +45,7 @@ class NelioABHeatmapExperimentController {
 		wp_enqueue_script( 'nelioab_sync_heatmaps',
 			NELIOAB_ASSETS_URL . '/js/nelioab-sync-heatmaps.min.js?' . NELIOAB_PLUGIN_VERSION );
 		if ( $this->has_post_a_heatmap_experiment() ||
-		     $this->is_post_in_an_ab_experiment_with_heatmaps() ) {
+		   ( $this->is_post_in_an_ab_experiment_with_heatmaps() && isset( $_POST['nelioab_load_alt'] ) ) ) {
 			global $nelioab_controller;
 			$post_id = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $nelioab_controller->get_current_url() );
 			?><script>var nelioab__hm_post_id = "<?php echo $post_id; ?>";</script><?php echo "\n";
@@ -126,9 +126,9 @@ class NelioABHeatmapExperimentController {
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 		$credential = NelioABBackend::make_credential();
 
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/hm',
-			NelioABSettings::get_site_id() );
+			NelioABAccountSettings::get_site_id() );
 
 		foreach ( $heatmaps_cache as $data ) {
 

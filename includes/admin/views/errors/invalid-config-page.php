@@ -50,7 +50,7 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 			echo sprintf( "<br /><div style=\"text-align:center;$style\">%s</div>",
 					$this->make_button(
 						__( 'Configure now', 'nelioab' ),
-						get_admin_url() . '/admin.php?page=nelioab-settings',
+						get_admin_url() . '/admin.php?page=nelioab-account',
 						true
 					)
 				);

@@ -30,7 +30,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 		public function clear() {
 			parent::clear();
-			$this->ori = -1;
+			$this->ori = new NelioABAlternative();
 			$this->track_heatmaps( true );
 		}
 
@@ -43,15 +43,22 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		}
 
 		public function get_original() {
+			if ( !is_object( $this->ori ) ) {
+				$aux = new NelioABAlternative();
+				$aux->set_value( $this->ori );
+				$this->ori = $aux;
+			}
 			return $this->ori;
 		}
 
 		public function get_originals_id() {
-			return $this->ori;
+			$ori_alt = $this->get_original();
+			return $ori_alt->get_value();
 		}
 
 		public function set_original( $ori ) {
-			$this->ori = $ori;
+			$ori_alt = $this->ori;
+			$ori_alt->set_value( $ori );
 
 			// Setting type
 			$post = get_post( $ori, ARRAY_A );
@@ -64,6 +71,20 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				else
 					$this->set_type( NelioABExperiment::POST_ALT_EXP );
 			}
+		}
+
+		public function set_winning_alternative_using_id( $id ) {
+			$winning_alt = false;
+			if ( $this->get_originals_id() == $id ) {
+				$winning_alt = $this->get_original();
+			}
+			else {
+				$alts = $this->get_alternatives();
+				foreach ( $alts as $aux )
+					if ( $aux->get_value() == $id )
+						$winning_alt = $aux;
+			}
+			$this->set_winning_alternative( $winning_alt );
 		}
 
 		public function create_title_alternative( $name ) {
@@ -109,7 +130,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 		public function create_alternative_copying_content( $name, $src_post_id ) {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// Retrieve original post
 			$src_post = get_post( $src_post_id, ARRAY_A );
@@ -167,7 +188,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
@@ -176,7 +197,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/exp/post',
-					NelioABSettings::get_site_id()
+					NelioABAccountSettings::get_site_id()
 				);
 			}
 			else {
@@ -351,12 +372,12 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// If everything is OK, we can start it!
 
-			$ori = get_post( $this->get_originals_id() );
-			if ( $ori && $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
+			$ori_post = get_post( $this->get_originals_id() );
+			if ( $ori_post && $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
 				foreach ( $this->get_alternatives() as $alt ) {
 					$alt_post = get_post( $alt->get_value() );
 					if ( $alt_post ) {
-						$alt_post->comment_status = $ori->comment_status;
+						$alt_post->comment_status = $ori_post->comment_status;
 						wp_update_post( $alt_post );
 					}
 				}

@@ -99,8 +99,7 @@ function nelioab_nav($) {
 function nelioab_nav_to_external_page($, external_page_link) {
 	$.ajax({
 		type:  'POST',
-		async: false,
-		timeout: 1000,
+		async: true,
 		url:   window.location.href,
 		data: {
 			referer: window.location.href,

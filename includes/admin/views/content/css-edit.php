@@ -55,6 +55,7 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 			require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
 			NelioABCssAlternativeExperiment::update_css_alternative(
 				$css_id, $_REQUEST['css_alt_name'], urldecode( $_REQUEST['css_alt_value'] ) );
+			NelioABExperimentsManager::update_running_experiments_cache( true );
 		}
 
 		try {
@@ -133,10 +134,10 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 									<?php
 											$wp_pages = get_pages();
 											$options_for_posts = array(
-												'posts_per_page' => -1,
-												'orderby'        => 'title',
-												'order'          => 'asc' );
+												'posts_per_page' => 150 );
 											$wp_posts = get_posts( $options_for_posts );
+											require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
+											NelioABArrays::sort_posts( $list_of_posts );
 
 									?>
 									<select id="goal_options" style="width:240px !important;" class="required">
