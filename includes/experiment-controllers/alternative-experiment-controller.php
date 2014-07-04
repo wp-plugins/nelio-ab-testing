@@ -263,6 +263,7 @@ class NelioABAlternativeExperimentController {
 
 	public function print_script_for_external_links( $content ) {
 		if ( !is_main_query() ) return;
+		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 
@@ -301,6 +302,13 @@ class NelioABAlternativeExperimentController {
 					if ( $page->is_external() ) {
 						$url = $page->get_reference();
 						$url = str_replace( '"', '', $url );
+						// Remove GET params
+						if ( !NelioABSettings::match_exact_url_for_external_goals() )
+							$url = preg_replace( '/\?.*$/', '', $url );
+						// Remove trailing slash
+						$url = preg_replace( '/\/+$/', '', $url );
+						// Remove https
+						$url = preg_replace( '/^https?:\/\//', 'http://', $url );
 						$url = '"' . $url . '"';
 						if ( !in_array( $url, $hrefs ) )
 							array_push( $hrefs, $url );
@@ -319,17 +327,17 @@ class NelioABAlternativeExperimentController {
 		$script .= "jQuery(document).ready( function() {\n";
 		$script .= "   var hrefs = [ $hrefs ];\n";
 		$script .= "   jQuery('a').click(function() {\n";
-		$script .= "      href = jQuery(this).attr('href').replace(/\/+$/, '');\n";
+		$script .= "      href = jQuery(this).attr('href');\n";
+		// Remove GET params
+		if ( !NelioABSettings::match_exact_url_for_external_goals() )
+			$script .= "      href = href.replace(/\?.*$/, '');\n";
+		// Remove trailing slash
+		$script .= "      href = href.replace(/\/+$/, '');\n";
+		// Remove https
+		$script .= "      href = href.replace(/^https?:\/\//, 'http://');\n";
 		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
 		$script .= "         if ( hrefs[i] == href ) {\n";
 		$script .= "            jQuery(this).attr('target','_blank');\n";
-		$script .= "         }\n";
-		$script .= "      }\n";
-		$script .= "   });\n";
-		$script .= "   jQuery(document).bind( 'byebye', function(e,href) {\n";
-		$script .= "      href = href.replace(/\/+$/, '');\n";
-		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
-		$script .= "         if ( hrefs[i] == href ) {\n";
 		$script .= "            nelioab_nav_to_external_page(jQuery,href);\n";
 		$script .= "            break;\n";
 		$script .= "         }\n";

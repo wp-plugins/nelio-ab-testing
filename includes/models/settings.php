@@ -24,6 +24,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 		const DEFAULT_EXPL_RATIO             = '90';
 		const DEFAULT_IS_GREEDY_ENABLED      = false;
 		const DEFAULT_USE_COLORBLIND_PALETTE = false;
+		const DEFAULT_EXACT_URL_EXTERNAL     = true;
 
 		public static function get_settings() {
 			return get_option( 'nelioab_settings', array() );
@@ -50,6 +51,12 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			if( isset( $input['use_colorblind'] ) ) {
 				$new_input['use_colorblind'] = sanitize_text_field( $input['use_colorblind'] );
 				$new_input['use_colorblind'] = $new_input['use_colorblind'] == '1';
+			}
+
+			$new_input['exact_url_external'] = NelioABSettings::DEFAULT_EXACT_URL_EXTERNAL;
+			if( isset( $input['exact_url_external'] ) ) {
+				$new_input['exact_url_external'] = sanitize_text_field( $input['exact_url_external'] );
+				$new_input['exact_url_external'] = $new_input['exact_url_external'] == '1';
 			}
 
 			$new_input['expl_ratio'] = NelioABSettings::DEFAULT_EXPL_RATIO;
@@ -100,6 +107,13 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			return NelioABSettings::DEFAULT_USE_COLORBLIND_PALETTE;
 		}
 
+		public static function match_exact_url_for_external_goals() {
+			$options = NelioABSettings::get_settings();
+			if ( isset( $options['exact_url_external'] ) )
+				return $options['exact_url_external'];
+			return NelioABSettings::DEFAULT_EXACT_URL_EXTERNAL;
+		}
+
 		public static function cookie_prefix() {
 			return 'nelioab_';
 		}
@@ -128,7 +142,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			return get_option( 'nelioab_copy_categories', true );
 		}
 
-		public function is_upgrade_message_visible() {
+		public static function is_upgrade_message_visible() {
 			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			if ( NelioABAccountSettings::get_subscription_plan() != NelioABAccountSettings::BASIC_SUBSCRIPTION_PLAN )
 				return false;
@@ -139,7 +153,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				return false;
 		}
 
-		public function hide_upgrade_message() {
+		public static function hide_upgrade_message() {
 			update_option( 'nelioab_hide_upgrade_message', NELIOAB_PLUGIN_VERSION );
 		}
 
@@ -147,4 +161,3 @@ if( !class_exists( 'NelioABSettings' ) ) {
 
 }
 
-?>

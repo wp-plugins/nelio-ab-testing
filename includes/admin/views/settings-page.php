@@ -90,6 +90,18 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				'nelioab_general_section'
 			);
 
+			add_settings_field(
+				'exact_url_external',
+				'External Goals',
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_exact_url_external_field' ),
+				'nelioab-settings',
+				'nelioab_general_section'
+			);
+
+
+
+
 			add_settings_section(
 				'nelioab_behavior_section',
 				// =============================================================
@@ -167,6 +179,22 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 					if ( NelioABSettings::use_colorblind_palette() )
 						echo ' selected="selected"';
 				?>><?php _e( 'Colorblind Palette', 'nelioab' ); ?></option>
+			</select>
+			<?php
+		}
+
+		public static function print_exact_url_external_field() {
+			$field_name = 'exact_url_external';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" style="width:100%;">',
+				$field_name
+			);
+			?>
+				<option value='1'><?php _e( 'Match whole URL', 'nelioab' ); ?></option>
+				<option value='0'<?php
+					if ( !NelioABSettings::match_exact_url_for_external_goals() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Ignore GET parameters', 'nelioab' ); ?></option>
 			</select>
 			<?php
 		}
