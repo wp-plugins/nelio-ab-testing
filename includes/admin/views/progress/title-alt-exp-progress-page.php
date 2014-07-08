@@ -93,7 +93,7 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
