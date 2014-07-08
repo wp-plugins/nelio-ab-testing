@@ -21,9 +21,6 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 
 	abstract class NelioABAltExpProgressSuperController {
 
-		public abstract static function build();
-		public abstract static function generate_html_content();
-
 		public abstract function apply_alternative();
 
 		public function manage_actions() {
@@ -51,4 +48,3 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 
 }
 
-?>
