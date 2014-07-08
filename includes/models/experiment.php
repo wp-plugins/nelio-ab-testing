@@ -298,8 +298,6 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		public abstract function start();
 		public abstract function stop();
 
-		public static abstract function load( $id );
-
 		public static function cmp_obj( $a, $b ) {
 			return strcmp( $a->get_name(), $b->get_name() );
 		}
@@ -340,4 +338,3 @@ if ( !class_exists( 'NelioABExperimentStatus' ) ) {
 
 }
 
-?>
