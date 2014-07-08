@@ -51,6 +51,7 @@ class NelioABAlternativeExperimentController {
 			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
 			add_action( 'wp_enqueue_scripts',  array( &$this, 'include_css_alternative_fragments_if_any' ) );
 			add_filter( 'the_content',         array( &$this, 'print_script_for_external_links' ) );
+			add_filter( 'get_post_metadata',   array( &$this, 'load_proper_page_template' ), 10, 4 );
 
 			// Support with other plugins
 			require_once( NELIOAB_UTILS_DIR . '/optimize-press-support.php' );
@@ -73,8 +74,21 @@ class NelioABAlternativeExperimentController {
 		add_action( 'wp_head',   array( &$this, 'add_js_to_replace_titles' ) );
 	}
 
+	public function load_proper_page_template( $value, $post_id = 0, $meta_key = '', $single = false ) {
+		if ( $meta_key === '_wp_page_template' ) {
+			if ( $this->is_post_in_a_post_alt_exp( $post_id ) ) {
+				$post_id = $this->get_post_alternative( $post_id );
+				remove_filter( 'get_post_metadata', array( &$this, 'load_proper_page_template' ), 10 );
+				$value = get_post_meta( $post_id, '_wp_page_template', true );
+				add_filter( 'get_post_metadata', array( &$this, 'load_proper_page_template' ), 10, 4 );
+				if ( !$value ) $value = null;
+			}
+		}
+		return $value;
+	}
+
 	public function update_current_winner_for_running_experiments() {
-		$now = mktime();
+		$now = time();
 		$last_update = get_option( 'nelioab_last_winners_update', 0 );
 		if ( $now - $last_update < 1800 )
 			return;

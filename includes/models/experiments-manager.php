@@ -112,7 +112,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				update_option( 'nelioab_running_experiments_date', 0 );
 
 			$last_update = get_option( 'nelioab_running_experiments_date', 0 );
-			$now = mktime();
+			$now = time();
 			// If the last update was less than fifteen minutes ago, it's OK
 			if ( $now - $last_update < 900 )
 				return;
