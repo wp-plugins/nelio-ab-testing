@@ -23,7 +23,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			if ( !$skip_status_check ) {
 				require_once( NELIOAB_MODELS_DIR . '/user.php' );
 				try {
-					$aux = NelioABSettings::check_user_settings();
+					$aux = NelioABAccountSettings::check_user_settings();
 				}
 				catch ( Exception $e ) {
 					throw $e;
@@ -37,7 +37,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		}
 
 		public static function remote_post( $url, $params = array(), $skip_status_check = false ) {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			$wrapped_params = array();
 			$credential     = NelioABBackend::make_credential();
@@ -63,7 +63,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		}
 
 		public static function make_credential( $skip_check = false ) {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// The following function makes sure that the registered URL and the
 			// current siteurl are the same:
@@ -72,9 +72,9 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 			// Creating the credential
 			$result = array();
-			$result['customerId']         = NelioABSettings::get_customer_id();
-			$result['registrationNumber'] = NelioABSettings::get_reg_num();
-			$result['siteId']             = NelioABSettings::get_site_id();
+			$result['customerId']         = NelioABAccountSettings::get_customer_id();
+			$result['registrationNumber'] = NelioABAccountSettings::get_reg_num();
+			$result['siteId']             = NelioABAccountSettings::get_site_id();
 			$result['siteUrl']            = get_option( 'siteurl' );
 
 			return $result;
@@ -87,12 +87,12 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		 * invalid.
 		 *
 		 * In principle, this is controlled by the following hook:
-		 *   pre_update_option_siteurl -> NelioABSettings::update_registered_sites_if_required
+		 *   pre_update_option_siteurl -> NelioABAccountSettings::update_registered_sites_if_required
 		 */
 		private static function sync_site_url() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			if ( NelioABSettings::has_a_configured_site() &&
-			     get_option( 'siteurl' ) != NelioABSettings::get_site_url() ) {
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+			if ( NelioABAccountSettings::has_a_configured_site() &&
+			     get_option( 'siteurl' ) != NelioABAccountSettings::get_site_url() ) {
 				try {
 					$special_credential = NelioABBackend::make_credential( true );
 					$params = array( 'url' => get_option( 'siteurl' ) );
@@ -107,10 +107,10 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					);
 
 					$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/update',
-						NelioABSettings::get_site_id()
+						NelioABAccountSettings::get_site_id()
 						);
 					$aux = NelioABBackend::remote_post_raw( $url, $json_params, true );
-					NelioABSettings::set_site_url( get_option( 'siteurl' ) );
+					NelioABAccountSettings::set_site_url( get_option( 'siteurl' ) );
 				}
 				catch ( Exception $e ) {
 					// Hopefully, this will never happen

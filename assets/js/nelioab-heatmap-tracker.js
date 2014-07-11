@@ -142,7 +142,12 @@ function nelioabStartHeatmapTracking() {
 		if ( e.pageX == undefined || e.pageY == undefined ) return;
 		var target = jQuery(e.target);
 
-		path = target.getFullPath();
+		try {
+			path = target.getFullPath();
+		}
+		catch ( e ) {
+			return;
+		}
 
 		var pl = target.css('padding-left');   if ( pl == undefined ) pl = "0";
 		var pr = target.css('padding-right');  if ( pr == undefined ) pr = "0";
