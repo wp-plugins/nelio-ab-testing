@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.1.6
+Stable tag: 2.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -141,6 +141,9 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 2.1.7 =
+* Bug fix: pages created with OptimizePress can now be properly duplicated.
 
 = 2.1.6 =
 * Bug fix: deprecated use of function 'split' is now fixed.
@@ -407,5 +410,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.1.6 =
-Deprecated use of function 'split' is now fixed.
+= 2.1.7 =
+Improved support for OptimizePress.
