@@ -58,13 +58,13 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function init() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// Some relevant global warnings
 			// -----------------------------
 
 			// No more quota
-			if ( !NelioABSettings::has_quota_left() ) {
+			if ( !NelioABAccountSettings::has_quota_left() ) {
 				array_push( $this->global_warnings,
 					__( '<b>Warning!</b> There is no more quota available.', 'nelioab' ) );
 			}
@@ -83,9 +83,13 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Some hooks
 			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
-			add_action( 'admin_menu', array( $this, 'create_nelioab_settings_pages' ) );
+
+			add_action( 'admin_menu', array( $this, 'create_nelioab_admin_pages' ) );
+				require_once( NELIOAB_ADMIN_DIR . '/views/settings-page.php' );
+				add_action( 'admin_init', array( 'NelioABSettingsPage', 'register_settings' ) );
+
 			add_action( 'admin_menu', array( $this, 'configure_edit_nelioab_alternative' ) );
-			add_action( 'pre_update_option_siteurl', array( 'NelioABSettings', 'update_registered_sites_if_required' ) );
+			add_action( 'pre_update_option_siteurl', array( 'NelioABAccountSettings', 'update_registered_sites_if_required' ) );
 
 			// AJAX functions
 			add_action( 'wp_ajax_get_html_content', array( $this, 'generate_html_content' ) ) ;
@@ -206,10 +210,10 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		 *
 		 * @since 0.1
 		 */
-		public function create_nelioab_settings_pages() {
+		public function create_nelioab_admin_pages() {
 
-			// WHEN USING THE DASHBOARD, RECOVER: $nelioab_menu = 'nelioab-admin-pages';
 			$nelioab_menu = 'nelioab-experiments';
+			//$nelioab_menu = 'nelioab-dashboard';
 
 			// Main menu
 			// ----------------------------------------------------------------------
@@ -222,15 +226,15 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'div' );
 
 
-//			// Dashboard page
-//			// ----------------------------------------------------------------------
-//			require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
-//			add_submenu_page( $nelioab_menu,
-//				__( 'Dashboard', 'nelioab' ),
-//				__( 'Dashboard', 'nelioab' ),
-//				'manage_options',
-//				'nelioab-admin-pages',
-//				array( 'NelioABDashboardPageController', 'build' ) );
+			// Dashboard page
+			// ----------------------------------------------------------------------
+			// require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
+			// add_submenu_page( $nelioab_menu,
+			// 	__( 'Dashboard', 'nelioab' ),
+			// 	__( 'Dashboard', 'nelioab' ),
+			// 	'manage_options',
+			// 	'nelioab-dashboard',
+			// 	array( 'NelioABDashboardPageController', 'build' ) );
 
 
 			// Experiments pages (depending on the action, we show one or another)
@@ -279,6 +283,16 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$page_to_build );
 
 
+			require_once( NELIOAB_ADMIN_DIR . '/account-page-controller.php' );
+			add_submenu_page( $nelioab_menu,
+				__( 'My Account', 'nelioab' ),
+				__( 'My Account', 'nelioab' ),
+				'manage_options',
+				'nelioab-account',
+				array( 'NelioABAccountPageController', 'build' ) );
+
+			// Feedback page
+			// ----------------------------------------------------------------------
 			require_once( NELIOAB_ADMIN_DIR . '/settings-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
 				__( 'Settings', 'nelioab' ),
@@ -286,6 +300,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'manage_options',
 				'nelioab-settings',
 				array( 'NelioABSettingsPageController', 'build' ) );
+
 
 			// Feedback page
 			// ----------------------------------------------------------------------
@@ -366,75 +381,77 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function print_alternative_box() { ?>
-			<script>
-				var nelioab_style_metabox = document.createElement("style");
-			   nelioab_style_metabox.setAttribute("type", "text/css");
-   			nelioab_style_metabox.innerHTML = "#save_nelioab_alternative_box h3.hndle { " +
-					"background:none; " +
-					"background-color:#298cba; " +
-					"color:white; " +
-					"text-shadow:#000 0 1px 0; " +
-					<?php echo '"background:#21759B url(' . admin_url() . '/images/button-grad.png ) repeat-x scroll left top; "'; ?>
-				"}";
-   			document.getElementsByTagName('head')[0].appendChild(nelioab_style_metabox);
-			</script>
-			<div class="submitbox" id="submitpost">
-				<div class="misc-pub-section" style="min-height:4em;">
-					<div style="float:right;margin-top:1em;">
-						<input name="original_publish" type="hidden" id="original_publish" value="Update">
-						<input name="save" type="submit"
-							class="button-primary" id="publish"
-							tabindex="5"
-							value="<?php _e( 'Update' ); ?>" />
+			<div id="submitdiv">
+				<script>
+					var nelioab_style_metabox = document.createElement("style");
+				   nelioab_style_metabox.setAttribute("type", "text/css");
+					nelioab_style_metabox.innerHTML = "#save_nelioab_alternative_box h3.hndle { " +
+						"background:none; " +
+						"background-color:#298cba; " +
+						"color:white; " +
+						"text-shadow:#000 0 1px 0; " +
+						<?php echo '"background:#21759B url(' . admin_url() . '/images/button-grad.png ) repeat-x scroll left top; "'; ?>
+					"}";
+					document.getElementsByTagName('head')[0].appendChild(nelioab_style_metabox);
+				</script>
+				<div class="submitbox" id="submitpost">
+					<div class="misc-pub-section" style="min-height:4em;">
+						<div style="float:right;margin-top:1em;">
+							<input name="original_publish" type="hidden" id="original_publish" value="Update">
+							<input name="save" type="submit"
+								class="button-primary" id="publish"
+								tabindex="5"
+								value="<?php _e( 'Update' ); ?>" />
+						</div>
+						<div style="float:right;margin-top:1em;margin-right:1em;">
+							<div id="preview-action">
+								<?php
+									$preview_link = admin_url();
+									$preview_link = add_query_arg( array(
+										'preview' => 'true',
+										'post'    => $_GET['post'] ), $preview_link );
+								?>
+								<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a>
+								<input type="hidden" name="wp-preview" id="wp-preview" value="" />
+							</div>
+						</div>
 					</div>
-					<div style="float:right;margin-top:1em;margin-right:1em;">
-					<div id="preview-action">
+					<div style="margin:0.8em 0.2em 0.8em 0.2em;">
+						<b><?php _e( 'Go back to...', 'nelioab' ); ?></b>
 						<?php
-							$preview_link = admin_url();
-							$preview_link = add_query_arg( array(
-								'preview' => 'true',
-								'post'    => $_GET['post'] ), $preview_link );
-						?>
-						<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a>
-						<input type="hidden" name="wp-preview" id="wp-preview" value="" />
-					</div>
-					</div>
-				</div>
-				<div style="margin:0.8em 0.2em 0.8em 0.2em;">
-					<b><?php _e( 'Go back to...', 'nelioab' ); ?></b>
-					<?php
-					$the_post_id = 0;
-					if ( isset( $_GET['post'] ) )
-						$the_post_id = $_GET['post'];
+						$the_post_id = 0;
+						if ( isset( $_GET['post'] ) )
+							$the_post_id = $_GET['post'];
 
-					$url        = admin_url() . 'admin.php?page=nelioab-experiments';
-					$values     = explode( ',', get_post_meta( $the_post_id, '_is_nelioab_alternative', true ) );
-					$exp_id     = $values[0];
-					$exp_status = $values[1];
-					?>
-					<ul style="margin-left:1.5em;">
-						<?php
-						switch( $exp_status ){
-							case NelioABExperimentStatus::DRAFT:
-							case NelioABExperimentStatus::READY:
-					   		?><li><a href="<?php echo $url . '&action=edit&id=' . $exp_id .
-									'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
-										_e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
-								break;
-							case NelioABExperimentStatus::RUNNING:
-							case NelioABExperimentStatus::FINISHED:
-					   		?><li><a href="<?php echo $url . '&action=progress&id=' . $exp_id .
-								'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
-									_e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
-								break;
-							case NelioABExperimentStatus::TRASH:
-							case NelioABExperimentStatus::PAUSED:
-							default:
-								// Nothing here
-						}
+						$url        = admin_url() . 'admin.php?page=nelioab-experiments';
+						$values     = explode( ',', get_post_meta( $the_post_id, '_is_nelioab_alternative', true ) );
+						$exp_id     = $values[0];
+						$exp_status = $values[1];
 						?>
-					   <li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>
-					</ul>
+						<ul style="margin-left:1.5em;">
+							<?php
+							switch( $exp_status ){
+								case NelioABExperimentStatus::DRAFT:
+								case NelioABExperimentStatus::READY:
+									?><li><a href="<?php echo $url . '&action=edit&id=' . $exp_id .
+										'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
+											_e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
+									break;
+								case NelioABExperimentStatus::RUNNING:
+								case NelioABExperimentStatus::FINISHED:
+									?><li><a href="<?php echo $url . '&action=progress&id=' . $exp_id .
+									'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
+										_e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
+									break;
+								case NelioABExperimentStatus::TRASH:
+								case NelioABExperimentStatus::PAUSED:
+								default:
+									// Nothing here
+							}
+							?>
+						   <li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>
+						</ul>
+					</div>
 				</div>
 			</div><?php
 		}

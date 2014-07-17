@@ -26,10 +26,6 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 	abstract class NelioABAltExpSuperController {
 
-		abstract public static function get_instance();
-		abstract public static function build();
-		abstract public static function generate_html_content();
-
 		abstract protected function do_build();
 		abstract protected function build_experiment_from_post_data();
 
@@ -183,4 +179,3 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 }
 
-?>

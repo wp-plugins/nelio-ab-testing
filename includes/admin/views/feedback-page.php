@@ -110,7 +110,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 				__( 'Contact with Nelio', 'nelioab' ),
 				array(
 					array(
-						'label'     => __( 'Share your thoughts with us', 'nelioab' ),
+						'label'     => __( 'What\'s up', 'nelioab' ),
 						'id'        => 'content',
 						'callback'  => array ( $this, 'print_textarea' ),
 						'mandatory' => 'true'

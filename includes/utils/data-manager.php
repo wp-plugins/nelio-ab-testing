@@ -19,4 +19,25 @@ interface iNelioABDataManager {
 	public function list_elements();
 }
 
+class NelioABArrays {
+
+	public static function sort_posts( &$posts, $comparator = 'title' ) {
+		switch( $comparator ) {
+			case 'title':
+			default:
+				usort( $posts, array( 'NelioABArrays', 'compare_posts_by_title' ) );
+		}
+	}
+
+	private static function compare_posts_by_title( $a, $b ) {
+		if ( is_object( $a ) ) $title_a = $a->post_title;
+		else $title_a = $a['post_title'];
+		if ( is_object( $b ) ) $title_b = $b->post_title;
+		else $title_b = $b['post_title'];
+
+		return strcmp( $title_a, $title_b );
+	}
+
+}
+
 ?>

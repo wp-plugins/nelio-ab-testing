@@ -23,18 +23,20 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		protected $title_action;
 		protected $icon_id;
 		protected $message;
+		protected $classes;
 
 		public function __construct( $title = '' ) {
-			$this->title            = $title;
-			$this->title_action     = '';
-			$this->icon_id          = 'icon-options-general';
+			$this->title        = $title;
+			$this->title_action = '';
+			$this->icon_id      = 'icon-options-general';
+			$this->classes      = array();
 
 			$this->message = false;
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			if ( NelioABSettings::is_upgrade_message_visible() )
 				$this->message = sprintf(
-					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
-					'mailto:info@wp-abtesting.com?subject=Request%20-%20Upgrade%20to%20Professional%20Plan'
+					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing. Track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
+					'mailto:support@neliosoftware.com?subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20to%20Professional%20Plan'
 				);
 		}
 
@@ -55,10 +57,14 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		public function print_page_buttons() {
 		}
 
+		public function add_class( $class ) {
+			array_push( $this->classes, $class );
+		}
+
 		public function render() {
 			?>
 			<script type="text/javascript" src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/tablesorter.min.js'; ?>"></script>
-			<div class="wrap">
+			<div class="wrap <?php echo implode( ' ', $this->classes ); ?>">
 				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
 				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>
 				<?php
@@ -68,12 +74,10 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 						$this->print_errors();
 				?>
 				<br />
-				<div id="poststuff">
-					<?php $this->do_render(); ?>
-					<br />
-					<div class="actions"><?php
-						$this->print_page_buttons(); ?>
-					</div>
+				<?php $this->do_render(); ?>
+				<br />
+				<div class="actions"><?php
+					$this->print_page_buttons(); ?>
 				</div>
 			</div>
 			<div id="dialog-modal" title="Basic modal dialog" style="display:none;">

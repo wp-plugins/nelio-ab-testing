@@ -366,7 +366,12 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							$lights_img = 'status-tick';
 							$lights_label = __( 'There is a clear winner, with a confidence greater than 90%', 'nelioab' );
 						}
-					?><div class="<?php echo $lights_img; ?>"
+					?><div class="status-icon <?php
+						echo $lights_img;
+						require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+						if ( NelioABSettings::use_colorblind_palette() )
+							echo ' status-colorblind';
+					?>"
 						title="<?php echo $lights_label; ?>"></div> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
 					<div class="inside">
 
