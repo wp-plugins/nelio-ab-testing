@@ -1,19 +1,20 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
  * This script is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 
 /**
@@ -28,8 +29,13 @@ class NelioABController {
 	const FRONT_PAGE__YOUR_LATEST_POSTS = -100;
 
 	private $controllers;
+	private $url;
 
 	public function __construct() {
+		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+
+		$this->build_current_url();
+
 		$this->controllers = array();
 		$directory   = NELIOAB_DIR . '/experiment-controllers';
 
@@ -40,21 +46,75 @@ class NelioABController {
 		$aux = new NelioABHeatmapExperimentController();
 		$this->controllers['hm'] = $aux;
 
+		$this->prepare_ajax_callbacks();
+
 		if ( isset( $_GET['nelioab_preview_css'] ) )
 			add_action( 'the_content',    array( &$this->controllers['alt-exp'], 'preview_css' ) );
-		if ( isset( $_POST['nelioab_send_alt_titles_info'] ) )
-			add_action( 'init', array( &$this->controllers['alt-exp'], 'send_alt_titles_info' ) );
-		if ( isset( $_POST['nelioab_send_heatmap_info'] ) )
-			add_action( 'plugins_loaded', array( &$aux, 'save_heatmap_info_into_cache' ) );
-		if ( isset( $_POST['nelioab_sync_heatmaps'] ) )
-			add_action( 'plugins_loaded', array( &$aux, 'send_heatmap_info_if_required' ) );
+	}
+
+	private function prepare_ajax_callbacks() {
+
+		add_action( 'wp_ajax_nopriv_nelioab_send_navigation',
+			array( &$this, 'send_navigation' ) );
+		add_action( 'wp_ajax_nelioab_send_navigation',
+			array( &$this, 'send_navigation' ) );
+
+		add_action( 'wp_ajax_nopriv_nelioab_send_alt_titles_info',
+			array( &$this->controllers['alt-exp'], 'send_alt_titles_info' ) );
+		add_action( 'wp_ajax_nelioab_send_alt_titles_info',
+			array( &$this->controllers['alt-exp'], 'send_alt_titles_info' ) );
+
+		add_action( 'wp_ajax_nopriv_nelioab_sync_cookies_and_check',
+			array( &$this, 'sync_cookies_and_check' ) );
+		add_action( 'wp_ajax_nelioab_sync_cookies_and_check',
+			array( &$this, 'sync_cookies_and_check' ) );
+
+		add_action( 'wp_ajax_nopriv_nelioab_send_heatmap_info',
+			array( &$this->controllers['hm'], 'save_heatmap_info_into_cache' ) );
+		add_action( 'wp_ajax_nelioab_send_heatmap_info',
+			array( &$this->controllers['hm'], 'save_heatmap_info_into_cache' ) );
+
+		add_action( 'wp_ajax_nopriv_nelioab_sync_heatmaps',
+			array( &$this->controllers['hm'], 'send_heatmap_info_if_required' ) );
+		add_action( 'wp_ajax_nelioab_sync_heatmaps',
+			array( &$this->controllers['hm'], 'send_heatmap_info_if_required' ) );
+
+	}
+
+	public function sync_cookies_and_check() {
+		// We control that cookies correspond to the last version of the plugin
+		$this->version_control();
+
+		// We update the cookies
+		$cookies = $this->update_cookies();
+
+		// Finally, we check if we need to load an alternative
+		$alt_con  = $this->controllers['alt-exp'];
+		$load_alt = $alt_con->check_requires_an_alternative( $_SERVER['HTTP_REFERER'] );
+		$result   = array(
+			'cookies'  => $cookies,
+			'load_alt' => $load_alt );
+		echo json_encode( $result );
+		die();
+	}
+
+	private function update_cookies() {
+		// We assign the current user an ID (if she does not have any)
+		require_once( NELIOAB_MODELS_DIR . '/user.php' );
+		$user_id = NelioABUser::get_id();
+
+		// And we prepare the other cookies
+		$alt_con  = $this->controllers['alt-exp'];
+		$cookies  = $alt_con->sync_cookies();
+
+		return $cookies;
 	}
 
 	public function init() {
 		// If the user has been disabled... get out of here
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		try {
-			$aux = NelioABSettings::check_user_settings();
+			$aux = NelioABAccountSettings::check_user_settings();
 		}
 		catch ( Exception $e ) {
 			if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER )
@@ -62,65 +122,37 @@ class NelioABController {
 		}
 
 		// Trick for proper THEME ALT EXP testing
-		if ( isset( $_POST['nelioab_load_alt'] ) ) {
-			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			// Theme alt exp related
-			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
-				$aux = $this->controllers['alt-exp'];
-				add_filter( 'stylesheet',       array( &$aux, 'modify_stylesheet' ) );
-				add_filter( 'template',         array( &$aux, 'modify_template' ) );
-				add_filter( 'sidebars_widgets', array( &$aux, 'fix_widgets_for_theme' ) );
-			}
+		require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+		// Theme alt exp related
+		if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
+			$aux = $this->controllers['alt-exp'];
+			add_filter( 'stylesheet',       array( &$aux, 'modify_stylesheet' ) );
+			add_filter( 'template',         array( &$aux, 'modify_template' ) );
+			add_filter( 'sidebars_widgets', array( &$aux, 'fix_widgets_for_theme' ) );
 		}
 
 		add_action( 'init', array( &$this, 'do_init' ) );
 		add_action( 'init', array( &$this, 'init_admin_stuff' ) );
 	}
 
-	private function check_parameters() {
-
-		if ( isset( $_POST['nelioab_nav'] ) )
-			$this->send_navigation();
-
-		// Check if we are syncing cookies...
-		if ( isset( $_POST['nelioab_sync'] ) ) {
-			// We control that cookies correspond to the last version of the plugin
-			$this->version_control();
-
-			// We assign the current user an ID (if she does not have any)
-			require_once( NELIOAB_MODELS_DIR . '/user.php' );
-			$user_id = NelioABUser::get_id();
-		}
-
-		if ( isset( $_POST['nelioab_sync_and_check'] ) ) {
-			$alt_con  = $this->controllers['alt-exp'];
-			$cookies  = $alt_con->sync_cookies();
-			$load_alt = $alt_con->check_requires_an_alternative( $_SERVER['HTTP_REFERER'] );
-			$result   = array(
-				'cookies'  => $cookies,
-				'load_alt' => $load_alt );
-			echo json_encode( $result );
-			die();
-		}
-
-	}
-
-	private function send_navigation() {
-		$dest_post_id = $this->url_or_front_page_to_postid( $_SERVER['HTTP_REFERER'] );
+	public function send_navigation() {
+		$dest_post_id = $this->url_or_front_page_to_postid( $_POST['dest_url'] );
 		$referer = '';
-		if ( isset( $_POST['referer'] ) )
-			$referer = $_POST['referer'];
+		if ( isset( $_POST['ori_url'] ) )
+			$referer = $_POST['ori_url'];
 
-		if ( isset( $_POST['nelioab_nav_to_external_page'] ) )
-			$this->send_navigation_if_required( $_POST['nelioab_nav_to_external_page'], $referer, false );
+		if ( isset( $_POST['is_external_page'] ) )
+			$this->send_navigation_if_required( $_POST['dest_url'], $referer, false );
 		else if ( $dest_post_id )
 			$this->send_navigation_if_required( $dest_post_id, $referer );
 
+		$alt_con = $this->controllers['alt-exp'];
+		$alt_con->update_current_winner_for_running_experiments();
 		die();
 	}
 
 	private function send_navigation_if_required( $dest_id, $referer_url, $is_internal = true ) {
-		if ( !NelioABSettings::has_quota_left() && !NelioABSettings::is_quota_check_required() )
+		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
 			return;
 
 		$alt_exp_con = $this->controllers['alt-exp'];
@@ -134,12 +166,12 @@ class NelioABController {
 
 	public function send_navigation_object( $nav ) {
 
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 		$url = sprintf(
 			NELIOAB_BACKEND_URL . '/site/%s/nav',
-			NelioABSettings::get_site_id()
+			NelioABAccountSettings::get_site_id()
 		);
 
 		$wrapped_params = array();
@@ -157,14 +189,14 @@ class NelioABController {
 		for ( $attemp=0; $attemp < 5; ++$attemp ) {
 			try {
 				$result = NelioABBackend::remote_post_raw( $url, $data );
-				NelioABSettings::set_has_quota_left( true );
+				NelioABAccountSettings::set_has_quota_left( true );
 				break;
 			}
 			catch ( Exception $e ) {
 				// If the navigation could not be sent, it may be the case because
 				// there is no more quota available
 				if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
-					NelioABSettings::set_has_quota_left( false );
+					NelioABAccountSettings::set_has_quota_left( false );
 					break;
 				}
 				// If there was another error... we just keep trying (attemp) up to 5
@@ -187,15 +219,24 @@ class NelioABController {
 	}
 
 	public function get_current_url() {
-		$url = 'http';
-		if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == "on" )
-			$url .= 's';
-		$url .= '://';
-		if ( isset( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != '80')
-			$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
-		else
-			$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-		return $url;
+		return $this->url;
+	}
+
+	private function build_current_url() {
+		if ( isset( $_POST['current_url'] ) ) {
+			$this->url = $_POST['current_url'];
+		}
+		else {
+			$url = 'http';
+			if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == "on" )
+				$url .= 's';
+			$url .= '://';
+			if ( isset( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != '80')
+				$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
+			else
+				$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			$this->url = $url;
+		}
 	}
 
 	public function url_or_front_page_to_postid( $url ) {
@@ -205,7 +246,9 @@ class NelioABController {
 		// This is a special case, because it might be the case that the
 		// front page is dynamically built using the last posts info.
 		$front_page_url = rtrim( get_bloginfo('url'), '/' );
+		$front_page_url = str_replace( 'https://', 'http://', $front_page_url );
 		$proper_url     = rtrim( $url, '/' );
+		$proper_url     = str_replace( 'https://', 'http://', $proper_url );
 		if ( $proper_url == $front_page_url ) {
 			$aux = get_option( 'page_on_front' );
 			if ( $aux )
@@ -246,7 +289,20 @@ class NelioABController {
 		if ( current_user_can( 'delete_users' ) )
 			return;
 
-		$this->check_parameters();
+		// If we are using cookies, the _POST variable 'nelioab_load_alt' is not
+		// going to be automatically set. Therefore, we have to fake that a
+		// "sync_and_check" has been performed before.
+		if ( NelioABSettings::use_php_cookies() ) {
+			global $NELIOAB_COOKIES;
+			$NELIOAB_COOKIES = array();
+			foreach( $_COOKIE as $key => $value )
+				$NELIOAB_COOKIES[$key] = $value;
+			$aux = $this->update_cookies();
+			$alt_con = $this->controllers['alt-exp'];
+			$load_alt = $alt_con->check_requires_an_alternative( $this->get_current_url() );
+			if ( $load_alt == 'LOAD_ALT' )
+				$_POST['nelioab_load_alt'] = true;
+		}
 
 		add_action( 'wp_enqueue_scripts', array( &$this, 'load_jquery' ) );
 
@@ -265,7 +321,7 @@ class NelioABController {
 	public function load_jquery() {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'nelioab_events',
-			NELIOAB_ASSETS_URL . '/js/nelioab-events.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/nelioab-events.min.js' ) );
 	}
 
 	/**
@@ -312,9 +368,7 @@ class NelioABController {
 
 }//NelioABController
 
-if ( !is_admin() ) {
-	$nelioab_controller = new NelioABController();
+$nelioab_controller = new NelioABController();
+if ( !is_admin() )
 	$nelioab_controller->init();
-}
 
-?>

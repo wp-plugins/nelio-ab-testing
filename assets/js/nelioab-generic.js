@@ -67,7 +67,7 @@ var nelioab_styleNode;
 function nelioab_hide_body() {
 	nelioab_styleNode = document.createElement('style');
 	nelioab_styleNode.setAttribute("type", "text/css");
-	var text = "body {display: none;}";
+	var text = "html{display:none !important;} body{display:none !important;}";
 	if (nelioab_styleNode.styleSheet) {
 		// IE
 		nelioab_styleNode.styleSheet.cssText = "";
@@ -80,18 +80,23 @@ function nelioab_hide_body() {
 }
 
 function nelioab_show_body() {
-	document.getElementsByTagName('head')[0].removeChild(nelioab_styleNode);
+	try {
+		document.getElementsByTagName('head')[0].removeChild(nelioab_styleNode);
+	}
+	catch( e ) {}
 }
 
 function nelioab_nav($) {
 	$.ajax({
 		type:  'POST',
 		async: true,
-		url:   window.location.href,
+		url:   NelioABGeneric.ajaxurl,
 		data: {
-			referer: document.referrer,
+			action: 'nelioab_send_navigation',
+			current_url: document.URL,
+			ori_url: document.referrer,
+			dest_url: window.location.href,
 			nelioab_cookies: nelioab_get_local_cookies(),
-			nelioab_nav: 'true',
 		},
 	});
 }
@@ -99,14 +104,15 @@ function nelioab_nav($) {
 function nelioab_nav_to_external_page($, external_page_link) {
 	$.ajax({
 		type:  'POST',
-		async: false,
-		timeout: 1000,
-		url:   window.location.href,
+		async: true,
+		url:   NelioABGeneric.ajaxurl,
 		data: {
-			referer: window.location.href,
+			action: 'nelioab_send_navigation',
+			current_url: document.URL,
+			ori_url: window.location.href,
+			dest_url: external_page_link,
 			nelioab_cookies: nelioab_get_local_cookies(),
-			nelioab_nav: 'true',
-			nelioab_nav_to_external_page: external_page_link,
+			is_external_page: 'yes',
 		},
 	});
 }

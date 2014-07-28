@@ -85,7 +85,7 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 					'</tr>',
 					$set_as_winner, $alt_label,
 					$alt->get_name(),
-					$alt->get_value(), NELIOAB_ASSETS_URL . '/images/loading-small.gif',
+					$alt->get_value(), nelioab_asset_link( '/images/loading-small.gif' ),
 					__( '(Done!)', 'nelioab' ),
 					implode( ' | ', $action_links ) );
 			}
@@ -93,7 +93,7 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php

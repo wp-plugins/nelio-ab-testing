@@ -15,7 +15,7 @@
  */
 
 
-if( !class_exists( 'NelioABUser' ) ) {
+if ( !class_exists( 'NelioABUser' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
@@ -24,18 +24,47 @@ if( !class_exists( 'NelioABUser' ) ) {
 		const COOKIE_LIFETIME = 5184000; // 60 days
 		const TEN_YEARS = 315360000;
 
+		private static $assigned_theme;
+
 		public static function get_id() {
 			global $NELIOAB_COOKIES;
 
 			if ( isset( $NELIOAB_COOKIES['nelioab_userid'] ) )
 				return $NELIOAB_COOKIES['nelioab_userid'];
 
-			$user_id     = get_option( 'nelioab_last_user_id', 0 ) + 1;
+			if ( function_exists( 'uniqid' ) ) {
+				$user_id = uniqid( 'ui_', true );
+			}
+			else {
+				$user_id = get_option( 'nelioab_last_user_id', 0 ) + 1;
+				update_option( 'nelioab_last_user_id', $user_id );
+				$user_id = 'db_' . $user_id;
+			}
 			$cookie_name =  NelioABSettings::cookie_prefix() . 'userid';
 			nelioab_setcookie( $cookie_name, $user_id, time() + NelioABUser::TEN_YEARS );
-			update_option( 'nelioab_last_user_id', $user_id );
 
 			return $user_id;
+		}
+
+		public static function get_alternative_randomly( $options, $winning_option = false ) {
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			$num_of_options = count( $options );
+			$use_greedy = NelioABSettings::use_greedy_algorithm();
+
+			// Exploitation
+			if ( $use_greedy && $winning_option !== false ) {
+				$exploitation_percentage = NelioABSettings::get_exploitation_percentage();
+				$rand = mt_rand( 0, 100 );
+				if ( $rand < $exploitation_percentage )
+					return $winning_option;
+				$num_of_options = $num_of_options - 1; // The winning should not be used
+			}
+
+			// Exploration
+			$value = mt_rand( 0, $num_of_options - 1 ); // Index goes from 0..SIZE-1
+			if ( $use_greedy && $options[$value] == $winning_option )
+				$value = $num_of_options;
+			return $options[$value];
 		}
 
 		public static function get_alternative_for_post_alt_exp( $post_id ) {
@@ -65,14 +94,10 @@ if( !class_exists( 'NelioABUser' ) ) {
 
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
 				// Creating the cookie for the experiment information
-				$alternatives   = $exp->get_alternatives();
-				$num_of_options = count( $alternatives );
-				$option         = mt_rand( 0, $num_of_options );
-				$alt_post       = $exp->get_originals_id();
-				if ( $option != $num_of_options ) {
-					$alt_post = $alternatives[$option];
-					$alt_post = $alt_post->get_value();
-				}
+				$alternatives = $exp->get_alternatives();
+				array_push( $alternatives, $exp->get_original() );
+				$alt_post = NelioABUser::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
+				$alt_post = $alt_post->get_value();
 
 				// Before setting any cookie, we check that the original and the alternative
 				// posts exist...
@@ -103,7 +128,7 @@ if( !class_exists( 'NelioABUser' ) ) {
 
 				$ori_title = wptexturize( $post->post_title );
 				$ori_title = preg_replace( '/&[^;]+;/', '.', $ori_title );
-				$ori_title = preg_replace( '/[^a-zA-Z0-9\s]/', '(.|&[^;]+;)', $ori_title );
+				$ori_title = preg_replace( '/[^a-zA-Z0-9\s]/u', '(.|&[^;]+;)', $ori_title );
 				$ori_title = rawurlencode( $ori_title );
 
 				if ( $alt_post < 0 ) {
@@ -153,17 +178,10 @@ if( !class_exists( 'NelioABUser' ) ) {
 
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
 				// Creating the cookie for the experiment information
-				$alternatives   = $exp->get_alternatives();
-				$num_of_options = count( $alternatives );
-				$option         = mt_rand( 0, $num_of_options );
-
-				$aux    = $exp->get_original();
+				$alternatives = $exp->get_alternatives();
+				array_push( $alternatives, $exp->get_original() );
+				$aux = NelioABUser::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
 				$alt_id = $aux->get_id();
-				if ( $option != $num_of_options ) {
-					$aux    = $exp->get_alternatives();
-					$aux    = $aux[$option];
-					$alt_id = $aux->get_id();
-				}
 
 				// If everything seems to exist, we set the cookie and keep going
 				nelioab_setcookie( $cookie_name, $alt_id, $cookie_life );
@@ -184,15 +202,15 @@ if( !class_exists( 'NelioABUser' ) ) {
 
 		public static function get_assigned_theme() {
 			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+
 			$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
 
-			if ( !$alt )
-				return wp_get_theme();
-
-			$themes = wp_get_themes();
-			foreach ( $themes as $theme )
-				if ( $theme['Stylesheet'] == $alt->get_value() )
-					return $theme;
+			if ( $alt ) {
+				$themes = wp_get_themes();
+				foreach ( $themes as $theme )
+					if ( $theme['Stylesheet'] == $alt->get_value() )
+						return $theme;
+			}
 
 			return wp_get_theme();
 		}
@@ -201,4 +219,3 @@ if( !class_exists( 'NelioABUser' ) ) {
 
 }
 
-?>
