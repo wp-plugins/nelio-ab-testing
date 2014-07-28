@@ -15,14 +15,17 @@
  */
 
 
+require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 class NelioABAlternativeExperimentController {
 
 	private $alternative_post;
 	private $are_comments_from_original_loaded;
 
+	private $actual_theme;
 	private $original_theme;
 
 	public function __construct() {
+		$this->actual_theme = false;
 		$this->original_theme = false;
 	}
 
@@ -50,6 +53,7 @@ class NelioABAlternativeExperimentController {
 			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
 			add_action( 'wp_enqueue_scripts',  array( &$this, 'include_css_alternative_fragments_if_any' ) );
 			add_filter( 'the_content',         array( &$this, 'print_script_for_external_links' ) );
+			add_filter( 'get_post_metadata',   array( &$this, 'load_proper_page_template' ), 10, 4 );
 
 			// Support with other plugins
 			require_once( NELIOAB_UTILS_DIR . '/optimize-press-support.php' );
@@ -70,6 +74,33 @@ class NelioABAlternativeExperimentController {
 		add_filter( 'the_title', array( &$this, 'change_title_on_abtesting' ),  10, 2 );
 		add_filter( 'wp_title',  array( &$this, 'fix_title_for_landing_page' ), 10, 2 );
 		add_action( 'wp_head',   array( &$this, 'add_js_to_replace_titles' ) );
+	}
+
+	public function load_proper_page_template( $value, $post_id = 0, $meta_key = '', $single = false ) {
+		if ( $meta_key === '_wp_page_template' ) {
+			if ( $this->is_post_in_a_post_alt_exp( $post_id ) ) {
+				$post_id = $this->get_post_alternative( $post_id );
+				remove_filter( 'get_post_metadata', array( &$this, 'load_proper_page_template' ), 10 );
+				$value = get_post_meta( $post_id, '_wp_page_template', true );
+				add_filter( 'get_post_metadata', array( &$this, 'load_proper_page_template' ), 10, 4 );
+				if ( !$value ) $value = null;
+			}
+		}
+		return $value;
+	}
+
+	public function update_current_winner_for_running_experiments() {
+		$now = time();
+		$last_update = get_option( 'nelioab_last_winners_update', 0 );
+		if ( $now - $last_update < 1800 )
+			return;
+		update_option( 'nelioab_last_winners_update', $now );
+
+		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+		foreach ( $running_exps as $exp )
+			$exp->update_winning_alternative_from_appengine();
+		NelioABExperimentsManager::update_running_experiments_cache( true, $running_exps );
 	}
 
 	public function sync_cookies() {
@@ -144,39 +175,52 @@ class NelioABAlternativeExperimentController {
 		return false;
 	}
 
+	private function get_actual_theme() {
+		if ( !$this->actual_theme ) {
+			require_once( NELIOAB_MODELS_DIR . '/user.php' );
+			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
+			remove_filter( 'template',   array( &$this, 'modify_template' ) );
+			$this->actual_theme = NelioABUser::get_assigned_theme();
+			$this->original_theme = wp_get_theme();
+			add_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
+			add_filter( 'template',   array( &$this, 'modify_template' ) );
+		}
+		return $this->actual_theme;
+	}
+
 	public function modify_stylesheet( $stylesheet ) {
+		// If I'm not loading an alternative, I hooked for no reason...
+		if ( !isset( $_POST['nelioab_load_alt'] ) )
+			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
+
 		// WARNING: I check whether the function exists, because there are some (random)
 		// times in which calling "current_user_can" results in a fatal error :-S
 		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
-			return;
-		require_once( NELIOAB_MODELS_DIR . '/user.php' );
-		remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
-		remove_filter( 'template',   array( &$this, 'modify_template' ) );
-		$theme = NelioABUser::get_assigned_theme();
-		add_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
-		add_filter( 'template',   array( &$this, 'modify_template' ) );
+			return $stylesheet;
+		$theme = $this->get_actual_theme();
 		return $theme['Stylesheet'];
 	}
 
 	public function modify_template( $template ) {
+		// If I'm not loading an alternative, I hooked for no reason...
+		if ( !isset( $_POST['nelioab_load_alt'] ) )
+			remove_filter( 'stylesheet', array( &$this, 'modify_template' ) );
+
 		// WARNING: I check whether the function exists, because there are some (random)
 		// times in which calling "current_user_can" results in a fatal error :-S
 		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
-			return;
-		require_once( NELIOAB_MODELS_DIR . '/user.php' );
-		remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
-		remove_filter( 'template',   array( &$this, 'modify_template' ) );
-		$theme = NelioABUser::get_assigned_theme();
-		if ( !$this->original_theme )
-			$this->original_theme = wp_get_theme();
-		add_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
-		add_filter( 'template',   array( &$this, 'modify_template' ) );
+			return $template;
+		$theme = $this->get_actual_theme();
 		return $theme['Template'];
 	}
 
 	public function fix_widgets_for_theme( $all_widgets ) {
+		// If I'm not loading an alternative, I hooked for no reason...
+		if ( !isset( $_POST['nelioab_load_alt'] ) )
+			remove_filter( 'stylesheet', array( &$this, 'fix_widgets_for_theme' ) );
+
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
-		$actual_theme = NelioABUser::get_assigned_theme();
+		$actual_theme = $this->get_actual_theme();
 		$actual_theme_id = $actual_theme['Stylesheet'];
 
 		if ( !$this->original_theme['Stylesheet'] ||
@@ -219,20 +263,30 @@ class NelioABAlternativeExperimentController {
 
 	public function load_nelioab_scripts() {
 		wp_enqueue_script( 'nelioab_alternatives_script_generic',
-			NELIOAB_ASSETS_URL . '/js/nelioab-generic.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/nelioab-generic.min.js' ) );
+		wp_localize_script( 'nelioab_alternatives_script_generic',
+			'NelioABGeneric', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+
 		wp_enqueue_script( 'nelioab_alternatives_script_check',
-			NELIOAB_ASSETS_URL . '/js/nelioab-check.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/nelioab-check.min.js' ) );
+		wp_localize_script( 'nelioab_alternatives_script_check',
+			'NelioABChecker', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+
 		wp_enqueue_script( 'tapas_script',
-			NELIOAB_ASSETS_URL . '/js/tapas.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/tapas.min.js' ) );
 	}
 
 	public function load_nelioab_scripts_for_alt() {
 		wp_enqueue_script( 'nelioab_alternatives_script_generic',
-			NELIOAB_ASSETS_URL . '/js/nelioab-generic.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/nelioab-generic.min.js' ) );
+		wp_localize_script( 'nelioab_alternatives_script_generic',
+			'NelioABGeneric', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+
 		wp_enqueue_script( 'nelioab_alternatives_script_nav',
-			NELIOAB_ASSETS_URL . '/js/nelioab-nav.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/nelioab-nav.min.js' ) );
+
 		wp_enqueue_script( 'tapas_script',
-			NELIOAB_ASSETS_URL . '/js/tapas.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/tapas.min.js' ) );
 	}
 
 	public function include_css_alternative_fragments_if_any() {
@@ -247,7 +301,9 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function print_script_for_external_links( $content ) {
-		if ( !is_main_query() ) return;
+		if ( !is_main_query() )
+			return $content;
+		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
 
@@ -286,6 +342,13 @@ class NelioABAlternativeExperimentController {
 					if ( $page->is_external() ) {
 						$url = $page->get_reference();
 						$url = str_replace( '"', '', $url );
+						// Remove GET params
+						if ( !NelioABSettings::match_exact_url_for_external_goals() )
+							$url = preg_replace( '/\?.*$/', '', $url );
+						// Remove trailing slash
+						$url = preg_replace( '/\/+$/', '', $url );
+						// Remove https
+						$url = preg_replace( '/^https?:\/\//', 'http://', $url );
 						$url = '"' . $url . '"';
 						if ( !in_array( $url, $hrefs ) )
 							array_push( $hrefs, $url );
@@ -301,15 +364,25 @@ class NelioABAlternativeExperimentController {
 		$hrefs   = implode( ', ', $hrefs );
 		$script  = "\n\n";
 		$script .= "<script>\n";
-		$script .= "jQuery(document).bind( 'byebye', function(e,href) {\n";
-		$script .= "   href = href.replace(/\/+$/, '');\n";
+		$script .= "jQuery(document).ready( function() {\n";
 		$script .= "   var hrefs = [ $hrefs ];\n";
-		$script .= "   for ( i=0; i<hrefs.length; ++i ) {\n";
-		$script .= "      if ( hrefs[i] == href ) {;\n";
-		$script .= "         nelioab_nav_to_external_page(jQuery,href);\n";
-		$script .= "         break;\n";
+		$script .= "   jQuery('a').click(function() {\n";
+		$script .= "      href = jQuery(this).attr('href');\n";
+		// Remove GET params
+		if ( !NelioABSettings::match_exact_url_for_external_goals() )
+			$script .= "      href = href.replace(/\?.*$/, '');\n";
+		// Remove trailing slash
+		$script .= "      href = href.replace(/\/+$/, '');\n";
+		// Remove https
+		$script .= "      href = href.replace(/^https?:\/\//, 'http://');\n";
+		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
+		$script .= "         if ( hrefs[i] == href ) {\n";
+		$script .= "            jQuery(this).attr('target','_blank');\n";
+		$script .= "            nelioab_nav_to_external_page(jQuery,href);\n";
+		$script .= "            break;\n";
+		$script .= "         }\n";
 		$script .= "      }\n";
-		$script .= "   }\n";
+		$script .= "   });\n";
 		$script .= "});\n";
 		$script .= "</script>\n";
 
@@ -404,7 +477,7 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function add_js_to_replace_titles() {
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		?>
 
 		<script type="text/javascript">
@@ -435,10 +508,11 @@ class NelioABAlternativeExperimentController {
 					jQuery.ajax({
 						type:  'POST',
 						async: true,
-						url:   window.location.href,
+						url:   '<?php echo admin_url( 'admin-ajax.php' ); ?>',
 						data: {
+							action: 'nelioab_send_alt_titles_info',
+							current_url: document.URL,
 							referer: document.referrer,
-							nelioab_send_alt_titles_info: 'true',
 							nelioab_cookies: nelioab_get_local_cookies(),
 							replaced_title_exps: JSON.stringify( substitutions ),
 						},
@@ -455,8 +529,8 @@ class NelioABAlternativeExperimentController {
 		if ( !isset( $_POST['replaced_title_exps'] ) )
 			die();
 
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-		if ( !NelioABSettings::has_quota_left() && !NelioABSettings::is_quota_check_required() )
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
 			return;
 
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
@@ -481,11 +555,11 @@ class NelioABAlternativeExperimentController {
 			}
 		}
 
-		NelioABSettings::set_has_quota_left( true );
+		NelioABAccountSettings::set_has_quota_left( true );
 		foreach( $relevant_title_exps as $rte ) {
 			try {
 				$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/exp/%s/titleview',
-					NelioABSettings::get_site_id(),
+					NelioABAccountSettings::get_site_id(),
 					$rte->exp );
 				$body = array(
 					'user'    => '' . NelioABUser::get_id(),
@@ -495,14 +569,15 @@ class NelioABAlternativeExperimentController {
 			}
 			catch ( Exception $e ) {
 				if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
-					NelioABSettings::set_has_quota_left( false );
+					NelioABAccountSettings::set_has_quota_left( false );
 					break;
 				}
 				// else: bad luck, because navigation is lost
 			}
 		}
 
-		// Send a regular navigation (if it was not already sent) to control quota
+		// Send a regular navigation (if it was not already sent, which is controlled
+		// by the "is_relevant" function) to control quota
 		$nav = $this->prepare_navigation_object( $current_post_id, '', true );
 		if ( !$nelioab_controller->is_relevant( $nav ) )
 			$nelioab_controller->send_navigation_object( $nav );
@@ -511,7 +586,7 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function change_title_on_abtesting( $title, $id = -1 ) {
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		return "\t \t \t$title\t \t \t";
 	}
 
