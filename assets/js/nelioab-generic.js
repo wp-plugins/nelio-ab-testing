@@ -67,7 +67,7 @@ var nelioab_styleNode;
 function nelioab_hide_body() {
 	nelioab_styleNode = document.createElement('style');
 	nelioab_styleNode.setAttribute("type", "text/css");
-	var text = "body {display: none;}";
+	var text = "html{display:none !important;} body{display:none !important;}";
 	if (nelioab_styleNode.styleSheet) {
 		// IE
 		nelioab_styleNode.styleSheet.cssText = "";

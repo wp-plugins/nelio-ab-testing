@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -428,5 +428,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.0 =
+= 3.0.1 =
 New User Interface, new dashboard, and efficiency improvements.
