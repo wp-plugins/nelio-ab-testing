@@ -88,12 +88,10 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 				$this->get_id()
 			);
 			try {
-				$this->split_page_accessed_goal_if_any();
 				$result = NelioABBackend::remote_post( $url );
 				$this->set_status( NelioABExperimentStatus::RUNNING );
 			}
 			catch ( Exception $e ) {
-				$this->unsplit_page_accessed_goal_if_any();
 				throw $e;
 			}
 		}

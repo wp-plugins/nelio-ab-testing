@@ -170,14 +170,32 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				NelioABAccountSettings::get_site_id()
 			) );
 
-			$json_data = json_decode( $json_data['body'] );
+			// Including types of experiments...
+			require_once( NELIOAB_MODELS_DIR . '/summaries/alt-exp-summary.php' );
+			require_once( NELIOAB_MODELS_DIR . '/summaries/heatmap-exp-summary.php' );
 
-			// TODO: build the proper objects here
-			return $json_data;
+			$json_data = json_decode( $json_data['body'] );
+			$result = array();
+			if ( $json_data->items ) {
+				foreach ( $json_data->items as $item ) {
+					$exp = false;
+					switch ( $item->kind ) {
+						case NelioABExperiment::HEATMAP_EXP_STR:
+							$exp = new NelioABHeatmapExpSummary( $item->key->id );
+							break;
+						default:
+							$exp = new NelioABAltExpSummary( $item->key->id );
+					}
+					if ( $exp ) {
+						$exp->load_json4ae( $item );
+						array_push( $result, $exp );
+					}
+				}
+			}
+			return $result;
 		}
 
 	}//NelioABExperimentsManager
 
 }
 
-?>

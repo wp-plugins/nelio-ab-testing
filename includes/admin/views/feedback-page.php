@@ -110,7 +110,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 				__( 'Contact with Nelio', 'nelioab' ),
 				array(
 					array(
-						'label'     => __( 'What\'s up', 'nelioab' ),
+						'label'     => __( 'Message', 'nelioab' ),
 						'id'        => 'content',
 						'callback'  => array ( $this, 'print_textarea' ),
 						'mandatory' => 'true'
@@ -127,7 +127,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 				); ?>
 			<div id="fb-processing" style="display:inline-block;">
 				<div id="fb-sending" style="display:none;vertical-align:middle;">
-					<img src="<?php echo NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION; ?>" alt="<?php _e( 'Sending...', 'nelioab' ); ?>" />
+					<img src="<?php echo nelioab_asset_link( '/images/loading-small.gif' ); ?>" alt="<?php _e( 'Sending...', 'nelioab' ); ?>" />
 				</div>
 				<div id="fb-fail" style="display:none;"><?php _e( 'There was an error while sending your comment. Please, try again.', 'nelioab' ); ?> </div>
 				<div id="fb-ok" style="display:none;"><?php _e( 'Comment successfully sent.', 'nelioab' ); ?> </div>
@@ -199,4 +199,3 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 
 }
 
-?>

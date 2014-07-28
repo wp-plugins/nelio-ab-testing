@@ -1,17 +1,20 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 if ( !class_exists( 'NelioABAdminController' ) ) {
@@ -100,24 +103,24 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		public function add_css_for_creation_page() {
 			wp_register_style( 'nelioab_new_exp_selection_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-exp-selection.min.css', false, NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/css/nelioab-new-exp-selection.min.css' ) );
 			wp_enqueue_style( 'nelioab_new_exp_selection_css' );
 		}
 
 		public function add_css_for_themes() {
 			wp_register_style( 'nelioab_theme_exp_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-theme-exp.min.css', false, NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/css/nelioab-theme-exp.min.css' ) );
 			wp_enqueue_style( 'nelioab_theme_exp_css' );
 		}
 
 		public function add_custom_styles() {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			wp_register_style( 'nelioab_generic_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-generic.min.css', false, NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/css/nelioab-generic.min.css' ) );
 			wp_enqueue_style( 'nelioab_generic_css' );
 			if ( NelioABWpHelper::is_at_least_version( 3.8 ) ) {
 				wp_register_style( 'nelioab_new_icons_css',
-					NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-new-icons.min.css', false, NELIOAB_PLUGIN_VERSION );
+					nelioab_admin_asset_link( '/css/nelioab-new-icons.min.css' ) );
 				wp_enqueue_style( 'nelioab_new_icons_css' );
 			}
 		}
@@ -126,9 +129,9 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-dialog' );
 			wp_enqueue_style( 'jquery-style',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/jquery-ui.css', false, NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/css/jquery-ui.css' ) );
 			wp_register_style( 'nelioab_dialog_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-dialog.min.css', false, NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/css/nelioab-dialog.min.css' ) );
 			wp_enqueue_style( 'nelioab_dialog_css' );
 		}
 
@@ -138,20 +141,20 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Custom CSS for GRAPHICS and RESULTS (experiment progress)
 			wp_register_style( 'nelioab_progress_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/progress.min.css', false, NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/css/progress.min.css' ) );
 			wp_enqueue_style( 'nelioab_progress_css' );
 
 			wp_register_style( 'nelioab_tab_type_css',
-				NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-tab-type.min.css', false, NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/css/nelioab-tab-type.min.css' ) );
 			wp_enqueue_style( 'nelioab_tab_type_css' );
 
 			// Custom JS for GRAPHICS (conversion experiment progress)
 			wp_enqueue_script( 'nelioab_highcharts',
-				NELIOAB_ADMIN_ASSETS_URL . '/js/highcharts.min.js?' . NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/js/highcharts.min.js' ) );
 			wp_enqueue_script( 'nelioab_exporting',
-				NELIOAB_ADMIN_ASSETS_URL . '/js/exporting.min.js?' . NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/js/exporting.min.js' ) );
 			wp_enqueue_script( 'nelioab_graphic_functions',
-				NELIOAB_ADMIN_ASSETS_URL . '/js/graphic-functions.min.js?' . NELIOAB_PLUGIN_VERSION );
+				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ) );
 		}
 
 		public function exclude_alternative_posts_and_pages( $query ) {
@@ -203,7 +206,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		/**
-		 * TODO
+		 * This function creates all the relevant pages for our plugin.
+		 * These pages appear in the Dashboard.
 		 *
 		 * @package Nelio AB Testing
 		 * @subpackage Main Admin Plugin Controller
@@ -212,8 +216,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		 */
 		public function create_nelioab_admin_pages() {
 
-			$nelioab_menu = 'nelioab-experiments';
-			//$nelioab_menu = 'nelioab-dashboard';
+			$nelioab_menu = 'nelioab-dashboard';
 
 			// Main menu
 			// ----------------------------------------------------------------------
@@ -228,13 +231,13 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Dashboard page
 			// ----------------------------------------------------------------------
-			// require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
-			// add_submenu_page( $nelioab_menu,
-			// 	__( 'Dashboard', 'nelioab' ),
-			// 	__( 'Dashboard', 'nelioab' ),
-			// 	'manage_options',
-			// 	'nelioab-dashboard',
-			// 	array( 'NelioABDashboardPageController', 'build' ) );
+			require_once( NELIOAB_ADMIN_DIR . '/dashboard-page-controller.php' );
+			add_submenu_page( $nelioab_menu,
+				__( 'Dashboard', 'nelioab' ),
+				__( 'Dashboard', 'nelioab' ),
+				'manage_options',
+				'nelioab-dashboard',
+				array( 'NelioABDashboardPageController', 'build' ) );
 
 
 			// Experiments pages (depending on the action, we show one or another)
@@ -343,16 +346,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// ... but if it is ...
 
-			// a) Hide the "add new" button TODO: PENDING PROPER IMPLEMENTATION
-			// <style type="text/css">
-			// 	#favorite-actions, #message,
-			// 	.add-new-h2, .tablenav,
-			// 	#edit-slug-box {
-			// 		display:none;
-			// 	}
-			// </style>
-
-			// b) Hide some metaboxes whose contents are managed by the plugin
+			// a) Hide some metaboxes whose contents are managed by the plugin
 			remove_meta_box( 'submitdiv', 'page', 'side' );        // Publish options
 			remove_meta_box( 'commentstatusdiv', 'page', 'side' ); // Comments
 			remove_meta_box( 'slugdiv', 'page', 'normal' );        // Comments
@@ -361,7 +355,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			remove_meta_box( 'commentstatusdiv', 'post', 'side' ); // Comments
 			remove_meta_box( 'slugdiv', 'post', 'normal' );        // Comments
 
-			// c) Create a custom box for saving the alternative page
+			// b) Create a custom box for saving the alternative page
 			add_meta_box(
 				'save_nelioab_alternative_box',      // HTML identifier
 				__( 'Edition of Alternative\'s Content', 'nelioab' ), // Box title
@@ -384,14 +378,24 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			<div id="submitdiv">
 				<script>
 					var nelioab_style_metabox = document.createElement("style");
-				   nelioab_style_metabox.setAttribute("type", "text/css");
+					nelioab_style_metabox.setAttribute("type", "text/css");
 					nelioab_style_metabox.innerHTML = "#save_nelioab_alternative_box h3.hndle { " +
 						"background:none; " +
 						"background-color:#298cba; " +
 						"color:white; " +
 						"text-shadow:#000 0 1px 0; " +
-						<?php echo '"background:#21759B url(' . admin_url() . '/images/button-grad.png ) repeat-x scroll left top; "'; ?>
-					"}";
+						"border: 1px solid #298cba;" +
+						"background: #298cba;" +
+						"background: -moz-linear-gradient(bottom, #298cba 0%, #41a9cc 100%);" +
+						"background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#298cba), color-stop(100%,#41a9cc));" +
+						"background: -webkit-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
+						"background: -o-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
+						"background: -ms-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
+						"background: linear-gradient(bottom top, #298cba 0%,#41a9cc 100%);" +
+					"}" +
+					"#favorite-actions, #message, .add-new-h2, .tablenav, #edit-slug-box { display:none; }" +
+					"#save_nelioab_alternative_box .handlediv { color:#afe0f7; }" +
+					"#save_nelioab_alternative_box .handlediv:hover { visibility:visible; color:white; }";
 					document.getElementsByTagName('head')[0].appendChild(nelioab_style_metabox);
 				</script>
 				<div class="submitbox" id="submitpost">
@@ -422,7 +426,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						$the_post_id = 0;
 						if ( isset( $_GET['post'] ) )
 							$the_post_id = $_GET['post'];
-
 						$url        = admin_url() . 'admin.php?page=nelioab-experiments';
 						$values     = explode( ',', get_post_meta( $the_post_id, '_is_nelioab_alternative', true ) );
 						$exp_id     = $values[0];
@@ -433,7 +436,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 							switch( $exp_status ){
 								case NelioABExperimentStatus::DRAFT:
 								case NelioABExperimentStatus::READY:
-									?><li><a href="<?php echo $url . '&action=edit&id=' . $exp_id .
+									?><li><a href="<?php echo $url . '&action=edit&ctab=tab-alts&id=' . $exp_id .
 										'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
 											_e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
 									break;
@@ -449,7 +452,10 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 									// Nothing here
 							}
 							?>
-						   <li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>
+							<li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>
+							<?php if( $exp_status == NelioABExperimentStatus::RUNNING ) { ?>
+								<li><a href="<?php echo admin_url() . 'admin.php?page=nelioab-dashboard'; ?>"><?php _e( 'The Dashboard', 'nelioab' ); ?></a></li>
+							<?php } ?>
 						</ul>
 					</div>
 				</div>
@@ -462,4 +468,3 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 if ( is_admin() )
 	$nelioab_admin_controller = new NelioABAdminController();
 
-?>

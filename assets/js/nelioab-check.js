@@ -17,11 +17,11 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 	$.ajax({
 		type:  'POST',
 		async: false,
-		url:   window.location.href,
+		url:   NelioABChecker.ajaxurl,
 		data: {
+			action: 'nelioab_sync_cookies_and_check',
+			current_url: document.URL,
 			nelioab_cookies: nelioab_get_local_cookies(),
-			nelioab_sync: 'true',
-			nelioab_sync_and_check: 'true',
 		},
 	}).success(function(data) {
 		try {
@@ -52,6 +52,7 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 			}
 		}
 		catch(e) {
+			nelioab_show_body();
 		}
 	});
 }
@@ -81,14 +82,7 @@ function nelioab_load_alt($) {
 					'} catch ( e ) {}' +
 					'</scr'+'ipt>\n</head>'
 				);
-			data = data
-				.replace(
-					/<\/body>/,
-					'<script>' +
-					'jQuery(document).ready(function(){jQuery(window).trigger("load");});' +
-					'</scr'+'ipt>\n</body>'
-				);
-			$(window).load(function() {
+			$(document).ready(function() {
 				var aux = window.setTimeout(function() {}, 0);
 				while (aux--) window.clearTimeout(aux);
 				document.open();

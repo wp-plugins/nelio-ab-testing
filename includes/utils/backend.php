@@ -165,21 +165,23 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const DEACTIVATED_USER                 = 15;
 		const EXPERIMENT_ID_NOT_FOUND          = 16;
 		const INVALID_GOAL                     = 17;
+		const INVALID_MODIFICATION             = 18;
 
 		// Error codes corresponding to package details
 		const MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC = 100;
 		const HEATMAP_NOT_ALLOWED_IN_BASIC         = 101;
 
 		// These are "private" error codes
-		const BACKEND_NOT_AVAILABLE        = -1;
-		const BACKEND_NO_SITE_CONFIGURED   = -2;
-		const BACKEND_UNKNOWN_ERROR        = -3;
-		const ERROR_404                    = -4;
-		const NON_ACCEPTED_TAC             = -5;
-		const STATUS_204                   = -6;
-		const UNKNOWN_ERROR                = -7;
-		const NO_HEATMAPS_AVAILABLE        = -8;
-		const EXPERIMENT_CANNOT_BE_STARTED = -9;
+		const BACKEND_NOT_AVAILABLE                        = -1;
+		const BACKEND_NO_SITE_CONFIGURED                   = -2;
+		const BACKEND_UNKNOWN_ERROR                        = -3;
+		const ERROR_404                                    = -4;
+		const NON_ACCEPTED_TAC                             = -5;
+		const STATUS_204                                   = -6;
+		const UNKNOWN_ERROR                                = -7;
+		const NO_HEATMAPS_AVAILABLE                        = -8;
+		const NO_HEATMAPS_AVAILABLE_FOR_NON_RUNNING_EXPERIMENT = -9;
+		const EXPERIMENT_CANNOT_BE_STARTED                 = -10;
 
 		public static function to_string( $err ) {
 			switch( $err ) {
@@ -221,6 +223,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 						'</a></small>';
 				case NelioABErrCodes::INVALID_GOAL:
 					return __( 'Goal not found.', 'nelioab' );
+				case NelioABErrCodes::INVALID_MODIFICATION:
+					return __( 'The experiment cannot be modified.', 'nelioab' );
 
 
 				// Error codes corresponding to package details
@@ -248,7 +252,9 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				case NelioABErrCodes::STATUS_204:
 					return __( 'Backend is not accessible.<br />Please, try again in just a few moments.', 'nelioab' );
 				case NelioABErrCodes::NO_HEATMAPS_AVAILABLE:
-					return __( 'Be patient... We are still collecting the data for your heatmaps.', 'nelioab' );
+					return __( 'Be patient... We are still collecting the data for your heatmaps and clickmaps.', 'nelioab' );
+				case NelioABErrCodes::NO_HEATMAPS_AVAILABLE_FOR_NON_RUNNING_EXPERIMENT:
+					return __( 'We did not collect enough data for building your heatmaps and clickmaps. Sorry.', 'nelioab' );
 				case NelioABErrCodes::UNKNOWN_ERROR:
 					return __( 'An unknown error has occurred.', 'nelioab' );
 				case NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED:
@@ -258,7 +264,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );
 			}
 		}
+
 	}//NelioABBackend
 
 }
-?>
+

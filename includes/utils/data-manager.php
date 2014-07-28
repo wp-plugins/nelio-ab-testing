@@ -22,6 +22,8 @@ interface iNelioABDataManager {
 class NelioABArrays {
 
 	public static function sort_posts( &$posts, $comparator = 'title' ) {
+		if ( !is_array( $posts ) )
+			return;
 		switch( $comparator ) {
 			case 'title':
 			default:

@@ -66,14 +66,27 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			// ----------------------------------------------
 
 			global $nelioab_admin_controller;
-			$experiment = NULL;
+			$experiment  = NULL;
+			$other_names = array();
 			if ( !empty( $nelioab_admin_controller->data ) ) {
-				$experiment = $nelioab_admin_controller->data;
-				$alt_type   = $experiment->get_type();
+				$experiment  = $nelioab_admin_controller->data;
+				$alt_type    = $experiment->get_type();
 			}
 			else {
 				$experiment = new NelioABPostAlternativeExperiment( -1 );
 				$experiment->clear();
+			}
+
+			// ...and we also recover other experiment names (if any)
+			if ( isset( $_POST['other_names'] ) ) {
+				$other_names = json_decode( urldecode( $_POST['other_names'] ) );
+			}
+			else {
+				$mgr = new NelioABExperimentsManager();
+				foreach( $mgr->get_experiments() as $aux ) {
+					if ( $aux->get_id() != $experiment->get_id() )
+						array_push( $other_names, $aux->get_name() );
+				}
 			}
 
 
@@ -107,89 +120,41 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			// If everything is OK, we keep going!
 			// ---------------------------------------------------
 
-			// By default, we set the force direct to true...
-			$force_direct = true;
-			if ( !isset( $_POST['force_direct'] ) ) {
-				// If the variable is not set, we have to check if it is
-				// because it has been disabled or because it is the first
-				// time we access the page
-				$force_direct = !isset( $_POST['is_force_direct_submitted'] );
-
-				// Finally, we check what the experiment has to say about
-				// forcing direct conversions...
-				foreach ( $experiment->get_goals() as $goal ) {
-					foreach ( $goal->get_pages() as $page ) {
-						$force_direct = !$page->accepts_indirect_navigations();
-						break;
-					}
-					break;
-				}
-			}
-
 			// Creating the view
 			$view = $this->create_view( $alt_type );
-			$view->force_direct( $force_direct );
+			foreach ( $other_names as $name )
+				$view->add_another_experiment_name( $name );
 
 			// Experiment information
+			$view->set_basic_info(
+				$experiment->get_id(),
+				$experiment->get_name(),
+				$experiment->get_description() );
+
+			// Experiment specific variables and alternatives
 			$view->set_original_id( $experiment->get_originals_id() );
-			$view->set_experiment_id( $experiment->get_id() );
-			$view->set_experiment_name( $experiment->get_name() );
-			$view->set_experiment_descr( $experiment->get_description() );
+			$view->set_alternatives( $experiment->get_json4js_alternatives() );
+
+			// Goals
 			$goals = $experiment->get_goals();
-			if ( count( $goals ) > 0 )
-				$view->set_goal( $goals[0] );
-			else
-				$view->set_goal( new NelioABPageAccessedGoal( $experiment ) );
-			$view->set_alternatives( $experiment->get_alternatives() );
-			$view->set_encoded_appspot_alternatives( $experiment->encode_appspot_alternatives() );
-			$view->set_encoded_local_alternatives( $experiment->encode_local_alternatives() );
+			foreach ( $goals as $goal )
+				$view->add_goal( $goal->json4js() );
+
+			if ( count( $goals ) == 0 ) {
+				$new_goal = new NelioABPageAccessedGoal( $experiment );
+				$new_goal->set_name( __( 'Default', 'nelioab' ) );
+				$view->add_goal( $new_goal->json4js() );
+			}
 
 			$view->set_wp_pages( $list_of_pages );
 			$view->set_wp_posts( $list_of_posts );
-			if ( isset( $_POST['action'] ) ) {
-				if ( $_POST['action'] == 'show_empty_quickedit_box' )
-					$view->show_empty_quickedit_box();
-				if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-					$view->show_copying_content_quickedit_box();
-			}
+
 			return $view;
 		}
 
 		public function create_view( $alt_type ) {
 			$title = __( 'Edit Experiment', 'nelioab' );
 			return new NelioABPostAltExpEditionPage( $title, $alt_type );
-		}
-
-		public function add_empty_alternative() {
-			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
-			$exp_type = NelioABExperiment::PAGE_ALT_EXP;
-			if ( isset( $_POST['nelioab_exp_type'] ) &&
-			     $_POST['nelioab_exp_type'] == NelioABExperiment::POST_ALT_EXP )
-				$exp_type = NelioABExperiment::POST_ALT_EXP;
-
-			if ( isset( $_POST['new_alt_name'] ) ) {
-				$alt_name = stripslashes( $_POST['new_alt_name'] );
-				$exp = $nelioab_admin_controller->data;
-				$exp->create_empty_alternative( $alt_name, $exp_type );
-			}
-		}
-
-		public function add_alternative_copying_content() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-
-			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
-
-			if ( isset( $_POST['new_alt_name'] ) &&
-			     isset( $_POST['new_alt_postid'] ) ) {
-
-				$alt_name = stripslashes( $_POST['new_alt_name'] );
-				$alt_post_id = $_POST['new_alt_postid'];
-
-				$exp = $nelioab_admin_controller->data;
-				$exp->create_alternative_copying_content( $alt_name, $alt_post_id );
-			}
 		}
 
 		public function validate() {
@@ -204,8 +169,22 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 		public function edit_alternative_content() {
 			// 1. Save any local changes
 			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
 			$experiment = $nelioab_admin_controller->data;
+
+			// Before saving the experiment, we have to get the alternative we
+			// want to edit (after saving it, its IDs and/or its values may have
+			// change).
+			$post_id = '' . $_POST['content_to_edit'];
+			if ( strpos( $post_id, ':' ) ) {
+				$aux = explode( ':', $post_id );
+				$post_id = $aux[1];
+			}
+			$alt_to_edit = false;
+			foreach ( $experiment->get_alternatives() as $alt ) {
+				if ( $alt->get_value() == $post_id )
+					$alt_to_edit = $alt;
+			}
+
 			try {
 				$experiment->save();
 			}
@@ -215,28 +194,23 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			}
 
 			// 2. Redirect to the edit page
-			$post_id = 0;
-			if ( isset( $_POST['content_to_edit'] ) )
-				$post_id = $_POST['content_to_edit'];
-			echo '[SUCCESS]' . admin_url() . 'post.php?action=edit&post=' . $post_id;
+			echo '[SUCCESS]' . admin_url() . 'post.php?action=edit&post=' . $alt_to_edit->get_value();
 			die();
 		}
 
 		public function build_experiment_from_post_data() {
 			$exp = new NelioABPostAlternativeExperiment( $_POST['exp_id'] );
-			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
-			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
 			$exp->set_original( $_POST['exp_original'] );
-
-			$exp->load_encoded_appspot_alternatives( $_POST['appspot_alternatives'] );
-			$exp->load_encoded_local_alternatives( $_POST['local_alternatives'] );
-
-			$force_direct = isset( $_POST['force_direct'] );
-			$exp_goal = $this->build_goal_from_post_data( $exp );
-			foreach ( $exp_goal->get_pages() as $page )
-				$page->set_indirect_navigations_enabled( !$force_direct );
-			$exp->add_goal( $exp_goal );
-
+			$exp = $this->compose_basic_alt_exp_using_post_data( $exp );
+			foreach ( $exp->get_appspot_alternatives() as $alt ) {
+				$id = '' . $alt->get_id();
+				$aux = explode( ':', $id );
+				$alt->set_id( $aux[0] );
+				$alt->set_value( $aux[1] );
+			}
+			foreach ( $exp->get_local_alternatives() as $alt ) {
+				$alt->set_value( $alt->get_id() );
+			}
 			global $nelioab_admin_controller;
 			$nelioab_admin_controller->data = $exp;
 		}
@@ -247,24 +221,9 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 
 			parent::manage_actions();
 
-			if ( $_POST['action'] == 'add_empty_alt' )
-				$this->add_empty_alternative();
-
-			if ( $_POST['action'] == 'add_alt_copying_content' )
-				$this->add_alternative_copying_content();
-
-			if ( $_POST['action'] == 'show_empty_quickedit_box' )
-				$this->build_experiment_from_post_data();
-
-			if ( $_POST['action'] == 'show_copying_content_quickedit_box' )
-				$this->build_experiment_from_post_data();
-
 			if ( $_POST['action'] == 'edit_alt_content' )
 				if ( $this->validate() )
 					$this->edit_alternative_content();
-
-			if ( $_POST['action'] == 'hide_new_alt_box' )
-				$this->build_experiment_from_post_data();
 
 		}
 
@@ -277,4 +236,3 @@ if ( isset( $_POST['nelioab_edit_ab_post_exp_form'] ) ) {
 	$controller->manage_actions();
 }
 
-?>

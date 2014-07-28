@@ -44,7 +44,6 @@ if ( !class_exists( 'NelioABDashboardPageController' ) ) {
 				NelioABErrorController::build( $e );
 			}
 
-
 			$title = __( 'Dashboard', 'nelioab' );
 			$view = new NelioABDashboardPage( $title );
 			$view->set_summary( $summary );

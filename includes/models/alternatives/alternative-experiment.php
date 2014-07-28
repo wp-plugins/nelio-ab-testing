@@ -22,7 +22,7 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-statistics.php' );
-	require_once( NELIOAB_MODELS_DIR . '/alternatives/gstats.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
 
 	abstract class NelioABAlternativeExperiment extends NelioABExperiment {
 
@@ -76,6 +76,27 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			return $result;
 		}
 
+		public function get_json4js_alternatives() {
+			$result = array();
+
+			foreach ( $this->appspot_alternatives as $alt ) {
+				if ( $alt->was_removed() )
+					continue;
+				$json_alt = $alt->json4js();
+				array_push( $result, $json_alt );
+			}
+
+			foreach ( $this->local_alternatives as $alt ) {
+				if ( $alt->was_removed() )
+					continue;
+				$json_alt = $alt->json4js();
+				$json_alt['isNew'] = true;
+				array_push( $result, $json_alt );
+			}
+
+			return $result;
+		}
+
 		public function get_alternative_by_id( $id ) {
 			foreach ( $this->get_alternatives() as $alt )
 				if ( $alt->get_id() == $id )
@@ -111,46 +132,25 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			array_push( $this->local_alternatives, $alt );
 		}
 
-		public function encode_appspot_alternatives() {
-			$aux = array();
-			foreach ( $this->get_appspot_alternatives() as $alt )
-				array_push( $aux, $alt->json() );
-			return base64_encode( json_encode( $aux ) );
-		}
-
-		public function load_encoded_appspot_alternatives( $input ) {
-			$data = json_decode( base64_decode( $input ) );
-			$aux  = array();
-			foreach( $data as $json_alt ) {
-				$alt = new NelioABAlternative();
-				$alt->load_json( $json_alt );
-				array_push( $aux, $alt );
-			}
-			$this->set_appspot_alternatives( $aux );
-		}
-
-		public function encode_local_alternatives() {
-			$aux = array();
-			foreach ( $this->get_local_alternatives() as $alt )
-				array_push( $aux, $alt->json() );
-			return base64_encode( json_encode( $aux ) );
-		}
-
-		public function load_encoded_local_alternatives( $input ) {
-			$data = json_decode( base64_decode( $input ) );
-			foreach( $data as $json_alt ) {
-				$alt = new NelioABAlternative();
-				$alt->load_json( $json_alt );
-				array_push( $this->local_alternatives, $alt );
-			}
-		}
-
 		public function remove_alternative_by_id( $id ) {
 			foreach ( $this->get_alternatives() as $alt ) {
 				if ( $alt->get_id() == $id ) {
 					$alt->mark_as_removed();
 					return;
 				}
+			}
+		}
+
+		public function load_json4js_alternatives( $json_alts ) {
+			foreach ( $json_alts as $json_alt ) {
+				if ( isset( $json_alt->isNew ) && $json_alt->isNew &&
+				     isset( $json_alt->wasDeleted ) && $json_alt->wasDeleted )
+					continue;
+				$alt = NelioABAlternative::build_alternative_using_json4js( $json_alt );
+				if ( $alt->get_id() > 0 )
+					$this->add_appspot_alternative( $alt );
+				else
+					$this->add_local_alternative( $alt );
 			}
 		}
 
@@ -188,4 +188,3 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 
 }
 
-?>

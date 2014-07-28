@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.1.7
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,8 +19,12 @@ service for your WordPress site. It helps you define, manage, and keep track of
 Get everything you need from within your WordPress dashboard, where you'll
 benefit from a lovely, integrated, and familiar user experience. Since we
 designed the tool specifically for WordPress, you will have complete control on
-what you test: pages, posts, themes, titles… and many more that will be
+what you test: pages, posts, themes, titles... and many more that will be
 available in future releases!
+
+**Version 3.0** is the first big update of Nelio A/B Testing since we first
+launched it. It uses a new user interface that is faster and easier to use.  It
+also includes many efficiency and stability improvements.
 
 **Note** Please keep in mind that [you will need an
 account](http://wp-abtesting.com/subscription-plans/) to use our plugin (the
@@ -119,28 +123,42 @@ We keep an [up-to-date FAQs page in our site](http://wp-abtesting.com/faqs/).
 
 == Screenshots ==
 
-1. **Relevant info with a quick glance.** When you have an experiment running,
-you can see how it is performing in the Results of the Experiment page.
-2. **Data made easy.** Additional graphics help you understand what is going
+1. **Relevant info with a quick glance.** Running experiments are visible in
+Nelio's Dashboard. There, you'll find a summary of all the relevant information
+you need.
+2. **Progress of your Experiment.** Whilst an experiment is running (or once
+it is finished), you can see how it is performing in the Results of the
+Experiment page.
+3. **Data made easy.** Additional graphics help you understand what is going
 on.
-3. **Experiment Management.** Manage your experiments without leaving
+4. **Experiment Management.** Manage your experiments without leaving
 WordPress: creation, deletion, and monitoring!
-4. **Experiment Creation.** Creating new experiments has never been so easy!
+5. **Experiment Creation.** Creating new experiments has never been so easy!
 Just set a name, a description, and the page you want to test!
-5. **Alternatives are Regular Pages.** For each page to test, you can create
+6. **Alternatives are Regular Pages.** For each page to test, you can create
 alternatives quickly and easily, from scratch or from already-existing pages!
-6. **Account details.** View your account information and access your directly
+7. **Account details.** View your account information and access your directly
 from the plugin.
-7. **Use our plugin in more than one site.** You can use our plugin and service
+8. **Use our plugin in more than one site.** You can use our plugin and service
 on more than one site. Very useful for staging and production environments!
-8. **Different types of experiments.** Our product let's you test different
+9. **Different types of experiments.** Our product let's you test different
 aspects of your WordPress site; just select what you want to test and create
 the experiment!
-9. **Heatmaps.** Our service let's you analyse the hottest areas of any page
+10. **Heatmaps.** Our service let's you analyse the hottest areas of any page
 on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.0 =
+* **New User Interface** The User Interface in the Dashboard has been
+redesigned. Experiment creation and edition is easier and faster.
+* **Advanced Goal Management** You now have full control when it comes to
+define conversions. All the information you need, when you need it.
+* **New Dashboard** First version of an A/B Testing dashboard. You now have
+all relevant information just one click away!
+* **Efficiency Improvements** We updated the plugin to make it faster and
+more reliable.
 
 = 2.1.7 =
 * Bug fix: pages created with OptimizePress can now be properly duplicated.
@@ -410,5 +428,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.1.7 =
-Improved support for OptimizePress.
+= 3.0.0 =
+New User Interface, new dashboard, and efficiency improvements.

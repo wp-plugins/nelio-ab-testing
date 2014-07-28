@@ -22,7 +22,7 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-statistics.php' );
-	require_once( NELIOAB_MODELS_DIR . '/alternatives/gstats.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
 
 	class NelioABHeatmapExperiment extends NelioABExperiment {
 

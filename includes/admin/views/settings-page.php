@@ -1,17 +1,19 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
  * This script is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -129,6 +131,15 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				'nelioab_behavior_section'
 			);
 
+			add_settings_field(
+				'use_php_cookies',
+				'PHP cookies',
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_cookies_field' ),
+				'nelioab-settings',
+				'nelioab_behavior_section'
+			);
+
 		}
 
 		public static function print_section_without_info() {
@@ -206,7 +217,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				$field_name, NelioABSettings::get_exploitation_percentage()
 			);
 			?>
-			<span id="value_<?php echo $field_name; ?>"></span>
+			<span class="description" id="value_<?php echo $field_name; ?>"></span>
 			<script>
 				jQuery("#greedy_enabled").on("change", function() {
 					var option = jQuery("#<?php echo $field_name; ?>").parent().parent();
@@ -230,8 +241,27 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 		}
 
+		public static function print_cookies_field() {
+			$field_name = 'use_php_cookies';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" style="width:100%;">',
+				$field_name
+			);
+			?>
+				<option value='0'><?php _e( 'Disabled (use JavaScript)', 'nelioab' ); ?></option>
+				<option value='1'<?php
+					if ( NelioABSettings::use_php_cookies() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Enabled', 'nelioab' ); ?></option>
+			</select>
+			<br><span class="description"><?php
+				_e( 'Select how alternatives are loaded. With PHP cookies, page load times might be faster, because regular cookies reduce the amount of queries your visitors will perform to your server. However, they cannot be used everywhere (for instance, <a href="http://wpengine.com">WPEngine</a> does not permit them). If you are not sure, use JavaScript.',
+					'nelioab' );
+			?></span>
+			<?php
+		}
+
 	}//NelioABSettingsPage
 
 }
 
-?>

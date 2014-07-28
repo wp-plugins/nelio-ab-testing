@@ -25,6 +25,7 @@ if( !class_exists( 'NelioABSettings' ) ) {
 		const DEFAULT_IS_GREEDY_ENABLED      = false;
 		const DEFAULT_USE_COLORBLIND_PALETTE = false;
 		const DEFAULT_EXACT_URL_EXTERNAL     = true;
+		const DEFAULT_USE_PHP_COOKIES        = false;
 
 		public static function get_settings() {
 			return get_option( 'nelioab_settings', array() );
@@ -62,6 +63,12 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			$new_input['expl_ratio'] = NelioABSettings::DEFAULT_EXPL_RATIO;
 			if( isset( $input['expl_ratio'] ) )
 				$new_input['expl_ratio'] = sanitize_text_field( $input['expl_ratio'] );
+
+			$new_input['use_php_cookies'] = NelioABSettings::DEFAULT_USE_PHP_COOKIES;
+			if( isset( $input['use_php_cookies'] ) ) {
+				$new_input['use_php_cookies'] = sanitize_text_field( $input['use_php_cookies'] );
+				$new_input['use_php_cookies'] = $new_input['use_php_cookies'] == '1';
+			}
 
 			return $new_input;
 		}
@@ -113,6 +120,14 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				return $options['exact_url_external'];
 			return NelioABSettings::DEFAULT_EXACT_URL_EXTERNAL;
 		}
+
+		public static function use_php_cookies() {
+			$options = NelioABSettings::get_settings();
+			if ( isset( $options['use_php_cookies'] ) )
+				return $options['use_php_cookies'];
+			return NelioABSettings::DEFAULT_USE_PHP_COOKIES;
+		}
+
 
 		public static function cookie_prefix() {
 			return 'nelioab_';

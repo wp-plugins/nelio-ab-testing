@@ -24,6 +24,8 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 		private $original_appspot_theme;
 		private $original_local_theme;
 
+		private $selected_themes;
+
 		public function __construct( $id ) {
 			parent::__construct( $id );
 			$this->set_type( NelioABExperiment::THEME_ALT_EXP );
@@ -31,6 +33,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			$this->original_local_theme   = json_decode( json_encode(
 				array( 'name' => '', 'value' => -1 )
 			)	);
+			$this->selected_themes = array();
 		}
 
 		public function get_original() {
@@ -42,7 +45,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 		}
 
 		protected function determine_proper_status() {
-			if ( count( $this->get_local_alternatives() ) <= 0 )
+			if ( count( $this->selected_themes ) <= 0 )
 				return NelioABExperimentStatus::DRAFT;
 			return parent::determine_proper_status();
 		}
@@ -63,30 +66,14 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 		}
 
 		public function add_selected_theme( $id, $name ) {
-			$this->add_local_alternative(
+			array_push( $this->selected_themes,
 				json_decode( json_encode(
 					array( 'name' => $name, 'value' => $id )
 				) ) );
 		}
 
-		public function encode_appspot_alternatives() {
-			$aux = array();
-			$ori = $this->original_appspot_theme;
-			if ( $ori )
-				array_push( $aux, $ori->json() );
-			foreach ( $this->get_appspot_alternatives() as $alt )
-				array_push( $aux, $alt->json() );
-			return base64_encode( json_encode( $aux ) );
-		}
-
-		public function encode_local_alternatives() {
-			return base64_encode( json_encode( $this->get_local_alternatives() ) );
-		}
-
-		public function load_encoded_local_alternatives( $input ) {
-			$aux = json_decode( base64_decode( $input ) );
-			foreach( $aux as $alt )
-				$this->add_local_alternative( $alt );
+		public function get_selected_themes() {
+			return $this->selected_themes;
 		}
 
 		private function is_new( $theme_id ) {
@@ -97,15 +84,15 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 		}
 
 		private function was_removed( $alt ) {
-			foreach( $this->get_local_alternatives() as $local )
-				if ( $local->value == $alt->get_value() )
+			foreach( $this->selected_themes as $selected_theme )
+				if ( $selected_theme->value == $alt->get_value() )
 					return false;
 			return true;
 		}
 
-		public function is_theme_selected_locally( $theme_id ) {
-			foreach( $this->get_local_alternatives() as $alt )
-				if ( $alt->value == $theme_id )
+		public function is_theme_selected( $theme_id ) {
+			foreach( $this->selected_themes as $selected_theme )
+				if ( $selected_theme->value == $theme_id )
 					return true;
 			return false;
 		}
@@ -196,13 +183,13 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 
 
 			// 2.3. CREATE "NEW" LOCAL ALTERNATIVES IN APPSPOT
-			foreach ( $this->get_local_alternatives() as $alt ) {
-				if ( !$this->is_new( $alt->value ) )
+			foreach ( $this->selected_themes as $selected_theme ) {
+				if ( !$this->is_new( $selected_theme->value ) )
 					continue;
 
 				$body = array(
-					'name'  => $alt->name,
-					'value' => $alt->value,
+					'name'  => $selected_theme->name,
+					'value' => $selected_theme->value,
 					'kind' => NelioABExperiment::THEME_ALT_EXP_STR,
 				);
 
@@ -248,4 +235,3 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 
 }
 
-?>

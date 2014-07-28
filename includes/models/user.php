@@ -24,16 +24,24 @@ if ( !class_exists( 'NelioABUser' ) ) {
 		const COOKIE_LIFETIME = 5184000; // 60 days
 		const TEN_YEARS = 315360000;
 
+		private static $assigned_theme;
+
 		public static function get_id() {
 			global $NELIOAB_COOKIES;
 
 			if ( isset( $NELIOAB_COOKIES['nelioab_userid'] ) )
 				return $NELIOAB_COOKIES['nelioab_userid'];
 
-			$user_id     = get_option( 'nelioab_last_user_id', 0 ) + 1;
+			if ( function_exists( 'uniqid' ) ) {
+				$user_id = uniqid( 'ui_', true );
+			}
+			else {
+				$user_id = get_option( 'nelioab_last_user_id', 0 ) + 1;
+				update_option( 'nelioab_last_user_id', $user_id );
+				$user_id = 'db_' . $user_id;
+			}
 			$cookie_name =  NelioABSettings::cookie_prefix() . 'userid';
 			nelioab_setcookie( $cookie_name, $user_id, time() + NelioABUser::TEN_YEARS );
-			update_option( 'nelioab_last_user_id', $user_id );
 
 			return $user_id;
 		}
@@ -194,15 +202,15 @@ if ( !class_exists( 'NelioABUser' ) ) {
 
 		public static function get_assigned_theme() {
 			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+
 			$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
 
-			if ( !$alt )
-				return wp_get_theme();
-
-			$themes = wp_get_themes();
-			foreach ( $themes as $theme )
-				if ( $theme['Stylesheet'] == $alt->get_value() )
-					return $theme;
+			if ( $alt ) {
+				$themes = wp_get_themes();
+				foreach ( $themes as $theme )
+					if ( $theme['Stylesheet'] == $alt->get_value() )
+						return $theme;
+			}
 
 			return wp_get_theme();
 		}
@@ -211,4 +219,3 @@ if ( !class_exists( 'NelioABUser' ) ) {
 
 }
 
-?>

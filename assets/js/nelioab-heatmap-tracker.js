@@ -338,9 +338,10 @@ function nelioabStartHeatmapTracking() {
 			jQuery.ajax({
 				type: 'POST',
 				async: false,
-				url:	window.location.href,
+				url: NelioABHMTracker.ajaxurl,
 				data: {
-					'nelioab_send_heatmap_info': 'true',
+					action: 'nelioab_send_heatmap_info',
+					current_url: document.URL,
 					'phone-data':         JSON.stringify( phone_data.        exportDataSet() ),
 					'tablet-data':        JSON.stringify( tablet_data.       exportDataSet() ),
 					'desktop-data':       JSON.stringify( desktop_data.      exportDataSet() ),

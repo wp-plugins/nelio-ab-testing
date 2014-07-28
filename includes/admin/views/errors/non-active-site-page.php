@@ -41,7 +41,7 @@ if ( !class_exists( 'NelioABNonActiveSitePage' ) ) {
 
 			echo sprintf( "<br /><div style=\"text-align:center;$style\">%s</div>",
 					$this->make_button(
-						__( 'Go to Account', 'nelioab' ),
+						__( 'Go to My Account', 'nelioab' ),
 						get_admin_url() . '/admin.php?page=nelioab-account',
 						true
 					)
