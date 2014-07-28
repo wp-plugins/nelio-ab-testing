@@ -1,17 +1,20 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -223,82 +226,12 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 			$this->goals = $remaining_goals;
 		}
 
-		protected function split_page_accessed_goal_if_any() {
-			// I'm not sure this line is necessary at all... I hope so!
-			$this->unsplit_page_accessed_goal_if_any();
-
-			$requires_persistance = false;
-			$goals = $this->get_goals();
-
-			if ( count( $goals ) == 1 && !$goals[0]->is_main_goal() ) {
-				$goals[0]->set_as_main_goal( true );
-				$requires_persistance = true;
-			}
-
-			$main_goal = NULL;
-			foreach ( $goals as $goal ) {
-				if ( $goal->is_main_goal() ) {
-					$main_goal = $goal;
-					break;
-				}
-			}
-
-			if ( $main_goal != NULL &&
-			     $main_goal->get_kind() == NelioABGoal::PAGE_ACCESSED_GOAL ) {
-				if ( count( $main_goal->get_pages() ) > 1 ) {
-					foreach ( $main_goal->get_pages() as $page ) {
-						$requires_persistance = true;
-						$goal = new NelioABPageAccessedGoal( $this );
-						$goal->add_page( $page );
-						$this->add_goal( $goal );
-					}
-				}
-			}
-
-			if ( $requires_persistance )
-				$this->make_goals_persistent();
-		}
-
-		protected function unsplit_page_accessed_goal_if_any() {
-			$page_accessed_goals = array();
-			$other_goals         = array();
-
-			foreach ( $this->get_goals() as $goal ) {
-				if ( $goal->get_kind() == NelioABGoal::PAGE_ACCESSED_GOAL )
-					array_push( $page_accessed_goals, $goal );
-				else
-					array_push( $other_goals, $goal );
-			}
-
-			if ( count( $page_accessed_goals ) <= 1 )
-				return;
-
-			// If there are more than one page accessed goals,
-			// one of them has to be the master,
-			// and we have to delete the rest
-			$master = false;
-			foreach ( $page_accessed_goals as $goal ) {
-				if ( $goal->is_main_goal() )
-					$master = $goal;
-				else
-					$goal->set_to_be_deleted( true );
-			}
-
-			// If none is the master (strange situation), I just leave
-			if ( !$master )
-				return;
-
-			$this->make_goals_persistent();
-		}
-
 		public abstract function get_exp_kind_url_fragment();
 		public abstract function save();
 		public abstract function remove();
 
 		public abstract function start();
 		public abstract function stop();
-
-		public static abstract function load( $id );
 
 		public static function cmp_obj( $a, $b ) {
 			return strcmp( $a->get_name(), $b->get_name() );
@@ -340,4 +273,3 @@ if ( !class_exists( 'NelioABExperimentStatus' ) ) {
 
 }
 
-?>

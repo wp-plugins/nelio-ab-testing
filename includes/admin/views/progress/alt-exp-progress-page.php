@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
@@ -28,6 +30,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		protected $winner_label;
 		protected $goals;
 		protected $goal;
+		protected $graphic_delay;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -35,6 +38,12 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$this->exp          = null;
 			$this->goal         = null;
 			$this->results      = null;
+			$this->graphic_delay = 500;
+		}
+
+		private function print_graphic_delay() {
+			echo $this->graphic_delay;
+			$this->graphic_delay += 500;
 		}
 
 		public function set_experiment( $exp ) {
@@ -45,7 +54,6 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$sorted = array();
 			$aux    = array();
 			foreach ( $goals as $goal ) {
-				$this->autoset_goal_name( $goal );
 				if ( $goal->is_main_goal() )
 					array_push( $sorted, $goal );
 				else
@@ -71,28 +79,6 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 		public static function sort_by_name( $a, $b ) {
 			return strcmp( $a->get_name(), $b->get_name() );
-		}
-
-		private function autoset_goal_name( $goal ) {
-			if ( $goal->is_main_goal() ) {
-				$goal->set_name( __( 'Aggregated Info', 'nelioab' ) );
-				return;
-			}
-			$page = $goal->get_pages();
-			$page = $page[0];
-			if ( $page->is_external() ) {
-				$goal->set_name( $page->get_title() );
-			}
-			else {
-				$name = __( 'Unnamed', 'nelioab' );
-				$post = get_post( $page->get_reference() );
-				if ( $post ) {
-					$name = $post->post_title;
-					if ( strlen( $name ) > 30 )
-						$name = substr( $name, 0, 30 ) . '...';
-				}
-				$goal->set_name( $name );
-			}
 		}
 
 		public function set_current_selected_goal( $id ) {
@@ -264,11 +250,11 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$the_winner            = $this->who_wins();
 			$the_winner_confidence = $this->get_winning_confidence();
 
-			$the_winner_conversion_rate = $this->get_winning_conversion_rate();
-			if ( $the_winner_conversion_rate < 0 )
-				$the_winner_conversion_rate = '&mdash;';
+			$best_alt_conversion_rate = $this->get_best_alt_conversion_rate();
+			if ( $best_alt_conversion_rate < 0 )
+				$best_alt_conversion_rate = '&mdash;';
 			else
-				$the_winner_conversion_rate = number_format( $the_winner_conversion_rate, 2 );
+				$best_alt_conversion_rate = number_format( $best_alt_conversion_rate, 2 );
 
 			$this->winner_label = sprintf( ' alt-type-winner" title="%s"',
 				sprintf( __( 'Wins with a %s%% confidence', 'nelioab'), $the_winner_confidence ) );
@@ -278,52 +264,11 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			?>
 
 			<script type="text/javascript">
-				var colors = Highcharts.getOptions().colors;
 				var timelineGraphic;
 				var visitsGraphic;
 				var improvFactorGraphic;
 				var convRateGraphic;
-
-				function resizeGraphics() {
-					var $ = jQuery;
-					try {
-						var defaultWidth = 480;
-						if ( $("body").width() > 1200 )
-							defaultWidth = ($("body").width() - 200) / 3 - 40;
-						visitsGraphic.setSize( 320, 320, false);
-						improvFactorGraphic.setSize( 320, 320, false);
-						convRateGraphic.setSize( 320, 320, false);
-						visitsGraphic.setSize( defaultWidth, 320, false);
-						improvFactorGraphic.setSize( defaultWidth, 320, false);
-						convRateGraphic.setSize( defaultWidth, 320, false);
-					}
-					catch (e) {}
-
-					try {
-						timelineGraphic.setSize( 320, 240, false );
-						var infosumWidth  = 200;
-						var timelineWidth = $("body").width() - infosumWidth - $("#adminmenuwrap").width() - 150;
-						if ( timelineWidth < 400 ) {
-							$("#summary-numbers").css("float", "none");
-							$("#nelioab-timeline-graphic").css("float", "none");
-							infosumWidth = 'auto';
-							timelineWidth = $("body").width() - $("#adminmenuwrap").width() - 150;
-						}
-						else {
-							$("#summary-numbers").css("float", "left");
-							$("#nelioab-timeline-graphic").css("float", "left");
-						}
-						$("#summary-numbers").width( infosumWidth );
-						timelineGraphic.setSize( timelineWidth, 260, false );
-					}
-					catch (e) {}
-				}
-
-				jQuery(window).resize(function() {
-					resizeGraphics();
-				});
-
-		</script>
+			</script>
 
 			<?php
 			if ( count( $this->goals ) > 1 ) { ?>
@@ -352,25 +297,12 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				<!-- EXPERIMENT SUMMARY -->
 				<div id="info-summary" class="postbox">
 					<h3 style="cursor:auto;"><?php
-						$lights_img   = '';
-						$lights_label = '';
-						if ( $the_winner == -1 ) {
-							$lights_img = 'status-clock';
-							$lights_label = __( 'There is not enough data to determine any winner yet', 'nelioab' );
-						}
-						else if ( $the_winner_confidence < 90 ) {
-							$lights_img = 'status-star';
-							$lights_label = __( 'There is a possible winner, but keep in mind the confidence does not reach 90%', 'nelioab' );
-						}
-						else {
-							$lights_img = 'status-tick';
-							$lights_label = __( 'There is a clear winner, with a confidence greater than 90%', 'nelioab' );
-						}
-					?><div class="<?php echo $lights_img; ?>"
-						title="<?php echo $lights_label; ?>"></div> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
+						$light = NelioABGTest::generate_status_light( $this->results->get_summary_status() ); // TODO!!
+						echo $light;
+					?> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
 					<div class="inside">
 
-						<div>
+						<div id="summary-content">
 							<div id="summary-numbers">
 								<h3><?php
 									$conf_label = ' (' . __( 'Confidence', 'nelioab' ) . ')';
@@ -398,11 +330,11 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 								}
 								?>
 
-								<h3><?php _e( 'Winner\'s Conversion Rate', 'nelioab' ); ?></h3>
-								<p class="result"><?php printf( '%s %%', $the_winner_conversion_rate ); ?></p>
-
 								<h3><?php _e( 'Original\'s Conversion Rate', 'nelioab' ); ?></h3>
 								<p class="result"><?php printf( '%s %%', $originals_conversion_rate ); ?></p>
+
+								<h3><?php _e( 'Best Alt\'s Conversion Rate', 'nelioab' ); ?></h3>
+								<p class="result"><?php printf( '%s %%', $best_alt_conversion_rate ); ?></p>
 
 								<h3><?php _e( 'Conversions / Page Views', 'nelioab' ); ?></h3>
 								<p class="result"><?php echo $total_conversions . ' / ' . $total_visitors; ?></p>
@@ -412,10 +344,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							<div id="nelioab-timeline" class="nelioab-timeline-graphic">
 							</div>
 							<?php
-								if ( isset( $this->results ) && $this->results->has_historic_info() )
-									$this->print_timeline_for_alternatives_js();
-								else
+								if ( isset( $this->results ) && !$this->results->has_historic_info() )
 									$this->print_timeline_js();
+								else
+									$this->print_timeline_for_alternatives_js();
 							?>
 
 							<div class="clear"></div>
@@ -515,7 +447,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 						if ( $this->exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
 							<div style="margin-top:1em;">
 								<script>
-								function forceStop() {
+								function forceStop() {<?php
+									$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
+									$msg = str_replace( '"', '\\"', $msg ); ?>
+									if ( !confirm( "<?php echo $msg; ?>") ) return;
 									smoothTransitions();
 									jQuery.get(
 										"<?php echo sprintf(
@@ -553,17 +488,21 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			if ( $res != null ) { ?>
 
 				<!-- Summary graphics -->
-				<div id="nelioab-visitors" class="nelioab-summary-graphic">
+				<div style="text-align:center;">
+					<div id="nelioab-visitors" class="nelioab-summary-graphic">
+					</div>
+					<?php $this->print_visitors_js(); ?>
+	
+					<div id="nelioab-convrate-and-impfactor">
+						<div id="nelioab-conversion-rate" class="nelioab-summary-graphic">
+						</div>
+						<?php $this->print_conversion_rate_js(); ?>
+		
+						<div id="nelioab-improvement-factor" class="nelioab-summary-graphic">
+						</div>
+						<?php $this->print_improvement_factor_js(); ?>
+					</div>
 				</div>
-				<?php $this->print_visitors_js(); ?>
-
-				<div id="nelioab-conversion-rate" class="nelioab-summary-graphic">
-				</div>
-				<?php $this->print_conversion_rate_js(); ?>
-
-				<div id="nelioab-improvement-factor" class="nelioab-summary-graphic">
-				</div>
-				<?php $this->print_improvement_factor_js(); ?>
 
 				<?php
 				$wp_list_table = new NelioABAltExpProgressTable( $res->get_alternative_results() );
@@ -588,8 +527,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 					<ul style="list-style-type:circle; margin-left:2em;">
 					<?php
-						foreach( $res->get_gstats() as $g_stat ) {
-							echo '<li>' . $g_stat->to_string() . '</li>';
+						foreach( $res->get_gtests() as $gtest ) {
+							echo '<li>' . $gtest->to_string() . '</li>';
 						}
 					?>
 					</ul>
@@ -609,7 +548,6 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				printf( '<p style="color:#555;font-size:120%%;">%s</p>',
 					__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results.', 'nelioab' ) );
 			}
-
 		}
 
 		protected function print_alternatives_block() {
@@ -624,17 +562,19 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		abstract protected function print_the_real_alternatives();
 		abstract protected function print_winner_info();
 
-		protected function get_winning_conversion_rate() {
+		protected function get_best_alt_conversion_rate() {
 			$res = $this->results;
 			if ( $res == null )
 				return -1;
-
-			foreach ( $res->get_alternative_results() as $alt_result ) {
-				if ( $this->is_winner( $alt_result->get_alt_id() ) )
-					return $alt_result->get_conversion_rate();
+			$best = 0;
+			$alts = $res->get_alternative_results();
+			for ( $i = 1; $i < count( $alts ); ++$i ) {
+				$alt_result = $alts[$i];
+				$conv = $alt_result->get_conversion_rate();
+				if ( $best < $conv )
+					$best = $conv;
 			}
-
-			return -1;
+			return $best;
 		}
 
 		protected function get_winning_confidence() {
@@ -650,7 +590,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				return false;
 
 			$exp    = $this->exp;
-			$gtests = $res->get_gstats();
+			$gtests = $res->get_gtests();
 
 			if ( count( $gtests ) == 0 )
 				return false;
@@ -679,7 +619,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			if ( $res == null )
 				return false;
 
-			$gtests = $res->get_gstats();
+			$gtests = $res->get_gtests();
 			if ( count( $gtests ) == 0 )
 				return false;
 
@@ -759,9 +699,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			var conversions = <?php echo json_encode( $conversions ); ?>;
 			var labels      = <?php echo json_encode( $labels ); ?>;
 			var startDate   = <?php echo $date; ?>;
-
-			timelineGraphic = makeTimelineGraphic("nelioab-timeline", labels, visitors, conversions, startDate);
-			resizeGraphics();
+			var aux = setTimeout( function() {
+				timelineGraphic = makeTimelineGraphic("nelioab-timeline", labels, visitors, conversions, startDate);
+			}, <?php echo $this->print_graphic_delay(); ?> );
 		})(jQuery);
 		</script>
 		<?php
@@ -853,8 +793,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			var labels       = <?php echo json_encode( $labels ); ?>;
 			var startDate    = <?php echo $date; ?>;
 
-			timelineGraphic = makeTimelinePerAlternativeGraphic("nelioab-timeline", labels, alternatives, startDate);
-			resizeGraphics();
+			var aux = setTimeout( function() {
+				timelineGraphic = makeTimelinePerAlternativeGraphic("nelioab-timeline", labels, alternatives, startDate);
+			}, <?php echo $this->print_graphic_delay(); ?> );
 		})(jQuery);
 		</script>
 		<?php
@@ -907,9 +848,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$data = array();
 			foreach( $alt_results as $aux ) {
 				$rate = $aux->get_conversion_rate();
-				$color = 'color:colors[0]';
+				$color = 'color:"#7CB5EC"';
 				if ( $rate == $max_value )
-					$color = 'color:colors[2]';
+					$color = 'color:"#81D24A"';
 				$str = "{ y:$rate, $color }";
 				array_push( $data, $str );
 			}
@@ -923,8 +864,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			var categories  = <?php echo json_encode( $categories ); ?>;
 			var data        = [ <?php echo implode( ',', $data ); ?> ];
 			var labels      = <?php echo json_encode( $labels ); ?>;
-			convRateGraphic = makeConversionRateGraphic("nelioab-conversion-rate", labels, categories, data);
-			resizeGraphics();
+
+			var aux = setTimeout( function() {
+				convRateGraphic = makeConversionRateGraphic("nelioab-conversion-rate", labels, categories, data);
+			}, <?php echo $this->print_graphic_delay(); ?> );
 		})(jQuery);
 		</script>
 		<?php
@@ -979,11 +922,11 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$data = array();
 			foreach( $alt_results as $aux ) {
 				$factor = $aux->get_improvement_factor();
-				$color = 'color:colors[0]';
+				$color = 'color:"#7CB5EC"';
 				if ( $factor == $max_value )
-					$color = 'color:colors[2]';
+					$color = 'color:"#81D24A"';
 				if ( $factor < 0 )
-					$color = 'color:colors[8]';
+					$color = 'color:"#DD3D36"';
 				$str = "{ y:$factor, $color }";
 				array_push( $data, $str );
 			}
@@ -997,8 +940,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			var categories      = <?php echo json_encode( $categories ); ?>;
 			var data            = [ <?php echo implode( ',', $data ); ?> ];
 			var labels          = <?php echo json_encode( $labels ); ?>;
-			improvFactorGraphic = makeImprovementFactorGraphic("nelioab-improvement-factor", labels, categories, data);
-			resizeGraphics();
+			var aux = setTimeout( function() {
+				improvFactorGraphic = makeImprovementFactorGraphic("nelioab-improvement-factor", labels, categories, data);
+			}, <?php echo $this->print_graphic_delay(); ?> );
 		})(jQuery);
 		</script>
 		<?php
@@ -1044,8 +988,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			var visitors    = <?php echo json_encode( $visitors ); ?>;
 			var conversions = <?php echo json_encode( $conversions ); ?>;
 			var labels      = <?php echo json_encode( $labels ); ?>;
-			visitsGraphic   = makeVisitorsGraphic("nelioab-visitors", labels, categories, visitors, conversions);
-			resizeGraphics();
+			var aux = setTimeout( function() {
+				visitsGraphic   = makeVisitorsGraphic("nelioab-visitors", labels, categories, visitors, conversions);
+			}, <?php echo $this->print_graphic_delay(); ?> );
 		})(jQuery);
 		</script>
 
@@ -1095,6 +1040,3 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 }
 
-
-
-?>

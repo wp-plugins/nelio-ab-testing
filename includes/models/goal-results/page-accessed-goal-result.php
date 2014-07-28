@@ -17,26 +17,37 @@
 
 if( !class_exists( 'NelioABPageAccessedGoalResult' ) ) {
 
+	include_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
 	include_once( NELIOAB_MODELS_DIR . '/goal-results/goal-result.php' );
 	class NelioABPageAccessedGoalResult extends NelioABGoalResult {
 
+		private $summary_status;
 		private $total_visitors;
 		private $total_conversions;
 		private $total_conversion_rate;
 		private $alternatives;
-		private $gstats;
+		private $gtests;
 		private $visitors_history;
 		private $conversions_history;
 
 		public function __construct() {
 			parent::__construct();
+			$this->summary_status        = NelioABGTest::UNKNOWN;
 			$this->total_visitors        = 0;
 			$this->total_conversions     = 0;
 			$this->total_conversion_rate = 0;
 			$this->alternatives          = array();
-			$this->gstats                = array();
+			$this->gtests                = array();
 			$this->visitors_history      = array();
 			$this->conversions_history   = array();
+		}
+
+		public function set_summary_status( $status ) {
+			$this->summary_status = $status;
+		}
+
+		public function get_summary_status() {
+			return $this->summary_status;
 		}
 
 		public function add_alternative_results( $alternative_results ) {
@@ -71,12 +82,12 @@ if( !class_exists( 'NelioABPageAccessedGoalResult' ) ) {
 			return $this->total_conversion_rate;
 		}
 
-		public function add_gstat( $g ) {
-			array_push( $this->gstats, $g );
+		public function add_gtest( $g ) {
+			array_push( $this->gtests, $g );
 		}
 
-		public function get_gstats() {
-			return $this->gstats;
+		public function get_gtests() {
+			return $this->gtests;
 		}
 
 		public function set_visitors_history( $visitors_history ) {

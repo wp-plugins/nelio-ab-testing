@@ -12,18 +12,21 @@
     font-style: normal;
 }
 
-#toplevel_page_nelioab-experiments div.wp-menu-image:before {
+#toplevel_page_nelioab-experiments div.wp-menu-image:before,
+#toplevel_page_nelioab-dashboard div.wp-menu-image:before {
 	font-family: 'NelioFont' !important;
 	content: '\f100';
 }
 
-#toplevel_page_nelioab-experiments div.wp-menu-image {
+#toplevel_page_nelioab-experiments div.wp-menu-image,
+#toplevel_page_nelioab-dashboard div.wp-menu-image {
 	background: none;
 	background-image: none;
 }
 
-@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi) {
-	#toplevel_page_nelioab-experiments div.wp-menu-image {
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
+	#toplevel_page_nelioab-experiments div.wp-menu-image,
+	#toplevel_page_nelioab-dashboard div.wp-menu-image {
 		background: none;
 		background-image: none;
 	}
@@ -33,7 +36,12 @@
 #toplevel_page_nelioab-experiments.wp-has-current-submenu div.wp-menu-image,
 #toplevel_page_nelioab-experiments :hover div.wp-menu-image,
 #toplevel_page_nelioab-experiments .wp-has-current-submenu div.wp-menu-image,
-#toplevel_page_nelioab-experiments .current div.wp-menu-image {
+#toplevel_page_nelioab-experiments .current div.wp-menu-image,
+#toplevel_page_nelioab-dashboard:hover div.wp-menu-image,
+#toplevel_page_nelioab-dashboard.wp-has-current-submenu div.wp-menu-image,
+#toplevel_page_nelioab-dashboard :hover div.wp-menu-image,
+#toplevel_page_nelioab-dashboard .wp-has-current-submenu div.wp-menu-image,
+#toplevel_page_nelioab-dashboard .current div.wp-menu-image {
 	background-position: 0px 0px;
 }
 
