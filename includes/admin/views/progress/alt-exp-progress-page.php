@@ -297,7 +297,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				<!-- EXPERIMENT SUMMARY -->
 				<div id="info-summary" class="postbox">
 					<h3 style="cursor:auto;"><?php
-						$light = NelioABGTest::generate_status_light( $this->results->get_summary_status() ); // TODO!!
+						if ( $res )
+							$light = NelioABGTest::generate_status_light( $res->get_summary_status() );
+						else
+							$light = NelioABGTest::generate_status_light( false );
 						echo $light;
 					?> <span><?php _e( 'Summary', 'nelioab' ); ?></span></h3>
 					<div class="inside">
