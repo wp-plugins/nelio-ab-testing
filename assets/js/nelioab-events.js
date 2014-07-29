@@ -34,12 +34,12 @@ jQuery(document).ready(function() {
 		try { dest = target.href; } catch (e) {}
 		if ( dest != undefined ) {
 			e.type = 'byebye';
-			jQuery(document).trigger( e, [ dest ] );
+			jQuery(document).trigger( e, [ jQuery(this), dest ] );
 		}
 	});
 
 	jQuery(document).on('submit', 'form', function(e) {
-		jQuery(document).trigger( 'byebye', [ jQuery(this).attr('action') ] );
+		jQuery(document).trigger( 'byebye', [ jQuery(this), jQuery(this).attr('action') ] );
 	});
 
 });

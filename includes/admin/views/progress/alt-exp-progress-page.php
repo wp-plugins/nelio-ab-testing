@@ -69,8 +69,38 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				array_push( $sorted, $goal );
 			$this->goals = $sorted;
 
+			$are_all_undefined = true;
+			foreach ( $this->goals as $goal )
+				if ( $goal->get_name() != __( 'Undefined', 'nelioab' ) )
+					$are_all_undefined = false;
+			if ( $are_all_undefined )
+				foreach ( $this->goals as $goal )
+					$this->autoset_goal_name( $goal );
+
 			// Finally, we select one by default...
 			$this->results = null;
+		}
+
+		private function autoset_goal_name( $goal ) {
+			if ( $goal->is_main_goal() ) {
+				$goal->set_name( __( 'Aggregated Info', 'nelioab' ) );
+				return;
+			}
+			$page = $goal->get_pages();
+			$page = $page[0];
+			if ( $page->is_external() ) {
+				$goal->set_name( $page->get_title() );
+			}
+			else {
+				$name = __( 'Unnamed', 'nelioab' );
+				$post = get_post( $page->get_reference() );
+				if ( $post ) {
+					$name = $post->post_title;
+					if ( strlen( $name ) > 30 )
+						$name = substr( $name, 0, 30 ) . '...';
+				}
+				$goal->set_name( $name );
+			}
 		}
 
 		public static function sort_by_id( $a, $b ) {

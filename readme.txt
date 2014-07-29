@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,14 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.3 =
+* New Feature. So far, external goals were only tracked if the user clicked a
+link whose href was the same as the external goal's URL. Now, this is also
+extended to form submission (assuming that form's action attribute is the same
+as the external goal's URL).
+* Quick fix. In the progress of the experiment page, goals created with
+previous version of the plugin have useful names (instead of "Undefined").
 
 = 3.0.2 =
 * Bug fix: Fatal error when no results available.
@@ -434,5 +442,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.2 =
-New User Interface, new dashboard, and efficiency improvements.
+= 3.0.3 =
+External goals are also tracked with form submissions plus some minor
+improvements.
+

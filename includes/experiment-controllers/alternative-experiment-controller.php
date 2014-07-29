@@ -240,7 +240,7 @@ class NelioABAlternativeExperimentController {
 
 		$post = $posts[0];
 		if ( $this->is_post_in_a_post_alt_exp( $post->ID ) ) {
-			remove_action( 'posts_results', array( $this, 'posts_results_intercept' ) );
+			remove_filter( 'posts_results', array( $this, 'posts_results_intercept' ) );
 			$alt = get_post( $this->get_post_alternative( $post->ID ) );
 			if ( $alt )
 				$this->alternative_post = $alt;
@@ -366,8 +366,7 @@ class NelioABAlternativeExperimentController {
 		$script .= "<script>\n";
 		$script .= "jQuery(document).ready( function() {\n";
 		$script .= "   var hrefs = [ $hrefs ];\n";
-		$script .= "   jQuery('a').click(function() {\n";
-		$script .= "      href = jQuery(this).attr('href');\n";
+		$script .= "   jQuery(document).on('byebye',function(event, elem, href) {\n";
 		// Remove GET params
 		if ( !NelioABSettings::match_exact_url_for_external_goals() )
 			$script .= "      href = href.replace(/\?.*$/, '');\n";
@@ -377,7 +376,7 @@ class NelioABAlternativeExperimentController {
 		$script .= "      href = href.replace(/^https?:\/\//, 'http://');\n";
 		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
 		$script .= "         if ( hrefs[i] == href ) {\n";
-		$script .= "            jQuery(this).attr('target','_blank');\n";
+		$script .= "            elem.attr('target','_blank');\n";
 		$script .= "            nelioab_nav_to_external_page(jQuery,href);\n";
 		$script .= "            break;\n";
 		$script .= "         }\n";
@@ -579,7 +578,7 @@ class NelioABAlternativeExperimentController {
 		// Send a regular navigation (if it was not already sent, which is controlled
 		// by the "is_relevant" function) to control quota
 		$nav = $this->prepare_navigation_object( $current_post_id, '', true );
-		if ( !$nelioab_controller->is_relevant( $nav ) )
+		if ( $this->is_post_in_a_title_alt_exp( $current_post_id ) && !$nelioab_controller->is_relevant( $nav ) )
 			$nelioab_controller->send_navigation_object( $nav );
 
 		die();
