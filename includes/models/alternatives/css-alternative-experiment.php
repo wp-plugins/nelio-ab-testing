@@ -32,7 +32,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			parent::clear();
 			$this->set_type( NelioABExperiment::CSS_ALT_EXP );
 			$this->new_ids = array();
-			$this->original_appspot_css = $this->do_create_css_alternative( 'FakeOriginalCss' );
+			$this->original_appspot_css = $this->create_css_alternative( 'FakeOriginalCss' );
 		}
 
 		public function get_original() {
@@ -53,20 +53,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			parent::set_appspot_alternatives( $aux );
 		}
 
-		public function encode_appspot_alternatives() {
-			$aux = array();
-			array_push( $aux, $this->get_original()->json() );
-			foreach ( $this->get_appspot_alternatives() as $alt )
-				array_push( $aux, $alt->json() );
-			return base64_encode( json_encode( $aux ) );
-		}
-
 		public function create_css_alternative( $name ) {
-			$alt = $this->do_create_css_alternative( $name );
-			$this->add_local_alternative( $alt );
-		}
-
-		private function do_create_css_alternative( $name ) {
 			$alts = $this->get_alternatives();
 			$fake_post_id = -1;
 			foreach ( $alts as $aux )
@@ -86,16 +73,22 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
+			// 0. WE CHECK WHETHER THE EXPERIMENT IS COMPLETELY NEW OR NOT
+			// -------------------------------------------------------------------------
+			$is_new = $this->get_id() < 0;
+
+
 			// 1. SAVE THE EXPERIMENT AND ITS GOALS
 			// -------------------------------------------------------------------------
 			$exp_id = parent::save();
 
+
 			// 2. UPDATE THE ALTERNATIVES
 			// -------------------------------------------------------------------------
 
-			// 2.0. FIRST OF ALL, WE CREATE A FAKE ORIGINAL
+			// 2.0. FIRST OF ALL, WE CREATE A FAKE ORIGINAL FOR NEW EXPERIMENTS
 
-			if ( $this->get_original()->get_id() < 0 ) {
+			if ( $is_new && $this->get_original()->get_id() < 0 ) {
 				$body = array(
 					'name'    => $this->get_original()->get_name(),
 					'content' => '',
@@ -105,6 +98,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 					$result = NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 						$body );
+					$this->get_original()->set_id( $result );
 				}
 				catch ( Exception $e ) {
 				}

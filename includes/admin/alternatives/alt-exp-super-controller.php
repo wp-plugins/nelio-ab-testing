@@ -26,16 +26,11 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 	abstract class NelioABAltExpSuperController {
 
-		abstract public static function get_instance();
-		abstract public static function build();
-		abstract public static function generate_html_content();
-
-		abstract protected function do_build();
-		abstract protected function build_experiment_from_post_data();
+		protected abstract function do_build();
+		protected abstract function build_experiment_from_post_data();
 
 		public function remove_alternative() {
 			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
 			if ( isset( $_POST['alt_to_remove'] ) ) {
 				$alt_id = $_POST['alt_to_remove'];
 
@@ -46,7 +41,6 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 		public function update_alternative_name() {
 			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
 			$exp = $nelioab_admin_controller->data;
 
 			if ( isset( $_POST['qe_alt_id'] ) &&
@@ -66,7 +60,6 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 		public function validate() {
 			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
 			$exp = $nelioab_admin_controller->data;
 
 			$errors = array();
@@ -100,7 +93,6 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 		}
 
 		public function on_valid_submit() {
-
 			// 1. Save the data properly
 			global $nelioab_admin_controller;
 			$experiment = $nelioab_admin_controller->data;
@@ -121,7 +113,6 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 		public function cancel_changes() {
 			// 1. Delete any new alternatives created
 			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
 			$exp = $nelioab_admin_controller->data;
 
 			$exp->discard_changes();
@@ -132,50 +123,44 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 			die();
 		}
 
-		public function build_goal_from_post_data( $experiment ) {
-			$exp_goal = new NelioABPageAccessedGoal( $experiment );
-			if ( isset( $_POST['goal_id'] ) )
-				$exp_goal->set_id( $_POST['goal_id'] );
+		protected function compose_basic_alt_exp_using_post_data( $exp ) {
+			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
+			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
 
-			$goals_from_post = array();
-			if ( isset( $_POST['exp_goal'] ) ) {
-				if ( is_array( $_POST['exp_goal'] ) )
-					$goals_from_post = $_POST['exp_goal'];
-				else
-					$goals_from_post = array( $_POST['exp_goal'] );
+			if ( isset( $_POST['nelioab_alternatives'] ) ) {
+				$alts = json_decode( urldecode( $_POST['nelioab_alternatives'] ) );
+				$exp->load_json4js_alternatives( $alts );
 			}
 
-			foreach ( $goals_from_post as $goal ) {
-				if ( is_numeric( $goal ) ) {
-					$page = new NelioABPageDescription( $goal );
-					$exp_goal->add_page( $page );
-				}
-				else {
-					$goal = json_decode( urldecode( $goal ) );
-					$page = new NelioABPageDescription( $goal->url, false );
-					$page->set_title( $goal->name );
-					$exp_goal->add_page( $page );
+			if ( isset( $_POST['nelioab_goals'] ) ) {
+				$goals = json_decode( urldecode( $_POST['nelioab_goals'] ) );
+				if ( count( $goals ) > 0 ) {
+					foreach ( $goals as $json_goal ) {
+						$goal = NelioABPageAccessedGoal::build_goal_using_json4js( $json_goal, $exp );
+						if ( $goal )
+							$exp->add_goal( $goal );
+					}
+					$goals = $exp->get_goals();
+					$main_goal = $goals[0];
+					$main_goal->set_as_main_goal( true );
 				}
 			}
-			return $exp_goal;
+
+			return $exp;
 		}
 
 		public function manage_actions() {
+			$this->build_experiment_from_post_data();
+
 			if ( !isset( $_POST['action'] ) )
 				return;
 
-			if ( $_POST['action'] == 'validate' )
+			if ( $_POST['action'] == 'save' )
 				if ( $this->validate() )
 					$this->on_valid_submit();
 
 			if ( $_POST['action'] == 'cancel' )
 				$this->cancel_changes();
-
-			if ( $_POST['action'] == 'remove_alternative' )
-				$this->remove_alternative();
-
-			if ( $_POST['action'] == 'update_alternative_name' )
-				$this->update_alternative_name();
 
 		}
 
@@ -183,4 +168,3 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 }
 
-?>

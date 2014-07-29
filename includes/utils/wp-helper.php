@@ -148,7 +148,46 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			return $url;
 		}
 
+		/**
+		 *
+		 */
+		public static function print_selector_for_list_of_posts( $posts, $default_post_id = false, $options = array() ) {
+			echo NelioABWpHelper::get_selector_for_list_of_posts( $posts, $default_post_id, $options );
+		}
+
+		/**
+		 *
+		 */
+		public static function get_selector_for_list_of_posts( $posts, $default_post_id = false, $options = array() ) {
+			ob_start();
+			$id = '';
+			$style = '';
+			$class = '';
+			$default_value = '';
+			if ( isset( $options['id'] ) )
+				$id = ' id="' . $options['id'] . '" name="' . $options['id'] . '" ';
+			if ( isset( $options['style'] ) )
+				$id = ' style="' . $options['style'] . '" ';
+			if ( isset( $options['class'] ) )
+				$id = ' class="' . $options['class'] . '" ';
+			foreach ( $posts as $p ) {
+				$current_id = $p->ID;
+				?>
+				<option value="<?php echo $current_id; ?>"<?php
+						if ( $default_post_id == $current_id )
+							echo ' selected="selected"';
+					?>><?php
+					$title = $p->post_title;
+					if ( strlen( $title ) > 50 )
+						$title = substr( $title, 0, 50 ) . '...';
+					echo $title; ?></option><?php
+			}
+			$value = ob_get_contents();
+			ob_end_clean();
+			return $value;
+		}
+
 	}//NelioABWpHelper
 
 }
-?>
+
