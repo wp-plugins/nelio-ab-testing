@@ -1,17 +1,19 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
  * This script is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -43,14 +45,18 @@ class NelioABHeatmapExperimentController {
 
 	public function load_nelioab_scripts() {
 		wp_enqueue_script( 'nelioab_sync_heatmaps',
-			NELIOAB_ASSETS_URL . '/js/nelioab-sync-heatmaps.min.js?' . NELIOAB_PLUGIN_VERSION );
+			nelioab_asset_link( '/js/nelioab-sync-heatmaps.min.js' ) );
+		wp_localize_script( 'nelioab_sync_heatmaps',
+			'NelioABHMSync', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 		if ( $this->has_post_a_heatmap_experiment() ||
-		     $this->is_post_in_an_ab_experiment_with_heatmaps() ) {
+		   ( $this->is_post_in_an_ab_experiment_with_heatmaps() && isset( $_POST['nelioab_load_alt'] ) ) ) {
 			global $nelioab_controller;
 			$post_id = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $nelioab_controller->get_current_url() );
 			?><script>var nelioab__hm_post_id = "<?php echo $post_id; ?>";</script><?php echo "\n";
 			wp_enqueue_script( 'nelioab_track_heatmaps',
-				NELIOAB_ASSETS_URL . '/js/nelioab-heatmap-tracker.min.js?' . NELIOAB_PLUGIN_VERSION );
+				nelioab_asset_link( '/js/nelioab-heatmap-tracker.min.js' ) );
+			wp_localize_script( 'nelioab_track_heatmaps',
+				'NelioABHMTracker', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 		}
 	}
 
@@ -119,6 +125,10 @@ class NelioABHeatmapExperimentController {
 	}
 
 	public function send_heatmap_info_if_required() {
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
+			die();
+
 		$heatmaps_cache = get_option( 'nelioab_heatmaps_cache', array() );
 		update_option( 'nelioab_heatmaps_cache', array() );
 
@@ -126,9 +136,8 @@ class NelioABHeatmapExperimentController {
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 		$credential = NelioABBackend::make_credential();
 
-		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/hm',
-			NelioABSettings::get_site_id() );
+			NelioABAccountSettings::get_site_id() );
 
 		foreach ( $heatmaps_cache as $data ) {
 
@@ -188,4 +197,3 @@ class NelioABHeatmapExperimentController {
 
 }//NelioABHeatmapExperimentController
 
-?>

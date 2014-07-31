@@ -53,9 +53,9 @@ if ( !class_exists( 'NelioABErrorController' ) ) {
 
 		public static function build_error_page_on_invalid_settings() {
 			// Check settings
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			try {
-				$aux = NelioABSettings::check_user_settings();
+				$aux = NelioABAccountSettings::check_user_settings();
 			}
 			catch ( Exception $e ) {
 				switch ( $e->getCode() ) {
