@@ -1,6 +1,6 @@
 === Nelio AB Testing ===
 Contributors: nelio
-Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
+Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 3.9
 Stable tag: 3.0.3
