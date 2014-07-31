@@ -36,12 +36,14 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 	 */
 	abstract class NelioABExperiment {
 
-		const UNKNOWN_TYPE  = -1;
-		const NO_TYPE_SET   =  0;
-		const POST_ALT_EXP  =  1;
-		const PAGE_ALT_EXP  =  2;
-		const CSS_ALT_EXP   =  3;
-		const THEME_ALT_EXP =  4;
+		const UNKNOWN_TYPE   = -1;
+		const NO_TYPE_SET    =  0;
+		const POST_ALT_EXP   =  1;
+		const PAGE_ALT_EXP   =  2;
+		const CSS_ALT_EXP    =  3;
+		const THEME_ALT_EXP  =  4;
+		const WIDGET_ALT_EXP =  5;
+		const MENU_ALT_EXP   =  6;
 
 		// Used for returning from editing a post/page content
 		const PAGE_OR_POST_ALT_EXP  =  5;

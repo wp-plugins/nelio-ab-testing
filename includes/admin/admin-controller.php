@@ -95,7 +95,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			add_action( 'pre_update_option_siteurl', array( 'NelioABAccountSettings', 'update_registered_sites_if_required' ) );
 
 			// AJAX functions
-			add_action( 'wp_ajax_get_html_content', array( $this, 'generate_html_content' ) ) ;
+			add_action( 'wp_ajax_nelioab_get_html_content', array( $this, 'generate_html_content' ) ) ;
 
 			// TODO: this hook has to be placed inside the proper controller (don't know how, yet)
 			add_action( 'admin_enqueue_scripts', array( &$this, 'load_custom_style_and_scripts' ) );

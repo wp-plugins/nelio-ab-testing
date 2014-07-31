@@ -163,6 +163,11 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			// Override all information
 			NelioABWpHelper::override( $new_post_id, $src_post_id );
 
+			// Custom Permalinks compatibility
+			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
+			if ( NelioABCustomPermalinksSupport::is_plugin_active() )
+				NelioABCustomPermalinksSupport::remove_custom_permalink( $new_post_id );
+
 			return $new_post_id;
 		}
 

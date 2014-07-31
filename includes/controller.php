@@ -257,6 +257,14 @@ class NelioABController {
 				$the_id = NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS;
 		}
 
+		// Custom Permalinks Support: making sure that we get the real ID.
+		require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
+		if ( NelioABCustomPermalinksSupport::is_plugin_active() ) {
+			$custom_permalink_id = NelioABCustomPermalinksSupport::url_to_postid( $url );
+			if ( $custom_permalink_id )
+				$the_id = $custom_permalink_id;
+		}
+
 		return $the_id;
 	}
 
@@ -288,6 +296,14 @@ class NelioABController {
 		// ... or an ADMIN
 		if ( current_user_can( 'delete_users' ) )
 			return;
+
+		// Custom Permalinks Support: making sure that we are not redirected while
+		// loading an alternative...
+		if ( isset( $_POST['nelioab_load_alt'] ) ) {
+			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
+			if ( NelioABCustomPermalinksSupport::is_plugin_active() )
+				NelioABCustomPermalinksSupport::prevent_template_redirect();
+		}
 
 		// If we are using cookies, the _POST variable 'nelioab_load_alt' is not
 		// going to be automatically set. Therefore, we have to fake that a

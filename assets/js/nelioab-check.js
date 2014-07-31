@@ -61,12 +61,17 @@ function nelioab_load_alt($) {
 	$.ajax({
 		type:  'POST',
 		async: false,
-		url:   window.location.href,
+		url:   NelioABChecker.permalink,
 		data: {
 			nelioab_cookies:  nelioab_get_local_cookies(),
 			nelioab_load_alt: 'true',
 		},
 		success: function(data) {
+			if ( data.indexOf( 'nelio-ab-testing/assets/js/nelioab-check.min.js' ) != -1 ) {
+				console.log( 'ERROR: nelioab checker script has been included again...' );
+				nelioab_show_body();
+				return;
+			}
 			data = data
 				.replace(
 					/<script src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,

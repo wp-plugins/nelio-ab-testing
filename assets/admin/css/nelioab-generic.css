@@ -89,6 +89,16 @@ body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3:first-child #info
 		padding:0px;
 	}
 
+	body.toplevel_page_nelioab-dashboard #poststuff .nelio-card .row {
+		margin:0px;
+		padding:0px;
+	}
+
+	body.toplevel_page_nelioab-dashboard #poststuff .nelio-card .col {
+		margin:0px;
+		padding:0px;
+	}
+
 	body.toplevel_page_nelioab-dashboard #poststuff .nelio-card div.main .col {
 		height:140px;
 	}

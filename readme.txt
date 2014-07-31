@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,11 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.4 =
+* Quick Fix with Dashboard Cards. Some of you had CSS problems with the cards.
+They should be fixed, now.
+* Compatibility with Custom Permalinks plugin.
 
 = 3.0.3 =
 * New Feature. So far, external goals were only tracked if the user clicked a
@@ -442,7 +447,6 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.3 =
-External goals are also tracked with form submissions plus some minor
-improvements.
+= 3.0.4 =
+Custom Permalinks plugin compatibility and some CSS tweaks.
 

@@ -172,7 +172,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				jQuery(document).ready(function() {
 
 					var data = {
-						"action"	 : "get_html_content",<?php
+						"action" : "nelioab_get_html_content",<?php
 						foreach ( $this->post_params as $param )
 							echo "\n\t\t\t\t\t\t\"$param[0]\" : \"$param[1]\",";
 						?>

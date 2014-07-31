@@ -35,6 +35,7 @@ function nelioab_exclude_plugins( $plugins ) {
 	if ( nelioab_is_ajax_call_relevant() ) {
 		foreach( $plugins as $key => $plugin ) {
 			if ( false !== strpos( $plugin, 'nelio-ab-testing' ) ) continue;
+			if ( false !== strpos( $plugin, 'custom-permalinks' ) ) continue;
 			unset( $plugins[$key] );
 		}
 	}

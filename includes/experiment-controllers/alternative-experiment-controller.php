@@ -267,10 +267,22 @@ class NelioABAlternativeExperimentController {
 		wp_localize_script( 'nelioab_alternatives_script_generic',
 			'NelioABGeneric', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
+		// Custom Permalinks Support: Obtaining the real permalink (which might be
+		// masquared by custom permalinks plugin)
+		require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
+		global $post;
+		if ( NelioABCustomPermalinksSupport::is_plugin_active() )
+			$permalink = NelioABCustomPermalinksSupport::get_original_permalink( $post->ID );
+		else
+			$permalink = get_permalink( $post->ID );
+
 		wp_enqueue_script( 'nelioab_alternatives_script_check',
 			nelioab_asset_link( '/js/nelioab-check.min.js' ) );
 		wp_localize_script( 'nelioab_alternatives_script_check',
-			'NelioABChecker', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+			'NelioABChecker', array(
+				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+				'permalink' => $permalink,
+			) );
 
 		wp_enqueue_script( 'tapas_script',
 			nelioab_asset_link( '/js/tapas.min.js' ) );
@@ -405,11 +417,11 @@ class NelioABAlternativeExperimentController {
 
 	public function use_originals_post_link( $permalink, $id = 0, $leavename = false ) {
 		$perm_id = url_to_postid( $permalink );
-		if ( !$this->is_post_alternative( $perm_id ) )
-			return $permalink;
-
-		$ori_id = $this->get_original_related_to( $perm_id );
-		return get_permalink( $ori_id );
+		if ( $this->is_post_alternative( $perm_id ) ) {
+			$ori_id = $this->get_original_related_to( $perm_id );
+			$permalink = get_permalink( $ori_id );
+		}
+		return $permalink;
 	}
 
 	public function prepare_comments_form( $comments ) {
