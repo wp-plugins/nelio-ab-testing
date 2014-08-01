@@ -152,9 +152,6 @@ class NelioABController {
 	}
 
 	private function send_navigation_if_required( $dest_id, $referer_url, $is_internal = true ) {
-		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
-			return;
-
 		$alt_exp_con = $this->controllers['alt-exp'];
 		$nav = $alt_exp_con->prepare_navigation_object( $dest_id, $referer_url, $is_internal );
 
@@ -168,6 +165,9 @@ class NelioABController {
 
 		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+
+		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
+			return;
 
 		$url = sprintf(
 			NELIOAB_BACKEND_URL . '/site/%s/nav',

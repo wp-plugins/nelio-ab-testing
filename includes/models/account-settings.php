@@ -317,11 +317,10 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		}
 
 		public static function is_quota_check_required() {
-			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
-			$last_check = get_option( 'nelioab_last_quota_check', $the_past );
+			$last_check = get_option( 'nelioab_last_quota_check', 0 );
 			$now        = time();
 			$offset     = 1800; // seg == 30min
-			return ( ( $the_past + $offset ) < $now );
+			return ( ( $last_check + $offset ) < $now );
 		}
 
 	}//NelioABAccountSettings

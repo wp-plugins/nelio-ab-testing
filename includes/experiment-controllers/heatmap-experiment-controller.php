@@ -126,7 +126,7 @@ class NelioABHeatmapExperimentController {
 
 	public function send_heatmap_info_if_required() {
 		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
+		if ( !NelioABAccountSettings::has_quota_left() )
 			die();
 
 		$heatmaps_cache = get_option( 'nelioab_heatmaps_cache', array() );

@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 3.0.4
+Stable tag: 3.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,10 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.5 =
+* Improved Efficiency. Prevent sending information to Nelio backend servers
+when no quota is available.
 
 = 3.0.4 =
 * Quick Fix with Dashboard Cards. Some of you had CSS problems with the cards.
@@ -447,6 +451,6 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.4 =
-Custom Permalinks plugin compatibility and some CSS tweaks.
+= 3.0.5 =
+Efficiency improvements. Do not send data to Nelio backend servers if no quota.
 
