@@ -54,4 +54,3 @@ if ( isset( $_POST['nelioab_new_ab_post_exp_form'] ) ) {
 	$controller->manage_actions();
 }
 
-?>
