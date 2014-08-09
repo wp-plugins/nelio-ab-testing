@@ -1,23 +1,30 @@
 === Nelio AB Testing ===
 Contributors: nelio
-Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, website optimization, conversion optimization, optimization, conversion, heatmap, heatmaps
+Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.0.14
+Stable tag: 3.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A/B testing and conversion rate optimization service designed specifically for
-WordPress.
+A/B Testing, conversion rate optimization, and beautiful Heatmaps specifically
+designed for WordPress.
+
 
 == Description ==
 
 [Nelio A/B Testing](http://wp-abtesting.com) is a conversion optimization
 service for your WordPress site. It helps you define, manage, and keep track of
-A/B-testing experiments from within your WordPress dashboard, creating a
-lovely, integrated, and familiar user experience. Since we designed the tool
-specifically for WordPress, you will have complete control on what you test:
-pages, posts, themes, titles… and many more that will be available soon!
+**A/B-testing experiments**, combined with powerful and beautiful **Heatmaps**.
+Get everything you need from within your WordPress dashboard, where you'll
+benefit from a lovely, integrated, and familiar user experience. Since we
+designed the tool specifically for WordPress, you will have complete control on
+what you test: pages, posts, themes, titles... and many more that will be
+available in future releases!
+
+**Version 3.0** is the first big update of Nelio A/B Testing since we first
+launched it. It uses a new user interface that is faster and easier to use.  It
+also includes many efficiency and stability improvements.
 
 **Note** Please keep in mind that [you will need an
 account](http://wp-abtesting.com/subscription-plans/) to use our plugin (the
@@ -35,9 +42,10 @@ creating alternatives and applying the winning ones.
 * **Nelio A/B Testing is a powerful A/B Testing tool.** Test alternatives for
 your pages and posts or modify the look and feel of your website testing
 different themes or tweaking the CSS files.
-* **But it is also more than that!** Understand more about your website and
-your customers using our Heatmaps feature. Use them to know the spots in which
-your users pay more attention!
+* **Heatmaps as the perfect companion for A/B Testing** Understand more about
+your website and your customers using our Heatmaps feature. Use Heatmaps to
+know the spots in which your users pay more attention or to discover what they
+are ignoring!
 * **Understand what's going on with your site.** Get fresh information about
 the evolution of the experiment every day, with nice graphics about visitors
 and conversions. Detailed statistical information is also available if you want
@@ -115,28 +123,107 @@ We keep an [up-to-date FAQs page in our site](http://wp-abtesting.com/faqs/).
 
 == Screenshots ==
 
-1. **Relevant info with a quick glance.** When you have an experiment running,
-you can see how it is performing in the Results of the Experiment page.
-2. **Data made easy.** Additional graphics help you understand what is going
+1. **Relevant info with a quick glance.** Running experiments are visible in
+Nelio's Dashboard. There, you'll find a summary of all the relevant information
+you need.
+2. **Progress of your Experiment.** Whilst an experiment is running (or once
+it is finished), you can see how it is performing in the Results of the
+Experiment page.
+3. **Data made easy.** Additional graphics help you understand what is going
 on.
-3. **Experiment Management.** Manage your experiments without leaving
+4. **Experiment Management.** Manage your experiments without leaving
 WordPress: creation, deletion, and monitoring!
-4. **Experiment Creation.** Creating new experiments has never been so easy!
+5. **Experiment Creation.** Creating new experiments has never been so easy!
 Just set a name, a description, and the page you want to test!
-5. **Alternatives are Regular Pages.** For each page to test, you can create
+6. **Alternatives are Regular Pages.** For each page to test, you can create
 alternatives quickly and easily, from scratch or from already-existing pages!
-6. **Account details.** View your account information and access your directly
+7. **Account details.** View your account information and access your directly
 from the plugin.
-7. **Use our plugin in more than one site.** You can use our plugin and service
+8. **Use our plugin in more than one site.** You can use our plugin and service
 on more than one site. Very useful for staging and production environments!
-8. **Different types of experiments.** Our product let's you test different
+9. **Different types of experiments.** Our product let's you test different
 aspects of your WordPress site; just select what you want to test and create
 the experiment!
-9. **Heatmaps.** Our service let's you analyse the hottest areas of any page
+10. **Heatmaps.** Our service let's you analyse the hottest areas of any page
 on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.6 =
+* Bug fix: you can now set up the Shop Page in a WordPress installation as a
+conversion goal action.
+
+= 3.0.5 =
+* Improved Efficiency. Prevent sending information to Nelio backend servers
+when no quota is available.
+
+= 3.0.4 =
+* Quick Fix with Dashboard Cards. Some of you had CSS problems with the cards.
+They should be fixed, now.
+* Compatibility with Custom Permalinks plugin.
+
+= 3.0.3 =
+* New Feature. So far, external goals were only tracked if the user clicked a
+link whose href was the same as the external goal's URL. Now, this is also
+extended to form submission (assuming that form's action attribute is the same
+as the external goal's URL).
+* Quick fix. In the progress of the experiment page, goals created with
+previous version of the plugin have useful names (instead of "Undefined").
+
+= 3.0.2 =
+* Bug fix: Fatal error when no results available.
+
+= 3.0.1 =
+* Improvement. Making sure that body remains insivible during experiment load.
+
+= 3.0.0 =
+* **New User Interface** The User Interface in the Dashboard has been
+redesigned. Experiment creation and edition is easier and faster.
+* **Advanced Goal Management** You now have full control when it comes to
+define conversions. All the information you need, when you need it.
+* **New Dashboard** First version of an A/B Testing dashboard. You now have
+all relevant information just one click away!
+* **Efficiency Improvements** We updated the plugin to make it faster and
+more reliable.
+
+= 2.1.7 =
+* Bug fix: pages created with OptimizePress can now be properly duplicated.
+
+= 2.1.6 =
+* Bug fix: deprecated use of function 'split' is now fixed.
+
+= 2.1.5 =
+* Bug fix related to PHP Strict Warnings.
+* Bug fix with the function is_page_template(x). It now returns the proper
+value.
+
+= 2.1.3 =
+* Bug fix: compatibility with meta options defined by Lotus theme.
+* Bug fix related to PHP Strict Warnings.
+* New feature: you can now select whether external goals should take GET params
+into account when tracking conversions.
+
+= 2.1.2 =
+* Bug fix: AJAX error on windows installations does no longer appear.
+* Improvement: tracking conversions to external goals is now faster and more
+reliable.
+* Some minor changes and bug fixes for specific installations.
+
+= 2.1.1 =
+* Bug fix in experiment creation: if you have many published posts, you can
+now select among the most recent ones (instead of the alphabetically-ordered
+first ones).
+
+= 2.1.0 =
+* **Greedy Algorithm.** Do you want to exploit the winning alternative? Now
+you can! Use a greedy algorithm to increase the chances of your visitors to
+see the winning alternative of your experiment
+* **New Settings Page**. Our plugin includes a new Settings page where you
+can tune a few parameters of the plugin. This are the first steps towards a
+more customizable plugin!
+* Graphical improvements
+* Minor bug fixes
 
 = 2.0.14 =
 * Bug fix: title tag does no longer show a _notice_ on certain installations
@@ -368,5 +455,6 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 2.0.14 =
-Small bug fixes with Titles and Heatmaps.
+= 3.0.6 =
+Bug fix with WooCommerce. Shop Page can be used as the goal of an experiment.
+

@@ -31,7 +31,7 @@ if ( !class_exists( 'NelioABErrorPage' ) ) {
 		protected function do_render() {
 			echo '<center>';
 			echo sprintf( '<img src="%s" alt="%s" />',
-				NELIOAB_ASSETS_URL . '/admin/images/error-icon.png?' . NELIOAB_PLUGIN_VERSION,
+				nelioab_asset_link( '/admin/images/error-icon.png' ),
 				__( 'Funny image to graphically notify of an error.', 'nelioab' )
 			);
 			echo "<h2>$this->error_message</h2>";
