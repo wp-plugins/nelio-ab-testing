@@ -265,6 +265,16 @@ class NelioABController {
 				$the_id = $custom_permalink_id;
 		}
 
+		if ( $the_id === 0 && function_exists( 'woocommerce_get_page_id' ) ) {
+			// I wasn't able to find a post/page whose URL is the provided one.
+			// If the user is using WooCommerce, for instance, this happens with the
+			// Shop Page (see https://core.trac.wordpress.org/ticket/25136). The
+			// reported solution there does not work, so I'll try something new:
+			$shop_page_id = woocommerce_get_page_id( 'shop' );
+			if ( get_permalink( $shop_page_id ) == $url )
+				$the_id = $shop_page_id;
+		}
+
 		return $the_id;
 	}
 

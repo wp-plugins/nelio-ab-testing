@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,10 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.6 =
+* Bug fix: you can now set up the Shop Page in a WordPress installation as a
+conversion goal action.
 
 = 3.0.5 =
 * Improved Efficiency. Prevent sending information to Nelio backend servers
@@ -451,6 +455,6 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.5 =
-Efficiency improvements. Do not send data to Nelio backend servers if no quota.
+= 3.0.6 =
+Bug fix with WooCommerce. Shop Page can be used as the goal of an experiment.
 
