@@ -47,7 +47,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			if ( count( $this->experiments ) == 0 ) {
 				echo '<center>';
 				echo sprintf( '<img src="%s" alt="%s" />',
-					NELIOAB_ASSETS_URL . '/admin/images/happy.png?' . NELIOAB_PLUGIN_VERSION,
+					nelioab_asset_link( '/admin/images/happy.png' ),
 					__( 'Happy smile.', 'nelioab' )
 				);
 				echo '<h2>';
@@ -285,11 +285,12 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				case NelioABExperiment::HEATMAP_EXP:
 					return sprintf( $img, 'heatmap', __( 'Heatmap', 'nelioab' ) );
 
-				// case NelioABExperiment::WIDGET_ALT_EXP:
-				// 	return sprintf( $img, 'widget', __( 'Widget', 'nelioab' ) );
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					return sprintf( $img, 'widget', __( 'Widget', 'nelioab' ) );
 
-				// case NelioABExperiment::MENU_ALT_EXP:
-				// 	return sprintf( $img, 'menu', __( 'Menu', 'nelioab' ) );
+				case NelioABExperiment::MENU_ALT_EXP:
+					return sprintf( $img, 'menu', __( 'Menu', 'nelioab' ) );
+
 				default:
 					return '';
 			}
