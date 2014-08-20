@@ -96,6 +96,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// AJAX functions
 			add_action( 'wp_ajax_nelioab_get_html_content', array( $this, 'generate_html_content' ) ) ;
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			add_action( 'wp_ajax_nelioab_install_performance_muplugin', array( 'NelioABSettings', 'toggle_performance_muplugin_installation' ) ) ;
 
 			// TODO: this hook has to be placed inside the proper controller (don't know how, yet)
 			add_action( 'admin_enqueue_scripts', array( &$this, 'load_custom_style_and_scripts' ) );

@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,10 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.7 =
+* Improvement: enable/disable mu-plugin from the Settings page.
+* Bug fix: heatmaps on Latest Posts page are now working.
 
 = 3.0.6 =
 * Bug fix: you can now set up the Shop Page in a WordPress installation as a
@@ -455,6 +459,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.6 =
-Bug fix with WooCommerce. Shop Page can be used as the goal of an experiment.
-
+= 3.0.7 =
+Enable/disable mu-plugin from the Settings page, plus some fixes.

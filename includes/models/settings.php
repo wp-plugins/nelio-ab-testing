@@ -83,6 +83,48 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			return $result;
 		}
 
+		public static function is_performance_muplugin_installed() {
+			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
+			$mu_dir = untrailingslashit( $mu_dir );
+			$mu_plugin = $mu_dir . '/nelioab-performance.php';
+			return file_exists( $mu_plugin );
+		}
+
+		public static function toggle_performance_muplugin_installation() {
+			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
+			$mu_dir = untrailingslashit( $mu_dir );
+			$source = NELIOAB_ROOT_DIR . '/mu-plugins/nelioab-performance.php';
+			$dest = $mu_dir . '/nelioab-performance.php';
+
+			$result = array( 'status' => 'OK', 'error' => '' );
+			if ( !self::is_performance_muplugin_installed() ) {
+				// INSTALL
+				if ( !wp_mkdir_p( $mu_dir ) ) {
+					$result['error'] = sprintf(
+						__( '<strong>Error!</strong> The following directory could not be created: <code>%s</code>.', 'nelioab' ),
+						$mu_dir );
+					$result['status'] = 'ERROR';
+				}
+				if ( $result['status'] !== 'ERROR' && !copy( $source, $dest ) ) {
+					$result['error'] = sprintf(
+						__( '<strong>Error!</strong> Could not copy Nelio\'s performance MU-Plugin from <code>%1$s</code> to <code>%2$s</code>.', 'nelioab' ),
+						$source, $dest );
+					$result['status'] = 'ERROR';
+				}
+			}
+			else {
+				if ( file_exists( $dest ) && !unlink( $dest ) ) {
+					$result['error'] = sprintf(
+						__( '<strong>Error!</strong> Could not remove the Nelio\'s performance MU-Plugin from <code>%s</code>.', 'nelioab' ),
+						$dest );
+					$result['status'] = 'ERROR';
+				}
+			}
+			header( 'Content-Type: application/json' );
+			echo json_encode( $result );
+			die();
+		}
+
 		public static function get_conv_unit() {
 			$options = NelioABSettings::get_settings();
 			$result = '';

@@ -59,7 +59,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			add_settings_section(
 				'nelioab_general_section',
 				// =============================================================
-				'General',
+				__( 'General', 'nelioab' ),
 				// =============================================================
 				array( 'NelioABSettingsPage', 'print_section_without_info' ),
 				'nelioab-settings'
@@ -85,7 +85,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 			add_settings_field(
 				'use_colorblind_palette',
-				'Icons and Colors',
+				__( 'Icons and Colors', 'nelioab' ),
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_colorblindness_field' ),
 				'nelioab-settings',
@@ -94,7 +94,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 			add_settings_field(
 				'exact_url_external',
-				'External Goals',
+				__( 'External Goals', 'nelioab' ),
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_exact_url_external_field' ),
 				'nelioab-settings',
@@ -107,15 +107,15 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			add_settings_section(
 				'nelioab_behavior_section',
 				// =============================================================
-				'Behavior',
+				__( 'Behavior', 'nelioab' ),
 				// =============================================================
-				array( 'NelioABSettingsPage', 'print_section_without_info' ),
+				array( 'NelioABSettingsPage', 'print_behavior_section' ),
 				'nelioab-settings'
 			);
 
 			add_settings_field(
 				'algorithm',
-				'Algorithm',
+				__( 'Algorithm', 'nelioab' ),
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_algorithm_field' ),
 				'nelioab-settings',
@@ -124,7 +124,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 			add_settings_field(
 				'expl_ratio',
-				'Exploitation or Exploration',
+				__( 'Exploitation or Exploration', 'nelioab' ),
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_expl_ratio_field' ),
 				'nelioab-settings',
@@ -133,7 +133,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 			add_settings_field(
 				'use_php_cookies',
-				'PHP cookies',
+				__( 'PHP cookies', 'nelioab' ),
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_cookies_field' ),
 				'nelioab-settings',
@@ -144,6 +144,83 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 		public static function print_section_without_info() {
 			// Nothing to print here
+		}
+
+		public static function print_behavior_section() {
+			self::print_mu_plugin_row();
+		}
+
+		public static function print_mu_plugin_row() { ?>
+			<table class="form-table">
+				<tbody><tr>
+					<th scope="row">AJAX Performance</th>
+					<td><?php
+						self::print_mu_plugin_settings();
+					?></td>
+				</tr></tbody>
+			</table>
+			<?php
+		}
+
+		public static function print_mu_plugin_settings() {
+			$status = __( 'In order to boost response times of all AJAX requests triggered by Nelio A/B Testing, we include a tiny <a %s>Must Use Plugin</a> that disables other plugins when they\'re not necessary.<br><br><strong>AJAX Performance MU-Plugin Status: %s</strong>.<br>%s', 'nelioab' );
+			if ( NelioABSettings::is_performance_muplugin_installed() ) {
+				$status = sprintf( $status,
+					'target="_blank" href="http://codex.wordpress.org/Must_Use_Plugins"',
+					'<span class="status installed">' . __( 'Installed', 'nelioab' ) . '</span>',
+					__( 'In order to uninstall the plugin, please use the previous «Uninstall» button.', 'nelioab' ) );
+				$button = __( 'Uninstall', 'nelioab' );
+			}
+			else {
+				$status = sprintf( $status,
+					'target="_blank" href="http://codex.wordpress.org/Must_Use_Plugins"',
+					'<span class="status uninstalled">' . __( 'Not Installed', 'nelioab' ) . '</span>',
+					__( 'In order to install the plugin, please use the previous «Install» button.', 'nelioab' ) );
+				$button = __( 'Install', 'nelioab' );
+			}
+			printf( '<a id="muplugin-installer" class="button">%s</a>', $button );
+			?>
+			<span
+				id="muplugin-descr" class="description"
+				style="display:block;margin-top:0.4em;"><?php echo $status; ?></span>
+			<span
+				id="muplugin-installation-feedback" class="description"
+				style="display:block;margin-top:0.4em;display:none;"></span>
+			<script type="text/javascript">
+			(function($){
+				$("#muplugin-installer").click(function() {
+					var descr = $("#muplugin-descr");
+					var button = $(this);
+					if ( button.hasClass("disabled") )
+						return;
+					button.addClass( "disabled" );
+					$.post( ajaxurl, {action:"nelioab_install_performance_muplugin"}, function(response) {
+						console.log( response );
+						if ( response.status === "OK" ) {
+							button.text( "<?php _e( "Done!", "nelioab" ) ?>" );
+							var s = descr.find(".status").first();
+							if ( s.hasClass( "installed" ) ){
+								s.removeClass("installed");
+								s.addClass("uninstalled");
+								s.text( "<?php _e( 'Not Installed', 'nelioab' ); ?>" );
+							}
+							else {
+								s.removeClass("uninstalled");
+								s.addClass("installed");
+								s.text( "<?php _e( 'Installed', 'nelioab' ); ?>" );
+							}
+						}
+						else {
+							var feedback = $("#muplugin-installation-feedback");
+							feedback.html( response.error );
+							descr.hide();
+							feedback.css("display","block");
+						}
+					} );
+				});
+			})(jQuery);
+			</script>
+			<?php
 		}
 
 		public static function print_def_conv_value_field() {
@@ -218,7 +295,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			);
 			?>
 			<span class="description" id="value_<?php echo $field_name; ?>"></span>
-			<script>
+			<script type="text/javascript">
 				jQuery("#greedy_enabled").on("change", function() {
 					var option = jQuery("#<?php echo $field_name; ?>").parent().parent();
 					if ( jQuery(this).attr('value') == 1 ) option.show();

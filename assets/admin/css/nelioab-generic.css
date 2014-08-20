@@ -417,6 +417,15 @@ body #goal-list .nelio-card .actions .action input {
 	display: none;
 }
 
+#muplugin-descr .status.installed {
+	color: #00AA00;
+}
+
+
+#muplugin-descr .status.uninstalled {
+	color: #AA0000;
+}
+
 
 /* ------------------- */
 /*        PAGES        */

@@ -88,13 +88,15 @@
 
 		// Prepare the content
 		$page_on_front = get_option( 'page_on_front' );
-		if ( $page_on_front && $page_on_front == $post_id )
-			$url = get_option( 'home' );
-		else
+		if ( !$page_on_front  && !$post_id ) // if the home page is the list of posts and the experiment is for the home page
+			$url = get_option( 'home' ); // the url should be the home page
+		else  // otherwise (1 - the heatmaps is NOT for the home page or 2 - the home page is a specific page, the heatmaps should display that page
 			$url = get_permalink( $post_id );
+
 		if ( !$url )
 			$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
 		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
+
 		?>
 		<div id="phantom" style="width:0px;height:0px;"></div>
 		<div id="wrapper" style="width:100%;height:100%;">
