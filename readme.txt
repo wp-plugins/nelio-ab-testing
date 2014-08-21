@@ -151,7 +151,8 @@ on your site so that you can understand your customers better.
 == Changelog ==
 
 = 3.0.7 =
-* Improvement: enable/disable mu-plugin from the Settings page.
+* Improvement: enable and disable from the Settings page a Must Use Plugin to
+improve performance.
 * Bug fix: heatmaps on Latest Posts page are now working.
 
 = 3.0.6 =
@@ -460,4 +461,5 @@ replaceText function
 == Upgrade Notice ==
 
 = 3.0.7 =
-Enable/disable mu-plugin from the Settings page, plus some fixes.
+Enable and disable from the Settings page a Must Use Plugin to improve
+performance, plus some additional fixes.
