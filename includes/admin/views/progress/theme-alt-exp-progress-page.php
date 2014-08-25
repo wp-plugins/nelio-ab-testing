@@ -121,7 +121,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 							'style="font-size:96%%;padding-left:5px;padding-right:5px;margin-left:1em;" '.
 							'href="javascript:nelioab_confirm_overriding(\'%4$s\', \'%5$s\', \'%6$s\');">%7$s</a></span></li>',
 							__( 'Done!', 'nelioab' ),
-							NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
+							nelioab_asset_link( '/images/loading-small.gif' ),
 							$winner_button,
 							$alt->get_value(),
 							$theme['Stylesheet'], $theme['Template'],
@@ -142,7 +142,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 		}
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
