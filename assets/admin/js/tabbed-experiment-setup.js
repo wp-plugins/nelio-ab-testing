@@ -620,7 +620,8 @@ var NelioABGoalCards = {
 			});
 		});
 		jQuery('#nelioab_goals').attr('value', 
-			encodeURIComponent( JSON.stringify( NelioABGoalCards.goals ) ) );
+			encodeURIComponent( JSON.stringify( NelioABGoalCards.goals ) )
+				.replace( "'", "%27") );
 	},
 
 };

@@ -172,7 +172,8 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					// Save the experiment (and encode the alternatives)
 					$(document).on('save-experiment', function() {
 						$( '#nelioab_selected_themes' ).attr('value',
-							encodeURIComponent( JSON.stringify( nelioABSelectedThemes ) ) );
+							encodeURIComponent( JSON.stringify( nelioABSelectedThemes ) )
+								.replace( "'", "%27") );
 					});
 
 					$(document).on( 'tab-changed', function( e, tabId ) {

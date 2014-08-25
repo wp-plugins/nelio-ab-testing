@@ -60,6 +60,13 @@ class NelioABAlternativeExperimentController {
 			if ( NelioABOptimizePressSupport::is_optimize_press_active() )
 				add_filter( 'template_include',
 					array( 'NelioABOptimizePressSupport', 'op_template_include' ) );
+
+			// Compatibility tweak with Member Access
+			require_once( NELIOAB_UTILS_DIR . '/member-access-support.php' );
+			if ( NelioABMemberAccessSupport::is_plugin_active() ) {
+				add_action( 'wp_loaded',
+					array( 'NelioABMemberAccessSupport', 'unhook_redirections' ) );
+			}
 		}
 		else {
 			// If the "nelioab_load_alt" POST param is not set, we have to return the

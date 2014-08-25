@@ -156,7 +156,7 @@ var NelioABAltTable = {
 
 		row.closest('table').trigger('row-removed', [ row ] );
 	},
-	
+
 	showNewPageOrPostAltForm: function(table, copyingContent) {
 		if ( copyingContent ) {
 			table.find('.new-alt-form .copying-content').show();
@@ -263,7 +263,8 @@ var NelioABAltTable = {
 
 	save: function() {
 		jQuery('#nelioab_alternatives').attr('value', 
-			encodeURIComponent( JSON.stringify( NelioABAltTable.alts ) ) );
+			encodeURIComponent( JSON.stringify( NelioABAltTable.alts ) )
+				.replace( "'", "%27") );
 	},
 
 };
