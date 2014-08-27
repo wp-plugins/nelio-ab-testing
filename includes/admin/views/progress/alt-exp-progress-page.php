@@ -124,6 +124,13 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 						$this->goal = $goal;
 			}
 
+			// If there's only one goal, but it's not set as the main goal (weird),
+			// I use it by default. It should not happen, but sometimes it does. This
+			// fragment resolves the issue.
+			if ( !$this->goal )
+				if ( count( $this->goals ) == 1 )
+					$this->goal = $this->goals[0];
+
 			if ( !$this->goal )
 				return;
 
