@@ -104,7 +104,7 @@ if( !class_exists( 'NelioABGoal' ) ) {
 			$this->is_main_goal = $is_main_goal;
 		}
 
-		public function set_to_be_deleted( $delete ) {
+		public function set_to_be_deleted( $delete = true ) {
 			$this->has_to_be_deleted = $delete;
 		}
 
@@ -112,12 +112,15 @@ if( !class_exists( 'NelioABGoal' ) ) {
 			return $this->has_to_be_deleted;
 		}
 
+		public abstract function json4js();
 		public abstract function get_results();
 		public abstract function is_ready();
-		public static abstract function decode_from_appengine( $exp, $json );
+
+		public static function build_goal_using_json4js( $json_goal, $exp ) {
+			throw new Exception( 'This function should be implemented by a concrete class.' );
+		}
 
 	}//NelioABGoal
 
 }
 
-?>

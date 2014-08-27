@@ -102,6 +102,7 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 			$results->set_conversions_history( $json_data['historyConversions'] );
 			$results->set_first_update( $json_data['firstUpdate'] );
 			$results->set_last_update( $json_data['lastUpdate'] );
+			$results->set_summary_status( NelioABGTest::get_result_status_from_str( $json_data['resultStatus'] ) );
 
 			$alt_res = new NelioABAltStats( true ); // Original
 			$alt_res->set_name( __( 'Original', 'nelioab' ) );
@@ -115,24 +116,7 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 				$alt_res->set_conversions_history( $json_data['originalStats']['historyConversions'] );
 			$results->add_alternative_results( $alt_res );
 
-			$visitors_alt = 0;
-			if ( isset( $json_data['visitorsAlt'] ) )
-				$visitors_alt = $json_data['visitorsAlt'];
-
-			$conversions_alt = 0;
-			if ( isset(	$json_data['conversionsAlt'] ) )
-				$conversions_alt = $json_data['conversionsAlt'];
-
-			$conversion_rate_alt = 0;
-			if ( isset(	$json_data['conversionRateAlt'] ) )
-				$conversion_rate_alt = $json_data['conversionRateAlt'];
-
-			$improvement_factor_alt = 0;
-			if ( isset(	$json_data['improvementAlt'] ) )
-				$improvement_factor_alt = $json_data['improvementAlt'];
-
 			if ( is_array( $json_data['alternativeStats'] ) ) {
-				$first_update = $json_data['firstUpdate'];
 				foreach ( $json_data['alternativeStats'] as $json_alt ) {
 					$alt_res = new NelioABAltStats();
 
@@ -206,15 +190,84 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 					if ( $experiment->get_originals_id() == $max_ver )
 						$g->set_max_name( __( 'Original', 'nelioab' ) );
 
-					$results->add_gstat( $g );
+					$results->add_gtest( $g );
 				}
 			}
 
 			return $results;
 		}
 
+		public function json4js() {
+			$result = array(
+					'id' => $this->get_id(),
+					'name' => $this->get_name(),
+					'actions' => array()
+				);
+
+			foreach ( $this->get_pages() as $page ) {
+				$action = array(
+						'isIndirect' => $page->accepts_indirect_navigations(),
+					);
+				if ( $page->is_internal() ) {
+					$p = get_post( $page->get_reference(), ARRAY_A );
+					if ( $p ) {
+						if ( $p['post_type'] == 'page' )
+							$action['type'] = 'page';
+						else
+							$action['type'] = 'post';
+					}
+					else {
+						continue;
+					}
+					$action['value'] = $page->get_reference();
+				}
+				else {
+					$action['url'] = $page->get_reference();
+					$action['type'] = 'external-page';
+					$action['name'] = $page->get_title();
+				}
+				array_push( $result['actions'], $action );
+			}
+
+			return $result;
+		}
+
+		public static function build_goal_using_json4js( $json_goal, $exp ) {
+			$goal = new NelioABPageAccessedGoal( $exp );
+
+			// If the goal was new, but it was also deleted, do nothing...
+			if ( isset( $json_goal->wasDeleted) && $json_goal->wasDeleted ) {
+				if ( $json_goal->id < 0 )
+					return false;
+				else
+					$goal->set_to_be_deleted( true );
+			}
+
+			$goal->set_id( $json_goal->id );
+			$goal->set_name( $json_goal->name );
+
+			foreach ( $json_goal->actions as $json_action ) {
+				if ( $json_action->type == 'external-page' ) {
+					$value = $json_action->url;
+					$internal = false;
+				}
+				else {
+					$value = $json_action->value;
+					$internal = true;
+				}
+
+				$pd = new NelioABPageDescription( $value, $internal );
+				if ( isset( $json_action->name ) )
+					$pd->set_title( $json_action->name );
+				if ( isset( $json_action->isIndirect ) && $json_action->isIndirect )
+					$pd->set_indirect_navigations_enabled();
+				$goal->add_page( $pd );
+			}
+
+			return $goal;
+		}
+
 	}//NelioABPageAccessedGoal
 
 }
 
-?>

@@ -1,1 +1,9 @@
-jQuery.ajax({type:'POST',async:true,url:window.location.href,data:{'nelioab_sync_heatmaps':'true'}});
+jQuery.ajax( {
+	type:  'POST',
+	async: true,
+	url:   NelioABHMSync.ajaxurl,
+	data:  {
+		action: 'nelioab_sync_heatmaps',
+		current_url: document.URL
+	}
+} );

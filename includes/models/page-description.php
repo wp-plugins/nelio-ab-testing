@@ -113,7 +113,10 @@ if( !class_exists( 'NelioABPageDescription' ) ) {
 		}
 
 		/**
-		 * TODO
+		 * Returns an array of values, ready to be JSON-codified and
+		 * prepared for AppEngine
+		 *
+		 * @return the JSON array for AppEngine
 		 */
 		public function encode_for_appengine() {
 			$page = array(
@@ -126,7 +129,13 @@ if( !class_exists( 'NelioABPageDescription' ) ) {
 		}
 
 		/**
-		 * TODO
+		 * Creates a Page Description using the information obtained from
+		 * the JSON parameter.
+		 *
+		 * @param json the JSON array from AppEngine
+		 *
+		 * @return a Page Description with the values obtained from the
+		 *         json
 		 */
 		public static function decode_from_appengine( $json ) {
 			$internal = isset( $json->internal ) && $json->internal;
@@ -147,4 +156,3 @@ if( !class_exists( 'NelioABPageDescription' ) ) {
 
 }
 
-?>
