@@ -61,7 +61,16 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function init() {
+			// If the user has been disabled... get out of here
 			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+			try {
+				$aux = NelioABAccountSettings::check_user_settings();
+			}
+			catch ( Exception $e ) {
+				// We do nothing here (if the user is deactivated, proper "ERROR" pages will be shown).
+				// However, it is important we add the check here: if the user was deactivated, but it
+				// no longer is, then it's important his settings are checked from the admin area.
+			}
 
 			// Some relevant global warnings
 			// -----------------------------

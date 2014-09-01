@@ -41,6 +41,7 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 			$max_sites = 1;
 			try {
 				NelioABAccountSettings::validate_email_and_reg_num( $email, $reg_num );
+				NelioABAccountSettings::check_account_status( 'force-check' );
 			}
 			catch ( Exception $e ) {}
 

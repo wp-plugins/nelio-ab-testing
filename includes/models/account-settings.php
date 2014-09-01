@@ -179,11 +179,22 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
 			}
 
+			NelioABAccountSettings::check_account_status();
+
+			if ( !NelioABAccountSettings::is_account_active() ) {
+				$err = NelioABErrCodes::DEACTIVATED_USER;
+				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+			}
+
+			return true;
+		}
+
+		public static function check_account_status( $mode = 'none' ) {
 			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
 			$last_check = get_option( 'nelioab_last_check_user_settings', $the_past );
 			$now        = time();
 			$offset     = 1800; // sec (== 30min)
-			if ( ( $last_check + $offset ) < $now ) {
+			if ( ( $last_check + $offset ) < $now || 'force-check' === $mode ) {
 				try {
 					$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABAccountSettings::get_customer_id() );
 					$json = NelioABBackend::remote_get( $url, true );
@@ -199,13 +210,6 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 					}
 				}
 			}
-
-			if ( !NelioABAccountSettings::is_account_active() ) {
-				$err = NelioABErrCodes::DEACTIVATED_USER;
-				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-			}
-
-			return true;
 		}
 
 		public static function is_account_active() {

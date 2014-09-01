@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 3.0.9
+Stable tag: 3.0.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,12 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.10 =
+* Improvement: when the user has been deactivated, _User Deactivated Page_
+error page is shown. If he access the _My Account_ page to check his
+subscription details and everything is OK, the error page is removed and he can
+use the plugin again.
 
 = 3.0.9 =
 * Bug fix: viewing the details of a title experiment throwed (sometimes) an
@@ -468,7 +474,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.9 =
-Bug fix: viewing the details of a title experiment throwed (sometimes) an
-exception.
+= 3.0.10 =
+If user's account has been activated (after being deactivated), accessing My
+Account settings page removes the error message.
 
