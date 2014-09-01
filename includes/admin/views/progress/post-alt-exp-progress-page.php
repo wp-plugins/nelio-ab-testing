@@ -43,7 +43,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			// Original title
 			$exp = $this->exp;
 			$aux = get_post( $exp->get_originals_id() );
-			$this->ori = sprintf( __( 'id is %s', 'nelioab' ), $aux->ID );
+			$this->ori = sprintf( __( 'Unknown (post_id is %s)', 'nelioab' ), $exp->get_originals_id() );
 			$this->is_ori_page = true;
 			if ( $aux ) {
 				$this->ori = trim( $aux->post_title );
@@ -161,12 +161,18 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			else
 				$set_as_winner = '';
 
+			if ( $link )
+				$link = sprintf( '<strong><a href="%s" target="_blank">%s</a></strong>',
+					$link, $this->ori );
+			else
+				$link = '<strong>' . $this->ori . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
+
 			echo sprintf( '<tr>' .
 				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
-				'<td><strong><a href="%s" target="_blank">%s</a></strong><br />' .
+				'<td>%s<br />' .
 				'<small>%s&nbsp;</small></td>' .
 				'</tr>',
-				$set_as_winner, $ori_label, $link, $this->ori, implode( ' | ', $action_links ) );
+				$set_as_winner, $ori_label, $link, implode( ' | ', $action_links ) );
 		}
 
 		protected function print_the_real_alternatives() {
@@ -187,16 +193,23 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					$set_as_winner = '';
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
+
+				if ( $link )
+					$link = sprintf( '<strong><a href="%s" target="_blank">%s</a></strong>',
+						$link, $alt->get_name() );
+				else
+					$link = '<strong>' . $alt->get_name() . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
+
 				echo sprintf( '<tr>' .
 					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
-					'<td><strong><a href="%3$s" target="_blank">%4$s</a></strong> ' .
-					'<img id="loading-%5$s" style="display:none;width:1em;margin-top:-1em;" src="%6$s" />' .
-					'<strong><small id="success-%5$s" style="display:none;">%7$s</small></strong><br />' .
-					'<small>%8$s&nbsp;</small></td>' .
+					'<td>%3$s ' .
+					'<img id="loading-%4$s" style="display:none;width:1em;margin-top:-1em;" src="%5$s" />' .
+					'<strong><small id="success-%4$s" style="display:none;">%6$s</small></strong><br />' .
+					'<small>%7$s&nbsp;</small></td>' .
 					'</tr>',
 					$set_as_winner, $alt_label,
-					$link, $alt->get_name(),
-					$alt->get_value(), NELIOAB_ASSETS_URL . '/images/loading-small.gif',
+					$link,
+					$alt->get_value(), nelioab_asset_link( '/images/loading-small.gif' ),
 					__( '(Done!)', 'nelioab' ),
 					implode( ' | ', $action_links ) );
 			}
