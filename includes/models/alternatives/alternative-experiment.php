@@ -22,12 +22,14 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-statistics.php' );
-	require_once( NELIOAB_MODELS_DIR . '/alternatives/gstats.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
 
 	abstract class NelioABAlternativeExperiment extends NelioABExperiment {
 
 		private $appspot_alternatives;
 		private $local_alternatives;
+
+		private $winning_alternative;
 
 		private $track_heatmaps;
 
@@ -41,6 +43,7 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			$this->appspot_alternatives = array();
 			$this->local_alternatives = array();
 			$this->track_heatmaps = false;
+			$this->winning_alternative = false;
 		}
 
 		public function track_heatmaps( $do_track ) {
@@ -73,6 +76,34 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			return $result;
 		}
 
+		public function get_json4js_alternatives() {
+			$result = array();
+
+			foreach ( $this->appspot_alternatives as $alt ) {
+				if ( $alt->was_removed() )
+					continue;
+				$json_alt = $alt->json4js();
+				array_push( $result, $json_alt );
+			}
+
+			foreach ( $this->local_alternatives as $alt ) {
+				if ( $alt->was_removed() )
+					continue;
+				$json_alt = $alt->json4js();
+				$json_alt['isNew'] = true;
+				array_push( $result, $json_alt );
+			}
+
+			return $result;
+		}
+
+		public function get_alternative_by_id( $id ) {
+			foreach ( $this->get_alternatives() as $alt )
+				if ( $alt->get_id() == $id )
+					return $alt;
+			return false;
+		}
+
 		public function untrash() {
 			$this->update_status_and_save( $this->determine_proper_status() );
 		}
@@ -101,40 +132,6 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			array_push( $this->local_alternatives, $alt );
 		}
 
-		public function encode_appspot_alternatives() {
-			$aux = array();
-			foreach ( $this->get_appspot_alternatives() as $alt )
-				array_push( $aux, $alt->json() );
-			return base64_encode( json_encode( $aux ) );
-		}
-
-		public function load_encoded_appspot_alternatives( $input ) {
-			$data = json_decode( base64_decode( $input ) );
-			$aux  = array();
-			foreach( $data as $json_alt ) {
-				$alt = new NelioABAlternative();
-				$alt->load_json( $json_alt );
-				array_push( $aux, $alt );
-			}
-			$this->set_appspot_alternatives( $aux );
-		}
-
-		public function encode_local_alternatives() {
-			$aux = array();
-			foreach ( $this->get_local_alternatives() as $alt )
-				array_push( $aux, $alt->json() );
-			return base64_encode( json_encode( $aux ) );
-		}
-
-		public function load_encoded_local_alternatives( $input ) {
-			$data = json_decode( base64_decode( $input ) );
-			foreach( $data as $json_alt ) {
-				$alt = new NelioABAlternative();
-				$alt->load_json( $json_alt );
-				array_push( $this->local_alternatives, $alt );
-			}
-		}
-
 		public function remove_alternative_by_id( $id ) {
 			foreach ( $this->get_alternatives() as $alt ) {
 				if ( $alt->get_id() == $id ) {
@@ -144,13 +141,50 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 			}
 		}
 
+		public function load_json4js_alternatives( $json_alts ) {
+			foreach ( $json_alts as $json_alt ) {
+				if ( isset( $json_alt->isNew ) && $json_alt->isNew &&
+				     isset( $json_alt->wasDeleted ) && $json_alt->wasDeleted )
+					continue;
+				$alt = NelioABAlternative::build_alternative_using_json4js( $json_alt );
+				if ( $alt->get_id() > 0 )
+					$this->add_appspot_alternative( $alt );
+				else
+					$this->add_local_alternative( $alt );
+			}
+		}
+
+		public function update_winning_alternative_from_appengine() {
+			$this->winning_alternative = false;
+			try {
+				require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+				$json_data = NelioABBackend::remote_get( sprintf(
+					NELIOAB_BACKEND_URL . '/exp/%s/%s/winner',
+					$this->get_exp_kind_url_fragment(), $this->get_id()
+				) );
+				$json_data = json_decode( $json_data['body'] );
+				if ( isset( $json_data->winner ) && $json_data->winner != 'NO_WINNER' )
+					$this->set_winning_alternative_using_id( $json_data->winner );
+			}
+			catch ( Exception $e ) {
+			}
+		}
+
+		protected function set_winning_alternative( $alt ) {
+			$this->winning_alternative = $alt;
+		}
+
+		public function get_winning_alternative() {
+			return $this->winning_alternative;
+		}
+
 		public abstract function discard_changes();
 		public abstract function get_original();
 		public abstract function get_originals_id();
+		public abstract function set_winning_alternative_using_id( $id );
 		protected abstract function determine_proper_status();
 
 	}//NelioABAlternativeExperiment
 
 }
 
-?>

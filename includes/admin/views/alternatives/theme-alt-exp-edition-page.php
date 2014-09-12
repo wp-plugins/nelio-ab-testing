@@ -1,17 +1,20 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -24,20 +27,33 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 
 		private $current_theme;
 		private $themes;
+		private $selected_themes;
+		private $appspot_ids;
 
 		public function __construct( $title = false ) {
 			if ( !$title)
 				$title = __( 'Edit Theme Experiment', 'nelioab' );
 			parent::__construct( $title );
-			$this->set_form_name( 'nelioab_new_ab_theme_exp_form' );
+			$this->set_icon( 'icon-nelioab' );
+			$this->set_form_name( 'nelioab_edit_ab_theme_exp_form' );
 
-			$this->current_theme = array();
-			$this->themes        = array();
+			$this->current_theme   = array();
+			$this->themes          = array();
+			$this->selected_themes = array();
+			$this->appspot_ids     = array();
+
+			// Prepare tabs
+			$this->add_tab( 'info', __( 'General', 'nelioab' ), array( $this, 'print_basic_info' ) );
+			$this->add_tab( 'theme-alts', __( 'Alternatives', 'nelioab' ), array( $this, 'print_alternatives' ) );
+			$this->add_tab( 'goals', __( 'Goals', 'nelioab' ), array( $this, 'print_goals' ) );
 		}
 
 		public function get_alt_exp_type() {
-			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 			return NelioABExperiment::THEME_ALT_EXP;
+		}
+
+		protected function get_save_experiment_name() {
+			return _e( 'Save', 'nelioab' );
 		}
 
 		public function set_current_theme( $id, $name, $image, $creator ) {
@@ -59,6 +75,14 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 			array_push( $this->themes, $theme );
 		}
 
+		public function set_selected_themes( $themes ) {
+			$this->selected_themes = $themes;
+		}
+
+		public function set_appspot_ids( $ids ) {
+			$this->appspot_ids = $ids;
+		}
+
 		protected function get_basic_info_elements() {
 			return array(
 				array (
@@ -70,11 +94,6 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					'label'     => 'Description',
 					'id'        => 'exp_descr',
 					'callback'  => array( &$this, 'print_descr_field' ) ),
-				array (
-					'label'     => __( 'Goal Pages and Posts', 'nelioab' ),
-					'id'        => 'exp_goal',
-					'callback'  => array ( &$this, 'print_goal_field' ),
-					'mandatory' => true ),
 			);
 		}
 
@@ -98,9 +117,90 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					$theme['selected'] );
 			}
 
+			?>
+
+			<input type="hidden" name="nelioab_selected_themes" id="nelioab_selected_themes" value="<?php
+					echo rawurlencode( json_encode( $this->selected_themes ) );
+				?>" />
+
+			<input type="hidden" name="nelioab_appspot_ids" id="nelioab_appspot_ids" value="<?php
+					echo rawurlencode( json_encode( $this->appspot_ids ) );
+				?>" />
+
+			<script type="text/javascript">
+				var NelioABSelectedThemes;
+				(function($) {
+
+					NelioABSelectedThemes = JSON.parse( decodeURIComponent(
+							jQuery('#nelioab_selected_themes').attr('value')
+						)	);
+
+					function validate() {
+						var isOneSelected = false;
+						for( var i = 0; i < NelioABSelectedThemes.length && !isOneSelected; ++i )
+							if ( NelioABSelectedThemes[i].isSelected )
+								isOneSelected = true;
+						if ( isOneSelected )
+							return [true,true];
+						else
+							return [true,false];
+					}
+
+					function toggleTheme( theme ) {
+						if ( theme.hasClass( 'nelioab-is-current-theme' ) )
+							return;
+						var selected;
+						if ( theme.hasClass('nelioab-selected') ) {
+							theme.removeClass('nelioab-selected');
+							selected = false;
+						}
+						else {
+							theme.addClass('nelioab-selected');
+							selected = true;
+						}
+
+						var id = theme.attr('id');
+						var name = theme.find('.the-whole-name').first().text();
+						var found = false;
+						for( var i = 0; i < NelioABSelectedThemes.length && !found; ++i ) {
+							var st = NelioABSelectedThemes[i];
+							if ( st.value == id )
+								found = st;
+						}
+						if ( !found ) {
+							found = { value: id, name: name };
+							NelioABSelectedThemes.push( found );
+						}
+						found.isSelected = selected;
+						validate();
+					}
+
+					$('.nelioab-theme').click(function() {
+						toggleTheme($(this));
+					});
+
+					// Save the experiment (and encode the alternatives)
+					$(document).on('save-experiment', function() {
+						$( '#nelioab_selected_themes' ).attr('value',
+							encodeURIComponent( JSON.stringify( NelioABSelectedThemes ) )
+								.replace( "'", "%27") );
+					});
+
+					$(document).on( 'tab-changed', function( e, tabId ) {
+						if ( tabId == 'tab-theme-alts' )
+							NelioABEditExperiment.validateCurrentTab = validate;
+					});
+
+				})(jQuery);
+			</script>
+			<?php
 		}
 
-		private function print_theme( $id, $name, $image, $creator, $selected, $current = false ) { ?>
+		private function print_theme( $id, $name, $image, $creator, $selected, $current = false ) {
+			$shortname = substr( $name, 0, 30 );
+			if ( $shortname != $name )
+				$shortname .= '...';
+			?>
 			<div class="nelioab-theme<?php
 				if ( $selected ) echo ' nelioab-selected';
 				if ( $current ) echo ' nelioab-is-current-theme';
@@ -118,7 +218,8 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					} ?>
 				</div>
 				<div class="theme-description">
-					<p><b class="the-theme-name"><?php echo $name; ?></b><br />
+					<span class="the-whole-name" style="display:none;"><?php echo $name; ?></span>
+					<p><b class="the-theme-name"><?php echo $shortname; ?></b><br />
 					<?php echo sprintf(
 						__( 'By %s', 'nelioab' ),
 						$creator ); ?></p>
@@ -127,120 +228,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 		<?php
 		}
 
-		protected function print_validator_js() { ?>
-			<script type="text/javascript">
-			jQuery(document).ready(function() {
-				var $ = jQuery;
-
-				// Global form
-				checkSubmit(jQuery);
-				$("#exp_name").bind( "change paste keyup", function() { checkSubmit(jQuery); } );
-				$("#active_goals").bind('NelioABGoalsChanged', function() { checkSubmit(jQuery); } );
-
-			});
-
-			function checkSubmit($) {
-				if ( validateGeneral($) )
-					$(".actions > .button-primary").removeClass("button-primary-disabled");
-				else
-					$(".actions > .button-primary").addClass("button-primary-disabled");
-			}
-
-			function validateGeneral($) {
-
-				try {
-					aux = $("#exp_name").attr("value");
-					if ( aux == undefined )
-						return false;
-					aux = $.trim( aux );
-					if ( aux.length == 0 )
-						return false;
-				} catch ( e ) {}
-
-				if ( !is_there_one_goal_at_least() )
-					return false;
-
-				return true;
-			}
-
-			function submitAndRedirect(action,force) {
-				if ( !force ) {
-					var primaryEnabled = true;
-					jQuery(".nelioab-js-button").each(function() {
-						if ( jQuery(this).hasClass("button-primary") &&
-						     jQuery(this).hasClass("button-primary-disabled") )
-						primaryEnabled = false;
-					});
-					if ( !primaryEnabled )
-						return;
-				}
-				smoothTransitions();
-				jQuery("#action").attr('value', action);
-				jQuery.post(
-					location.href,
-					jQuery("#<?php echo $this->form_name; ?>").serialize()
-				).success(function(data) {
-					data = jQuery( data );
-					if ( data.indexOf("[SUCCESS]") == 0) {
-						location.href = data.replace("[SUCCESS]", "");
-					}
-					else {
-						document.open();
-						document.write(data);
-						document.close();
-					}
-				});
-			}
-			</script>
-			<?php
-		}
-
-		public function print_page_buttons() {
-			echo $this->make_js_button(
-					_x( 'Update', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\',false)',
-					false, true
-				);
-			echo $this->make_js_button(
-					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\',true)'
-				);
-		}
-
-		public function print_custom_js() {
-		?>
-		<script>
-			jQuery(document).ready(function() {
-				$ = jQuery;
-				$(".theme-image-selector").click(function() {
-					p = $(this).parent();
-
-					if ( p.hasClass( "nelioab-is-current-theme" ) )
-						return;
-
-					if ( p.hasClass( "nelioab-selected" ) )
-						p.removeClass( "nelioab-selected" );
-					else
-						p.addClass( "nelioab-selected" );
-
-					selected = new Array();
-					$(".nelioab-selected").each( function() {
-						if ( $(this).hasClass( "nelioab-is-current-theme" ) )
-							return;
-						option = {};
-						option.name  = $(this).find(".the-theme-name").first().text();
-						option.value = $(this).attr("id");
-						selected.push( option );
-					} );
-					$("#local_alternatives").attr( "value", btoa( JSON.stringify( selected ) ) );
-				});
-			});
-		</script>
-		<?php
-		}
-
 	}//NelioABThemeAltExpEditionPage
 
 }
 
-?>

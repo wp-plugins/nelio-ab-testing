@@ -655,3 +655,53 @@
     })();
     w.h337 = w.heatmapFactory = heatmapFactory;
 })(window);
+
+// FUNCTIONS FOR MANIPULATING HEATMAPS
+var nelioabHeatmapObject = undefined;
+function clearHeatmapObject() {
+	try {
+		nelioabHeatmapObject.cleanup();
+	} catch(e) {}
+}
+function createHeatmapObject( w, h ) {
+	jQuery("body").width("100%");
+	if ( w == undefined ) w = 1024;
+	if ( h == undefined ) h = 768;
+	w = Math.max(jQuery(document).width(), w)
+	h = Math.max(jQuery(document).height(), h)
+	jQuery("body").width(w);
+	jQuery("body").height(h);
+	// heatmap configuration
+	var gradient = {
+		0.0: "rgba(000,000,255,0)",
+		0.2: "rgba(000,000,255,1)",
+		0.4: "rgba(000,255,255,1)",
+		0.6: "rgba(000,255,000,1)",
+		0.8: "rgba(255,255,000,1)",
+		1.0: "rgba(255,000,000,1)"
+	};
+	var config = {
+		element: jQuery("body").get(0),
+		radius: 40,
+		blurRadius: 60,
+		opacity: 65,
+		gradient: gradient
+	};
+	//creates and initializes the heatmap
+	nelioabHeatmapObject = h337.create(config);
+	return nelioabHeatmapObject;
+};
+
+(function() {
+	var css = 'body > canvas:last-child{ background:rgba(0,0,0,0.4); }',
+		head = document.head || document.getElementsByTagName('head')[0],
+		style = document.createElement('style');
+
+	style.type = 'text/css';
+	if (style.styleSheet)
+		style.styleSheet.cssText = css;
+	else
+		style.appendChild(document.createTextNode(css));
+
+	head.appendChild(style);
+})();

@@ -18,11 +18,13 @@
 if( !class_exists( 'NelioABGTest' ) ) {
 
 	class NelioABGTest {
-		const UNKNOWN           = 1;
-		const NO_CLEAR_WINNER   = 2;
-		const NOT_ENOUGH_VISITS = 3;
-		const DROP_VERSION      = 4;
-		const WINNER            = 5;
+
+		const UNKNOWN                = 1;
+		const NO_CLEAR_WINNER        = 2;
+		const NOT_ENOUGH_VISITS      = 3;
+		const DROP_VERSION           = 4;
+		const WINNER                 = 5;
+		const WINNER_WITH_CONFIDENCE = 6;
 
 		private $type;
 		private $original;
@@ -37,17 +39,8 @@ if( !class_exists( 'NelioABGTest' ) ) {
 		private $certainty;
 
 		public function __construct( $type, $original ) {
-			$this->type     = NelioABGTest::UNKNOWN;
+			$this->type     = NelioABGTest::get_result_status_from_str( $type );
 			$this->original = $original;
-
-			if ( $type == 'NO_CLEAR_WINNER' )
-				$this->type = NelioABGTest::NO_CLEAR_WINNER;
-			else if ( $type == 'NOT_ENOUGH_VISITS' )
-				$this->type = NelioABGTest::NOT_ENOUGH_VISITS;
-			else if ( $type == 'DROP_VERSION' )
-				$this->type = NelioABGTest::DROP_VERSION;
-			else if ( $type == 'WINNER' )
-				$this->type = NelioABGTest::WINNER;
 		}
 
 		public function is_original_the_best() {
@@ -146,7 +139,56 @@ if( !class_exists( 'NelioABGTest' ) ) {
 			}
 		}
 
+		public static function get_result_status_from_str( $status ) {
+			switch ( $status ) {
+				case 'NO_CLEAR_WINNER':
+					return NelioABGTest::NO_CLEAR_WINNER;
+				case 'NOT_ENOUGH_VISITS':
+					return NelioABGTest::NOT_ENOUGH_VISITS;
+				case 'DROP_VERSION':
+					return NelioABGTest::DROP_VERSION;
+				case 'WINNER':
+					return NelioABGTest::WINNER;
+				case 'WINNER_WITH_CONFIDENCE':
+					return NelioABGTest::WINNER_WITH_CONFIDENCE;
+				default:
+					return NelioABGTest::UNKNOWN;
+			}
+		}
+
+		public static function generate_status_light( $status ) {
+			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			$cb = '';
+			if ( NelioABSettings::use_colorblind_palette() )
+				$cb = ' status-colorblind';
+
+			$light = '<div class="status-icon status-%s" title="%s"></div>';
+			switch ( $status ) {
+				case NelioABGTest::WINNER_WITH_CONFIDENCE:
+					$light = sprintf( $light, 'tick' . $cb,
+						__( 'There is a clear winner, with a confidence greater than 90%', 'nelioab' ) );
+					break;
+				case NelioABGTest::WINNER:
+					$light = sprintf( $light, 'star' . $cb,
+						__( 'There is a possible winner, but keep in mind the confidence does not reach 90%', 'nelioab' ) );
+					break;
+				case NelioABGTest::NO_CLEAR_WINNER:
+					$light = sprintf( $light, 'clock' . $cb,
+						__( 'There is not enough data to determine any winner yet', 'nelioab' ) );
+					break;
+				case NelioABGTest::NOT_ENOUGH_VISITS:
+					$light = sprintf( $light, 'clock' . $cb,
+						__( 'There are not enough visits', 'nelioab' ) );
+					break;
+				case NelioABGTest::UNKNOWN:
+				default:
+					$light = sprintf( $light, 'gray' . $cb,
+						__( 'There are not enough visits', 'nelioab' ) );
+			}
+
+			return $light;
+		}
+
 	}//NelioABGTest
 }
 
-?>
