@@ -22,7 +22,14 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 	class NelioABThemeAlternativeExperiment extends NelioABGlobalAlternativeExperiment {
 
 		private $original_appspot_theme;
-		private $original_local_theme;
+
+		/**
+		 * We'll use a different approach, here. I'll store the list of appsport IDs, and
+		 * overwrite them as necessary. If I have less selected themes than appspot ids,
+		 * I'll remove the ones that are no longer necessary. If there are less appspot ids
+		 * than selected themes, I'll create the new ones.
+		 */
+		private $appspot_ids;
 
 		private $selected_themes;
 
@@ -30,10 +37,8 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			parent::__construct( $id );
 			$this->set_type( NelioABExperiment::THEME_ALT_EXP );
 			$this->original_appspot_theme = false;
-			$this->original_local_theme   = json_decode( json_encode(
-				array( 'name' => '', 'value' => -1 )
-			)	);
 			$this->selected_themes = array();
+			$this->appspot_ids = array();
 		}
 
 		public function get_original() {
@@ -52,6 +57,8 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 
 		public function set_appspot_alternatives( $alts ) {
 			$aux = array();
+			foreach ( $alts as $alt )
+				array_push( $this->appspot_ids, $alt->get_id() );
 			if ( count( $alts ) > 0 ) {
 				$this->original_appspot_theme = $alts[0];
 				for ( $i = 1; $i < count( $alts ); $i++ )
@@ -60,34 +67,28 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			parent::set_appspot_alternatives( $aux );
 		}
 
-		public function set_current_default_theme( $id, $name ) {
-			$this->original_local_theme->value = $id;
-			$this->original_local_theme->name  = $name;
+		public function set_appspot_ids( $ids ) {
+			$this->appspot_ids = $ids;
+		}
+
+		public function get_appspot_ids() {
+			return $this->appspot_ids;
 		}
 
 		public function add_selected_theme( $id, $name ) {
+			foreach ( $this->selected_themes as $theme )
+				if ( $theme->value === $id )
+					return;
+			if ( strlen( $id ) === 0 )
+				return;
 			array_push( $this->selected_themes,
 				json_decode( json_encode(
-					array( 'name' => $name, 'value' => $id )
+					array( 'name' => $name, 'value' => $id, 'isSelected' => true )
 				) ) );
 		}
 
 		public function get_selected_themes() {
 			return $this->selected_themes;
-		}
-
-		private function is_new( $theme_id ) {
-			foreach( $this->get_appspot_alternatives() as $alt )
-				if ( $alt->get_value() == $theme_id )
-					return false;
-			return true;
-		}
-
-		private function was_removed( $alt ) {
-			foreach( $this->selected_themes as $selected_theme )
-				if ( $selected_theme->value == $alt->get_value() )
-					return false;
-			return true;
 		}
 
 		public function is_theme_selected( $theme_id ) {
@@ -132,75 +133,54 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			// 2. UPDATE THE ALTERNATIVES
 			// -------------------------------------------------------------------------
 
-			// 2.1. CREATE OR DELETE ORIGINAL THEME
-			$ori_local   = $this->original_local_theme;
-			$ori_appspot = $this->original_appspot_theme;
-
-			// Create...
-			if ( !$ori_appspot ) {
-				if ( $ori_local->value !== -1 ) {
-					$body = array(
-						'name'  => $ori_local->name,
-						'value' => $ori_local->value,
-						'kind'  => NelioABExperiment::THEME_ALT_EXP_STR,
-					);
-					try {
-						$result = NelioABBackend::remote_post(
-							sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
-							$body );
-					}
-					catch ( Exception $e ) {
-					}
-				}
-			}
-			// Edit...
-			else {
-				if ( $ori_local->value != $ori_appspot->get_value() ) {
-					$body = array(
-						'name'  => $ori_local->name,
-						'value' => $ori_local->value,
-					);
-					$url = sprintf(
-						NELIOAB_BACKEND_URL . '/alternative/%s/update',
-						$ori_appspot->get_id()
-					);
-					$result = NelioABBackend::remote_post( $url, $body );
-				}
-			}
-
-			// 2.2. REMOVE FROM APPSPOT THE ALTERNATIVES THAT ARE NOT SELECTED LOCALLY
-			foreach ( $this->get_appspot_alternatives() as $alt ) {
-				if ( !$this->was_removed( $alt ) )
-					continue;
-
-				$url = sprintf(
-					NELIOAB_BACKEND_URL . '/alternative/%s/delete',
-					$alt->get_id()
-				);
-
-				$result = NelioABBackend::remote_post( $url );
-			}
-
-
-			// 2.3. CREATE "NEW" LOCAL ALTERNATIVES IN APPSPOT
-			foreach ( $this->selected_themes as $selected_theme ) {
-				if ( !$this->is_new( $selected_theme->value ) )
-					continue;
-
+			// 2.1 REUSE ALL APPSPOT ALTERNATIVES
+			$i = 0;
+			while ( $i < count( $this->appspot_ids ) && $i < count( $this->selected_themes ) ) {
+				$theme = $this->selected_themes[$i];
 				$body = array(
-					'name'  => $selected_theme->name,
-					'value' => $selected_theme->value,
+					'name'  => $theme->name,
+					'value' => $theme->value,
+				);
+				$url = sprintf(
+					NELIOAB_BACKEND_URL . '/alternative/%s/update',
+					$this->appspot_ids[$i]
+				);
+				$result = NelioABBackend::remote_post( $url, $body );
+				$i++;
+			}
+
+			// 2.2 CREATE NEW APPSPOT ALTERNATIVES (IF REQUIRED)
+			while ( $i < count( $this->selected_themes ) ) {
+				$theme = $this->selected_themes[$i];
+				$body = array(
+					'name'  => $theme->name,
+					'value' => $theme->value,
 					'kind' => NelioABExperiment::THEME_ALT_EXP_STR,
 				);
-
 				try {
 					$result = NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 						$body );
+					array_push( $this->appspot_ids, $result );
 				}
 				catch ( Exception $e ) {
 				}
+				$i++;
 			}
+
+			// 2.3 REMOVE UNUSED APPSPOT ALTERNATIVES (IF REQUIRED)
+			$last_valid = $i;
+			while ( $i < count( $this->appspot_ids ) ) {
+				$id = $this->appspot_ids[$i];
+				$url = sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/delete', $id );
+				$result = NelioABBackend::remote_post( $url );
+				$i++;
+			}
+
+			$aux = $this->appspot_ids;
+			$this->appspot_ids = array();
+			for ( $i = 0; $i < $last_valid; ++$i )
+				array_push( $this->appspot_ids, $aux[$i] );
 		}
 
 		public static function load( $id ) {

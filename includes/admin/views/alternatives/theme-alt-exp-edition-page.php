@@ -28,6 +28,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 		private $current_theme;
 		private $themes;
 		private $selected_themes;
+		private $appspot_ids;
 
 		public function __construct( $title = false ) {
 			if ( !$title)
@@ -39,6 +40,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 			$this->current_theme   = array();
 			$this->themes          = array();
 			$this->selected_themes = array();
+			$this->appspot_ids     = array();
 
 			// Prepare tabs
 			$this->add_tab( 'info', __( 'General', 'nelioab' ), array( $this, 'print_basic_info' ) );
@@ -75,6 +77,10 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 
 		public function set_selected_themes( $themes ) {
 			$this->selected_themes = $themes;
+		}
+
+		public function set_appspot_ids( $ids ) {
+			$this->appspot_ids = $ids;
 		}
 
 		protected function get_basic_info_elements() {
@@ -117,18 +123,22 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					echo rawurlencode( json_encode( $this->selected_themes ) );
 				?>" />
 
+			<input type="hidden" name="nelioab_appspot_ids" id="nelioab_appspot_ids" value="<?php
+					echo rawurlencode( json_encode( $this->appspot_ids ) );
+				?>" />
+
 			<script type="text/javascript">
-				var nelioABSelectedThemes;
+				var NelioABSelectedThemes;
 				(function($) {
 
-					nelioABSelectedThemes = JSON.parse( decodeURIComponent(
+					NelioABSelectedThemes = JSON.parse( decodeURIComponent(
 							jQuery('#nelioab_selected_themes').attr('value')
 						)	);
 
 					function validate() {
 						var isOneSelected = false;
-						for( var i = 0; i < nelioABSelectedThemes.length && !isOneSelected; ++i )
-							if ( nelioABSelectedThemes[i].isSelected )
+						for( var i = 0; i < NelioABSelectedThemes.length && !isOneSelected; ++i )
+							if ( NelioABSelectedThemes[i].isSelected )
 								isOneSelected = true;
 						if ( isOneSelected )
 							return [true,true];
@@ -152,14 +162,14 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 						var id = theme.attr('id');
 						var name = theme.find('.the-whole-name').first().text();
 						var found = false;
-						for( var i = 0; i < nelioABSelectedThemes.length && !found; ++i ) {
-							var st = nelioABSelectedThemes[i];
+						for( var i = 0; i < NelioABSelectedThemes.length && !found; ++i ) {
+							var st = NelioABSelectedThemes[i];
 							if ( st.value == id )
 								found = st;
 						}
 						if ( !found ) {
 							found = { value: id, name: name };
-							nelioABSelectedThemes.push( found );
+							NelioABSelectedThemes.push( found );
 						}
 						found.isSelected = selected;
 						validate();
@@ -172,7 +182,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					// Save the experiment (and encode the alternatives)
 					$(document).on('save-experiment', function() {
 						$( '#nelioab_selected_themes' ).attr('value',
-							encodeURIComponent( JSON.stringify( nelioABSelectedThemes ) )
+							encodeURIComponent( JSON.stringify( NelioABSelectedThemes ) )
 								.replace( "'", "%27") );
 					});
 

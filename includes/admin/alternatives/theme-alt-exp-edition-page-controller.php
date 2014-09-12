@@ -111,7 +111,12 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			// If everything is OK, we keep going!
 			// ---------------------------------------------------
 
+			$current_theme = wp_get_theme();
+			$current_theme_id = $current_theme['Stylesheet'];
+			$current_theme_name = $current_theme->offsetGet( 'Title' );
+
 			// We select the alternatives
+			$experiment->add_selected_theme( $current_theme_id, $current_theme_name );
 			if ( isset( $_POST['nelioab_selected_themes'] ) ) {
 				$selected_themes = json_decode( urldecode( $_POST['nelioab_selected_themes'] ) );
 				if ( is_array( $selected_themes ) )
@@ -120,9 +125,17 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 							$experiment->add_selected_theme( $theme->value, $theme->name );
 			}
 			else {
+				$ori = $experiment->get_original();
+				if ( $ori )
+					$experiment->add_selected_theme( $ori->get_value(), $ori->get_name() );
 				foreach( $experiment->get_alternatives() as $alt )
 					$experiment->add_selected_theme( $alt->get_value(), $alt->get_name() );
 			}
+
+			if ( isset( $_POST['nelioab_appspot_ids'] ) )
+				$experiment->set_appspot_ids( json_decode( urldecode( $_POST['nelioab_appspot_ids'] ) ) );
+			else
+				$experiment->set_appspot_ids( $experiment->get_appspot_ids() );
 
 			// Creating the view
 			$view = $this->create_view();
@@ -135,13 +148,11 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 
 			// Experiment alternatives
 			$view->set_selected_themes( $experiment->get_selected_themes() );
+			$view->set_appspot_ids( $experiment->get_appspot_ids() );
 
-			$current_theme = wp_get_theme();
-			$current_theme_id = $current_theme['Stylesheet'];
-			$experiment->set_current_default_theme( $current_theme_id, $current_theme->offsetGet( 'Title' ) );
 			$view->set_current_theme(
 				$current_theme_id,
-				$current_theme->offsetGet( 'Title' ),
+				$current_theme_name,
 				$current_theme->get_screenshot(),
 				$current_theme->offsetGet( 'Author' ) );
 
@@ -191,10 +202,6 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			$exp = new NelioABThemeAlternativeExperiment( $_POST['exp_id'] );
 			$exp = $this->compose_basic_alt_exp_using_post_data( $exp );
 
-			$current_theme = wp_get_theme();
-			$current_theme_id = basename( $current_theme->get_stylesheet_directory() );
-			$exp->set_current_default_theme( $current_theme_id, $current_theme->offsetGet( 'Title' ) );
-
 			if ( isset( $_POST['nelioab_selected_themes'] ) ) {
 				$selected_themes = json_decode( urldecode( $_POST['nelioab_selected_themes'] ) );
 				if ( is_array( $selected_themes ) )
@@ -202,6 +209,9 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 						if ( isset( $theme->isSelected ) &&  $theme->isSelected )
 							$exp->add_selected_theme( $theme->value, $theme->name );
 			}
+
+			if ( isset( $_POST['nelioab_appspot_ids'] ) )
+				$exp->set_appspot_ids( json_decode( urldecode( $_POST['nelioab_appspot_ids'] ) ) );
 
 			global $nelioab_admin_controller;
 			$nelioab_admin_controller->data = $exp;

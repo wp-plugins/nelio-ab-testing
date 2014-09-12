@@ -2,8 +2,8 @@
 Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
-Tested up to: 4.0
-Stable tag: 3.0.10
+Tested up to: 3.9
+Stable tag: 3.0.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,11 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.0.11 =
+* Bug fix: when editing a theme experiment (after its creation), the behavior
+of the overall process generated a few problems. Users got stuck, alternatives
+where not properly selected, and so on. It should be fixed, now.
 
 = 3.0.10 =
 * Improvement: when the user has been deactivated, _User Deactivated Page_
@@ -474,7 +479,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.10 =
-If user's account has been activated (after being deactivated), accessing My
-Account settings page removes the error message.
+= 3.0.11 =
+Theme Experiment edition should be working, now: properly-selected
+alternatives, Next/Previous buttons working properly, and so on.
 
