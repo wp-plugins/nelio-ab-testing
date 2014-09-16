@@ -22,7 +22,7 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-statistics.php' );
-	require_once( NELIOAB_MODELS_DIR . '/alternatives/gstats.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
 
 	class NelioABHeatmapExperiment extends NelioABExperiment {
 
@@ -66,7 +66,7 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
@@ -75,7 +75,7 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/exp/hm',
-					NelioABSettings::get_site_id()
+					NelioABAccountSettings::get_site_id()
 				);
 			}
 			else {
@@ -183,9 +183,9 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			if ( isset( $json_data->description ) )
 				$exp->set_description( $json_data->description );
 			$exp->set_status( $json_data->status );
+
 			if ( isset( $json_data->goals ) )
-				foreach ( $json_data->goals as $goal )
-					NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );
 
 			return $exp;
 		}

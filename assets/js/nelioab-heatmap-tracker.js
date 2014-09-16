@@ -142,7 +142,12 @@ function nelioabStartHeatmapTracking() {
 		if ( e.pageX == undefined || e.pageY == undefined ) return;
 		var target = jQuery(e.target);
 
-		path = target.getFullPath();
+		try {
+			path = target.getFullPath();
+		}
+		catch ( e ) {
+			return;
+		}
 
 		var pl = target.css('padding-left');   if ( pl == undefined ) pl = "0";
 		var pr = target.css('padding-right');  if ( pr == undefined ) pr = "0";
@@ -333,9 +338,10 @@ function nelioabStartHeatmapTracking() {
 			jQuery.ajax({
 				type: 'POST',
 				async: false,
-				url:	window.location.href,
+				url: NelioABHMTracker.ajaxurl,
 				data: {
-					'nelioab_send_heatmap_info': 'true',
+					action: 'nelioab_send_heatmap_info',
+					current_url: document.URL,
 					'phone-data':         JSON.stringify( phone_data.        exportDataSet() ),
 					'tablet-data':        JSON.stringify( tablet_data.       exportDataSet() ),
 					'desktop-data':       JSON.stringify( desktop_data.      exportDataSet() ),
@@ -344,7 +350,7 @@ function nelioabStartHeatmapTracking() {
 					'tablet-data-click':  JSON.stringify( tablet_data_click. exportDataSet() ),
 					'desktop-data-click': JSON.stringify( desktop_data_click.exportDataSet() ),
 					'hd-data-click':      JSON.stringify( hd_data_click.     exportDataSet() ),
-					'hm-post-id': nelioab__hm_post_id,
+					'hm-post-id':         NelioABHMTracker.post_id,
 				},
 			});
 		}
