@@ -38,10 +38,13 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 		public static function remote_post( $url, $params = array(), $skip_status_check = false ) {
 			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+			$json_params = NelioABBackend::build_json_object_with_credentials( $params );
+			return NelioABBackend::remote_post_raw( $url, $json_params, $skip_status_check );
+		}
 
+		public static function build_json_object_with_credentials( $params = array() ) {
 			$wrapped_params = array();
 			$credential     = NelioABBackend::make_credential();
-
 			if ( count( $params ) == 0 ) {
 				$wrapped_params = $credential;
 			}
@@ -49,13 +52,11 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				$wrapped_params['object']     = $params;
 				$wrapped_params['credential'] = $credential;
 			}
-
 			$json_params = array(
-				'headers' => array( 'Content-Type' => 'application/json' ),
-				'body'    => json_encode( $wrapped_params ),
+					'headers' => array( 'Content-Type' => 'application/json' ),
+					'body'    => json_encode( $wrapped_params ),
          );
-
-			return NelioABBackend::remote_post_raw( $url, $json_params, $skip_status_check );
+			return $json_params;
 		}
 
 		public static function remote_get( $url, $skip_status_check = false ) {
@@ -218,7 +219,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'User account has been deactivated.', 'nelioab' );
 				case NelioABErrCodes::EXPERIMENT_ID_NOT_FOUND:
 					return __( 'Experiment not found.', 'nelioab' ) . '<br />' .
-						'<small><a href="'. admin_url() . 'admin.php?page=nelioab-experiments">' .
+						'<small><a href="'. admin_url( 'admin.php?page=nelioab-experiments' ) . '">' .
 						__( 'Go to my list of experiments...', 'nelioab' ) .
 						'</a></small>';
 				case NelioABErrCodes::INVALID_GOAL:

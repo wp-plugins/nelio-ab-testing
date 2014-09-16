@@ -34,6 +34,8 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 			$this->show_new_form   = false;
 			$this->alternatives    = array();
 
+			$this->is_global = true;
+
 			// Prepare tabs
 			$this->add_tab( 'info', __( 'General', 'nelioab' ), array( $this, 'print_basic_info' ) );
 			$this->add_tab( 'alts', __( 'Alternatives', 'nelioab' ), array( $this, 'print_alternatives' ) );
@@ -83,10 +85,6 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 			$wp_list_table = new NelioABPostAlternativesTable(
 				$this->alternatives,
 				$this->alt_type );
-			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-				$wp_list_table->set_wp_posts_or_pages( $this->wp_posts );
-			else
-				$wp_list_table->set_wp_posts_or_pages( $this->wp_pages );
 			$wp_list_table->prepare_items();
 			$wp_list_table->display();
 		}
@@ -128,7 +126,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 		}
 
 		public function extra_tablenav( $which ) {
-			if ( $which == 'top' ){
+			if ( 'top' == $which ){
 				$text = __( 'Please, <b>add one or more</b> CSS fragments as alternatives.', 'nelioab' );
 				echo $text;
 			}

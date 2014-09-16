@@ -100,8 +100,8 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 				_e( 'You are about to override the original title with an alternative. Do you want to continue?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
-				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
-				$exp->get_id(); ?>">
+				echo admin_url(
+					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo NelioABExperiment::TITLE_ALT_EXP; ?>" />
 				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />

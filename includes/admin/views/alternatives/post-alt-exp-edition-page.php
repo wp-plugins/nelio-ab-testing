@@ -89,24 +89,13 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			);
 		}
 
-		protected function print_ori_field() { ?>
-			<select
-				id="exp_original"
-				style="width:280px;"
-				name="exp_original"
-				class="required"
-				value="<?php echo $this->original_id; ?>"><?php
-
+		protected function print_ori_field() {
+			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
 			if ( $this->alt_type == NelioABExperiment::PAGE_ALT_EXP )
-				$aux = $this->wp_pages;
+				NelioABHtmlGenerator::print_page_searcher( 'exp_original', $this->original_id );
 			else
-				$aux = $this->wp_posts;
-
-			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			NelioABWpHelper::print_selector_for_list_of_posts( $aux, $this->original_id );
+				NelioABHtmlGenerator::print_post_searcher( 'exp_original', $this->original_id );
 			?>
-			</select>
-
 			<a class="button" style="text-align:center;"
 				href="javascript:NelioABEditExperiment.previewOriginal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
 			<span class="description" style="display:block;"><?php
@@ -141,10 +130,6 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			$wp_list_table = new NelioABPostAlternativesTable(
 				$this->alternatives,
 				$this->alt_type );
-			if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-				$wp_list_table->set_wp_posts_or_pages( $this->wp_posts );
-			else
-				$wp_list_table->set_wp_posts_or_pages( $this->wp_pages );
 			$wp_list_table->prepare_items();
 			$wp_list_table->display();
 		}
@@ -156,17 +141,11 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/alternatives-table.php' );
 	class NelioABPostAlternativesTable extends NelioABAlternativesTable {
 
-		private $wp_posts_or_pages;
 		private $alt_type;
 
 		function __construct( $items, $alt_type ) {
-   	   parent::__construct( $items );
+			parent::__construct( $items );
 			$this->alt_type          = $alt_type;
-			$this->wp_posts_or_pages = array();
-		}
-
-		public function set_wp_posts_or_pages( $wp_posts_or_pages ) {
-			$this->wp_posts_or_pages = $wp_posts_or_pages;
 		}
 
 		public function column_name( $alt ){
@@ -197,7 +176,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		}
 
 		public function extra_tablenav( $which ) {
-			if ( $which == 'top' ){
+			if ( 'top' == $which ){
 				$text = __( 'Please, <b>add one or more</b> alternatives to the Original Page using the buttons above.', 'nelioab' );
 				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
 					$text = __( 'Please, <b>add one or more</b> alternatives to the Original Post using the buttons above.', 'nelioab' );
@@ -236,12 +215,13 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			<label class="copying-content" style="padding-top:0.5em;">
 				<span class="title"><?php _e( 'Source', 'nelioab' ); ?> </span>
 				<span class="input-text-wrap">
-					<select id="new_alt_postid" name="new_alt_postid" style="width:300px;">
 					<?php
-					require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-					NelioABWpHelper::print_selector_for_list_of_posts( $this->wp_posts_or_pages );
+					require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+					if ( $this->alt_type == NelioABExperiment::PAGE_ALT_EXP )
+						NelioABHtmlGenerator::print_page_searcher( 'new_alt_postid' );
+					else
+						NelioABHtmlGenerator::print_post_searcher( 'new_alt_postid' );
 					?>
-					</select>
 					<span class="description" style="display:block;"><?php _e( 'The selected page\'s content will be duplicated and used by this alternative.', 'nelioab' ); ?></span>
 				</span>
 			</label><?php

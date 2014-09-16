@@ -137,7 +137,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 		}
 
 		public static function get_running_experiments_from_cache() {
-			require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+			require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 			if ( self::$running_experiments == NULL ) {
 				// UPDATE TO VERSION 1.2: make sure we have objects...
 				if ( !get_option( 'nelioab_running_experiments_cache_uses_objects', false ) )

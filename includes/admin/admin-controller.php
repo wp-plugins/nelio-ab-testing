@@ -17,6 +17,15 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+$nelioab_admin_controller = false;
+
+/**
+ * Nelio AB Testing admin controller
+ *
+ * @package Nelio AB Testing
+ * @subpackage Experiment
+ * @since 0.1
+ */
 if ( !class_exists( 'NelioABAdminController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
@@ -108,6 +117,12 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			add_action( 'wp_ajax_nelioab_install_performance_muplugin', array( 'NelioABSettings', 'toggle_performance_muplugin_installation' ) ) ;
 
+			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+			add_action( 'wp_ajax_nelioab_post_searcher',
+				array( 'NelioABWpHelper', 'search_posts' ) );
+			add_action( 'wp_ajax_nelioab_form_searcher',
+				array( 'NelioABWpHelper', 'search_forms' ) );
+
 			// TODO: this hook has to be placed inside the proper controller (don't know how, yet)
 			add_action( 'admin_enqueue_scripts', array( &$this, 'load_custom_style_and_scripts' ) );
 		}
@@ -143,7 +158,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				nelioab_admin_asset_link( '/css/jquery-ui.css' ) );
 			wp_register_style( 'nelioab_dialog_css',
 				nelioab_admin_asset_link( '/css/nelioab-dialog.min.css' ) );
-			wp_enqueue_style( 'nelioab_dialog_css' );
+			wp_enqueue_style( '/css/font-awesome.min.css' );
 		}
 
 		public function load_custom_style_and_scripts() {
@@ -166,6 +181,18 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				nelioab_admin_asset_link( '/js/exporting.min.js' ) );
 			wp_enqueue_script( 'nelioab_graphic_functions',
 				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ) );
+
+			// Post Searcher
+			wp_enqueue_style( 'nelioab_select2_css',
+				nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.css' ) );
+			wp_enqueue_script( 'nelioab_select2',
+				nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.js' ) );
+			wp_enqueue_style( 'nelioab_post_searcher_css',
+				nelioab_admin_asset_link( '/css/post-searcher.css' ) );
+			wp_enqueue_script( 'nelioab_post_searcher',
+				nelioab_admin_asset_link( '/js/post-searcher.min.js' ) );
+			wp_enqueue_script( 'nelioab_form_searcher',
+				nelioab_admin_asset_link( '/js/form-searcher.min.js' ) );
 		}
 
 		public function exclude_alternative_posts_and_pages( $query ) {
@@ -421,7 +448,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						<div style="float:right;margin-top:1em;margin-right:1em;">
 							<div id="preview-action">
 								<?php
-									$preview_link = admin_url();
+									$preview_link = admin_url( 'admin.php' );
 									$preview_link = add_query_arg( array(
 										'preview' => 'true',
 										'post'    => $_GET['post'] ), $preview_link );
@@ -437,7 +464,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						$the_post_id = 0;
 						if ( isset( $_GET['post'] ) )
 							$the_post_id = $_GET['post'];
-						$url        = admin_url() . 'admin.php?page=nelioab-experiments';
+						$url        = admin_url( 'admin.php?page=nelioab-experiments' );
 						$values     = explode( ',', get_post_meta( $the_post_id, '_is_nelioab_alternative', true ) );
 						$exp_id     = $values[0];
 						$exp_status = $values[1];
@@ -465,7 +492,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 							?>
 							<li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>
 							<?php if( $exp_status == NelioABExperimentStatus::RUNNING ) { ?>
-								<li><a href="<?php echo admin_url() . 'admin.php?page=nelioab-dashboard'; ?>"><?php _e( 'The Dashboard', 'nelioab' ); ?></a></li>
+								<li><a href="<?php echo admin_url( 'admin.php?page=nelioab-dashboard' ); ?>"><?php _e( 'The Dashboard', 'nelioab' ); ?></a></li>
 							<?php } ?>
 						</ul>
 					</div>
@@ -474,8 +501,9 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 	}//NelioABAdminController
-}
 
-if ( is_admin() )
-	$nelioab_admin_controller = new NelioABAdminController();
+	if ( is_admin() )
+		$nelioab_admin_controller = new NelioABAdminController();
+
+}
 

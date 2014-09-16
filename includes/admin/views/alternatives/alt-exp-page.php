@@ -25,14 +25,14 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 
 		private $tabs;
 
-		protected $wp_pages;
-		protected $wp_posts;
 		protected $basic_info;
 
 		protected $alternatives;
 		protected $goals;
 
 		protected $form_name;
+
+		protected $is_global;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -45,6 +45,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				'name'        => '',
 				'description' => '',
 				'otherNames'  => array() );
+			$this->is_global = false;
 		}
 
 		protected abstract function get_alt_exp_type();
@@ -155,7 +156,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 							$this->get_save_experiment_name(); ?></a>
 					</div>
 				</div>
-				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tabbed-experiment-setup.js' ); ?>"></script>
+				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ); ?>"></script>
 				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/admin-table.min.js' ); ?>"></script>
 				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/nelioab-alt-table.min.js' ); ?>"></script>
 				<script type="text/javascript">NelioABEditExperiment.useTab(jQuery('#exp-tabs .nav-tab-active').attr('id'));</script>
@@ -203,6 +204,59 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				_e( 'Add Additional Goal', 'nelioab' );
 			?></a></h2>
 
+			<div id="new-action-templates">
+				<?php require_once( NELIOAB_UTILS_DIR . '/html-generator.php' ); ?>
+				<div class="action page" style="display:none;">
+					<?php
+						$options = NelioABHtmlGenerator::get_page_searcher( 'new-action-page-searcher', false, array(), false );
+						$this->print_post_or_form_action( 'page', $options, !$this->is_global ); ?>
+					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
+				</div>
+				<div class="action post" style="display:none;">
+					<?php
+						$options = NelioABHtmlGenerator::get_post_searcher( 'new-action-post-searcher', false, array(), false );
+						$this->print_post_or_form_action( 'post', $options, !$this->is_global ); ?>
+					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
+				</div>
+				<div class="action external-page" style="display:none;">
+					<?php
+						$name = sprintf(
+							'<input type="text" class="name" placeholder="%s" style="max-width:120px;">',
+							__( 'Name', 'nelioab' ) );
+
+						$url = sprintf(
+							'<input type="text" class="url" placeholder="%s" style="max-width:200px;">',
+							__( 'URL', 'nelioab' ) );
+
+						$options = '<select class="url_mode">';
+						$options .= sprintf( '<option value="exact">%s</option>',
+							__( 'whose URL is', 'nelioab' ) );
+						$options .= sprintf( '<option value="starts-with">%s</option>',
+							__( 'whose URL starts with', 'nelioab' ) );
+						$options .= sprintf( '<option value="contains">%s</option>',
+							__( 'whose URL contains', 'nelioab' ) );
+						$options .= sprintf( '<option value="ends-with">%s</option>',
+							__( 'whose URL ends with', 'nelioab' ) );
+						$options .= '</select>';
+
+						printf(
+							__( 'A visitor accesses page %1$s, %2$s %3$s', 'nelioab' ),
+							$name, $options, $url );
+					?>
+					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
+				</div>
+				<div class="action form-submit cf7" style="display:none;"><?php
+					$options = NelioABHtmlGenerator::get_form_searcher( 'new-cf7-form-searcher', false, array(), false );
+					$this->print_post_or_form_action( 'cf7-submit', $options, !$this->is_global ); ?>
+					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
+				</div>
+				<div class="action form-submit gf" style="display:none;"><?php
+					$options = NelioABHtmlGenerator::get_form_searcher( 'new-gf-form-searcher', false, array(), false );
+					$this->print_post_or_form_action( 'gf-submit', $options, !$this->is_global ); ?>
+					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
+				</div>
+			</div>
+
 			<div style="display:none;">
 				<span id="defaultNameForMainGoal" style="display:none;"><?php _e( 'Default', 'nelioab' ); ?></span>
 				<?php
@@ -229,12 +283,80 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 			<?php
 		}
 
-		private function print_page_post_action( $text, $options ) {
-			$direct  = '<select class="direct">';
-			$direct .= ' <option value="1">' . __( 'directly', 'nelioab' ) . '</option>';
-			$direct .= ' <option value="0">' . __( 'directly or indirectly', 'nelioab' ) . '</option>';
-			$direct .= '</select>';
-			printf( $text, $direct, $options );
+		private function print_post_or_form_action( $type, $options, $indirect ) {
+
+			$do_print = true;
+
+			// INDIRECT selectors for pages and posts
+			$p_indirect_real  = '<select class="direct">';
+			$p_indirect_real .= ' <option value="1">' . __( 'directly', 'nelioab' ) . '</option>';
+			$p_indirect_real .= ' <option value="0">' . __( 'directly or indirectly', 'nelioab' ) . '</option>';
+			$p_indirect_real .= '</select>';
+			$p_indirect_hidden = '<input type="hidden" class="direct" value="0" />';
+
+			// INDIRECT selectors (or ANY_PAGE) for forms
+			$f_any_real  = '<select class="any-page">';
+			$f_any_real .= ' <option value="0">' . __( 'from the tested page', 'nelioab' ) . '</option>';
+			$f_any_real .= ' <option value="1">' . __( 'from any page', 'nelioab' ) . '</option>';
+			$f_any_real .= '</select>';
+			$f_any_hidden = '<input type="hidden" class="any-page" value="1" />';
+
+			// INDIRECT selector
+			$indirect_selector = false;
+
+			switch( $type ) {
+
+				case 'page':
+					if ( $indirect ) {
+						$text = __( 'A visitor %2$s accesses page %1$s', 'nelioab' );
+						$indirect_selector = $p_indirect_real;
+					}
+					else {
+						$text = __( 'A visitor accesses page %1$s%2$s', 'nelioab' );
+						$indirect_selector = $p_indirect_hidden;
+					}
+					break;
+
+				case 'post':
+					if ( $indirect ) {
+						$text = __( 'A visitor %2$s accesses post %1$s', 'nelioab' );
+						$indirect_selector = $p_indirect_real;
+					}
+					else {
+						$text = __( 'A visitor accesses post %1$s%2$s', 'nelioab' );
+						$indirect_selector = $p_indirect_hidden;
+					}
+					break;
+
+				case 'cf7-submit':
+					if ( $indirect ) {
+						$text = __( 'A visitor submits %2$s the Contact Form 7 %1$s', 'nelioab' );
+						$indirect_selector = $f_any_real;
+					}
+					else {
+						$text = __( 'A visitor submits the Contact Form 7 %1$s%2$s', 'nelioab' );
+						$indirect_selector = $f_any_hidden;
+					}
+					break;
+
+				case 'gf-submit':
+					if ( $indirect ) {
+						$text = __( 'A visitor submits %2$s the Gravity Form %1$s', 'nelioab' );
+						$indirect_selector = $f_any_real;
+					}
+					else {
+						$text = __( 'A visitor submits the Gravity Form %1$s%2$s', 'nelioab' );
+						$indirect_selector = $f_any_hidden;
+					}
+					break;
+
+				default:
+					$do_print = false;
+			}
+
+			if ( $do_print ) {
+				printf( $text, $options, $indirect_selector );
+			}
 		}
 
 		/**
@@ -252,46 +374,6 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 			</div>
 			<div class="actions" style="display:none;">
 			</div>
-			<div class="new-action-templates">
-				<?php require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' ); ?>
-				<div class="new-page-action action page" style="display:none;">
-					<?php
-						$options  = '<select class="page">';
-						$options .= NelioABWpHelper::get_selector_for_list_of_posts( $this->wp_pages );
-						$options .= '</select>';
-						$this->print_page_post_action(
-							__( 'A visitor %s accesses page %s', 'nelioab' ),
-							$options ); ?>
-					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
-				</div>
-				<div class="new-post-action action post" style="display:none;">
-					<?php
-						$options  = '<select class="post">';
-						$options .= NelioABWpHelper::get_selector_for_list_of_posts( $this->wp_posts );
-						$options .= '</select>';
-						$this->print_page_post_action(
-							__( 'A visitor %s accesses post %s', 'nelioab' ),
-							$options ); ?>
-					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
-				</div>
-				<div class="new-external-page-action action external-page" style="display:none;">
-					<?php
-						$name = sprintf(
-							'<input type="text" class="name" placeholder="%s" style="max-width:120px;">',
-							__( 'Name', 'nelioab' ) );
-
-						$url = sprintf(
-							'<input type="text" class="url" placeholder="%s" style="max-width:200px;">',
-							__( 'URL', 'nelioab' ) );
-
-						printf(
-							__( 'A visitor accesses external page %s with URL is %s', 'nelioab' ),
-							$name, $url );
-					?>
-					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
-				</div>
-
-			</div>
 			<div class="new-actions">
 				<div class="wrapper">
 					<strong><?php _e( 'New Actions', 'nelioab' ); ?></strong><br>
@@ -301,16 +383,41 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 							'post', __( 'Post', 'nelioab' ),
 							esc_html( __( 'A visitor accesses a post in your WordPress site', 'nelioab' ) )
 						);
+
 					echo ' | ';
 					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
 							'page', __( 'Page', 'nelioab' ),
 							esc_html( __( 'A visitor accesses a page in your WordPress site', 'nelioab' ) )
 						);
+
 					echo ' | ';
 					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
 							'external-page', __( 'External Page', 'nelioab' ),
-							esc_html( __( 'A visitor accesses an external page specified using its URL', 'nelioab' ) )
+							esc_html( __( 'A visitor tries to access an external page (either by clicking a link or by sutbmitting a form) specified using its URL', 'nelioab' ) )
 						);
+
+					$cf7 = is_plugin_active( 'contact-form-7/wp-contact-form-7.php' );
+					$gf = is_plugin_active( 'gravityforms/gravityforms.php' );
+					$cf7_action_lbl = __( 'Form Submit', 'nelioab' );
+					$gf_action_lbl = __( 'Form Submit', 'nelioab' );
+					if ( $cf7 && $gf ) {
+						$cf7_action_lbl = __( 'Contact Form 7', 'nelioab' );
+						$gf_action_lbl = __( 'Gravity Form', 'nelioab' );
+					}
+					if ( $cf7 ) {
+						echo ' | ';
+						printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
+								'form-submit cf7', $cf7_action_lbl,
+								esc_html( __( 'A visitor successfully submits a «Contact Form 7» form', 'nelioab' ) )
+							);
+					}
+					if ( $gf ) {
+						echo ' | ';
+						printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
+								'form-submit gf', $gf_action_lbl,
+								esc_html( __( 'A visitor successfully submits a «Gravity Forms» form', 'nelioab' ) )
+							);
+					}
 					?>
 				</div>
 			</div>
@@ -327,17 +434,9 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				$real_value = $visible_value;
 			echo '<input type="text" id="' . $id . '_search"' .
 				' style="width:280px;" maxlength="250"' .
- 				' class="regular-text" value="' . $visible_value . '" />';
+				' class="regular-text" value="' . $visible_value . '" />';
 			echo '<input type="hidden" id="' . $id . '" name="' . $id . '"' .
 				' value="' . $real_value . '"/>';
-		}
-
-		public function set_wp_posts( $wp_posts ) {
-			$this->wp_posts = $wp_posts;
-		}
-
-		public function set_wp_pages( $wp_pages ) {
-			$this->wp_pages = $wp_pages;
 		}
 
 	}//NelioABAltExpPage

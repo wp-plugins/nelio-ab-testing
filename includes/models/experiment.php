@@ -89,7 +89,10 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		}
 
 		public function add_goal( $goal ) {
-			array_push( $this->goals, $goal );
+			if ( $goal->is_main_goal() )
+				array_unshift( $this->goals, $goal );
+			else
+				array_push( $this->goals, $goal );
 		}
 
 		public function set_type_using_text( $kind ) {
@@ -187,9 +190,9 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		public function get_url_for_making_goal_persistent( $goal ) {
 			$exp_url_fragment = $this->get_exp_kind_url_fragment();
 			switch ( $goal->get_kind() ) {
-				case NelioABGoal::PAGE_ACCESSED_GOAL:
+				case NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL:
 				default:
-				$type = 'page-accessed';
+				$type = 'alternativeexp';
 			}
 			if ( $goal->get_id() == -1 ) {
 				$url = sprintf(
@@ -213,6 +216,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		public function make_goals_persistent() {
 			require_once( NELIOAB_MODELS_DIR . '/goals/goals-manager.php' );
 			$remaining_goals = array();
+			$order = 0;
 			foreach ( $this->get_goals() as $goal ) {
 				$url = $this->get_url_for_making_goal_persistent( $goal );
 				if ( $goal->has_to_be_deleted() ) {
@@ -220,12 +224,32 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 						$result = NelioABBackend::remote_post( $url );
 				}
 				else {
+					$order++;
 					array_push( $remaining_goals, $goal );
 					$encoded = NelioABGoalsManager::encode_goal_for_appengine( $goal );
+					$encoded['order'] = $order;
 					$result = NelioABBackend::remote_post( $url, $encoded );
 				}
 			}
 			$this->goals = $remaining_goals;
+		}
+
+		public static function load_goals_from_json( $exp, $json_goals = array() ) {
+			$ae_goals = array();
+
+			foreach ( $json_goals as $goal ) {
+				$index = false;
+				if ( isset( $goal->order ) )
+					$index = intval( $goal->order );
+
+				if ( $index && !isset( $ae_goals[$index] ) )
+					$ae_goals[$index] = $goal;
+				else
+					array_push( $ae_goals, $goal );
+			}
+
+			foreach ( $ae_goals as $goal )
+				NelioABGoalsManager::load_goal_from_json( $exp, $goal );
 		}
 
 		public abstract function get_exp_kind_url_fragment();

@@ -206,9 +206,9 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			if ( isset( $json_data->description ) )
 				$exp->set_description( $json_data->description );
 			$exp->set_status( $json_data->status );
+
 			if ( isset( $json_data->goals ) )
-				foreach ( $json_data->goals as $goal )
-					NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );
 
 			$alternatives = array();
 			if ( isset( $json_data->alternatives ) ) {

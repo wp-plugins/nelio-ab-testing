@@ -159,9 +159,10 @@ var NelioABAltTable = {
 
 	showNewPageOrPostAltForm: function(table, copyingContent) {
 		if ( copyingContent ) {
+			var aux = table.find('#new_alt_postid');
+			var info = NelioABPostSearcher.getInfo( jQuery('#exp_original') );
+			NelioABPostSearcher.doSetDefault( aux, info.label, info.value );
 			table.find('.new-alt-form .copying-content').show();
-			table.find('#new_alt_postid').attr('value',
-				jQuery('#exp_original').attr('value' ) );
 		}
 		else {
 			table.find('.new-alt-form .copying-content').hide();

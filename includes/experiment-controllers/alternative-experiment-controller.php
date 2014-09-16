@@ -55,18 +55,23 @@ class NelioABAlternativeExperimentController {
 			add_filter( 'the_content',         array( &$this, 'print_script_for_external_links' ) );
 			add_filter( 'get_post_metadata',   array( &$this, 'load_proper_page_template' ), 10, 4 );
 
-			// Support with other plugins
+			/**
+			 * Support with other plugins.
+			 * Compatibility tweaks for testing OptimizePress pages.
+			 */
 			require_once( NELIOAB_UTILS_DIR . '/optimize-press-support.php' );
 			if ( NelioABOptimizePressSupport::is_optimize_press_active() )
 				add_filter( 'template_include',
 					array( 'NelioABOptimizePressSupport', 'op_template_include' ) );
 
-			// Compatibility tweak with Member Access
+			/**
+			 * Support with other plugins.
+			 * Compatibility tweaks with Member Access.
+			 */
 			require_once( NELIOAB_UTILS_DIR . '/member-access-support.php' );
-			if ( NelioABMemberAccessSupport::is_plugin_active() ) {
+			if ( NelioABMemberAccessSupport::is_plugin_active() )
 				add_action( 'wp_loaded',
 					array( 'NelioABMemberAccessSupport', 'unhook_redirections' ) );
-			}
 		}
 		else {
 			// If the "nelioab_load_alt" POST param is not set, we have to return the
@@ -75,12 +80,21 @@ class NelioABAlternativeExperimentController {
 			add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_scripts' ) );
 		}
 
-		// Make the script for managing alternatives available everywhere
-
 		// Make sure that the title is replaced everywhere
 		add_filter( 'the_title', array( &$this, 'change_title_on_abtesting' ),  10, 2 );
 		add_filter( 'wp_title',  array( &$this, 'fix_title_for_landing_page' ), 10, 2 );
 		add_action( 'wp_head',   array( &$this, 'add_js_to_replace_titles' ) );
+
+		/**
+		 *  Hooks for Gravity Forms and Contact Form 7
+		 */
+		// Adding hidden fields:
+		add_filter( 'gform_pre_render',    array( &$this, 'add_hidden_fields_to_gf' ),  10, 1 );
+		add_filter( 'wpcf7_form_elements', array( &$this, 'add_hidden_fields_to_cf7' ), 10, 1 );
+
+		// Monitoring submissions:
+		add_action( 'gform_after_submission', array( &$this, 'track_gf_submission' ),  10, 2 );
+		add_action( 'wpcf7_submit',           array( &$this, 'track_cf7_submission' ), 10, 2 );
 	}
 
 	public function load_proper_page_template( $value, $post_id = 0, $meta_key = '', $single = false ) {
@@ -105,8 +119,10 @@ class NelioABAlternativeExperimentController {
 
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-		foreach ( $running_exps as $exp )
-			$exp->update_winning_alternative_from_appengine();
+		foreach ( $running_exps as $exp ) {
+			if ( $exp->get_type() !== NelioABExperiment::HEATMAP_EXP )
+				$exp->update_winning_alternative_from_appengine();
+		}
 		NelioABExperimentsManager::update_running_experiments_cache( true, $running_exps );
 	}
 
@@ -165,7 +181,7 @@ class NelioABAlternativeExperimentController {
 	}
 
 	private function is_there_a_global_alt_exp_with_goal( $post_id ) {
-		require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+		require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
@@ -173,7 +189,7 @@ class NelioABAlternativeExperimentController {
 			     $exp->get_type() != NelioABExperiment::CSS_ALT_EXP )
 				continue;
 			foreach( $exp->get_goals() as $goal ) {
-				if ( $goal->get_kind() != NelioABGoal::PAGE_ACCESSED_GOAL )
+				if ( $goal->get_kind() != NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL )
 					continue;
 				if ( $goal->includes_internal_page( $post_id ) )
 					return true;
@@ -324,7 +340,7 @@ class NelioABAlternativeExperimentController {
 			return $content;
 		require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-		require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+		require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
 		// LOOK FOR A PAGE/POST EXPERIMENT IN WHICH THIS POST IS BEING TESTED OR
 		// FOR A GLOBAL EXPERIMENT THAT APPLIES TO THIS PAGE
@@ -352,52 +368,50 @@ class NelioABAlternativeExperimentController {
 			return $content;
 
 		// Retrieve all the external pages
-		$hrefs = array();
+		$ae_hrefs = array();
+		$regex_hrefs = array();
 		foreach( $relevant_exps as $experiment ) {
 			foreach( $experiment->get_goals() as $goal ) {
-				if ( $goal->get_kind() != NelioABGoal::PAGE_ACCESSED_GOAL )
+				if ( $goal->get_kind() != NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL )
 					continue;
-				foreach( $goal->get_pages() as $page ) {
-					if ( $page->is_external() ) {
-						$url = $page->get_reference();
-						$url = str_replace( '"', '', $url );
-						// Remove GET params
-						if ( !NelioABSettings::match_exact_url_for_external_goals() )
-							$url = preg_replace( '/\?.*$/', '', $url );
-						// Remove trailing slash
-						$url = preg_replace( '/\/+$/', '', $url );
-						// Remove https
-						$url = preg_replace( '/^https?:\/\//', 'http://', $url );
-						$url = '"' . $url . '"';
-						if ( !in_array( $url, $hrefs ) )
-							array_push( $hrefs, $url );
+				foreach( $goal->get_actions() as $action ) {
+					$type = $action->get_type();
+					if ( $type == NelioABAction::PAGE_ACCESSED ||
+					     $type == NelioABAction::POST_ACCESSED ||
+					     $type == NelioABAction::EXTERNAL_PAGE_ACCESSED ) {
+						if ( $action->is_external() ) {
+							$ae_url = $action->get_reference();
+							$regex_url = $action->get_regex_reference4js();
+							if ( !in_array( $ae_url, $ae_hrefs ) ) {
+								array_push( $ae_hrefs, $ae_url );
+								array_push( $regex_hrefs, $regex_url );
+							}
+						}
 					}
 				}
 			}
 		}
 
-		if ( count( $hrefs ) == 0 )
+		if ( count( $ae_hrefs ) == 0 )
 			return $content;
 
 		// Print the script
-		$hrefs   = implode( ', ', $hrefs );
+		$ae_hrefs   = json_encode( $ae_hrefs );
+		$regex_hrefs   = implode( ', ', $regex_hrefs );
 		$script  = "\n\n";
 		$script .= "<script>\n";
 		$script .= "jQuery(document).ready( function() {\n";
-		$script .= "   var hrefs = [ $hrefs ];\n";
+		$script .= "   var ae_hrefs = $ae_hrefs;\n";
+		$script .= "   var regex_hrefs = [ $regex_hrefs ];\n";
 		$script .= "   jQuery(document).on('byebye',function(event, elem, href) {\n";
-		// Remove GET params
-		if ( !NelioABSettings::match_exact_url_for_external_goals() )
-			$script .= "      href = href.replace(/\?.*$/, '');\n";
 		// Remove trailing slash
 		$script .= "      href = href.replace(/\/+$/, '');\n";
 		// Remove https
 		$script .= "      href = href.replace(/^https?:\/\//, 'http://');\n";
-		$script .= "      for ( i=0; i<hrefs.length; ++i ) {\n";
-		$script .= "         if ( hrefs[i] == href ) {\n";
+		$script .= "      for ( i=0; i<ae_hrefs.length; ++i ) {\n";
+		$script .= "         if ( regex_hrefs[i].test(href) ) {\n";
 		$script .= "            elem.attr('target','_blank');\n";
-		$script .= "            nelioab_nav_to_external_page(jQuery,href);\n";
-		$script .= "            break;\n";
+		$script .= "            nelioab_nav_to_external_page(jQuery,ae_hrefs[i]);\n";
 		$script .= "         }\n";
 		$script .= "      }\n";
 		$script .= "   });\n";
@@ -674,7 +688,7 @@ class NelioABAlternativeExperimentController {
 	}
 
 	private function is_goal_in_some_page_or_post_experiment( $post_id ) {
-		require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+		require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
@@ -682,7 +696,7 @@ class NelioABAlternativeExperimentController {
 			     $exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ) {
 
 				foreach( $exp->get_goals() as $goal ) {
-					if ( $goal->get_kind() != NelioABGoal::PAGE_ACCESSED_GOAL )
+					if ( $goal->get_kind() != NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL )
 						continue;
 					if ( $goal->includes_internal_page( $post_id ) )
 						return true;
@@ -758,7 +772,10 @@ class NelioABAlternativeExperimentController {
 
 		// Checking if the source page was an alternative
 		$actual_src_id = $src_id;
-		if ( $this->is_post_in_a_post_alt_exp( $src_id ) )
+		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $actual_src_id &&
+		     strlen( $referer_url ) === 0 )
+			$actual_src_id = NelioABController::NAVIGATION_ORIGIN_IS_UNKNOWN;
+		elseif ( $this->is_post_in_a_post_alt_exp( $src_id ) )
 			$actual_src_id = $this->get_post_alternative( $src_id );
 
 		// PREPARING THE REST OF THE DATA IF THE NAVIGATION IS...
@@ -791,13 +808,174 @@ class NelioABAlternativeExperimentController {
 		$the_theme = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
 		if ( $the_theme )
 			$nav['activeTheme'] = '' . $the_theme->get_id();
+
 		$the_css = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::CSS_ALT_EXP );
 		if ( $the_css )
 			$nav['activeCSS'] = '' . $the_css->get_id();
 
+		//$the_menu = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::MENU_ALT_EXP );
+		//if ( $the_menu )
+		//	$nav['activeMenu'] = '' . $the_menu->get_id();
+
 		return $nav;
+	}
+
+	public function add_hidden_fields_to_gf( $form ) {
+		$this->add_hidden_field_to_gf( $form, 'nelioab_form_cookies' );
+		$this->add_hidden_field_to_gf( $form, 'nelioab_form_current_url' );
+		return $form;
+	}
+
+
+	private function add_hidden_field_to_gf( &$form, $name ) {
+		// Counting number of fields (for GF internal field counter)
+		$max = 0;
+		foreach( $form['fields'] as $field )
+			if( floatval($field['id'] ) > $max )
+				$max = floatval( $field['id'] );
+
+		// Adding field
+		$form['fields'][] = array(
+			'type'   => 'adminonly_hidden',
+			'id'     => $max + 1,
+			'allowsPrepopulate' => true,
+			'inputs' => array(
+				array(
+					'id' => $name,
+				),
+			),
+		);
+	}
+
+
+	public function add_hidden_fields_to_cf7( $fields ) {
+		global $post;
+		$original_id = $this->get_original_related_to( $post->ID );
+		$hf_template = '<input type="hidden" name="%1$s" value="%2$s" />';
+
+		$hidden_fields  = sprintf( $hf_template, 'nelioab_form_cookies', '' );
+		$hidden_fields .= sprintf( $hf_template, 'nelioab_form_current_url', '' );
+
+		return $hidden_fields . $fields;
+	}
+
+
+	public function track_gf_submission( $entry, $form ) {
+		$type = NelioABAction::SUBMIT_GRAVITY_FORM;
+		$this->send_form_action_if_required( $type, $form['id'] );
+	}
+
+
+	public function track_cf7_submission( $form, $result ) {
+		$status = $result['status'];
+		$type = NelioABAction::SUBMIT_CF7_FORM;
+		if ( $status == 'mail_sent' || $status == 'demo_mode' )
+			$this->send_form_action_if_required( $type, $form->id() );
+	}
+
+
+	private function send_form_action_if_required( $type, $form_id ) {
+		require_once( NELIOAB_MODELS_DIR . '/goals/actions/form-submission-action.php' );
+		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+		require_once( NELIOAB_MODELS_DIR . '/goals/actions/action.php' );
+		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+
+		$kap = NelioABFormSubmissionAction::type_to_kind_and_plugin( $type );
+		if ( !$kap )
+			return;
+
+		if ( !isset( $_POST['nelioab_form_current_url'] ) )
+			return;
+
+		// Constructing FORM EVENT object:
+		$page_url = rtrim( json_decode( urldecode( $_POST['nelioab_form_current_url'] ) ), '/' );
+		global $nelioab_controller;
+		$page = $nelioab_controller->url_or_front_page_to_postid( $page_url );
+		$actual_page = $this->get_post_alternative( $page );
+
+		$ev = array(
+			'kind'       => $kap['kind'],
+			'form'       => $form_id,
+			'plugin'     => $kap['plugin'],
+			'page'       => $page,
+			'actualPage' => $actual_page,
+			'user'       => NelioABUser::get_id(),
+		);
+
+		$the_theme = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
+		if ( $the_theme )
+			$ev['activeTheme'] = $the_theme->get_id();
+
+		$the_css = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::CSS_ALT_EXP );
+		if ( $the_css )
+			$ev['activeCSS'] = $the_css->get_id();
+
+		//$the_menu = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::MENU_ALT_EXP );
+		//if ( $the_menu )
+		//	$ev['activeMenu'] = $the_menu->get_id();
+
+
+		// Check if there's one experiment at least with a form submission action,
+		// which corresponds to the given form, then send the event. Otherwise,
+		// get out!
+		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+		$send_form_event = false;
+		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+		foreach ( $running_exps as $exp ) {
+			foreach ( $exp->get_goals() as $goal ) {
+				foreach ( $goal->get_actions() as $action ) {
+					if ( $action->get_type() == $type &&
+					     $action->get_form_id() == $ev['form'] ) {
+						// If this action uses the form, then we have to check whether
+						// it accepts submissions from anywhere or only from the tested
+						// page.
+						if ( $action->accepts_submissions_from_any_page() ) {
+							$send_form_event = true;
+							break;
+						}
+					  if ( $exp->get_originals_id() == $ev['page'] ) {
+							$send_form_event = true;
+							break;
+						}
+					}
+				}
+				if ( $send_form_event )
+					break;
+			}
+			if ( $send_form_event )
+				break;
+		}
+
+		if ( !$send_form_event )
+			return;
+
+		$url = sprintf(
+			NELIOAB_BACKEND_URL . '/site/%s/form',
+			NelioABAccountSettings::get_site_id()
+		);
+
+		$data = NelioABBackend::build_json_object_with_credentials( $ev );
+		$data['timeout'] = 50;
+
+		for ( $attemp=0; $attemp < 5; ++$attemp ) {
+			try {
+				$result = NelioABBackend::remote_post_raw( $url, $data );
+				NelioABAccountSettings::set_has_quota_left( true );
+				break;
+			}
+			catch ( Exception $e ) {
+				// If the form submission event could not be sent, it may be that's
+				// because there is no more quota available
+				if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
+					NelioABAccountSettings::set_has_quota_left( false );
+					break;
+				}
+				// If there was another error... we just keep trying (attemp) up to 5
+				// times.
+			}
+		}
+
 	}
 
 }//NelioABAlternativeExperimentController
 
-?>

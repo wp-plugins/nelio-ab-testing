@@ -77,7 +77,7 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 				$set_as_winner = '';
 
 			echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s</li>',
-				$set_as_winner, $ori_label, $this->get_original_name() );
+				$set_as_winner, $ori_label, $this->trunk( $this->get_original_name() ) );
 		}
 
 		protected function print_the_real_alternatives() {
@@ -102,7 +102,7 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 
 				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 					$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-						admin_url() . 'admin.php?page=nelioab-css-edit&exp_id=' . $this->exp->get_id() . '&css_id=' . $alt->get_id(),
+						admin_url( 'admin.php?page=nelioab-css-edit&exp_id=' . $this->exp->get_id() . '&css_id=' . $alt->get_id() ),
 						__( 'Edit' ) );
 				}
 
@@ -127,7 +127,7 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 				?></span>
 				<?php
 				echo sprintf( '<span class="alt-type add-new-h2 %s">%s</span><a href="#" onClick="javascript:openCss(%s)">%s</a>%s',
-					$set_as_winner, $alt_label, $alt->get_id(), $alt->get_name(), $edit_link );
+					$set_as_winner, $alt_label, $alt->get_id(), $this->trunk( $alt->get_name() ), $edit_link );
 				echo '</li>';
 
 			}

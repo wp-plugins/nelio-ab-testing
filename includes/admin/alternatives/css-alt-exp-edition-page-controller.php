@@ -19,7 +19,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
-	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/css-alt-exp-edition-page.php' );
 
@@ -99,26 +99,16 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 				$view->add_goal( $goal->json4js() );
 
 			if ( count( $goals ) == 0 ) {
-				$new_goal = new NelioABPageAccessedGoal( $experiment );
+				$new_goal = new NelioABAltExpGoal( $experiment );
 				$new_goal->set_name( __( 'Default', 'nelioab' ) );
 				$view->add_goal( $new_goal->json4js() );
 			}
-
-			$list_of_pages = get_pages();
-			$options_for_posts = array(
-				'posts_per_page' => 150 );
-			$list_of_posts = get_posts( $options_for_posts );
-			require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
-			NelioABArrays::sort_posts( $list_of_posts );
-
-			$view->set_wp_pages( $list_of_pages );
-			$view->set_wp_posts( $list_of_posts );
 
 			return $view;
 		}
 
 		public function create_view() {
-			$title = __( 'Edit Experiment', 'nelioab' );
+			$title = __( 'Edit CSS Experiment', 'nelioab' );
 			return new NelioABCssAltExpEditionPage( $title );
 		}
 
@@ -150,7 +140,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 				$css_alt_id = $_POST['content_to_edit'];
 				$css_alt_id = $experiment->get_real_id_for_alt( $css_alt_id );
 			}
-			echo '[SUCCESS]' . admin_url() . 'admin.php?page=nelioab-css-edit&exp_id=' . $exp_id . '&css_id=' . $css_alt_id;
+			echo '[SUCCESS]' . admin_url( 'admin.php?page=nelioab-css-edit&exp_id=' . $exp_id . '&css_id=' . $css_alt_id );
 			die();
 		}
 

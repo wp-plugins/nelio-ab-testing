@@ -84,7 +84,7 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 						return $template;
 
 					$status = get_post_status( $id );
-					if ( $status == 'draft' || $status == 'publish' ||
+					if ( 'draft' == $status || 'publish' == $status ||
 					     ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 					   ) {
 						if ( get_post_meta( $id, '_' . OP_SN . '_pagebuilder', true ) == 'Y' ) {

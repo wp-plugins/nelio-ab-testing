@@ -350,7 +350,7 @@ function nelioabStartHeatmapTracking() {
 					'tablet-data-click':  JSON.stringify( tablet_data_click. exportDataSet() ),
 					'desktop-data-click': JSON.stringify( desktop_data_click.exportDataSet() ),
 					'hd-data-click':      JSON.stringify( hd_data_click.     exportDataSet() ),
-					'hm-post-id': nelioab__hm_post_id,
+					'hm-post-id':         NelioABHMTracker.post_id,
 				},
 			});
 		}

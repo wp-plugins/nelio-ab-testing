@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.0.11
+Stable tag: 3.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -150,6 +150,20 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
+= 3.1.0 =
+* **New Feature**. You can now use form submissions as conversion actions. In
+particular, we now support Contact Forms 7 and Gravity Forms plugins.
+* Improved page and post selectors during experiment creation/edition. You're
+no longer limited to the latest posts/pages, but you can now search and select
+any page or post from your site.
+* Improved CSS editor, with syntax highlighting and warning/error
+notifications.
+* Bug fix: in the progress of the experiment page, under the summary section,
+the conversion rate timeline does no longer show conversion rates greater than
+100 per cent.
+* Bug fix: the order in which conversion goals and conversion actions are
+defined is now preserved.
+
 = 3.0.11 =
 * Bug fix: when editing a theme experiment (after its creation), the behavior
 of the overall process generated a few problems. Users got stuck, alternatives
@@ -188,8 +202,8 @@ They should be fixed, now.
 * Compatibility with Custom Permalinks plugin.
 
 = 3.0.3 =
-* New Feature. So far, external goals were only tracked if the user clicked a
-link whose href was the same as the external goal's URL. Now, this is also
+* **New Feature**. So far, external goals were only tracked if the user clicked
+a link whose href was the same as the external goal's URL. Now, this is also
 extended to form submission (assuming that form's action attribute is the same
 as the external goal's URL).
 * Quick fix. In the progress of the experiment page, goals created with
@@ -479,7 +493,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.0.11 =
-Theme Experiment edition should be working, now: properly-selected
-alternatives, Next/Previous buttons working properly, and so on.
+= 3.1.0 =
+You can now use Contact Form 7 and Gravity Form submissions as conversion
+actions. The version also includes some additional improvements and bug fixes.
 

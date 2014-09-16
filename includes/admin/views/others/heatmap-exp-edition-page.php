@@ -31,8 +31,6 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 		protected $exp_descr;
 
 		protected $post_id;
-		protected $wp_pages;
-		protected $wp_posts;
 		protected $form_name;
 
 		protected $show_latest_posts;
@@ -72,19 +70,11 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 			$this->show_latest_posts = $latest_posts;
 		}
 
-		public function set_wp_pages( $wp_pages ) {
-			$this->wp_pages = $wp_pages;
-		}
-
-		public function set_wp_posts( $wp_posts ) {
-			$this->wp_posts = $wp_posts;
-		}
-
 		public function set_post_id( $post_id ) {
 			if ( $post_id )
 				$this->post_id = $post_id;
 			else
-				$this->post_id = -1;
+				$this->post_id = NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS;
 		}
 
 		protected function do_render() { ?>
@@ -239,38 +229,9 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 		}
 
 
-		public function print_post_field() { ?>
-			<select id="exp_post_id" style="width:300px;"
-				name="exp_post_id" class="required" value="<?php echo $this->post_id; ?>">
-				<option id="select_goal_label" value="-1"><?php _e( 'Select a page or post...', 'nelioab' ); ?></option>
-				<?php
-				$selected = 'selected="selected"';
-				if ( $this->show_latest_posts ) { ?>
-					<optgroup id="latest-posts" label="<?php _e( 'Dynamic Front Page', 'nelioab' ); ?>">
-						<option
-							id="goal-0"
-							<?php if ( NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS == $this->post_id )
-								echo $selected; ?>
-							value="<?php echo NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS; ?>"
-							title="<?php _e( 'Your latest posts' ); ?>"><?php
-							_e( 'Your latest posts' ); ?></option>
-					</optgroup><?php
-				}
-				$counter  = 1;
-				if ( count( $this->wp_pages ) > 0 ) { ?>
-					<optgroup id="page-options" label="<?php _e( 'WordPress Pages' ); ?>"><?php
-						require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-						NelioABWpHelper::print_selector_for_list_of_posts( $this->wp_pages, $this->post_id );
-					?></optgroup><?php
-				}
-
-				if ( count( $this->wp_posts ) > 0 ) { ?>
-					<optgroup id="post-options" label="<?php _e( 'WordPress Posts' ); ?>"><?php
-						require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-						NelioABWpHelper::print_selector_for_list_of_posts( $this->wp_posts, $this->post_id );
-					?></optgroup><?php
-				} ?>
-			</select><?php
+		public function print_post_field() {
+			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+			NelioABHtmlGenerator::print_full_searcher( 'exp_post_id', $this->post_id );
 		}
 
 	}//NelioABHeatmapExpEditionPage

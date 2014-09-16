@@ -44,7 +44,7 @@ if ( !class_exists( 'NelioABHeatmapExpCreationPageController' ) ) {
 		}
 
 		public function create_view() {
-			$title = __( 'Add Experiment', 'nelioab' );
+			$title = __( 'Add Heatmap Experiment', 'nelioab' );
 			return new NelioABHeatmapExpCreationPage( $title );
 		}
 

@@ -254,7 +254,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 							'mailto:support@neliosoftware.com?subject=Nelio%20A%2FB%20Testing%20-%20Monthly%20Quota%20Update' );
 				}
 				else {
-					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please contact <a href="%s">%s</a>.', 'nelioab' ),
+					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please contact <a href="%1$s">%2$s</a>.', 'nelioab' ),
 							$this->user_info['total_quota'],
 							$this->user_info['agencymail'],
 							$this->user_info['agencyname'] );

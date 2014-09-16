@@ -88,7 +88,7 @@
 
 		// Prepare the content
 		$page_on_front = get_option( 'page_on_front' );
-		if ( !$page_on_front  && !$post_id ) // if the home page is the list of posts and the experiment is for the home page
+		if ( !$page_on_front && !$post_id ) // if the home page is the list of posts and the experiment is for the home page
 			$url = get_option( 'home' ); // the url should be the home page
 		else  // otherwise (1 - the heatmaps is NOT for the home page or 2 - the home page is a specific page, the heatmaps should display that page
 			$url = get_permalink( $post_id );
@@ -285,13 +285,13 @@
 				if ( $heatmap->click ) {
 					$name .= '_click';
 					$views = sprintf(
-						_n( 'Clickmap built using data from only one user', 'Clickmap built using data from %s page views',
+						_n( 'Clickmap built using data from only one page view', 'Clickmap built using data from %s page views',
 							$heatmap->views, 'nelioab' ),
 						$heatmap->views );
 				}
 				else {
 					$views = sprintf(
-						_n( 'Heatmap built using data from only one user', 'Heatmap built using data from %s page views',
+						_n( 'Heatmap built using data from only one page view', 'Heatmap built using data from %s page views',
 							$heatmap->views, 'nelioab' ),
 						$heatmap->views );
 				}
@@ -431,13 +431,13 @@
 			<li>|</li>
 			<li><a id="view-clicks" style="font-size:12px;"><?php echo __( 'View Clickmap', 'nelioab' ); ?></a></li>
 			<li>|</li>
-			<li><a style="font-size:12px;" href="<?php echo admin_url() . 'admin.php?page=nelioab-experiments'; ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
+			<li><a style="font-size:12px;" href="<?php echo admin_url( 'admin.php?page=nelioab-experiments' ); ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
 			<?php
 			if ( $show_back_link ) {
-				$link = '%1$s?page=nelioab-experiments&action=progress&id=%2$s&exp_type=%3$s';
+				$link = admin_url( 'admin.php?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s' );
 				?>
 				<li>|</li>
-				<li><a style="font-size:12px;" href="<?php printf( $link, admin_url(), $_GET['id'], $_GET['exp_type'] ); ?>"><?php echo __( 'Back', 'nelioab' ); ?></a></li>
+				<li><a style="font-size:12px;" href="<?php printf( $link, $_GET['id'], $_GET['exp_type'] ); ?>"><?php echo __( 'Back', 'nelioab' ); ?></a></li>
 			<?php
 			} ?>
 		</ul>

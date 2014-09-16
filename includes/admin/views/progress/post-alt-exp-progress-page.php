@@ -121,7 +121,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 		private function make_link_for_edit( $id ) {
 			return sprintf( ' <a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>',
-				admin_url() . '/post.php?post=' . $id . '&action=edit',
+				admin_url( 'post.php?post=' . $id . '&action=edit' ),
 				__( 'Edit' ) );
 		}
 
@@ -163,9 +163,9 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 			if ( $link )
 				$link = sprintf( '<strong><a href="%s" target="_blank">%s</a></strong>',
-					$link, $this->ori );
+					$link, $this->trunk( $this->ori ) );
 			else
-				$link = '<strong>' . $this->ori . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
+				$link = '<strong>' . $this->trunk( $this->ori ) . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
 
 			echo sprintf( '<tr>' .
 				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
@@ -196,9 +196,9 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 				if ( $link )
 					$link = sprintf( '<strong><a href="%s" target="_blank">%s</a></strong>',
-						$link, $alt->get_name() );
+						$link, $this->trunk( $alt->get_name() ) );
 				else
-					$link = '<strong>' . $alt->get_name() . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
+					$link = '<strong>' . $this->trunk( $alt->get_name() ) . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
 
 				echo sprintf( '<tr>' .
 					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
@@ -229,8 +229,8 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 				}
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
-				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
-				$exp->get_id(); ?>">
+				echo admin_url(
+					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
 				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />

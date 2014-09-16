@@ -405,11 +405,11 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// ...but before, if it is a title experiment, we have to create the goal
 			if ( $this->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
-				require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
-				$goal = new NelioABPageAccessedGoal( $this );
-				$page = new NelioABPageDescription( $this->get_originals_id() );
+				require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
+				$goal = new NelioABAltExpGoal( $this );
+				$page = new NelioABPageAccessedAction( $this->get_originals_id() );
 				$page->set_indirect_navigations_enabled( true );
-				$goal->add_page( $page );
+				$goal->add_action( $page );
 				$this->add_goal( $goal );
 				$this->make_goals_persistent();
 			}
@@ -472,8 +472,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				$exp->track_heatmaps( $json_data->showHeatmap );
 
 			if ( isset( $json_data->goals ) )
-				foreach ( $json_data->goals as $goal )
-					NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );
 
 			$alternatives = array();
 			if ( isset( $json_data->alternatives ) ) {

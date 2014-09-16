@@ -104,7 +104,7 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 			$alt = new NelioABAlternative();
 			$alt->id            = $json_alt->id;
 			$alt->name          = $json_alt->name;
-			$alt->value         = $json_alt->value;
+			$alt->value         = isset( $json_alt->value ) ? $json_alt->value : -1;
 			$alt->based_on      = isset( $json_alt->base ) ? $json_alt->base : false;
 			$alt->was_removed   = isset( $json_alt->wasDeleted ) && $json_alt->wasDeleted;
 			$alt->is_dirty      = isset( $json_alt->isDirty ) && $json_alt->isDirty;

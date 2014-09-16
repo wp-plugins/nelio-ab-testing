@@ -24,7 +24,6 @@ if( !class_exists( 'NelioABSettings' ) ) {
 		const DEFAULT_EXPL_RATIO             = '90';
 		const DEFAULT_IS_GREEDY_ENABLED      = false;
 		const DEFAULT_USE_COLORBLIND_PALETTE = false;
-		const DEFAULT_EXACT_URL_EXTERNAL     = true;
 		const DEFAULT_USE_PHP_COOKIES        = false;
 
 		public static function get_settings() {
@@ -52,12 +51,6 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			if( isset( $input['use_colorblind'] ) ) {
 				$new_input['use_colorblind'] = sanitize_text_field( $input['use_colorblind'] );
 				$new_input['use_colorblind'] = $new_input['use_colorblind'] == '1';
-			}
-
-			$new_input['exact_url_external'] = NelioABSettings::DEFAULT_EXACT_URL_EXTERNAL;
-			if( isset( $input['exact_url_external'] ) ) {
-				$new_input['exact_url_external'] = sanitize_text_field( $input['exact_url_external'] );
-				$new_input['exact_url_external'] = $new_input['exact_url_external'] == '1';
 			}
 
 			$new_input['expl_ratio'] = NelioABSettings::DEFAULT_EXPL_RATIO;
@@ -154,13 +147,6 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $options['use_colorblind'] ) )
 				return $options['use_colorblind'];
 			return NelioABSettings::DEFAULT_USE_COLORBLIND_PALETTE;
-		}
-
-		public static function match_exact_url_for_external_goals() {
-			$options = NelioABSettings::get_settings();
-			if ( isset( $options['exact_url_external'] ) )
-				return $options['exact_url_external'];
-			return NelioABSettings::DEFAULT_EXACT_URL_EXTERNAL;
 		}
 
 		public static function use_php_cookies() {

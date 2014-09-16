@@ -26,7 +26,6 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 		protected $exp;
 		protected $results;
-		protected $is_single_goal;
 		protected $winner_label;
 		protected $goals;
 		protected $goal;
@@ -61,14 +60,17 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			}
 
 			// Sort aux alphabetically...
-			usort( $aux, array( 'NelioABAltExpProgressPage', 'sort_by_id' ) );
 			usort( $aux, array( 'NelioABAltExpProgressPage', 'sort_by_name' ) );
+			usort( $aux, array( 'NelioABAltExpProgressPage', 'sort_by_id' ) );
 
 			// And add them in sorted
 			foreach ( $aux as $goal )
 				array_push( $sorted, $goal );
 			$this->goals = $sorted;
 
+			// Autoset names are only used by pre-3.0 experiments. For those,
+			// the only possible actions where PageAccessedActions, and that's
+			// why I assume $action[0] is a $page.
 			$are_all_undefined = true;
 			foreach ( $this->goals as $goal )
 				if ( $goal->get_name() != __( 'Undefined', 'nelioab' ) )
@@ -86,8 +88,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				$goal->set_name( __( 'Aggregated Info', 'nelioab' ) );
 				return;
 			}
-			$page = $goal->get_pages();
-			$page = $page[0];
+			$action = $goal->get_actions();
+			$page = $action[0];
 			if ( $page->is_external() ) {
 				$goal->set_name( $page->get_title() );
 			}
@@ -135,7 +137,6 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				return;
 
 			try {
-				$this->is_single_goal = count( $this->goal->get_pages() ) <= 1;
 				$this->results = $this->goal->get_results();
 			}
 			catch ( Exception $e ) {
@@ -154,107 +155,176 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		protected abstract function get_original_value();
 		protected abstract function print_js_function_for_post_data_overriding();
 
-		private function print_single_goal_info() {
-			$pages = $this->goal->get_pages();
-			$page  = $pages[0];
-
-			if ( $page->is_internal() )
-				$this->print_single_goal_info_internal( $page );
-			else
-				$this->print_single_goal_info_external( $page );
-		}
-
-		private function print_single_goal_info_internal( $page ) {
-			// Get goal post
-			$post = false;
-			$is_goal_page = false;
-			$post = get_post( $page->get_reference() );
-			$link = get_permalink( $page->get_reference() );
-			$is_goal_page = ( $post->post_type == 'page' );
-
-			// Create goal title
-			if ( $is_goal_page )
-				$label = __( 'Goal page not found.', 'nelioab' );
-			else
-				$label = __( 'Goal post not found.', 'nelioab' );
-			if ( $post )
-				$label = trim( $post->post_title );
-			if ( strlen( $label ) == 0 ) {
-				if ( $is_goal_page )
-					$label = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
-				else
-					$label = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
-			}
-			if ( $post )
-				$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $label );
-			$this->do_single_print( $label, $is_goal_page );
-		}
-
-		private function print_single_goal_info_external( $page ) {
-			$label = sprintf( '<a href="%s" target="_blank">%s</a>',
-				$page->get_reference(),
-				$page->get_title() );
-			$this->do_single_print( $label, true );
-		}
-
-		private function do_single_print( $label, $is_goal_page ) { ?>
-			<h3><?php
-			$aux  = $this->goal->get_pages();
-			$page = false;
-			if ( count( $aux ) > 0 )
-				$page = $aux[0];
-			if ( $page && $page->accepts_indirect_navigations() ) {
-				if ( $is_goal_page )
-					_e( 'Indirect Goal Page', 'nelioab' );
-				else
-					_e( 'Indirect Goal Post', 'nelioab' );
-			}
-			else {
-				if ( $is_goal_page )
-					_e( 'Direct Goal Page', 'nelioab' );
-				else
-					_e( 'Direct Goal Post', 'nelioab' );
-			}
-			?></h3><p><?php echo $label; ?></p><?php
-		}
-
-		private function print_multiple_goals_info() {
-			$aux  = $this->goal->get_pages();
-			$page = false;
-			if ( count( $aux ) > 0 )
-				$page = $aux[0];
-			if ( $page && $page->accepts_indirect_navigations() ) { ?>
-				<h3><?php _e( 'Indirect Goal Pages and Posts', 'nelioab' ); ?></h3><?php
-			}
-			else { ?>
-				<h3><?php _e( 'Direct Goal Pages and Posts', 'nelioab' ); ?></h3><?php
-			} ?>
+		private function print_actions_info() {
+			$aux  = $this->goal->get_actions();
+			if ( count( $aux ) <= 0 )
+				return;
+			?>
+			<h3><?php _e( 'Conversion Actions', 'nelioab' ); ?></h3>
 			<ul style="margin-left:2em;"><?php
-			$pages = $this->goal->get_pages();
-			foreach ( $pages as $page ) {
-				if ( $page->is_internal() ) {
-					$post = get_post( $page->get_reference() );
-					$label = sprintf( __( 'Page or post «%s» not found.', 'nelioab' ), $page->get_reference() );
-					if ( $post ) {
-						$name = trim( $post->post_title );
-						$link = get_permalink( $post );
-						if ( strlen( $name ) == 0 ) {
-							if ( $is_goal_page )
-								$name = sprintf( __( 'Unnamed page «%s»', 'nelioab' ), $post->ID );
-							else
-								$name = sprintf( __( 'Unnamed post «%s»', 'nelioab' ), $post->ID );
-						}
-						$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $name );
-					}
+			$actions = $this->goal->get_actions();
+			foreach ( $actions as $action ) {
+				switch ( $action->get_type() ) {
+					case NelioABAction::PAGE_ACCESSED:
+					case NelioABAction::POST_ACCESSED:
+					case NelioABAction::EXTERNAL_PAGE_ACCESSED:
+						$label = $this->print_page_accessed_action( $action );
+						if ( $label )
+							echo "<li>- $label</li>";
+						continue;
+					case NelioABAction::SUBMIT_CF7_FORM:
+					case NelioABAction::SUBMIT_GRAVITY_FORM:
+						$label = $this->print_form_submission_action( $action );
+						if ( $label )
+							echo "<li>- $label</li>";
+						continue;
 				}
-				else {
-					$link  = $page->get_reference();
-					$name  = $page->get_title();
-					$label = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $name );
-				}
-				echo "<li>- $label</li>";
 			}
 			?></ul><?php
+		}
+
+		private function print_page_accessed_action( $action ) {
+			$indirect = $action->accepts_indirect_navigations();
+			$result  = false;
+
+			if ( $action->is_internal() ) {
+				$post = get_post( $action->get_reference() );
+				if ( $post ) {
+					$name = trim( $post->post_title );
+					$link = get_permalink( $post );
+					if ( strlen( $name ) == 0 )
+						$name = $post->ID;
+					$link = sprintf( '<a href="%s" target="_blank">%s</a>', $link, $name );
+
+					if ( $post->post_type == 'page' && $indirect )
+						$result = sprintf(
+							__( 'Indirect access to page %s', 'nelioab' ),
+							$link );
+					elseif ( $post->post_type == 'page' && !$indirect )
+						$result = sprintf(
+							__( 'Direct access to page %s', 'nelioab' ),
+							$link );
+					elseif ( $post->post_type == 'post' && $indirect )
+						$result = sprintf(
+							__( 'Indirect access to post %s', 'nelioab' ),
+							$link );
+					elseif ( $post->post_type == 'post' && !$indirect )
+						$result = sprintf(
+							__( 'Direct access to post %s', 'nelioab' ),
+							$link );
+				}
+				else {
+					if ( $indirect )
+						$result = __( 'Indirect access to a page or post that does no longer exist', 'nelioab' );
+					else
+						$result = __( 'Direct access to a page or post that does no longer exist', 'nelioab' );
+				}
+			}
+			else {
+				$name = $action->get_title();
+				$fake_link = '<span style="text-decoration:underline;" title="%2$s">%1$s</span>';
+				$real_link = '<a href="%2$s" target="_blank">%1$s</a>';
+				$special_case = false;
+				switch ( $action->get_regex_mode() ) {
+					case 'starts-with':
+						$name = sprintf( $fake_link, $name, '%s' );
+						$special_case = esc_html( sprintf( __( 'URL starts with "%s"', 'nelioab' ),
+							$action->get_clean_reference() ) );
+						break;
+					case 'ends-with':
+						$name = sprintf( $fake_link, $name, '%s' );
+						$special_case = esc_html( sprintf( __( 'URL ends with "%s"', 'nelioab' ),
+							$action->get_clean_reference() ) );
+						break;
+					case 'contains':
+						$name = sprintf( $fake_link, $name, '%s' );
+						$special_case = esc_html( sprintf( __( 'URL contains "%s"', 'nelioab' ),
+							$action->get_clean_reference() ) );
+						break;
+					default:
+						$name = sprintf( $real_link, $name, $action->get_reference() );
+				}
+
+				if ( $indirect ) {
+					$result = sprintf(
+						__( 'Indirect access to external page %1$s', 'nelioab' ),
+						$name );
+				}
+				else {
+					$result = sprintf(
+						__( 'Direct access to external page %1$s', 'nelioab' ),
+						$name );
+				}
+
+				if ( $special_case ) {
+					$result = sprintf( $result, $special_case );
+				}
+			}
+			return $result;
+		}
+
+		private function print_form_submission_action( $action ) {
+			$form_id = $action->get_form_id();
+			$name    = false;
+			$result  = false;
+
+			$cf7  = is_plugin_active( 'contact-form-7/wp-contact-form-7.php' );
+			$gf   = is_plugin_active( 'gravityforms/gravityforms.php' );
+			switch ( $action->get_type() ) {
+
+				case NelioABAction::SUBMIT_CF7_FORM:
+					if ( $cf7 ) {
+						$aux = WPCF7_ContactForm::find( array( 'p' => $form_id ) );
+						if ( count( $aux ) > 0 ) {
+							$form = $aux[0];
+							$name = $form->title();
+							$link = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $form_id );
+						}
+					}
+					$mode = __( 'from the tested page', 'nelioab' );
+					if ( $action->accepts_submissions_from_any_page() )
+						$mode = __( 'from any page', 'nelioab' );
+					if ( $name ) {
+						$result = sprintf(
+							__( 'Submission of form %1$s %2$s', 'nelioab' ),
+							sprintf( '<a href="%2$s" target="_blank">%1$s</a>', $name, $link ),
+							$mode
+						);
+					}
+					else {
+						$result = sprintf(
+							__( 'Submission of an unknown Contact Form 7 %s' ),
+							$mode );
+					}
+					break;
+
+				case NelioABAction::SUBMIT_GRAVITY_FORM:
+					$mode = __( 'from the tested page', 'nelioab' );
+					if ( $action->accepts_submissions_from_any_page() )
+						$mode = __( 'from any page', 'nelioab' );
+					if ( $gf ) {
+						$form = GFAPI::get_form( $form_id );
+						if ( $form ) {
+							$name = $form['title'];
+							$link = admin_url( 'admin.php?page=gf_edit_forms&id=' . $form_id );
+						}
+					}
+					if ( $name ) {
+						$result = sprintf(
+							__( 'Submission of form %1$s %2$s', 'nelioab' ),
+							sprintf( '<a href="%2$s" target="_blank">%1$s</a>', $name, $link ),
+							$mode
+						);
+					}
+					else {
+						$result = sprintf(
+							__( 'Submission of an unknown Gravity Form %s', 'nelioab' ),
+							$mode );
+					}
+					break;
+			}
+
+			return $result;
 		}
 
 		protected function do_render() {
@@ -364,7 +434,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									}
 									else {
 										printf ( '<p class="result">%s</p>',
-											sprintf( __( 'Alternative %s <small>(%s %%)</small>', 'nelioab' ),
+											sprintf( __( 'Alternative %1$s <small>(%2$s %%)</small>', 'nelioab' ),
 												$the_winner, $the_winner_confidence ) );
 									}
 								}
@@ -395,6 +465,42 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 						</div>
 
 					</div>
+
+					<?php
+					if ( $this->exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
+						<div style="margin:0.5em;margin-top:0em;text-align:right;">
+							<script>
+							function forceStop() {<?php
+								$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
+								$msg = str_replace( '"', '\\"', $msg ); ?>
+								if ( !confirm( "<?php echo $msg; ?>") ) return;
+								smoothTransitions();
+								jQuery.get(
+									"<?php
+										echo admin_url( sprintf(
+											'admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
+											$this->exp->get_id(), $this->exp->get_type() )
+										); ?>",
+									function(data) {
+										data = jQuery.trim( data );
+										if ( data.indexOf("[SUCCESS]") == 0) {
+											location.href = data.replace("[SUCCESS]", "");
+										}
+										else {
+											document.open();
+											document.write(data);
+											document.close();
+										}
+									});
+							}
+							</script>
+							<?php
+							echo $this->make_js_button( __( 'Stop Experiment Now', 'nelioab' ), 'javascript:forceStop();' );
+							?>
+						</div>
+					<?php
+					} ?>
+
 				</div>
 				<!-- ENDOF EXPERIMENT SUMMARY -->
 
@@ -403,120 +509,92 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				<div id="exp-info">
 
 					<h2><?php $this->print_experiment_details_title() ?></h2>
-					<div id="exp-info-gen">
-						<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
-							<p><?php echo $exp->get_name(); ?></p>
-						<h3><?php _e( 'Description', 'nelioab' ); ?></h3>
-							<p><?php echo $descr; ?></p>
-						<?php
-							if ( $this->is_single_goal )
-								$this->print_single_goal_info();
-							else
-								$this->print_multiple_goals_info();
-						?>
+					<div class="nelioab-row">
+						<div class="nelioab-first-col">
+							<div id="exp-info-gen">
+								<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
+									<p><?php echo $exp->get_name(); ?></p>
+								<h3><?php _e( 'Description', 'nelioab' ); ?></h3>
+									<p><?php echo $descr; ?></p>
+							</div>
 
-					</div>
+							<div id="exp-info-alts">
+								<h3><?php _e( 'Alternatives', 'nelioab' ); ?></h3>
 
-					<div id="exp-info-alts">
-						<h3><?php _e( 'Alternatives', 'nelioab' ); ?></h3>
-
-						<?php
-						if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
-							<script>
-							function nelioab_confirm_editing() {
-								return confirm( "<?php
-									_e( 'Editing an alternative while the experiment is running may invalidate the results of the experiment. Do you really want to continue?', 'nelioab' );
-								?>" );
-							}
-							</script>
-						<?php
-						} ?>
-
-						<?php
-						if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) { ?>
-							<script>
-							<?php
-							$this->print_js_function_for_post_data_overriding();
-							?>
-
-							function nelioab_show_the_dialog_for_overriding(id) {
-								$ = jQuery;
-								$(function() {
-									$("#dialog-modal").dialog({
-										title: '<?php echo __( 'Override Original', 'nelioab' ); ?>',
-										resizable: false,
-										width: 500,
-										modal: true,
-										buttons: {
-											"OK": function() {
-												$(this).dialog("close");
-												nelioab_do_override(id);
-											},
-											"Cancel": function() {
-												$(this).dialog("close");
-											}
-										}
-									});
-								});
-							}
-
-							function nelioab_do_override(id) {
-								jQuery(".apply-link").each(function() {
-									jQuery(this).fadeOut(100);
-								});
-
-								jQuery("#loading-" + id).delay(120).fadeIn();
-
-								jQuery.ajax({
-									url: jQuery("#apply_alternative").attr("action"),
-									type: 'post',
-									data: jQuery('#apply_alternative').serialize(),
-									success: function(data) {
-										jQuery("#loading-" + id).delay(120).fadeOut(250);
-										jQuery("#success-" + id).delay(500).fadeIn(200).delay(10000).fadeOut(200);
+								<?php
+								if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
+									<script>
+									function nelioab_confirm_editing() {
+										return confirm( "<?php
+											_e( 'Editing an alternative while the experiment is running may invalidate the results of the experiment. Do you really want to continue?', 'nelioab' );
+										?>" );
 									}
-								});
-							}
-							</script>
+									</script>
+								<?php
+								} ?>
 
-						<?php
-						}
+								<?php
+								if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) { ?>
+									<script>
+									<?php
+									$this->print_js_function_for_post_data_overriding();
+									?>
 
-						$this->print_alternatives_block();
+									function nelioab_show_the_dialog_for_overriding(id) {
+										$ = jQuery;
+										$(function() {
+											$("#dialog-modal").dialog({
+												title: '<?php echo __( 'Override Original', 'nelioab' ); ?>',
+												resizable: false,
+												width: 500,
+												modal: true,
+												buttons: {
+													"OK": function() {
+														$(this).dialog("close");
+														nelioab_do_override(id);
+													},
+													"Cancel": function() {
+														$(this).dialog("close");
+													}
+												}
+											});
+										});
+									}
 
-						if ( $this->exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
-							<div style="margin-top:1em;">
-								<script>
-								function forceStop() {<?php
-									$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
-									$msg = str_replace( '"', '\\"', $msg ); ?>
-									if ( !confirm( "<?php echo $msg; ?>") ) return;
-									smoothTransitions();
-									jQuery.get(
-										"<?php echo sprintf(
-											'%s/admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
-											admin_url(), $this->exp->get_id(), $this->exp->get_type() ); ?>",
-										function(data) {
-											data = jQuery.trim( data );
-											if ( data.indexOf("[SUCCESS]") == 0) {
-												location.href = data.replace("[SUCCESS]", "");
-											}
-											else {
-												document.open();
-												document.write(data);
-												document.close();
+									function nelioab_do_override(id) {
+										jQuery(".apply-link").each(function() {
+											jQuery(this).fadeOut(100);
+										});
+
+										jQuery("#loading-" + id).delay(120).fadeIn();
+
+										jQuery.ajax({
+											url: jQuery("#apply_alternative").attr("action"),
+											type: 'post',
+											data: jQuery('#apply_alternative').serialize(),
+											success: function(data) {
+												jQuery("#loading-" + id).delay(120).fadeOut(250);
+												jQuery("#success-" + id).delay(500).fadeIn(200).delay(10000).fadeOut(200);
 											}
 										});
-								}
-								</script>
+									}
+									</script>
 								<?php
-								echo $this->make_js_button( __( 'Stop Experiment Now', 'nelioab' ), 'javascript:forceStop();' );
+								}
+								$this->print_alternatives_block();
 								?>
 							</div>
-						<?php
-						} ?>
+						</div>
 
+						<div class="nelioab-second-col">
+							<div id="exp-info-goal-actions">
+								<?php
+									$this->print_actions_info();
+								?>
+							</div>
+						</div>
 					</div>
+
 				</div>
 				<!-- END OF EXPERIMENT DETAILS -->
 
@@ -601,6 +679,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		abstract protected function print_the_original_alternative();
 		abstract protected function print_the_real_alternatives();
 		abstract protected function print_winner_info();
+
+		protected function trunk( $in ) {
+			return strlen( $in ) > 50 ? substr( $in, 0, 50 ) . "..." : $in;
+		}
 
 		protected function get_best_alt_conversion_rate() {
 			$res = $this->results;
@@ -759,8 +841,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				$div = $arr_divisor[$i];
 				if ( $div < 1 )
 					$aux = 0;
-				else
+				elseif ( $num < $div )
 					$aux = round( ($num / $div) * 100 );
+				else
+					$aux = 100;
 				array_push( $result, $aux );
 			}
 
@@ -1045,10 +1129,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		private $form_name;
 		private $show_new_form;
 		private $copying_content;
-		private $wp_pages;
 
 		function __construct( $items ){
-   	   parent::__construct( array(
+				parent::__construct( array(
 				'singular' => __( 'result', 'nelioab' ),
 				'plural'   => __( 'results', 'nelioab' ),
 				'ajax'     => false

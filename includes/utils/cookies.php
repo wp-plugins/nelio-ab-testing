@@ -21,6 +21,8 @@ $NELIOAB_COOKIES = array();
 
 if ( isset( $_POST['nelioab_cookies'] ) )
 	$NELIOAB_COOKIES = $_POST['nelioab_cookies'];
+elseif ( isset( $_POST['nelioab_form_cookies'] ) )
+	$NELIOAB_COOKIES = (array) json_decode( urldecode( $_POST['nelioab_form_cookies'] ) );
 
 function nelioab_setrawcookie( $name, $value, $expire=0 ) {
 	if ( NelioABSettings::use_php_cookies() )
@@ -41,4 +43,3 @@ function nelioab_setcookie( $name, $value, $expire=0 ) {
 	nelioab_setrawcookie( $name, rawurlencode( $value ), $expire );
 }
 
-?>

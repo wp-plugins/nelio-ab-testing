@@ -37,6 +37,8 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 			$this->set_icon( 'icon-nelioab' );
 			$this->set_form_name( 'nelioab_edit_ab_theme_exp_form' );
 
+			$this->is_global = true;
+
 			$this->current_theme   = array();
 			$this->themes          = array();
 			$this->selected_themes = array();

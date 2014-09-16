@@ -71,22 +71,10 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			);
 		}
 
-		protected function print_ori_field() { ?>
-			<select
-				id="exp_original"
-				style="width:280px;"
-				name="exp_original"
-				class="required"
-				value="<?php echo $this->original_id; ?>"><?php
-
-			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			echo '<optgroup label="' . __( 'Pages', 'nelioab' ) . '"';
-			NelioABWpHelper::print_selector_for_list_of_posts( $this->wp_pages, $this->original_id );
-
-			echo '<optgroup label="' . __( 'Posts', 'nelioab' ) . '"';
-			NelioABWpHelper::print_selector_for_list_of_posts( $this->wp_posts, $this->original_id );
+		protected function print_ori_field() {
+			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+			NelioABHtmlGenerator::print_page_or_post_searcher( 'exp_original', $this->original_id );
 			?>
-			</select>
 
 			<a class="button" style="text-align:center;"
 				href="javascript:NelioABEditExperiment.previewOriginal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
@@ -152,7 +140,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 		}
 
 		public function extra_tablenav( $which ) {
-			if ( $which == 'top' ){
+			if ( 'top' == $which ){
 				$text = __( 'Please, <b>add one or more</b> title alternatives.',
 					'nelioab' );
 				echo $text;

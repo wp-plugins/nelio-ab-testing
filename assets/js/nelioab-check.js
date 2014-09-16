@@ -46,6 +46,8 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 			else {
 				nelioab_show_body();
 				jQuery(document).ready(function(){
+					if ( typeof( nelioab_add_hidden_fields_on_forms ) == "function" )
+						nelioab_add_hidden_fields_on_forms(jQuery);
 					if ( typeof( nelioabStartHeatmapTracking ) == "function" )
 						nelioabStartHeatmapTracking();
 				});

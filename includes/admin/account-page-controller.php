@@ -166,7 +166,7 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 				$action = $_POST['nelioab_registration_action'];
 
 				try {
-					if ( $action == 'register' ) {
+					if ( 'register' == $action ) {
 						NelioABAccountSettings::register_this_site();
 						$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
 					}

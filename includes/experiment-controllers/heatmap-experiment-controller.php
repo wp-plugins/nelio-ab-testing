@@ -52,11 +52,13 @@ class NelioABHeatmapExperimentController {
 		   ( $this->is_post_in_an_ab_experiment_with_heatmaps() && isset( $_POST['nelioab_load_alt'] ) ) ) {
 			global $nelioab_controller;
 			$post_id = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $nelioab_controller->get_current_url() );
-			?><script>var nelioab__hm_post_id = "<?php echo $post_id; ?>";</script><?php echo "\n";
 			wp_enqueue_script( 'nelioab_track_heatmaps',
 				nelioab_asset_link( '/js/nelioab-heatmap-tracker.min.js' ) );
 			wp_localize_script( 'nelioab_track_heatmaps',
-				'NelioABHMTracker', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+				'NelioABHMTracker', array(
+					'ajaxurl' => admin_url( 'admin-ajax.php' ),
+					'post_id' => $post_id,
+				) );
 		}
 	}
 

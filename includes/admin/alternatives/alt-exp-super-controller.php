@@ -18,9 +18,8 @@
 if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-	require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/post-alternative-experiment.php' );
-	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/post-alt-exp-edition-page.php' );
 
@@ -82,7 +81,7 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 							$duplicated_name_found = true;
 						}
 					}
-			}
+				}
 			}
 			catch ( Exception $e ) {
 				$errors = array( array ( 'none', $e->getMessage() ) );
@@ -105,8 +104,7 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 			}
 
 			// 2. Redirect to the appropiate page
-			echo '[SUCCESS]' . admin_url() .
-				'admin.php?page=nelioab-experiments&action=list';
+			echo '[SUCCESS]' . admin_url( 'admin.php?page=nelioab-experiments&action=list' );
 			die();
 		}
 
@@ -118,8 +116,7 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 			$exp->discard_changes();
 
 			// 2. Redirect to the appropiate page
-			echo '[SUCCESS]' . admin_url() .
-				'admin.php?page=nelioab-experiments&action=list';
+			echo '[SUCCESS]' . admin_url( 'admin.php?page=nelioab-experiments&action=list' );
 			die();
 		}
 
@@ -136,7 +133,7 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 				$goals = json_decode( urldecode( $_POST['nelioab_goals'] ) );
 				if ( count( $goals ) > 0 ) {
 					foreach ( $goals as $json_goal ) {
-						$goal = NelioABPageAccessedGoal::build_goal_using_json4js( $json_goal, $exp );
+						$goal = NelioABAltExpGoal::build_goal_using_json4js( $json_goal, $exp );
 						if ( $goal )
 							$exp->add_goal( $goal );
 					}

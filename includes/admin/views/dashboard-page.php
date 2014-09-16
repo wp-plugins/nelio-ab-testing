@@ -74,7 +74,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 							colors.push(Highcharts.Color(base).brighten(i / divider).get());
 						return colors;
 					}());
-						
+
 					// Build the chart
 					var chart = $('#' + id).highcharts({
 						chart: {
@@ -103,12 +103,12 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 					});
 				}
 			</script><?php
-			
+
 			include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			foreach ( $this->summary as $exp ) {
 				switch( $exp->get_type() ) {
 					case NelioABExperiment::HEATMAP_EXP:
-           		 	$progress_url = NelioABWPHelper::get_unsecured_site_url() .
+							$progress_url = NelioABWPHelper::get_unsecured_site_url() .
 							'/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME .
 							'/heatmaps.php?id=%1$s&exp_type=%2$s';
 						$this->print_linked_beautiful_box(

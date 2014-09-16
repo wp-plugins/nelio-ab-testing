@@ -18,76 +18,135 @@
  */
 
 
-if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
+if( !class_exists( 'NelioABAltExpGoal' ) ) {
 
-	require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
-	require_once( NELIOAB_MODELS_DIR . '/goal-results/page-accessed-goal-result.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/actions/action.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/actions/form-submission-action.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goal-results/alternative-experiment-goal-result.php' );
 
 	require_once( NELIOAB_MODELS_DIR . '/goals/goal.php' );
-	class NelioABPageAccessedGoal extends NelioABGoal {
+	class NelioABAltExpGoal extends NelioABGoal {
 
-		private $pages;
+		private $actions;
 
 		public function __construct( $exp ) {
 			parent::__construct( $exp );
-			$this->set_kind( NelioABGoal::PAGE_ACCESSED_GOAL );
-			$this->pages = array();
+			$this->set_kind( NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL );
+			$this->actions = array();
 		}
 
-		public function clear_pages() {
-			$this->pages = array();
+		public function clear_actions() {
+			$this->actions = array();
 		}
 
-		public function get_pages() {
-			return $this->pages;
+		public function get_actions() {
+			return $this->actions;
 		}
 
-		public function add_page( $page ) {
-			array_push( $this->pages, $page );
+		public function add_action( $action ) {
+			array_push( $this->actions, $action );
 		}
 
 		public function includes_internal_page( $post_id ) {
-			foreach( $this->pages as $page ) {
-				if ( !$page->is_internal() )
-					continue;
-				if ( $page->get_reference() == $post_id )
-					return true;
+			foreach( $this->actions as $action ) {
+				switch( $action->get_type() ) {
+					case NelioABAction::PAGE_ACCESSED:
+					case NelioABAction::POST_ACCESSED:
+					case NelioABAction::EXTERNAL_PAGE_ACCESSED:
+						if ( !$action->is_internal() )
+							continue;
+						if ( $action->get_reference() == $post_id )
+							return true;
+					default:
+						// Nothing to be done
+				}
 			}
 			return false;
 		}
 
 		public function includes_external_page( $url ) {
-			foreach( $this->pages as $page ) {
-				if ( !$page->is_external() )
-					continue;
-				if ( $page->get_reference() == $url )
-					return true;
+			foreach( $this->actions as $action ) {
+				switch( $action->get_type() ) {
+					case NelioABAction::PAGE_ACCESSED:
+					case NelioABAction::POST_ACCESSED:
+					case NelioABAction::EXTERNAL_PAGE_ACCESSED:
+						if ( !$action->is_external() )
+							continue;
+						if ( $action->get_reference() == $url )
+							return true;
+					default:
+						// Nothing to be done
+				}
 			}
 			return false;
 		}
 
 		public function is_ready() {
-			return count( $this->get_pages() ) > 0;
+			if ( $this->has_to_be_deleted() )
+				return true;
+			return count( $this->get_actions() ) > 0;
 		}
 
 		public static function decode_from_appengine( $exp, $json ) {
-			$result = new NelioABPageAccessedGoal( $exp );
+			$result = new NelioABAltExpGoal( $exp );
 			$result->set_id( $json->key->id );
 			$result->set_name( $json->name );
 			$result->set_as_main_goal( $json->isMainGoal );
-			require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
-			if ( isset( $json->pages ) )
-				foreach ( $json->pages as $p )
-					$result->add_page( NelioABPageDescription::decode_from_appengine( $p ) );
+			require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
+			$ae_actions = array();
+
+			if ( isset( $json->pageAccessedActions ) ) {
+				foreach ( $json->pageAccessedActions as $action ) {
+					$action = (array)$action;
+					$action['_type'] = 'page-accessed-action';
+					$action = (object)$action;
+
+					$index = false;
+					if ( isset( $action->order ) )
+						$index = intval( $action->order );
+					if ( $index && !isset( $ae_actions[$index] ) )
+						$ae_actions[$index] = $action;
+					else
+						array_push( $ae_actions, $action );
+				}
+			}
+
+			if ( isset( $json->formActions ) ) {
+				foreach ( $json->formActions as $action ) {
+					$action = (array)$action;
+					$action['_type'] = 'form-action';
+					$action = (object)$action;
+
+					$index = false;
+					if ( isset( $action->order ) )
+						$index = intval( $action->order );
+					if ( $index && !isset( $ae_actions[$index] ) )
+						$ae_actions[$index] = $action;
+					else
+						array_push( $ae_actions, $action );
+				}
+			}
+
+			foreach ( $ae_actions as $action ) {
+				switch( $action->_type ) {
+					case 'page-accessed-action':
+						$result->add_action( NelioABPageAccessedAction::decode_from_appengine( $action ) );
+						break;
+					case 'form-action':
+						$result->add_action( NelioABFormSubmissionAction::decode_from_appengine( $action ) );
+						break;
+				}
+			}
 			return $result;
 		}
 
 		public function get_results() {
-			$results    = new NelioABPageAccessedGoalResult();
+			$results    = new NelioABAltExpGoalResult();
 			$experiment = $this->get_experiment();
 
 			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/goal/page-accessed/%s/result',
+				NELIOAB_BACKEND_URL . '/goal/alternativeexp/%s/result',
 				$this->get_id()
 			);
 
@@ -204,36 +263,17 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 					'actions' => array()
 				);
 
-			foreach ( $this->get_pages() as $page ) {
-				$action = array(
-						'isIndirect' => $page->accepts_indirect_navigations(),
-					);
-				if ( $page->is_internal() ) {
-					$p = get_post( $page->get_reference(), ARRAY_A );
-					if ( $p ) {
-						if ( $p['post_type'] == 'page' )
-							$action['type'] = 'page';
-						else
-							$action['type'] = 'post';
-					}
-					else {
-						continue;
-					}
-					$action['value'] = $page->get_reference();
-				}
-				else {
-					$action['url'] = $page->get_reference();
-					$action['type'] = 'external-page';
-					$action['name'] = $page->get_title();
-				}
-				array_push( $result['actions'], $action );
+			foreach ( $this->get_actions() as $action ) {
+				$json_action = $action->json4js();
+				if ( $json_action )
+					array_push( $result['actions'], $json_action );
 			}
 
 			return $result;
 		}
 
 		public static function build_goal_using_json4js( $json_goal, $exp ) {
-			$goal = new NelioABPageAccessedGoal( $exp );
+			$goal = new NelioABAltExpGoal( $exp );
 
 			// If the goal was new, but it was also deleted, do nothing...
 			if ( isset( $json_goal->wasDeleted) && $json_goal->wasDeleted ) {
@@ -247,27 +287,15 @@ if( !class_exists( 'NelioABPageAccessedGoal' ) ) {
 			$goal->set_name( $json_goal->name );
 
 			foreach ( $json_goal->actions as $json_action ) {
-				if ( $json_action->type == 'external-page' ) {
-					$value = $json_action->url;
-					$internal = false;
-				}
-				else {
-					$value = $json_action->value;
-					$internal = true;
-				}
-
-				$pd = new NelioABPageDescription( $value, $internal );
-				if ( isset( $json_action->name ) )
-					$pd->set_title( $json_action->name );
-				if ( isset( $json_action->isIndirect ) && $json_action->isIndirect )
-					$pd->set_indirect_navigations_enabled();
-				$goal->add_page( $pd );
+				$action = NelioABAction::build_action_using_json4js( $json_action );
+				if ( $action )
+					$goal->add_action( $action );
 			}
 
 			return $goal;
 		}
 
-	}//NelioABPageAccessedGoal
+	}//NelioABAltExpGoal
 
 }
 

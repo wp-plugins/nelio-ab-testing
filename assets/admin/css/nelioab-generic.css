@@ -2,6 +2,13 @@
 /*   GENERIC STUFF     */
 /* ------------------- */
 
+.nelio-sect h3 {
+    font-size: 14px;
+    padding: 8px 12px;
+    margin: 0;
+    line-height: 1.4;
+}
+
 label.mandatory:before {
 	display: inline-block;
 	width: 8px;
@@ -211,40 +218,60 @@ body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3:first-child #info
 /* ------------------- */
 
 
-form.nelio-exp-form label.error,
-form.nelio-exp-form .error label,
-form.nelio-exp-form .error .description {
+div.nelio-sect label.error,
+div.nelio-sect .error label,
+div.nelio-sect .error .description {
 	color:red;
 	-webkit-transition: color 0.20s ease-in-out;
 	-moz-transition: color 0.20s ease-in-out;
 	-ms-transition: color 0.20s ease-in-out;
 	-o-transition: color 0.20s ease-in-out;
 }
-form.nelio-exp-form .error label:before {
+div.nelio-sect .error label:before {
 	background:red;
 	-webkit-transition: background 0.20s ease-in-out;
 	-moz-transition: background 0.20s ease-in-out;
 	-ms-transition: background 0.20s ease-in-out;
 	-o-transition: background 0.20s ease-in-out;
 }
-form.nelio-exp-form input[type=email].error,
-form.nelio-exp-form input[type=number].error,
-form.nelio-exp-form input[type=password].error,
-form.nelio-exp-form input[type=search].error,
-form.nelio-exp-form input[type=tel].error,
-form.nelio-exp-form input[type=text].error,
-form.nelio-exp-form input[type=url].error,
-form.nelio-exp-form select.error,
-form.nelio-exp-form textarea.error,
-form.nelio-exp-form .error input[type=email],
-form.nelio-exp-form .error input[type=number],
-form.nelio-exp-form .error input[type=password],
-form.nelio-exp-form .error input[type=search],
-form.nelio-exp-form .error input[type=tel],
-form.nelio-exp-form .error input[type=text],
-form.nelio-exp-form .error input[type=url],
-form.nelio-exp-form .error select,
-form.nelio-exp-form .error textarea {
+div.nelio-sect a.select2-choice.error,
+div.nelio-card a.select2-choice.error,
+div.nelio-sect input[type=email].error,
+div.nelio-card input[type=email].error,
+div.nelio-sect input[type=number].error,
+div.nelio-card input[type=number].error,
+div.nelio-sect input[type=password].error,
+div.nelio-card input[type=password].error,
+div.nelio-sect input[type=search].error,
+div.nelio-card input[type=search].error,
+div.nelio-sect input[type=tel].error,
+div.nelio-card input[type=tel].error,
+div.nelio-sect input[type=text].error,
+div.nelio-card input[type=text].error,
+div.nelio-sect input[type=url].error,
+div.nelio-card input[type=url].error,
+div.nelio-sect select.error,
+div.nelio-card select.error,
+div.nelio-sect textarea.error,
+div.nelio-card textarea.error,
+div.nelio-sect .error input[type=email],
+div.nelio-card .error input[type=email],
+div.nelio-sect .error input[type=number],
+div.nelio-card .error input[type=number],
+div.nelio-sect .error input[type=password],
+div.nelio-card .error input[type=password],
+div.nelio-sect .error input[type=search],
+div.nelio-card .error input[type=search],
+div.nelio-sect .error input[type=tel],
+div.nelio-card .error input[type=tel],
+div.nelio-sect .error input[type=text],
+div.nelio-card .error input[type=text],
+div.nelio-sect .error input[type=url],
+div.nelio-card .error input[type=url],
+div.nelio-sect .error select,
+div.nelio-card .error select,
+div.nelio-sect .error textarea,
+div.nelio-card .error textarea {
 	-webkit-transition: all 0.20s ease-in-out;
 	-moz-transition: all 0.20s ease-in-out;
 	-ms-transition: all 0.20s ease-in-out;
@@ -252,24 +279,46 @@ form.nelio-exp-form .error textarea {
 	transition: all 0.20s ease-in-out;
 	border: 1px solid red;
 }
-form.nelio-exp-form input[type=email].error:focus,
-form.nelio-exp-form input[type=number].error:focus,
-form.nelio-exp-form input[type=password].error:focus,
-form.nelio-exp-form input[type=search].error:focus,
-form.nelio-exp-form input[type=tel].error:focus,
-form.nelio-exp-form input[type=text].error:focus,
-form.nelio-exp-form input[type=url].error:focus,
-form.nelio-exp-form select.error:focus,
-form.nelio-exp-form textarea.error:focus,
-form.nelio-exp-form .error input[type=email]:focus,
-form.nelio-exp-form .error input[type=number]:focus,
-form.nelio-exp-form .error input[type=password]:focus,
-form.nelio-exp-form .error input[type=search]:focus,
-form.nelio-exp-form .error input[type=tel]:focus,
-form.nelio-exp-form .error input[type=text]:focus,
-form.nelio-exp-form .error input[type=url]:focus,
-form.nelio-exp-form .error select:focus,
-form.nelio-exp-form .error textarea:focus {
+div.nelio-sect a.select2-choice.error:focus,
+div.nelio-card a.select2-choice.error:focus,
+div.nelio-sect .select2-container-active a.select2-choice.error,
+div.nelio-card .select2-container-active a.select2-choice.error,
+div.nelio-sect input[type=email].error:focus,
+div.nelio-card input[type=email].error:focus,
+div.nelio-sect input[type=number].error:focus,
+div.nelio-card input[type=number].error:focus,
+div.nelio-sect input[type=password].error:focus,
+div.nelio-card input[type=password].error:focus,
+div.nelio-sect input[type=search].error:focus,
+div.nelio-card input[type=search].error:focus,
+div.nelio-sect input[type=tel].error:focus,
+div.nelio-card input[type=tel].error:focus,
+div.nelio-sect input[type=text].error:focus,
+div.nelio-card input[type=text].error:focus,
+div.nelio-sect input[type=url].error:focus,
+div.nelio-card input[type=url].error:focus,
+div.nelio-sect select.error:focus,
+div.nelio-card select.error:focus,
+div.nelio-sect textarea.error:focus,
+div.nelio-card textarea.error:focus,
+div.nelio-sect .error input[type=email]:focus,
+div.nelio-card .error input[type=email]:focus,
+div.nelio-sect .error input[type=number]:focus,
+div.nelio-card .error input[type=number]:focus,
+div.nelio-sect .error input[type=password]:focus,
+div.nelio-card .error input[type=password]:focus,
+div.nelio-sect .error input[type=search]:focus,
+div.nelio-card .error input[type=search]:focus,
+div.nelio-sect .error input[type=tel]:focus,
+div.nelio-card .error input[type=tel]:focus,
+div.nelio-sect .error input[type=text]:focus,
+div.nelio-card .error input[type=text]:focus,
+div.nelio-sect .error input[type=url]:focus,
+div.nelio-card .error input[type=url]:focus,
+div.nelio-sect .error select:focus,
+div.nelio-card .error select:focus,
+div.nelio-sect .error textarea:focus,
+div.nelio-card .error textarea:focus {
 	box-shadow: 0 0 2px rgba(255, 0, 0, 1);
 	border: 1px solid rgba(255, 0, 0, 1);
 }
@@ -329,6 +378,7 @@ body #goal-list .nelio-card .new-actions {
 	margin-top: 2em;
 	margin-left:4em;
 	margin-right:4em;
+	margin-bottom:1em;
 }
 
 body #goal-list .nelio-card .new-actions .wrapper {

@@ -22,7 +22,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	require_once( NELIOAB_MODELS_DIR . '/heatmap-experiment.php' );
-	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/others/heatmap-exp-edition-page.php' );
 
@@ -46,7 +46,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 		}
 
 		protected function do_build() {
-			$title = __( 'Edit Experiment', 'nelioab' );
+			$title = __( 'Edit Heatmap Experiment', 'nelioab' );
 
 			// Check settings
 			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -96,23 +96,32 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 			$view->set_experiment_descr( $experiment->get_description() );
 			$view->set_post_id( $experiment->get_post_id() );
 
+			// Checking whether there are pages or posts available
+			// ---------------------------------------------------
+
+			// ...pages...
 			$list_of_pages = get_pages();
 			$options_for_posts = array(
-				'posts_per_page' => 150 );
+				'posts_per_page' => 1 );
 			$list_of_posts = get_posts( $options_for_posts );
 			require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
 			NelioABArrays::sort_posts( $list_of_posts );
 
+			if ( count( $list_of_pages ) + count( $list_of_posts ) == 0) {
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
+				$view = new NelioABErrorPage(
+					__( 'There are no pages nor posts available.', 'nelioab' ) );
+				return $view;
+			}
+
 			$is_there_a_static_front_page = get_option( 'page_on_front', 0 ) > 0;
 			$view->show_latest_posts_option( !$is_there_a_static_front_page );
-			$view->set_wp_pages( $list_of_pages );
-			$view->set_wp_posts( $list_of_posts );
 
 			return $view;
 		}
 
 		public function create_view() {
-			$title = __( 'Edit Experiment', 'nelioab' );
+			$title = __( 'Edit Heatmap Experiment', 'nelioab' );
 			return new NelioABHeatmapExpEditionPage( $title );
 		}
 
@@ -167,8 +176,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 			}
 
 			// 2. Redirect to the appropiate page
-			echo '[SUCCESS]' . admin_url() .
-				'admin.php?page=nelioab-experiments&action=list';
+			echo '[SUCCESS]' . admin_url( 'admin.php?page=nelioab-experiments&action=list' );
 			die();
 		}
 
@@ -178,8 +186,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 			$exp = $nelioab_admin_controller->data;
 
 			// 2. Redirect to the appropiate page
-			echo '[SUCCESS]' . admin_url() .
-				'admin.php?page=nelioab-experiments&action=list';
+			echo '[SUCCESS]' . admin_url( 'admin.php?page=nelioab-experiments&action=list' );
 			die();
 		}
 

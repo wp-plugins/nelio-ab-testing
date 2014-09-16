@@ -18,10 +18,9 @@
 if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
-	require_once( NELIOAB_MODELS_DIR . '/page-description.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/post-alternative-experiment.php' );
-	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/title-alt-exp-edition-page.php' );
 
@@ -46,7 +45,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 		}
 
 		protected function do_build() {
-			$title = __( 'Edit Experiment', 'nelioab' );
+			$title = __( 'Edit Title Experiment', 'nelioab' );
 
 			// Check settings
 			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -88,7 +87,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			// ...pages...
 			$list_of_pages = get_pages();
 			$options_for_posts = array(
-				'posts_per_page' => 150 );
+				'posts_per_page' => 1 );
 			$list_of_posts = get_posts( $options_for_posts );
 			require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
 			NelioABArrays::sort_posts( $list_of_posts );
@@ -118,9 +117,6 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			// Experiment specific variables and alternatives
 			$view->set_original_id( $experiment->get_originals_id() );
 			$view->set_alternatives( $experiment->get_json4js_alternatives() );
-
-			$view->set_wp_pages( $list_of_pages );
-			$view->set_wp_posts( $list_of_posts );
 
 			return $view;
 		}

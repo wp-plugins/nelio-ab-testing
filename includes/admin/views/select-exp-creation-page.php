@@ -28,7 +28,7 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 		}
 
 		public function do_render() {
-			$url = admin_url() . 'admin.php?page=nelioab-add-experiment&experiment-type=';
+			$url = admin_url( 'admin.php?page=nelioab-add-experiment&experiment-type=' );
 
 			// POST
 			$this->print_beautiful_box(

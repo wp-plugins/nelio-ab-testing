@@ -31,9 +31,12 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 			) {
 				require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
 				NelioABExperimentsPageController::stop_experiment( $_GET['id'], $_GET['exp_type'] );
-				echo sprintf(
-					'[SUCCESS]%sadmin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s',
-					admin_url(), $_GET['id'], $_GET['exp_type'] );
+				echo '[SUCCESS]' .
+					admin_url(
+						sprintf(
+							'admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s',
+							$_GET['id'], $_GET['exp_type'] )
+					);
 				die();
 			}
 

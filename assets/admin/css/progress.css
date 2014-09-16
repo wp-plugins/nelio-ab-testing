@@ -167,6 +167,20 @@ div#info-summary {
 div#exp-info {
 }
 
+@media (min-width:1280px) {
+	div#exp-info .nelioab-row .nelioab-first-col {
+		width:auto;
+		max-width:45%;
+		display:inline-block;
+	}
+
+	div#exp-info .nelioab-row .nelioab-second-col {
+		width:45%;
+		display:inline-block;
+	}
+}
+
+
 div#exp-info h3 {
 	margin-bottom: 0px;
 	padding-bottom: 0px;
@@ -186,18 +200,6 @@ div#exp-info ul {
 
 div#exp-info ul > li {
 	vertical-align: middle;
-}
-
-div#exp-info-gen {
-	width:320px;
-	display:inline-block;
-	vertical-align:top;
-}
-
-div#exp-info-alts {
-	min-width:320px;
-	display:inline-block;
-	vertical-align:top;
 }
 
 div#exp-info-alts .alt-type {

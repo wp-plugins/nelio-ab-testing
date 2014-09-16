@@ -198,7 +198,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		}
 
 		protected function make_section( $section_title, $fields ) { ?>
-			<div class="stuffbox">
+			<div class="nelio-sect stuffbox">
 				<h3><label><?php echo $section_title; ?></label></h3>
 				<div class="inside"><?php
 					foreach ( $fields as $field ) {

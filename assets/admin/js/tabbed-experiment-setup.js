@@ -175,7 +175,7 @@ var NelioABEditExperiment = {
 
 	validateName: function() {
 		var elem = jQuery('#exp_name');
-		var name = elem.attr('value').trim(); 
+		var name = elem.attr('value').trim();
 		var result = true;
 
 		if ( name.length == 0 )
@@ -217,11 +217,6 @@ var NelioABGoalCards = {
 			if ( g.id < NelioABGoalCards.id )
 				NelioABGoalCards.id = g.id;
 		}
-		jQuery('#exp_original').change(function() {
-			NelioABGoalCards.getList('.neliocard').each(function() {
-				NelioABGoalCards.recomputeVisibleActions(jQuery(this));
-			});
-		});
 
 		// Create the main card
 		var mainGoalCard;
@@ -239,9 +234,10 @@ var NelioABGoalCards = {
 			mainGoalCard = NelioABGoalCards.getList().find( '.nelio-card' ).first();
 			NelioABGoalCards.rename(
 				mainGoalCard.data('goal-id'),
-				jQuery('defaultNameForMainGoal').text() );
+				jQuery('#defaultNameForMainGoal').text() );
 		}
 		mainGoalCard.find('h3 .isMain').show();
+		mainGoalCard.find( '.name .value' ).first().text( goals[0].name );
 		mainGoalCard.find( '.name .row-actions .delete' ).remove();
 		mainGoalCard.find( '.name .row-actions .sep' ).remove();
 		mainGoalCard.find( '.form' ).hide();
@@ -262,18 +258,16 @@ var NelioABGoalCards = {
 		}
 
 		jQuery(document).on( 'tab-changed', function( e, tabId ) {
-			if ( tabId == 'tab-goals' )
+			if ( tabId == 'tab-goals' ) {
 				NelioABEditExperiment.validateCurrentTab = NelioABGoalCards.validate;
+				NelioABGoalCards.removeUnnecessaryActions();
+			}
 		});
 
 
 		// Save the experiment (and encode the alternatives)
 		jQuery(document).on('save-experiment', function() {
 			NelioABGoalCards.save();
-		});
-
-		NelioABGoalCards.getList('.neliocard').each(function() {
-			NelioABGoalCards.recomputeVisibleActions(jQuery(this));
 		});
 
 	},
@@ -288,6 +282,18 @@ var NelioABGoalCards = {
 			if ( goals[i].id == id )
 				return goals[i];
 		return false;
+	},
+
+	removeUnnecessaryActions: function() {
+		var oriId = jQuery('#exp_original').attr('value');
+		if ( oriId == undefined || oriId == "" )
+			return;
+		jQuery('.actions .action').each(function() {
+			if ( !jQuery(this).hasClass('post') && !jQuery(this).hasClass('page') )
+				return;
+			if ( jQuery(this).find('input.post-searcher').eq(0).attr('value') == oriId )
+				jQuery(this).remove();
+		});
 	},
 
 	create: function() {
@@ -348,19 +354,19 @@ var NelioABGoalCards = {
 
 		// NEW GOAL ACTIONS
 		newCard.find('.new-actions .page').click(function() {
-			if ( jQuery(this).hasClass('disabled') )
-				return;
 			NelioABGoalCards.addAction( { isNew:true, type:'page' }, newCard );
 		});
 		newCard.find('.new-actions .post').click(function() {
-			if ( jQuery(this).hasClass('disabled') )
-				return;
 			NelioABGoalCards.addAction( { isNew:true, type:'post' }, newCard );
 		});
 		newCard.find('.new-actions .external-page').click(function() {
-			if ( jQuery(this).hasClass('disabled') )
-				return;
 			NelioABGoalCards.addAction( { isNew:true, type:'external-page' }, newCard );
+		});
+		newCard.find('.new-actions .form-submit').click(function() {
+			if ( jQuery(this).hasClass( 'cf7' ) )
+				NelioABGoalCards.addAction( { isNew:true, type:'form-submit', form_type:'cf7' }, newCard );
+			else if ( jQuery(this).hasClass( 'gf' ) )
+				NelioABGoalCards.addAction( { isNew:true, type:'form-submit', form_type:'gf' }, newCard );
 		});
 
 		var list = NelioABGoalCards.getList();
@@ -384,31 +390,32 @@ var NelioABGoalCards = {
 
 			case 'post':
 			case 'page':
-				result = card.find( '.new-' + action.type + '-action' ).clone();
-				result.removeClass( 'new-' + action.type + '-action' );
-				result.find('select.' + action.type).first().change( function() {
-					NelioABGoalCards.recomputeVisibleActions(card);
-				});
+				result = jQuery('#new-action-templates').find( '.action.' + action.type ).clone();
+				var searcher = result.find( 'input.post-searcher.' + action.type );
 				if ( action.isNew !== true ) {
-					if ( action.isIndirect )
+					if ( action.is_indirect )
 						result.find('.direct').attr( 'value', '0' );
 					else
 						result.find('.direct').attr( 'value', '1' );
-					result.find('.' + action.type).attr('value', action.value );
+					searcher.attr('value', action.value);
+					NelioABPostSearcher.setDefault( searcher, action.type );
 				}
 				card.find( '.actions' ).append( result );
 				card.find( '.empty' ).hide();
 				card.find( '.actions' ).show();
+				searcher.on( 'change', function() { NelioABGoalCards.validatePageOrPost( result ); } );
+				searcher.removeAttr('id');
+				searcher.removeAttr('name');
+				NelioABPostSearcher.buildSearcher( searcher, action.type, NelioABGoalCards.filterPosts );
 				result.show();
-				NelioABGoalCards.recomputeVisibleActions( card );
 				break;
 
 			case 'external-page':
-				result = card.find( '.new-external-page-action' ).clone();
-				result.removeClass( 'new-external-page-action' );
+				result = jQuery('#new-action-templates').find( '.action.external-page' ).clone();
 				if ( action.isNew !== true ) {
 					result.find('.name').attr( 'value', action.name );
 					result.find('.url').attr( 'value', action.url );
+					result.find('.url_mode').attr( 'value', action.url_mode );
 				}
 				result.find('.name').on( 'keyup focusout', function() {
 					NelioABGoalCards.validateExternalPage(result, 'name');
@@ -419,6 +426,28 @@ var NelioABGoalCards = {
 				card.find( '.actions' ).append( result );
 				card.find( '.empty' ).hide();
 				card.find( '.actions' ).show();
+				result.show();
+				break;
+
+			case 'form-submit':
+				result = jQuery('#new-action-templates').find( '.action.form-submit.' + action.form_type ).clone();
+				var searcher = result.find( 'input.form-searcher' );
+				if ( action.isNew !== true ) {
+					searcher.attr('value', action.form_id);
+					david = result;
+					if ( action.any_page )
+						result.find('.any-page').attr( 'value', '1' );
+					else
+						result.find('.any-page').attr( 'value', '0' );
+					NelioABFormSearcher.setDefault( searcher, action.form_type );
+				}
+				card.find( '.actions' ).append( result );
+				card.find( '.empty' ).hide();
+				card.find( '.actions' ).show();
+				searcher.on( 'change', function() { NelioABGoalCards.validateForm( result ); } );
+				searcher.removeAttr('id');
+				searcher.removeAttr('name');
+				NelioABFormSearcher.buildSearcher( searcher, action.form_type, NelioABGoalCards.filterForms );
 				result.show();
 				break;
 
@@ -434,65 +463,72 @@ var NelioABGoalCards = {
 				card.find( '.empty' ).show();
 			}
 			NelioABEditExperiment.manageProgress(true,true);
-			NelioABGoalCards.recomputeVisibleActions( card );
 		});
 		return result;
 	},
 
-	recomputeVisibleActions: function(card) {
-		var types = [ 'post', 'page' ];
-		var oriId = jQuery('#exp_original').attr('value');
+	/**
+	 * This function is used as a callback by the buildSearcher function. Its goal
+	 * is to make sure that the page/post of other actions in a goal or the original
+	 * experiment id do not appear as a selectable option in elem.
+	 */
+	filterPosts: function( elem, data ) {
 
-		// Remove any goal whose target is the original page
-		card.find('.actions .action select').each(function() {
-			if ( jQuery(this).attr('value') == oriId )
-				if ( jQuery(this).hasClass('post') || jQuery(this).hasClass('page') )
-					jQuery(this).closest('.action').remove();
+		var idsToIgnore = [];
+		var aux = jQuery( '#exp_original' ).attr( 'value' );
+		if ( aux != undefined && aux.length > 0 )
+			idsToIgnore.push( parseInt( aux ) );
+		var card = elem.closest( '.nelio-card' );
+		card.find( 'input.post-searcher' ).each(function() {
+			if ( jQuery( this )[0] == elem[0] ) return;
+			idsToIgnore.push( parseInt( jQuery( this ).attr( 'value' ) ) );
 		});
-		if ( card.find( '.actions .action' ).length == 0 ) {
-			card.find( '.actions' ).hide();
-			card.find( '.empty' ).show();
+		var result = [];
+		for ( var i = 0; i < data.length; ++i ) {
+			var item = data[i];
+			var add = true;
+			for ( var j = 0; j < idsToIgnore.length && add; ++j ) {
+				if ( item.id == idsToIgnore[j] )
+					add = false;
+			}
+			if ( add )
+				result.push( item );
 		}
+		return result;
+	},
 
-		// Prepare the other visible actions
-		for ( var t = 0; t < types.length; ++t ) {
-			var type = types[t];
-			var values = [ oriId ];
-
-			// Recover selected values of valid actions and making all options
-			// visible (in a few lines we'll hide the ones relevant)
-			card.find('.new-action-templates select.' + type + ' option').show();
-			card.find('.actions .action select.' + type).each(function() {
-				jQuery(this).find('option').show();
-				values.push( jQuery(this).attr('value') );
+	/**
+	 * This function is used as a callback by the buildSearcher function. Its goal
+	 * is to make sure that the form of other actions in a goal does not appear as
+	 * a selectable option in elem.
+	 */
+	filterForms: function( elem, data ) {
+		var form_type = undefined;
+		var action_div = elem.closest( '.action.form-submit' );
+		if ( action_div.hasClass( 'cf7' ) )
+			form_type = 'cf7';
+		else if ( action_div.hasClass( 'gf' ) )
+			form_type = 'gf';
+		var idsToIgnore = [];
+		if ( undefined != form_type ) {
+			var card = elem.closest( '.nelio-card' );
+			card.find( '.action.form-submit.' + form_type + ' input.form-searcher' ).each(function() {
+				if ( jQuery( this )[0] == elem[0] ) return;
+				idsToIgnore.push( parseInt( jQuery( this ).attr( 'value' ) ) );
 			});
-
-			// Disable already selected values for existing actions and new action
-			// (Note that .actions is not here is not in the selector)
-			for ( var i = 0; i < values.length; ++i )
-				card.find('.action select.' + type + ' option[value=' + values[i] + ']').hide();
-
-			// Do not hide the selected value of each selector
-			card.find('.actions .action select.' + type).each(function() {
-				jQuery(this).find('option[value=' + jQuery(this).attr('value') + ']').show();
-			});
-
-			// Update default value for new action
-			var soval = 0;
-			var s = card.find('.new-action-templates select.' + type);
-			s.find('option').each(function() {
-				jQuery(this).removeAttr('selected');
-				if ( jQuery(this).css('display') != 'none' && soval == 0) {
-					jQuery(this).attr('selected','selected');
-					soval = jQuery(this).attr('value');
-				}
-			});
-			s.attr('value', soval);
-			if ( soval == 0 )
-				jQuery('.new-actions a.' + type).addClass('disabled');
-			else
-				jQuery('.new-actions a.' + type).removeClass('disabled');
 		}
+		var result = [];
+		for ( var i = 0; i < data.length; ++i ) {
+			var item = data[i];
+			var add = true;
+			for ( var j = 0; j < idsToIgnore.length && add; ++j ) {
+				if ( item.id == idsToIgnore[j] )
+					add = false;
+			}
+			if ( add )
+				result.push( item );
+		}
+		return result;
 	},
 
 	validate: function() {
@@ -506,7 +542,22 @@ var NelioABGoalCards = {
 			}
 		});
 
-		jQuery('#goal-list .actions .external-page input').each(function() {
+		jQuery('#goal-list .actions > .action.post').each(function() {
+			var action = jQuery(this).closest('.action');
+			nextOk = NelioABGoalCards.validatePageOrPost( action ) && nextOk;
+		});
+
+		jQuery('#goal-list .actions > .action.page').each(function() {
+			var action = jQuery(this).closest('.action');
+			nextOk = NelioABGoalCards.validatePageOrPost( action ) && nextOk;
+		});
+
+		jQuery('#goal-list .actions > .action.form-submit').each(function() {
+			var action = jQuery(this).closest('.action');
+			nextOk = NelioABGoalCards.validateForm( action ) && nextOk;
+		});
+
+		jQuery('#goal-list .actions > .action.external-page input').each(function() {
 			var action = jQuery(this).closest('.action');
 			if ( jQuery(this).hasClass('name') )
 				nextOk = NelioABGoalCards.validateExternalPage(action, 'name') && nextOk;
@@ -547,6 +598,37 @@ var NelioABGoalCards = {
 		}
 
 		return result;
+	},
+
+	validatePageOrPost: function(action) {
+		var ok = true;
+		if ( action.find('input.post-searcher').attr('value') == '' )
+			ok = false;
+		if ( ok ) {
+			action.find('.select2-container > a.select2-choice').removeClass('error');
+			NelioABEditExperiment.manageProgress(true, true);
+		}
+		else {
+			action.find('.select2-container > a.select2-choice').addClass('error');
+			NelioABEditExperiment.manageProgress(true, false);
+		}
+		return ok;
+	},
+
+	validateForm: function(action) {
+		var ok = true;
+		if ( action.find('input.form-searcher').attr('value') == '' )
+			ok = false;
+		if ( ok ) {
+			action.find('.select2-container > a.select2-choice').removeClass('error');
+			NelioABEditExperiment.manageProgress(true, true);
+		}
+		else {
+			action.find('.select2-container > a.select2-choice').addClass('error');
+			NelioABEditExperiment.manageProgress(true, false);
+		}
+
+		return ok;
 	},
 
 	validateExternalPage: function(action, fieldClass, preventRecursive) {
@@ -605,21 +687,41 @@ var NelioABGoalCards = {
 				var a = {};
 				a.type = action.data( 'type' );
 				switch( action.data( 'type' ) ) {
+
 					case 'page':
 					case 'post':
-						a.value = action.find( '.' + action.data( 'type' ) ).attr('value');
-						a.isIndirect = action.find( '.direct' ).attr('value') == '0';
+						a.value = action.find( 'input.post-searcher.' + action.data( 'type' ) ).attr('value');
+						a.is_indirect = action.find( '.direct' ).attr('value') == '0';
+						if ( a.value == '' )
+							break;
 						g.actions.push(a);
 						break;
+
 					case 'external-page':
 						a.name = action.find( '.name' ).attr('value');
 						a.url = action.find( '.url' ).attr('value');
+						a.url_mode = action.find( '.url_mode' ).attr('value');
+						if ( a.name == '' || a.url == '' )
+							break;
 						g.actions.push(a);
 						break;
+
+					case 'form-submit':
+						if ( action.hasClass( 'cf7' ) )
+							a.form_type = 'cf7';
+						else if ( action.hasClass( 'gf' ) )
+							a.form_type = 'gf';
+						else
+							break;
+						a.form_id = action.find( 'input.form-searcher' ).attr( 'value' );
+						a.any_page = action.find( '.any-page' ).attr( 'value' ) == '1';
+						g.actions.push(a);
+						break;
+
 				}
 			});
 		});
-		jQuery('#nelioab_goals').attr('value', 
+		jQuery('#nelioab_goals').attr('value',
 			encodeURIComponent( JSON.stringify( NelioABGoalCards.goals ) )
 				.replace( "'", "%27") );
 	},

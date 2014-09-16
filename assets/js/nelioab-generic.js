@@ -86,6 +86,20 @@ function nelioab_show_body() {
 	catch( e ) {}
 }
 
+function nelioab_add_hidden_fields_on_forms($) {
+	$('input[name="input_nelioab_form_cookies"]').attr('name', 'nelioab_form_cookies');
+	$('input[name="input_nelioab_form_current_url"]').attr('name', 'nelioab_form_current_url');
+
+	$('input[name="nelioab_form_cookies"]').attr('value',
+		encodeURIComponent( JSON.stringify( nelioab_get_local_cookies() )
+			.replace( "'", "%27") )
+		);
+	$('input[name="nelioab_form_current_url"]').attr('value',
+		encodeURIComponent( JSON.stringify( document.URL )
+			.replace( "'", "%27") )
+		);
+}
+
 function nelioab_nav($) {
 	$.ajax({
 		type:  'POST',

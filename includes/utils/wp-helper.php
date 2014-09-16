@@ -149,42 +149,241 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		}
 
 		/**
+		 * This function is an AJAX callback. It returns a list of up to 20 posts (or
+		 * pages). It is used by the select2 widget (an item selector that looks more
+		 * beautiful than regular the "select>option" combo.
 		 *
+		 * Accepted POST params are:
+		 *   term: {string}
+		 *         the (part of the) string used to look for items.
+		 *   type: {'post'|'page'|'post-or-page'}
+		 *         what type of element are we looking.
+		 *   default_id: {int} (optional)
+		 *         if set, the item with that ID will be returned. If that item is
+		 *         not found, then we'll perform a regular search (as if the param
+		 *         had not been set).
 		 */
-		public static function print_selector_for_list_of_posts( $posts, $default_post_id = false, $options = array() ) {
-			echo NelioABWpHelper::get_selector_for_list_of_posts( $posts, $default_post_id, $options );
+		public static function search_posts() {
+			$term = false;
+			if ( isset( $_POST['term'] ) )
+				$term = $_POST['term'];
+
+			$type = false;
+			if ( isset( $_POST['type'] ) )
+				$type = $_POST['type'];
+
+			if ( 'page-or-post' == $type )
+				$type = array( 'page', 'post' );
+
+			$default_id = false;
+			if ( isset( $_POST['default_id'] ) )
+				$default_id = $_POST['default_id'];
+			if ( $default_id == -1 )
+				$default_id = false;
+
+			$default_thumbnail = sprintf(
+				'<img src="data:image/gif;%s" class="%s" alt="%s" />',
+				'base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+				'attachment-thumbnail wp-post-image nelioab-no-thumbnail',
+				__( 'No featured image available', 'nelioab' )
+			);
+
+			$args = array(
+				's'              => $term,
+				'post_type'      => $type,
+				'posts_per_page' => 20,
+				'meta_key'       => '_is_nelioab_alternative',
+				'meta_compare'   => 'NOT EXISTS',
+				'post_status'    => 'publish',
+			);
+
+			$lp_title = __( 'Your latest posts', 'nelioab' );
+			$latest_post_item = false;
+			if ( isset( $_POST['include_latest_posts'] ) || $default_id !== false ) {
+				if ( !$term || strpos( strtolower( $lp_title ), strtolower( $term ) ) !== false ) {
+					$latest_post_item = array(
+						'id'        => NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS,
+						'type'      => '',
+						'title'     => $lp_title,
+						'status'    => '',
+						'date'      => '',
+						'author'    => 'WordPress',
+						'thumbnail' => $default_thumbnail,
+					);
+				}
+			}
+
+			// If there's a default_id set, it means that the user is interested
+			// in one post only; I'm going to return that post to him
+			if ( $default_id !== false ) {
+				$id = $default_id;
+				$post = false;
+
+				if ( $id == NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS ) {
+					header( 'Content-Type: application/json' );
+					echo json_encode( array( $latest_post_item ) );
+					die();
+				}
+
+				if ( $id > 0 )
+					$post = get_post( $id );
+				if ( $post ) {
+					$item = array(
+						'id' => $post->ID,
+						'title' => $post->post_title,
+					);
+					header( 'Content-Type: application/json' );
+					echo json_encode( array( $item ) );
+					die();
+				}
+			}
+
+			$result = array();
+
+			$my_query = new WP_Query( $args );
+
+			if ( $my_query->have_posts() ) {
+				global $post;
+
+				while ( $my_query->have_posts() ) {
+					$my_query->the_post();
+					$thumbnail = get_the_post_thumbnail( $post->ID, 'thumbnail' );
+					if ( $thumbnail === '' )
+						$thumbnail = $default_thumbnail;
+
+					$item = array(
+						'id'        => $post->ID,
+						'type'      => $post->post_type,
+						'title'     => $post->post_title,
+						'status'    => $post->post_status,
+						'date'      => $post->post_date,
+						'author'    => get_the_author(),
+						'thumbnail' => $thumbnail,
+					);
+					array_push( $result, $item );
+				}
+			}
+
+			if ( $latest_post_item )
+				array_unshift( $result, $latest_post_item );
+
+			header( 'Content-Type: application/json' );
+			echo json_encode( $result );
+			die();
 		}
 
 		/**
+		 * This function is an AJAX callback. It returns a list of up to 20 forms.
+		 * The forms can either be Gravity Forms or Contact Form 7 forms. It is
+		 * used by the select2 widget (an item selector that looks more beautiful
+		 * than regular the "select>option" combo.
 		 *
+		 * Accepted POST params are:
+		 *   term: {string}
+		 *         the (part of the) string used to look for items.
+		 *   type: {'cf7','gf'}
+		 *         we may look for Contact Forms 7 (cf7) or Gravity Forms (gf)
+		 *   default_id: {int} (optional)
+		 *         if set, the item with that ID will be returned. If that item is
+		 *         not found, then we'll perform a regular search (as if the param
+		 *         had not been set).
 		 */
-		public static function get_selector_for_list_of_posts( $posts, $default_post_id = false, $options = array() ) {
-			ob_start();
-			$id = '';
-			$style = '';
-			$class = '';
-			$default_value = '';
-			if ( isset( $options['id'] ) )
-				$id = ' id="' . $options['id'] . '" name="' . $options['id'] . '" ';
-			if ( isset( $options['style'] ) )
-				$id = ' style="' . $options['style'] . '" ';
-			if ( isset( $options['class'] ) )
-				$id = ' class="' . $options['class'] . '" ';
-			foreach ( $posts as $p ) {
-				$current_id = $p->ID;
-				?>
-				<option value="<?php echo $current_id; ?>"<?php
-						if ( $default_post_id == $current_id )
-							echo ' selected="selected"';
-					?>><?php
-					$title = $p->post_title;
-					if ( strlen( $title ) > 50 )
-						$title = substr( $title, 0, 50 ) . '...';
-					echo $title; ?></option><?php
+		public static function search_forms() {
+			$term = false;
+			if ( isset( $_POST['term'] ) )
+				$term = $_POST['term'];
+
+			$type = false;
+			if ( isset( $_POST['type'] ) )
+				$type = $_POST['type'];
+
+			$default_id = false;
+			if ( isset( $_POST['default_id'] ) )
+				$default_id = $_POST['default_id'];
+
+			$default_thumbnail = sprintf(
+				'<img src="data:image/gif;%s" class="%s" alt="%s" />',
+				'base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+				'attachment-thumbnail wp-post-image nelioab-no-thumbnail',
+				__( 'No featured image available', 'nelioab' )
+			);
+
+			$args = array(
+				's'              => $term,
+				'posts_per_page' => 20,
+				'orderby'        => 'date',
+			);
+
+			// If there's a default_id set, it means that the user is interested
+			// in one form only; I'm going to return that form to him
+			if ( $default_id !== false && $default_id > 0 ) {
+				if ( 'cf7' == $type && class_exists( 'WPCF7_ContactForm' ) ) {
+					$aux = WPCF7_ContactForm::find( array( 'p' => $default_id ) );
+					if ( count( $aux ) > 0 ) {
+						$form = $aux[0];
+						$item = array(
+							'id'        => $form->id(),
+							'title'     => $form->title(),
+							'type'      => 'Contact Form 7',
+							'thumbnail' => $default_thumbnail,
+						);
+						header( 'Content-Type: application/json' );
+						echo json_encode( array( $item ) );
+						die();
+					}
+				}
+				elseif ( 'gf' == $type && class_exists( 'GFAPI' ) ) {
+					$form = GFAPI::get_form( $default_id );
+					if ( $form ) {
+						$item = array(
+							'id'        => $form['id'],
+							'title'     => $form['title'],
+							'thumbnail' => $default_thumbnail,
+						);
+						header( 'Content-Type: application/json' );
+						echo json_encode( array( $item ) );
+						die();
+					}
+				}
 			}
-			$value = ob_get_contents();
-			ob_end_clean();
-			return $value;
+
+			$result = array();
+
+			if ( 'cf7' == $type && class_exists( 'WPCF7_ContactForm' ) ) {
+				$forms = WPCF7_ContactForm::find( $args );
+				foreach ( $forms as $form ) {
+					$item = array(
+						'id'        => $form->id(),
+						'title'     => $form->title(),
+						'type'      => 'Contact Form 7',
+						'thumbnail' => $default_thumbnail,
+					);
+					array_push( $result, $item );
+				}
+			}
+
+			elseif ( 'gf' == $type && class_exists( 'RGFormsModel' ) ) {
+				$forms = RGFormsModel::get_forms();
+				foreach ( $forms as $form ) {
+					if ( $term && strpos( strtolower( $form->title ), strtolower( $term ) ) === false )
+						continue;
+					$item = array(
+						'id'        => $form->id,
+						'title'     => $form->title,
+						'type'      => 'Gravity Form',
+						'thumbnail' => $default_thumbnail,
+					);
+					array_push( $result, $item );
+				}
+			}
+
+			header( 'Content-Type: application/json' );
+			echo json_encode( $result );
+			die();
+		}
+
+		public static function sort_post_search_by_title( $i1, $i2 ) {
+			return strcasecmp( $i1['title'], $i2['title'] );
 		}
 
 	}//NelioABWpHelper

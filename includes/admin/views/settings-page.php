@@ -92,16 +92,6 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				'nelioab_general_section'
 			);
 
-			add_settings_field(
-				'exact_url_external',
-				__( 'External Goals', 'nelioab' ),
-				// -------------------------------------------------------------
-				array( 'NelioABSettingsPage', 'print_exact_url_external_field' ),
-				'nelioab-settings',
-				'nelioab_general_section'
-			);
-
-
 
 
 			add_settings_section(
@@ -163,7 +153,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		}
 
 		public static function print_mu_plugin_settings() {
-			$status = __( 'In order to boost response times of all AJAX requests triggered by Nelio A/B Testing, we include a tiny <a %s>Must Use Plugin</a> that disables other plugins when they\'re not necessary.<br><br><strong>AJAX Performance MU-Plugin Status: %s</strong>.<br>%s', 'nelioab' );
+			$status = __( 'In order to boost response times of all AJAX requests triggered by Nelio A/B Testing, we include a tiny <a %1$s>Must Use Plugin</a> that disables other plugins when they\'re not necessary.<br><br><strong>AJAX Performance MU-Plugin Status: %2$s</strong>.<br>%3$s', 'nelioab' );
 			if ( NelioABSettings::is_performance_muplugin_installed() ) {
 				$status = sprintf( $status,
 					'target="_blank" href="http://codex.wordpress.org/Must_Use_Plugins"',
@@ -267,22 +257,6 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 					if ( NelioABSettings::use_colorblind_palette() )
 						echo ' selected="selected"';
 				?>><?php _e( 'Colorblind Palette', 'nelioab' ); ?></option>
-			</select>
-			<?php
-		}
-
-		public static function print_exact_url_external_field() {
-			$field_name = 'exact_url_external';
-			printf(
-				'<select id="%1$s" name="nelioab_settings[%1$s]" style="width:100%;">',
-				$field_name
-			);
-			?>
-				<option value='1'><?php _e( 'Match whole URL', 'nelioab' ); ?></option>
-				<option value='0'<?php
-					if ( !NelioABSettings::match_exact_url_for_external_goals() )
-						echo ' selected="selected"';
-				?>><?php _e( 'Ignore GET parameters', 'nelioab' ); ?></option>
 			</select>
 			<?php
 		}
