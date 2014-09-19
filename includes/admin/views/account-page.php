@@ -406,14 +406,20 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 
 			$other_sites = array();
 			$this_url    = get_option( 'siteurl' );
-			foreach( $this->sites as $site )
-				if ( $site->get_url() != $this_url )
+			$this_id     = NelioABAccountSettings::get_site_id();
+			$reg_name    = false;
+			foreach( $this->sites as $site ) {
+				if ( $site->get_id() != $this_id )
 					array_push( $other_sites, $site );
+				else
+					$reg_name = $site->get_url();
+			}
 
 			if( $this->current_site_status == NelioABSite::ACTIVE ) {
 				array_push( $sites, array(
 						'this_site'   => true,
 						'name'        => $this_url,
+						'reg_name'    => $reg_name,
 						'cancel_link' => $this->cancel_registration_link()
 					) );
 			}
@@ -469,10 +475,19 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 		private function make_this_site( $site ) {
 			$name = $this->beautify_url( $site['name'] );
 			$name = sprintf( $name, '#000000', '#909090' );
-			$name = '<span class="row-title">' . 
-				'<strong style="font-weight:bold;">' . $name . '</strong> ' .
-				'<strong style="font-variant:small-caps;">(' . __( 'this site', 'neliab' ) . ')</strong> ' .
-				'</span>';
+			$name = '<span class="row-title"%s><strong style="font-weight:bold;">' . $name . '</strong>';
+
+			$reg_name = '';
+			if ( $site['reg_name'] !== $site['name'] ) {
+				$name .= '*';
+				$reg_name = $site['reg_name'];
+				$reg_name = sprintf( __( 'In your account, the site is actually registered as «%s»', 'nelioab' ), $reg_name );
+				$reg_name = ' title="' . esc_html( $reg_name ) . '"';
+			}
+			$name = sprintf( $name, $reg_name );
+
+			$name .= ' <strong style="font-variant:small-caps;">(' . __( 'this site', 'neliab' ) . ')</strong> ';
+			$name .= '</span>';
 			$actions = $this->row_actions( array(
 					'delete' => '<a href="' . $site['cancel_link'] . '">Cancel Registration</a>'
 				) );

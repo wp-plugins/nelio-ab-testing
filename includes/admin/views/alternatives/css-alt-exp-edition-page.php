@@ -31,7 +31,6 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
 			$this->set_form_name( 'nelioab_edit_ab_css_exp_form' );
-			$this->show_new_form   = false;
 			$this->alternatives    = array();
 
 			$this->is_global = true;
@@ -71,10 +70,6 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 		protected function print_alternatives() { ?>
 			<h2><?php
 
-				$explanation = __( 'based on an existing page', 'nelioab' );
-				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					$explanation = __( 'based on an existing post', 'nelioab' );
-
 				printf( '<a onClick="javascript:%1$s" class="add-new-h2" href="javascript:;">%2$s</a>',
 					'NelioABAltTable.showNewPageOrPostAltForm(jQuery(\'table#alt-table\'), false);',
 					__( 'New Alternative CSS', 'nelioab' )
@@ -82,9 +77,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 
 			?></h2><?php
 
-			$wp_list_table = new NelioABPostAlternativesTable(
-				$this->alternatives,
-				$this->alt_type );
+			$wp_list_table = new NelioABCssAlternativesTable( $this->alternatives );
 			$wp_list_table->prepare_items();
 			$wp_list_table->display();
 		}
@@ -133,8 +126,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 		}
 
 		public function display_rows_or_placeholder() {
-			if ( $this->show_new_form )
-				$this->print_new_alt_form();
+			$this->print_new_alt_form();
 
 			$title = __( 'Original: Default CSS without any additions', 'nelioab' );
 			$expl = __( 'This original version of this experiment is not using any alternative CSS at all.', 'nelioab' );
@@ -156,10 +148,6 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 				$alt->get_id(),
 				'edit_alt_content',
 				__( 'Save Experiment & Edit CSS', 'nelioab' ) );
-		}
-
-		protected function hide_quick_actions() {
- 			return $this->show_new_form;
 		}
 
 		protected function print_additional_info_for_new_alt_form() {

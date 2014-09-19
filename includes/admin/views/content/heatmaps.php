@@ -36,7 +36,8 @@
 
 			// Get the Heatmap
 			$exp_type = $_GET['exp_type'];
-			$exp = NelioABExperimentsManager::get_experiment_by_id( $_GET['id'], $exp_type );
+			$mgr = new NelioABExperimentsManager();
+			$exp = $mgr->get_experiment_by_id( $_GET['id'], $exp_type );
 
 			if ( $exp_type == NelioABExperiment::HEATMAP_EXP ) {
 				$url = sprintf( NELIOAB_BACKEND_URL . '/exp/hm/%s/result', $exp->get_id() );

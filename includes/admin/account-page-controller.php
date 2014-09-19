@@ -55,14 +55,9 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 				if ( NelioABAccountSettings::has_a_configured_site() ) {
 					$site_id = NelioABAccountSettings::get_site_id();
 					$current_site_status = NelioABSite::INVALID_ID;
-					foreach( $sites as $site ) {
-						if ( $site->get_id() == $site_id ) {
-							if ( $site->get_url() == get_option( 'siteurl' ) )
-								$current_site_status = NelioABSite::ACTIVE;
-							else
-								$current_site_status = NelioABSite::NON_MATCHING_URLS;
-						}
-					}
+					foreach( $sites as $site )
+						if ( $site->get_id() == $site_id )
+							$current_site_status = NelioABSite::ACTIVE;
 				}
 
 			}

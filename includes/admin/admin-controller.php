@@ -110,7 +110,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				add_action( 'admin_init', array( 'NelioABSettingsPage', 'register_settings' ) );
 
 			add_action( 'admin_menu', array( $this, 'configure_edit_nelioab_alternative' ) );
-			add_action( 'pre_update_option_siteurl', array( 'NelioABAccountSettings', 'update_registered_sites_if_required' ) );
 
 			// AJAX functions
 			add_action( 'wp_ajax_nelioab_get_html_content', array( $this, 'generate_html_content' ) ) ;

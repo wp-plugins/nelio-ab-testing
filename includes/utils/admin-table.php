@@ -29,6 +29,9 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		public function __construct( $super_params ){
 			global $status, $page;
 
+			if ( !isset( $super_params['screen'] ) )
+				$super_params['screen'] = 'nelio-ab-testing';
+
 			//Set parent defaults
 			parent::__construct( $super_params );
 		}

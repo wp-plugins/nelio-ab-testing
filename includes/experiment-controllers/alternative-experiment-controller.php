@@ -841,7 +841,8 @@ class NelioABAlternativeExperimentController {
 			'allowsPrepopulate' => true,
 			'inputs' => array(
 				array(
-					'id' => $name,
+					'id'    => $name,
+					'label' => $name,
 				),
 			),
 		);

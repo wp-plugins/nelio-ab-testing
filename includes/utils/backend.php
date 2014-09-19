@@ -66,11 +66,6 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		public static function make_credential( $skip_check = false ) {
 			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
-			// The following function makes sure that the registered URL and the
-			// current siteurl are the same:
-			// if ( !$skip_check )
-			//    NelioABBackend::sync_site_url();
-
 			// Creating the credential
 			$result = array();
 			$result['customerId']         = NelioABAccountSettings::get_customer_id();
@@ -79,44 +74,6 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			$result['siteUrl']            = get_option( 'siteurl' );
 
 			return $result;
-		}
-
-		/**
-		 * Before creating a credential, we must check whether the registered url
-		 * and 'siteurl' are the same. If the user changed his WP's URL after he
-		 * registered the site, these urls differ and the credentials would be
-		 * invalid.
-		 *
-		 * In principle, this is controlled by the following hook:
-		 *   pre_update_option_siteurl -> NelioABAccountSettings::update_registered_sites_if_required
-		 */
-		private static function sync_site_url() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-			if ( NelioABAccountSettings::has_a_configured_site() &&
-			     get_option( 'siteurl' ) != NelioABAccountSettings::get_site_url() ) {
-				try {
-					$special_credential = NelioABBackend::make_credential( true );
-					$params = array( 'url' => get_option( 'siteurl' ) );
-
-					$wrapped_params = array();
-					$wrapped_params['object'] = $params;
-					$wrapped_params['credential'] = $special_credential;
-
-					$json_params = array(
-						'headers' => array( 'Content-Type' => 'application/json' ),
-						'body'    => json_encode( $wrapped_params ),
-					);
-
-					$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/update',
-						NelioABAccountSettings::get_site_id()
-						);
-					$aux = NelioABBackend::remote_post_raw( $url, $json_params, true );
-					NelioABAccountSettings::set_site_url( get_option( 'siteurl' ) );
-				}
-				catch ( Exception $e ) {
-					// Hopefully, this will never happen
-				}
-			}
 		}
 
 		private static function throw_exceptions_if_any( $result ) {

@@ -84,17 +84,15 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 
 			// Check if the current site is already registered for this account
 			$registered = false;
-			$this_url   = get_option( 'siteurl' );
-			$sites_info = NelioABAccountSettings::get_registered_sites_information();
-			$sites      = $sites_info->get_registered_sites();
-			foreach( $sites as $s )
-				if ( $s->get_url() == $this_url )
-					$registered = true;
-
-			if ( $registered )
-				NelioABAccountSettings::register_this_site();
-			else
-				NelioABAccountSettings::set_has_a_configured_site( false );
+			if ( NelioABAccountSettings::has_a_configured_site() ) {
+				$this_id    = NelioABAccountSettings::get_site_id();
+				$sites_info = NelioABAccountSettings::get_registered_sites_information();
+				$sites      = $sites_info->get_registered_sites();
+				foreach( $sites as $s )
+					if ( $s->get_id() == $this_id )
+						$registered = true;
+			}
+			NelioABAccountSettings::set_has_a_configured_site( $registered );
 		}
 
 		public static function get_customer_id() {
@@ -139,14 +137,6 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 
 		public static function set_site_id( $site_id ) {
 			update_option( 'nelioab_site_id', $site_id );
-		}
-
-		public static function get_site_url() {
-			return get_option( 'nelioab_site_url', false );
-		}
-
-		public static function set_site_url( $site_url ) {
-			update_option( 'nelioab_site_url', $site_url );
 		}
 
 		public static function check_terms_and_conditions( $accepted ) {
@@ -252,29 +242,6 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			return $res;
 		}
 
-		public static function update_registered_sites_if_required( $url ) {
-
-			while ( substr( $url, -1 ) === '/' )
-				$url = substr( $url, 0, strlen( $url ) - 1 );
-
-			if ( NelioABAccountSettings::has_a_configured_site() ) {
-				$id     = NelioABAccountSettings::get_site_id();
-				$params = array(
-					'url' => $url,
-				);
-				try {
-					$json_data = NelioABBackend::remote_post( sprintf(
-						NELIOAB_BACKEND_URL . '/site/%s/update',
-						$id
-					), $params, true );
-					NelioABAccountSettings::set_site_url( $url );
-				}
-				catch ( Exception $e ) {}
-			}
-
-			return $url;
-		}
-
 		public static function register_this_site() {
 
 			try {
@@ -287,7 +254,6 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 				$json_data = json_decode( $json_data['body'] );
 				NelioABAccountSettings::set_has_a_configured_site( true );
 				NelioABAccountSettings::set_site_id( $json_data->key->id );
-				NelioABAccountSettings::set_site_url( get_option( 'siteurl' ) );
 			}
 			catch ( Exception $e ) {
 				NelioABAccountSettings::set_has_a_configured_site( false );

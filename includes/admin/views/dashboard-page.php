@@ -168,6 +168,8 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 
 			if ( $exp->has_result_status() )
 				$light = NelioABGTest::generate_status_light( $exp->get_result_status() );
+			else
+				$light = '';
 
 			$name = '<span class="exp-title">' . $exp->get_name() . '</span>';
 			$status = '<span id="info-summary">' . $light . '</span>';
