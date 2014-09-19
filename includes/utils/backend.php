@@ -23,7 +23,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			if ( !$skip_status_check ) {
 				require_once( NELIOAB_MODELS_DIR . '/user.php' );
 				try {
-					$aux = NelioABSettings::check_user_settings();
+					$aux = NelioABAccountSettings::check_user_settings();
 				}
 				catch ( Exception $e ) {
 					throw $e;
@@ -37,11 +37,14 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		}
 
 		public static function remote_post( $url, $params = array(), $skip_status_check = false ) {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
+			$json_params = NelioABBackend::build_json_object_with_credentials( $params );
+			return NelioABBackend::remote_post_raw( $url, $json_params, $skip_status_check );
+		}
 
+		public static function build_json_object_with_credentials( $params = array() ) {
 			$wrapped_params = array();
 			$credential     = NelioABBackend::make_credential();
-
 			if ( count( $params ) == 0 ) {
 				$wrapped_params = $credential;
 			}
@@ -49,13 +52,11 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				$wrapped_params['object']     = $params;
 				$wrapped_params['credential'] = $credential;
 			}
-
 			$json_params = array(
-				'headers' => array( 'Content-Type' => 'application/json' ),
-				'body'    => json_encode( $wrapped_params ),
+					'headers' => array( 'Content-Type' => 'application/json' ),
+					'body'    => json_encode( $wrapped_params ),
          );
-
-			return NelioABBackend::remote_post_raw( $url, $json_params, $skip_status_check );
+			return $json_params;
 		}
 
 		public static function remote_get( $url, $skip_status_check = false ) {
@@ -63,59 +64,16 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		}
 
 		public static function make_credential( $skip_check = false ) {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-
-			// The following function makes sure that the registered URL and the
-			// current siteurl are the same:
-			// if ( !$skip_check )
-			//    NelioABBackend::sync_site_url();
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// Creating the credential
 			$result = array();
-			$result['customerId']         = NelioABSettings::get_customer_id();
-			$result['registrationNumber'] = NelioABSettings::get_reg_num();
-			$result['siteId']             = NelioABSettings::get_site_id();
+			$result['customerId']         = NelioABAccountSettings::get_customer_id();
+			$result['registrationNumber'] = NelioABAccountSettings::get_reg_num();
+			$result['siteId']             = NelioABAccountSettings::get_site_id();
 			$result['siteUrl']            = get_option( 'siteurl' );
 
 			return $result;
-		}
-
-		/**
-		 * Before creating a credential, we must check whether the registered url
-		 * and 'siteurl' are the same. If the user changed his WP's URL after he
-		 * registered the site, these urls differ and the credentials would be
-		 * invalid.
-		 *
-		 * In principle, this is controlled by the following hook:
-		 *   pre_update_option_siteurl -> NelioABSettings::update_registered_sites_if_required
-		 */
-		private static function sync_site_url() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			if ( NelioABSettings::has_a_configured_site() &&
-			     get_option( 'siteurl' ) != NelioABSettings::get_site_url() ) {
-				try {
-					$special_credential = NelioABBackend::make_credential( true );
-					$params = array( 'url' => get_option( 'siteurl' ) );
-
-					$wrapped_params = array();
-					$wrapped_params['object'] = $params;
-					$wrapped_params['credential'] = $special_credential;
-
-					$json_params = array(
-						'headers' => array( 'Content-Type' => 'application/json' ),
-						'body'    => json_encode( $wrapped_params ),
-					);
-
-					$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/update',
-						NelioABSettings::get_site_id()
-						);
-					$aux = NelioABBackend::remote_post_raw( $url, $json_params, true );
-					NelioABSettings::set_site_url( get_option( 'siteurl' ) );
-				}
-				catch ( Exception $e ) {
-					// Hopefully, this will never happen
-				}
-			}
 		}
 
 		private static function throw_exceptions_if_any( $result ) {
@@ -165,21 +123,23 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const DEACTIVATED_USER                 = 15;
 		const EXPERIMENT_ID_NOT_FOUND          = 16;
 		const INVALID_GOAL                     = 17;
+		const INVALID_MODIFICATION             = 18;
 
 		// Error codes corresponding to package details
 		const MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC = 100;
 		const HEATMAP_NOT_ALLOWED_IN_BASIC         = 101;
 
 		// These are "private" error codes
-		const BACKEND_NOT_AVAILABLE        = -1;
-		const BACKEND_NO_SITE_CONFIGURED   = -2;
-		const BACKEND_UNKNOWN_ERROR        = -3;
-		const ERROR_404                    = -4;
-		const NON_ACCEPTED_TAC             = -5;
-		const STATUS_204                   = -6;
-		const UNKNOWN_ERROR                = -7;
-		const NO_HEATMAPS_AVAILABLE        = -8;
-		const EXPERIMENT_CANNOT_BE_STARTED = -9;
+		const BACKEND_NOT_AVAILABLE                        = -1;
+		const BACKEND_NO_SITE_CONFIGURED                   = -2;
+		const BACKEND_UNKNOWN_ERROR                        = -3;
+		const ERROR_404                                    = -4;
+		const NON_ACCEPTED_TAC                             = -5;
+		const STATUS_204                                   = -6;
+		const UNKNOWN_ERROR                                = -7;
+		const NO_HEATMAPS_AVAILABLE                        = -8;
+		const NO_HEATMAPS_AVAILABLE_FOR_NON_RUNNING_EXPERIMENT = -9;
+		const EXPERIMENT_CANNOT_BE_STARTED                 = -10;
 
 		public static function to_string( $err ) {
 			switch( $err ) {
@@ -216,11 +176,13 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'User account has been deactivated.', 'nelioab' );
 				case NelioABErrCodes::EXPERIMENT_ID_NOT_FOUND:
 					return __( 'Experiment not found.', 'nelioab' ) . '<br />' .
-						'<small><a href="'. admin_url() . 'admin.php?page=nelioab-experiments">' .
+						'<small><a href="'. admin_url( 'admin.php?page=nelioab-experiments' ) . '">' .
 						__( 'Go to my list of experiments...', 'nelioab' ) .
 						'</a></small>';
 				case NelioABErrCodes::INVALID_GOAL:
 					return __( 'Goal not found.', 'nelioab' );
+				case NelioABErrCodes::INVALID_MODIFICATION:
+					return __( 'The experiment cannot be modified.', 'nelioab' );
 
 
 				// Error codes corresponding to package details
@@ -248,7 +210,9 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				case NelioABErrCodes::STATUS_204:
 					return __( 'Backend is not accessible.<br />Please, try again in just a few moments.', 'nelioab' );
 				case NelioABErrCodes::NO_HEATMAPS_AVAILABLE:
-					return __( 'Be patient... We are still collecting the data for your heatmaps.', 'nelioab' );
+					return __( 'Be patient... We are still collecting the data for your heatmaps and clickmaps.', 'nelioab' );
+				case NelioABErrCodes::NO_HEATMAPS_AVAILABLE_FOR_NON_RUNNING_EXPERIMENT:
+					return __( 'We did not collect enough data for building your heatmaps and clickmaps. Sorry.', 'nelioab' );
 				case NelioABErrCodes::UNKNOWN_ERROR:
 					return __( 'An unknown error has occurred.', 'nelioab' );
 				case NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED:
@@ -258,7 +222,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );
 			}
 		}
+
 	}//NelioABBackend
 
 }
-?>
+

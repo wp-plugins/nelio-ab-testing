@@ -32,6 +32,15 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 			$this->ori = array( -1 );
 		}
 
+		public function set_winning_alternative_using_id( $id ) {
+			$winning_alt = false;
+			if ( $this->get_originals_id() == $id )
+				$winning_alt = $this->get_original();
+			else
+				$winning_alt = $this->get_alternative_by_id( $id );
+			$this->set_winning_alternative( $winning_alt );
+		}
+
 		public function get_origins() {
 			return $this->ori;
 		}
@@ -79,12 +88,10 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 				$this->get_id()
 			);
 			try {
-				$this->split_page_accessed_goal_if_any();
 				$result = NelioABBackend::remote_post( $url );
 				$this->set_status( NelioABExperimentStatus::RUNNING );
 			}
 			catch ( Exception $e ) {
-				$this->unsplit_page_accessed_goal_if_any();
 				throw $e;
 			}
 		}
@@ -99,14 +106,14 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			$url = '';
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/exp/global',
-					NelioABSettings::get_site_id()
+					NelioABAccountSettings::get_site_id()
 				);
 			}
 			else {

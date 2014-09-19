@@ -77,22 +77,32 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 				$set_as_winner = '';
 
 			echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s</li>',
-				$set_as_winner, $ori_label, $this->get_original_name() );
+				$set_as_winner, $ori_label, $this->trunk( $this->get_original_name() ) );
 		}
 
 		protected function print_the_real_alternatives() {
+			?>
+			<script>
+				function openCss( css ) {
+					var id = "#css-" + css;
+					var w = window.open("", "blank", "toolbar=no,location=no,width=600,height=350,top=0,left=0,scrollbars=yes");
+					w.document.open();
+					w.document.write('<pre>' + jQuery(id).text() + '</pre>');
+					w.document.close();
+				}
+			</script>
+			<?php
 			// REAL ALTERNATIVES
 			// -----------------------------------------
 			$exp = $this->exp;
 			$i   = 0;
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
-				$link      = get_permalink( $alt->get_value() );
 				$edit_link = '';
 
 				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 					$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
-						admin_url() . 'admin.php?page=nelioab-css-edit&exp_id=' . $this->exp->get_id() . '&css_id=' . $alt->get_id(),
+						admin_url( 'admin.php?page=nelioab-css-edit&exp_id=' . $this->exp->get_id() . '&css_id=' . $alt->get_id() ),
 						__( 'Edit' ) );
 				}
 
@@ -110,8 +120,15 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 					$set_as_winner = '';
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
-				echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span><a href="%s" target="_blank">%s</a>%s',
-					$set_as_winner, $alt_label, $link, $alt->get_name(), $edit_link );
+				echo '<li>';
+				?>
+				<span id="css-<?php echo $alt->get_id(); ?>" style="display:none;"><?php
+					echo $alt->get_value();
+				?></span>
+				<?php
+				echo sprintf( '<span class="alt-type add-new-h2 %s">%s</span><a href="#" onClick="javascript:openCss(%s)">%s</a>%s',
+					$set_as_winner, $alt_label, $alt->get_id(), $this->trunk( $alt->get_name() ), $edit_link );
+				echo '</li>';
 
 			}
 		}

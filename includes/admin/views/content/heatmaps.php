@@ -1,4 +1,21 @@
 <?php
+/**
+ * Copyright 2013 Nelio Software S.L.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
+ *
+ * This script is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ * This script is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	$show_back_link = false;
@@ -19,7 +36,8 @@
 
 			// Get the Heatmap
 			$exp_type = $_GET['exp_type'];
-			$exp = NelioABExperimentsManager::get_experiment_by_id( $_GET['id'], $exp_type );
+			$mgr = new NelioABExperimentsManager();
+			$exp = $mgr->get_experiment_by_id( $_GET['id'], $exp_type );
 
 			if ( $exp_type == NelioABExperiment::HEATMAP_EXP ) {
 				$url = sprintf( NELIOAB_BACKEND_URL . '/exp/hm/%s/result', $exp->get_id() );
@@ -48,15 +66,21 @@
 				}
 			}
 			if ( $counter == 0 ) {
-				$err = NelioABErrCodes::NO_HEATMAPS_AVAILABLE;
-				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+					$err = NelioABErrCodes::NO_HEATMAPS_AVAILABLE;
+					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+				}
+				else {
+					$err = NelioABErrCodes::NO_HEATMAPS_AVAILABLE_FOR_NON_RUNNING_EXPERIMENT;
+					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+				}
 			}
 		}
 		catch ( Exception $e ) {
 			echo sprintf( '<img src="%s" alt="%s" style="margin-top:50px;"/>',
-            NELIOAB_ASSETS_URL . '/admin/images/white-error-icon.png?' . NELIOAB_PLUGIN_VERSION,
-            __( 'Funny image to graphically notify of an error.', 'nelioab' )
-         );
+				nelioab_asset_link( '/admin/images/white-error-icon.png' ),
+				__( 'Funny image to graphically notify of an error.', 'nelioab' )
+			);
 			?>
 			<p id="ajax-loader-label1"
 				style="margin-top:10px;color:white;font-size:20px;"><?php echo $e->getMessage(); ?></p><?php
@@ -64,17 +88,69 @@
 		}
 
 		// Prepare the content
-		$url = get_option( 'home' );
-		if ( $post_id )
-			$url = add_query_arg( array( 'p' => $post_id ), $url );
+		$page_on_front = get_option( 'page_on_front' );
+		if ( !$page_on_front && !$post_id ) // if the home page is the list of posts and the experiment is for the home page
+			$url = get_option( 'home' ); // the url should be the home page
+		else  // otherwise (1 - the heatmaps is NOT for the home page or 2 - the home page is a specific page, the heatmaps should display that page
+			$url = get_permalink( $post_id );
+
+		if ( !$url )
+			$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
 		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
+
 		?>
 		<div id="phantom" style="width:0px;height:0px;"></div>
 		<div id="wrapper" style="width:100%;height:100%;">
+			<div id="builder" style="
+					display:none;
+					z-index:11;
+					background-color:#585c62;
+					color:white;
+					font-size:15px;
+					text-align:center;
+					position:relative;
+					top:0px;
+					left:0px;
+					width:100%;
+					height:100%;
+					min-height:100%;
+				">
+				<br><br>
+				<div style="text-align:center;height:50px;">
+					<div class="nelioab_spinner white_spinner"></div>
+				</div>
+				<p><?php
+					_e( 'Building heatmap...<br>This might take a while. Please, wait.', 'nelioab' );
+				?></p>
+			</div>
 			<iframe id="content" name="content" frameborder="0"
 				src="<?php echo $url; ?>"
 				style="background-color:white;width:0px;height:0px;"></iframe>
 		</div>
+		<script>
+			var NelioABHeatmapLabels = { hm:{}, cm:{} };<?php ?>
+
+			NelioABHeatmapLabels.hm.view      = "<?php echo esc_html( __( 'View Heatmap', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.phone     = "<?php echo esc_html( __( 'Smartphone', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.phoneNo   = "<?php echo esc_html( __( 'Smartphone (no Heatmap available)', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.tablet    = "<?php echo esc_html( __( 'Tablet', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.tabletNo  = "<?php echo esc_html( __( 'Tablet (no Heatmap available)', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.desktop   = "<?php echo esc_html( __( 'Laptop Monitor', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.desktopNo = "<?php echo esc_html( __( 'Laptop Monitor (no Heatmap available)', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.hd        = "<?php echo esc_html( __( 'Regular Desktop Monitor', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.hm.hdNo      = "<?php echo esc_html( __( 'Regular Desktop Monitor (no Heatmap available)', 'nelioab' ) ); ?>";
+
+			NelioABHeatmapLabels.cm.view      = "<?php echo esc_html( __( 'View Clickmap', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.phone     = "<?php echo esc_html( __( 'Smartphone', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.phoneNo   = "<?php echo esc_html( __( 'Smartphone (no Clickmap available)', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.tablet    = "<?php echo esc_html( __( 'Tablet', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.tabletNo  = "<?php echo esc_html( __( 'Tablet (no Clickmap available)', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.desktop   = "<?php echo esc_html( __( 'Laptop Monitor', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.desktopNo = "<?php echo esc_html( __( 'Laptop Monitor (no Clickmap available)', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.hd        = "<?php echo esc_html( __( 'Regular Desktop Monitor', 'nelioab' ) ); ?>";
+			NelioABHeatmapLabels.cm.hdNo      = "<?php echo esc_html( __( 'Regular Desktop Monitor (no Clickmap available)', 'nelioab' ) ); ?>";
+
+		</script>
 		<script>
 			var nelioabHeatmapScale = 0.75;
 			var nelioabHoveringDevice = null;
@@ -84,9 +160,9 @@
 				nelioabSwitchToClickEnabled = false;
 				nelioab__show_clicks = !nelioab__show_clicks;
 				if ( nelioab__show_clicks )
-					$("#view-clicks").text( "<?php echo __( 'View Heatmap', 'nelioab' ); ?>" );
+					$("#view-clicks").text( NelioABHeatmapLabels.hm.view );
 				else
-					$("#view-clicks").text( "<?php echo __( 'View Clickmap', 'nelioab' ); ?>" );
+					$("#view-clicks").text( NelioABHeatmapLabels.cm.view );
 				highlightData( nelioab__show_clicks );
 				switchHeatmap();
 			});
@@ -127,6 +203,7 @@
 			}
 			function switchHeatmap() {
 				document.getElementById('content').contentWindow.clearHeatmapObject();
+				jQuery("#builder").show();
 				setTimeout('doSwitchHeatmap()', 400);
 			}
 			function doSwitchHeatmap() {
@@ -139,6 +216,7 @@
 						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__phone.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone, nelioab__phone);
 						if ( nelioab__phone_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone_click, nelioab__phone_click );
+						jQuery("#builder").hide();
 						if ( nelioab__show_clicks ) {
 							jQuery("#visitors-count").html( nelioab__pre_phone_click.views );
 							nelioabHeatmapObject.store.setDataSet( nelioab__phone_click );
@@ -154,6 +232,7 @@
 						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__tablet.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet, nelioab__tablet);
 						if ( nelioab__tablet_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet_click, nelioab__tablet_click );
+						jQuery("#builder").hide();
 						if ( nelioab__show_clicks ) {
 							jQuery("#visitors-count").html( nelioab__pre_tablet_click.views );
 							nelioabHeatmapObject.store.setDataSet( nelioab__tablet_click );
@@ -169,6 +248,7 @@
 						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__desktop.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop, nelioab__desktop);
 						if ( nelioab__desktop_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop_click, nelioab__desktop_click );
+						jQuery("#builder").hide();
 						if ( nelioab__show_clicks ) {
 							jQuery("#visitors-count").html( nelioab__pre_desktop_click.views );
 							nelioabHeatmapObject.store.setDataSet( nelioab__desktop_click );
@@ -184,6 +264,7 @@
 						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
 						if ( nelioab__hd.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd, nelioab__hd);
 						if ( nelioab__hd_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd_click, nelioab__hd_click );
+						jQuery("#builder").hide();
 						if ( nelioab__show_clicks ) {
 							jQuery("#visitors-count").html( nelioab__pre_hd_click.views );
 							nelioabHeatmapObject.store.setDataSet( nelioab__hd_click );
@@ -205,13 +286,13 @@
 				if ( $heatmap->click ) {
 					$name .= '_click';
 					$views = sprintf(
-						_n( 'Clickmap built using data from only one user', 'Clickmap built using data from %s page views',
+						_n( 'Clickmap built using data from only one page view', 'Clickmap built using data from %s page views',
 							$heatmap->views, 'nelioab' ),
 						$heatmap->views );
 				}
 				else {
 					$views = sprintf(
-						_n( 'Heatmap built using data from only one user', 'Heatmap built using data from %s page views',
+						_n( 'Heatmap built using data from only one page view', 'Heatmap built using data from %s page views',
 							$heatmap->views, 'nelioab' ),
 						$heatmap->views );
 				}
@@ -222,7 +303,8 @@
 			<?php
 			}
 			?>
-
+			</script>
+			<script>
 			var nelioab__phone = { "max":-1, "data":[] };
 			var nelioab__tablet = { "max":-1, "data":[] };
 			var nelioab__desktop = { "max":-1, "data":[] };
@@ -304,26 +386,17 @@
 				switchHeatmap();
 			});
 			function highlightData(isClick) {
-				if ( isClick ) {
-					if ( nelioab__pre_phone_click.max > 0 ) $("#mobile").attr('title','<?php _e( 'Smartphone', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#mobile").attr('title','<?php _e( 'Smartphone (no Clickmap available)', 'nelioab' ); ?>').addClass("disabled");
-					if ( nelioab__pre_tablet_click.max > 0 ) $("#tablet").attr('title','<?php _e( 'Tablet', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#tablet").attr('title','<?php _e( 'Tablet (no Clickmap available)', 'nelioab' ); ?>').addClass("disabled");
-					if ( nelioab__pre_desktop_click.max > 0 ) $("#desktop").attr('title','<?php _e( 'Laptop Monitor', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#desktop").attr('title','<?php _e( 'Laptop Monitor (no Clickmap available)', 'nelioab' ); ?>').addClass("disabled");
-					if ( nelioab__pre_hd_click.max > 0 ) $("#hd").attr('title','<?php _e( 'Regular Desktop Monitor', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#hd").attr('title','<?php _e( 'Regular Desktop Monitor (no Clickmap available)', 'nelioab' ); ?>').addClass("disabled");
-				}
-				else {
-					if ( nelioab__pre_phone.max > 0 ) $("#mobile").attr('title','<?php _e( 'Smartphone', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#mobile").attr('title','<?php _e( 'Smartphone (no Heatmap available)', 'nelioab' ); ?>').addClass("disabled");
-					if ( nelioab__pre_tablet.max > 0 ) $("#tablet").attr('title','<?php _e( 'Tablet', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#tablet").attr('title','<?php _e( 'Tablet (no Heatmap available)', 'nelioab' ); ?>').addClass("disabled");
-					if ( nelioab__pre_desktop.max > 0 ) $("#desktop").attr('title','<?php _e( 'Laptop Monitor', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#desktop").attr('title','<?php _e( 'Laptop Monitor (no Heatmap available)', 'nelioab' ); ?>').addClass("disabled");
-					if ( nelioab__pre_hd.max > 0 ) $("#hd").attr('title','<?php _e( 'Regular Desktop Monitor', 'nelioab' ); ?>').removeClass("disabled");
-					else $("#hd").attr('title','<?php _e( 'Regular Desktop Monitor (no Heatmap available)', 'nelioab' ); ?>').addClass("disabled");
-				}
+				var values;
+				if ( isClick ) values = NelioABHeatmapLabels.cm;
+				else values = NelioABHeatmapLabels.hm;
+				if ( nelioab__pre_phone_click.max > 0 ) $("#mobile").attr('title',values.phone).removeClass("disabled");
+				else $("#mobile").attr('title',values.phoneNo).addClass("disabled");
+				if ( nelioab__pre_tablet_click.max > 0 ) $("#tablet").attr('title',values.tablet).removeClass("disabled");
+				else $("#tablet").attr('title',values.tabletNo).addClass("disabled");
+				if ( nelioab__pre_desktop_click.max > 0 ) $("#desktop").attr('title',values.desktop).removeClass("disabled");
+				else $("#desktop").attr('title',values.desktopNo).addClass("disabled");
+				if ( nelioab__pre_hd_click.max > 0 ) $("#hd").attr('title',values.hd).removeClass("disabled");
+				else $("#hd").attr('title',values.hdNo).addClass("disabled");
 			}
 		</script><?php
 		die();
@@ -333,15 +406,15 @@
 
 <head>
 	<title><?php _e( 'Nelio AB Testing &mdash; Heatmaps Viewer', 'nelioab' ); ?></title>
-	<link rel="stylesheet" href="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/css/nelioab-generic.min.css'; ?>">
-	<link rel="stylesheet" href="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/css/resizer.min.css'; ?>">
+	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/nelioab-generic.min.css' ); ?>">
+	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/resizer.min.css' ); ?>">
 	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9, chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta charset="utf-8">
 </head>
 
 <body>
-	<script src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/jquery4hm.min.js'; ?>"></script>
+	<script src="<?php echo nelioab_admin_asset_link( '/js/jquery4hm.min.js' ); ?>"></script>
 
 	<div id="toolbar" data-resizer="basic">
 		<ul id="devices">
@@ -359,13 +432,13 @@
 			<li>|</li>
 			<li><a id="view-clicks" style="font-size:12px;"><?php echo __( 'View Clickmap', 'nelioab' ); ?></a></li>
 			<li>|</li>
-			<li><a style="font-size:12px;" href="<?php echo admin_url() . 'admin.php?page=nelioab-experiments'; ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
+			<li><a style="font-size:12px;" href="<?php echo admin_url( 'admin.php?page=nelioab-experiments' ); ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
 			<?php
 			if ( $show_back_link ) {
-				$link = '%1$s?page=nelioab-experiments&action=progress&id=%2$s&exp_type=%3$s';
+				$link = admin_url( 'admin.php?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s' );
 				?>
 				<li>|</li>
-				<li><a style="font-size:12px;" href="<?php printf( $link, admin_url(), $_GET['id'], $_GET['exp_type'] ); ?>"><?php echo __( 'Back', 'nelioab' ); ?></a></li>
+				<li><a style="font-size:12px;" href="<?php printf( $link, $_GET['id'], $_GET['exp_type'] ); ?>"><?php echo __( 'Back', 'nelioab' ); ?></a></li>
 			<?php
 			} ?>
 		</ul>
