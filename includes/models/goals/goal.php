@@ -22,11 +22,11 @@ if( !class_exists( 'NelioABGoal' ) ) {
 
 	abstract class NelioABGoal {
 
-		const UNDEFINED_GOAL_TYPE = 0;
-		const PAGE_ACCESSED_GOAL  = 1;
+		const UNDEFINED_GOAL_TYPE          = 0;
+		const ALTERNATIVE_EXPERIMENT_GOAL  = 1;
 
-		const UNDEFINED_GOAL_TYPE_STR = 'UndefinedGoalKind';
-		const PAGE_ACCESSED_GOAL_STR  = 'PageAccessedGoal';
+		const UNDEFINED_GOAL_TYPE_STR          = 'UndefinedGoalKind';
+		const ALTERNATIVE_EXPERIMENT_GOAL_STR  = 'AlternativeExperimentGoal';
 
 		private $exp;
 		private $id;
@@ -37,7 +37,7 @@ if( !class_exists( 'NelioABGoal' ) ) {
 		private $has_to_be_deleted;
 
 		public function __construct( $exp, $id = -1 ) {
-			$this->kind = NelioABGoal::UNDEFINED_GOAL_TYPE;
+			$this->kind = self::UNDEFINED_GOAL_TYPE;
 			$this->name = __( 'Undefined', 'nelioab' );
 			$this->exp  = $exp;
 			$this->id   = $id;
@@ -67,23 +67,26 @@ if( !class_exists( 'NelioABGoal' ) ) {
 
 		public function set_kind_using_text( $kind ) {
 			switch( $kind ) {
-				case NelioABGoal::PAGE_ACCESSED_GOAL_STR:
-					$this->set_kind( NelioABGoal::PAGE_ACCESSED_GOAL );
+
+				case self::ALTERNATIVE_EXPERIMENT_GOAL_STR:
+					$this->set_kind( self::ALTERNATIVE_EXPERIMENT_GOAL );
 					return;
-				case NelioABGoal::UNDEFINED_GOAL_TYPE_STR:
+
+				case self::UNDEFINED_GOAL_TYPE_STR:
 				default:
-					$this->set_kind( NelioABGoal::UNDEFINED_GOAL_TYPE );
+					$this->set_kind( self::UNDEFINED_GOAL_TYPE );
 					return;
+
 			}
 		}
 
 		public function get_textual_kind() {
 			switch( $this->get_kind() ) {
-				case NelioABGoal::PAGE_ACCESSED_GOAL:
-					return NelioABGoal::PAGE_ACCESSED_GOAL_STR;
-				case NelioABGoal::UNDEFINED_GOAL_TYPE:
+				case self::ALTERNATIVE_EXPERIMENT_GOAL:
+					return self::ALTERNATIVE_EXPERIMENT_GOAL_STR;
+				case self::UNDEFINED_GOAL_TYPE:
 				default:
-					return NelioABGoal::UNDEFINED_GOAL_TYPE_STR;
+					return self::UNDEFINED_GOAL_TYPE_STR;
 			}
 
 		}
@@ -104,7 +107,7 @@ if( !class_exists( 'NelioABGoal' ) ) {
 			$this->is_main_goal = $is_main_goal;
 		}
 
-		public function set_to_be_deleted( $delete ) {
+		public function set_to_be_deleted( $delete = true ) {
 			$this->has_to_be_deleted = $delete;
 		}
 
@@ -112,12 +115,15 @@ if( !class_exists( 'NelioABGoal' ) ) {
 			return $this->has_to_be_deleted;
 		}
 
+		public abstract function json4js();
 		public abstract function get_results();
 		public abstract function is_ready();
-		public static abstract function decode_from_appengine( $exp, $json );
+
+		public static function build_goal_using_json4js( $json_goal, $exp ) {
+			throw new Exception( 'This function should be implemented by a concrete class.' );
+		}
 
 	}//NelioABGoal
 
 }
 
-?>

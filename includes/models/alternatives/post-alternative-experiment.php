@@ -30,7 +30,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 		public function clear() {
 			parent::clear();
-			$this->ori = -1;
+			$this->ori = new NelioABAlternative();
 			$this->track_heatmaps( true );
 		}
 
@@ -43,15 +43,22 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		}
 
 		public function get_original() {
+			if ( !is_object( $this->ori ) ) {
+				$aux = new NelioABAlternative();
+				$aux->set_value( $this->ori );
+				$this->ori = $aux;
+			}
 			return $this->ori;
 		}
 
 		public function get_originals_id() {
-			return $this->ori;
+			$ori_alt = $this->get_original();
+			return $ori_alt->get_value();
 		}
 
 		public function set_original( $ori ) {
-			$this->ori = $ori;
+			$ori_alt = $this->ori;
+			$ori_alt->set_value( $ori );
 
 			// Setting type
 			$post = get_post( $ori, ARRAY_A );
@@ -66,24 +73,32 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			}
 		}
 
-		public function create_title_alternative( $name ) {
-			$alts         = $this->get_alternatives();
-			$fake_post_id = -1;
-			foreach ( $alts as $aux )
-				if ( $aux->get_value() <= $fake_post_id )
-					$fake_post_id = $aux->get_value() - 1;
-
-			$alternative = new NelioABAlternative();
-			$alternative->set_name( $name );
-			$alternative->set_value( $fake_post_id );
-			$this->add_local_alternative( $alternative );
+		public function set_winning_alternative_using_id( $id ) {
+			$winning_alt = false;
+			if ( $this->get_originals_id() == $id ) {
+				$winning_alt = $this->get_original();
+			}
+			else {
+				$alts = $this->get_alternatives();
+				foreach ( $alts as $aux )
+					if ( $aux->get_value() == $id )
+						$winning_alt = $aux;
+			}
+			$this->set_winning_alternative( $winning_alt );
 		}
 
 		public function create_empty_alternative( $name, $post_type ) {
-			if ( $post_type == NelioABExperiment::PAGE_ALT_EXP )
-				$post_type = 'page';
-			else
-				$post_type = 'post';
+			switch ( $post_type ) {
+				case NelioABExperiment::PAGE_ALT_EXP:
+					$post_type = 'page';
+					break;
+				case NelioABExperiment::POST_ALT_EXP:
+					$post_type = 'post';
+					break;
+				default:
+					return false;
+			}
+
 			$post = array(
 				'post_type'    => $post_type,
 				'post_title'   => $name,
@@ -93,31 +108,39 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				'post_name'    => 'nelioab_' . rand(1, 10),
 			);
 
+			// Retrieve original post
+			$ori_post = get_post( $this->get_originals_id(), ARRAY_A );
+			if ( $ori_post )
+				$post['post_author'] = $ori_post['post_author'];
+
 			$post_id = wp_insert_post( $post, true );
+			if ( is_wp_error( $post_id ) )
+				return false;
+
 			$aux = get_post( $post_id, ARRAY_A );
+
+			// Update the post_name
 			$aux['post_name'] = 'nelioab_' . $post_id;
 			wp_update_post( $aux );
 
+			// Prepare custom metadata
 			add_post_meta( $post_id, '_is_nelioab_alternative', 'true' );
 
-			$alt = new NelioABAlternative();
-			$alt->set_name( $name );
-			$alt->set_value( $post_id );
-
-			$this->add_local_alternative( $alt );
+			return $post_id;
 		}
 
 		public function create_alternative_copying_content( $name, $src_post_id ) {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// Retrieve original post
 			$src_post = get_post( $src_post_id, ARRAY_A );
 			if ( !$src_post )
-				return;
+				return false;
 
 			// Create new empty post
 			$post_data = array(
+				'post_author'  => $src_post['post_author'],
 				'post_type'    => $src_post['post_type'],
 				'post_title'   => $src_post['post_title'],
 				'post_content' => $src_post['post_content'],
@@ -127,11 +150,8 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			);
 			$new_post_id = wp_insert_post( $post_data, true );
 			if ( is_wp_error( $new_post_id ) )
-				return;
+				return false;
 			$new_post = get_post( $new_post_id, ARRAY_A );
-
-			// Override all information
-			NelioABWpHelper::override( $new_post_id, $src_post_id );
 
 			// Update the post_name
 			$new_post['post_name'] = 'nelioab_' . $new_post_id;
@@ -139,13 +159,16 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// Prepare custom metadata
 			add_post_meta( $new_post_id, '_is_nelioab_alternative', 'true' );
+
+			// Override all information
 			NelioABWpHelper::override( $new_post_id, $src_post_id );
 
-			$alt = new NelioABAlternative();
-			$alt->set_name( $name );
-			$alt->set_value( $new_post_id );
+			// Custom Permalinks compatibility
+			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
+			if ( NelioABCustomPermalinksSupport::is_plugin_active() )
+				NelioABCustomPermalinksSupport::remove_custom_permalink( $new_post_id );
 
-			$this->add_local_alternative( $alt );
+			return $new_post_id;
 		}
 
 		protected function determine_proper_status() {
@@ -166,17 +189,27 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			return NelioABExperimentStatus::READY;
 		}
 
+		public function add_local_alternative( $alt ) {
+			if ( $this->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
+				$fake_post_id = -1;
+				foreach ( $this->get_alternatives() as $aux )
+					if ( $aux->get_value() <= $fake_post_id )
+						$fake_post_id = $aux->get_value() - 1;
+				$alt->set_value( $fake_post_id );
+			}
+			parent::add_local_alternative( $alt );
+		}
+
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
-
 			$url = '';
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/exp/post',
-					NelioABSettings::get_site_id()
+					NelioABAccountSettings::get_site_id()
 				);
 			}
 			else {
@@ -250,6 +283,23 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				if ( $alt->was_removed() )
 					continue;
 
+				if ( $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
+					if ( $alt->is_based_on_a_post() ) {
+						$new_id = $this->create_alternative_copying_content( $alt->get_name(), $alt->get_base_post() );
+						if ( $new_id )
+							$alt->set_value( $new_id );
+						else
+							continue;
+					}
+					else {
+						$new_id = $this->create_empty_alternative( $alt->get_name(), $this->get_type() );
+						if ( $new_id )
+							$alt->set_value( $new_id );
+						else
+							continue;
+					}
+				}
+
 				$body = array(
 					'name'  => $alt->get_name(),
 					'value' => $alt->get_value(),
@@ -260,6 +310,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					$result = NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/exp/post/%s/alternative', $exp_id ),
 						$body );
+					$alt->set_id( $result );
 				}
 				catch ( Exception $e ) {
 					// If I could not add an alternative... remove the associated page
@@ -277,7 +328,8 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			foreach ( $all_alternatives as $alt ) {
 				if ( $alt->was_removed() ) {
 					// Delete permanently (skipping Trash)
-					wp_delete_post( $alt->get_value(), true );
+					if ( $alt->get_value() )
+						wp_delete_post( $alt->get_value(), true );
 				}
 			}
 
@@ -351,12 +403,24 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// If everything is OK, we can start it!
 
-			$ori = get_post( $this->get_originals_id() );
-			if ( $ori && $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
+			// ...but before, if it is a title experiment, we have to create the goal
+			if ( $this->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
+				require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
+				$goal = new NelioABAltExpGoal( $this );
+				$page = new NelioABPageAccessedAction( $this->get_originals_id() );
+				$page->set_indirect_navigations_enabled( true );
+				$goal->add_action( $page );
+				$this->add_goal( $goal );
+				$this->make_goals_persistent();
+			}
+
+			// And there we go!
+			$ori_post = get_post( $this->get_originals_id() );
+			if ( $ori_post && $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
 				foreach ( $this->get_alternatives() as $alt ) {
 					$alt_post = get_post( $alt->get_value() );
 					if ( $alt_post ) {
-						$alt_post->comment_status = $ori->comment_status;
+						$alt_post->comment_status = $ori_post->comment_status;
 						wp_update_post( $alt_post );
 					}
 				}
@@ -366,12 +430,10 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					$this->get_id()
 				);
 			try {
-				$this->split_page_accessed_goal_if_any();
 				$result = NelioABBackend::remote_post( $url );
 				$this->set_status( NelioABExperimentStatus::RUNNING );
 			}
 			catch ( Exception $e ) {
-				$this->unsplit_page_accessed_goal_if_any();
 				throw $e;
 			}
 		}
@@ -410,8 +472,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				$exp->track_heatmaps( $json_data->showHeatmap );
 
 			if ( isset( $json_data->goals ) )
-				foreach ( $json_data->goals as $goal )
-					NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );
 
 			$alternatives = array();
 			if ( isset( $json_data->alternatives ) ) {
@@ -431,4 +492,3 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 }
 
-?>

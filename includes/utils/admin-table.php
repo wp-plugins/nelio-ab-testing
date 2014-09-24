@@ -29,6 +29,9 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 		public function __construct( $super_params ){
 			global $status, $page;
 
+			if ( !isset( $super_params['screen'] ) )
+				$super_params['screen'] = 'nelio-ab-testing';
+
 			//Set parent defaults
 			parent::__construct( $super_params );
 		}
@@ -177,57 +180,11 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 
 		public function display() {
 			if ( $this->get_table_id() )
-				echo '<span style="display:none;" id="' . $this->get_table_id() . '"></span>';
+				echo '<span style="display:none;" id="span-' . $this->get_table_id() . '"></span>';
 			parent::display();
-			// TODO: aixo hauria d'estar ben identificat (la var nelioabEditingItem,
-			// per si tinc mes d'una taula i tal...)
-			?>
-			<script>
-				var nelioabEditingItem = null;
-				function showInlineEdit( row ) {
-					if ( nelioabEditingItem != null )
-						hideInlineEdit();
 
-
-					// Get the ROW and place the INLINE_EDIT after it
-					jQuery("#inline-edit").insertAfter(row);
-
-					// Hide the ROW and show the INLINE_EDIT
-					row.hide();
-					try {
-						fillInlineEdit(row);
-					}
-					catch (e) {}
-					jQuery("#inline-edit").show();
-
-					// Update the global var
-					nelioabEditingItem = row;
-				}
-
-				function hideInlineEdit() {
-					jQuery("#inline-edit").hide();
-					if (nelioabEditingItem != null) {
-						nelioabEditingItem.show();
-						nelioabEditingItem = null;
-					}
-				}
-
-				function fillInlineEdit(row) {
-					<?php $this->print_js_body_for_inline_form(); ?>
-				}
-
-				jQuery("a.show-inline-edit").each(function() {
-					jQuery(this).click(function() {
-						row = jQuery(this).parent().parent().parent().parent();
-						showInlineEdit(row);
-					});
-				});
-
-
-			</script>
-			<?php
 			// And now this is OK:
-			$id = $this->get_table_id();;
+			$id = $this->get_table_id();
 			if ( $id ) {
 				$cols = $this->get_columns();
 				$sort = $this->get_jquery_sortable_columns();
@@ -240,9 +197,9 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 				}
 				?>
 				<script>if (typeof jQuery !== 'undefined') {
-					jQuery("span#<?php echo $id; ?>").nextAll("table").first().
+					jQuery("span#span-<?php echo $id; ?>").nextAll("table").first().
 						attr("id", "<?php echo $id; ?>");
-					jQuery("span#<?php echo $id; ?>").remove();
+					jQuery("span#span-<?php echo $id; ?>").remove();
 					jQuery("table#<?php echo $id; ?>").
 					find("th").each(function() {
 						jQuery(this).html(
@@ -264,45 +221,61 @@ if ( !class_exists( 'NelioABAdminTable' ) ) {
 			}
 		}
 
-		// TODO: fix this operation AND documentation
-		// Mejor identificador para el inline-edit?
 		protected function print_inline_edit_form() { ?>
-			<tr id="inline-edit" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page" style="display:none;">
+			<tr class="nelioab-quick-edit-row inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page" style="display:none;">
 				<td colspan="<?php echo $this->get_column_count(); ?>" class="colspanchange">
 					<?php $this->inline_edit_form(); ?>
 					<p class="submit inline-edit-save">
-						<?php $this->inline_edit_form_ok_button(); ?>
-						<a class="button-secondary cancel alignleft" style="margin-left:0.4em;"
-							onClick="javascript:hideInlineEdit();">
-							<?php _e( 'Cancel', 'nelioab' ); ?></a>
+						<a class="button button-primary save alignleft"
+							style="margin-left:0.4em;"
+							href="javascript:;"
+							onClick="javascript:
+							jQuery(this).trigger('pre-clicked');
+							if (!jQuery(this).hasClass('disabled')) {
+								jQuery(this).trigger('clicked');
+								NelioABAdminTable.hideInlineEdit(jQuery(this).closest('table.wp-list-table'));
+							}"><?php
+							echo $this->inline_save_button_label(); ?></a>
+						<a class="button button-secondary cancel alignleft"
+							style="margin-left:0.4em;"
+							href="javascript:;"
+							onClick="javascript:
+							jQuery(this).trigger('pre-clicked');
+							if (!jQuery(this).hasClass('disabled')) {
+								jQuery(this).trigger('clicked');
+								NelioABAdminTable.hideInlineEdit(jQuery(this).closest('table.wp-list-table') );
+							}"><?php
+							_e( 'Cancel', 'nelioab' ); ?></a>
 						<br class="clear" />
 					</p>
 				</td>
 			</tr><?php
 		}
 
-		// TODO: Implemented this function
-		public function inline_edit_form_ok_button() {
+		public function inline_save_button_label() {
+			return __( 'Save' );
 		}
 
 		// TODO: fix this operation AND documentation
 		public function inline_edit_form() {
 		}
 
-		// TODO document this operation
+		/**
+		 * This function adds a simple button with the class "show-inline-edit".
+		 * TODO acaba de documentar
+		 */
 		public function make_quickedit_button( $label ) {
-			return '<a class="show-inline-edit" style="cursor:pointer;">' .
+			return
+				'<a class="show-inline-edit"' .
+				'  style="cursor:pointer;"' .
+				'  href="javascript:;"' .
+				'  onClick="javascript:NelioABAdminTable.showInlineEdit( ' .
+				'    jQuery(this).closest(\'tr\')' .
+				'  );">' .
 				$label . '</a>';
-		}
-
-		// TODO document this operation
-		public function print_js_body_for_inline_form() { ?>
-			// No code provided
-			<?php
 		}
 
 	}// NelioABAdminTable
 
 }
 
-?>

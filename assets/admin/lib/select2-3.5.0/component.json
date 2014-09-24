@@ -1,0 +1,24 @@
+{
+  "name": "select2",
+  "repo": "ivaynberg/select2",
+  "description": "Select2 is a jQuery based replacement for select boxes. It supports searching, remote data sets, and infinite scrolling of results.",
+  "version": "3.5.0",
+  "demo": "http://ivaynberg.github.io/select2/",
+  "keywords": [
+    "jquery"
+  ],
+  "main": "select2.min.js",
+  "styles": [
+    "select2.min.css",
+    "select2-bootstrap.min.css"
+  ],
+  "scripts": [
+    "select2.min.js"
+  ],
+  "images": [
+    "select2-spinner.gif",
+    "select2.png",
+    "select2x2.png"
+  ],
+  "license": "MIT"
+}
