@@ -77,7 +77,7 @@ class NelioABAlternativeExperimentController {
 			// If the "nelioab_load_alt" POST param is not set, we have to return the
 			// page with the JS file that is able to load an alternative and do all
 			// the required stuff
-			add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_scripts' ) );
+			add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_check_scripts' ) );
 		}
 
 		// Make sure that the title is replaced everywhere
@@ -284,7 +284,7 @@ class NelioABAlternativeExperimentController {
 		}
 	}
 
-	public function load_nelioab_scripts() {
+	public function load_nelioab_check_scripts() {
 		wp_enqueue_script( 'nelioab_alternatives_script_generic',
 			nelioab_asset_link( '/js/nelioab-generic.min.js' ) );
 		wp_localize_script( 'nelioab_alternatives_script_generic',
@@ -293,11 +293,13 @@ class NelioABAlternativeExperimentController {
 		// Custom Permalinks Support: Obtaining the real permalink (which might be
 		// masquared by custom permalinks plugin)
 		require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
-		global $post;
+		global $nelioab_controller;
+		$url = $nelioab_controller->get_current_url();
+		$current_post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
 		if ( NelioABCustomPermalinksSupport::is_plugin_active() )
-			$permalink = NelioABCustomPermalinksSupport::get_original_permalink( $post->ID );
+			$permalink = NelioABCustomPermalinksSupport::get_original_permalink( $current_post_id );
 		else
-			$permalink = get_permalink( $post->ID );
+			$permalink = get_permalink( $current_post_id );
 
 		wp_enqueue_script( 'nelioab_alternatives_script_check',
 			nelioab_asset_link( '/js/nelioab-check.min.js' ) );
