@@ -46,6 +46,11 @@ function nelioab_activate_plugin() {
 		$post->post_type = 'post';
 		wp_update_post( $post );
 	}
+
+	// Make sure that the cache uses new classes
+	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+	NelioABExperimentsManager::reset_running_experiments_cache();
+	NelioABExperimentsManager::update_running_experiments_cache( true );
 }
 
 /**

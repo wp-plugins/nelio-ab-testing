@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,10 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.1.3 =
+* Bug fix: if the user is upgrading from a previous version of the plugin, the
+	cache of running experiments is properly updated.
 
 = 3.1.2 =
 * Bug fix: when running a global (CSS or Theme) experiment, the user does no
@@ -501,7 +505,9 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.1.2 =
-Bug fix: when running a global (CSS or Theme) experiment, the user does no
-longer see the latest post only when accessing the latest posts page.
+= 3.1.3 =
+A couple of bug fixes. First, when running a global (CSS or Theme) experiment,
+the user does no longer see the latest post only when accessing the latest
+posts page. Second, if the user is upgrading from a previous version of the
+plugin, the cache of running experiments is properly updated.
 

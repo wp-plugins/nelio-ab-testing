@@ -107,6 +107,11 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			return $this->get_experiments();
 		}
 
+		public static function reset_running_experiments_cache() {
+			update_option( 'nelioab_running_experiments', array() );
+			update_option( 'nelioab_running_experiments_date', 0 );
+		}
+
 		public static function update_running_experiments_cache( $force_update = false, $running_exps = false ) {
 			if ( $force_update )
 				update_option( 'nelioab_running_experiments_date', 0 );
