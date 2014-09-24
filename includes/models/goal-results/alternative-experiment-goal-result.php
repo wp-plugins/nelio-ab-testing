@@ -1,42 +1,55 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
  * This script is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-if( !class_exists( 'NelioABPageAccessedGoalResult' ) ) {
+if( !class_exists( 'NelioABAltExpGoalResult' ) ) {
 
+	include_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
 	include_once( NELIOAB_MODELS_DIR . '/goal-results/goal-result.php' );
-	class NelioABPageAccessedGoalResult extends NelioABGoalResult {
+	class NelioABAltExpGoalResult extends NelioABGoalResult {
 
+		private $summary_status;
 		private $total_visitors;
 		private $total_conversions;
 		private $total_conversion_rate;
 		private $alternatives;
-		private $gstats;
+		private $gtests;
 		private $visitors_history;
 		private $conversions_history;
 
 		public function __construct() {
 			parent::__construct();
+			$this->summary_status        = NelioABGTest::UNKNOWN;
 			$this->total_visitors        = 0;
 			$this->total_conversions     = 0;
 			$this->total_conversion_rate = 0;
 			$this->alternatives          = array();
-			$this->gstats                = array();
+			$this->gtests                = array();
 			$this->visitors_history      = array();
 			$this->conversions_history   = array();
+		}
+
+		public function set_summary_status( $status ) {
+			$this->summary_status = $status;
+		}
+
+		public function get_summary_status() {
+			return $this->summary_status;
 		}
 
 		public function add_alternative_results( $alternative_results ) {
@@ -71,12 +84,12 @@ if( !class_exists( 'NelioABPageAccessedGoalResult' ) ) {
 			return $this->total_conversion_rate;
 		}
 
-		public function add_gstat( $g ) {
-			array_push( $this->gstats, $g );
+		public function add_gtest( $g ) {
+			array_push( $this->gtests, $g );
 		}
 
-		public function get_gstats() {
-			return $this->gstats;
+		public function get_gtests() {
+			return $this->gtests;
 		}
 
 		public function set_visitors_history( $visitors_history ) {
@@ -95,8 +108,7 @@ if( !class_exists( 'NelioABPageAccessedGoalResult' ) ) {
 			return $this->conversions_history;
 		}
 
-	}//NelioABPageAccessedGoalResult
+	}//NelioABAltExpGoalResult
 
 }
 
-?>

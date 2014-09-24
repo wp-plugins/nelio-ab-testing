@@ -47,7 +47,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			if ( count( $this->experiments ) == 0 ) {
 				echo '<center>';
 				echo sprintf( '<img src="%s" alt="%s" />',
-					NELIOAB_ASSETS_URL . '/admin/images/happy.png?' . NELIOAB_PLUGIN_VERSION,
+					nelioab_asset_link( '/admin/images/happy.png' ),
 					__( 'Happy smile.', 'nelioab' )
 				);
 				echo '<h2>';
@@ -87,7 +87,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$status_finished = NelioABExperimentStatus::FINISHED;
 			$status_trash    = NelioABExperimentStatus::TRASH;
 			NelioABHtmlGenerator::print_filters(
-				get_admin_url() . 'admin.php?page=nelioab-experiments',
+				admin_url( 'admin.php?page=nelioab-experiments' ),
 				array (
 					array ( 'value' => 'none',
 					        'label' => __( 'All' ),
@@ -143,7 +143,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 	class NelioABExperimentsTable extends NelioABAdminTable {
 
 		function __construct( $experiments ){
-   	   parent::__construct( array(
+			parent::__construct( array(
 				'singular'  => __( 'experiment', 'nelioab' ),
 				'plural'    => __( 'experiments', 'nelioab' ),
 				'ajax'      => false
@@ -178,9 +178,13 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 		function column_name( $exp ) {
 
+			$url_fragment = admin_url( 'admin.php?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s' );
+			if ( isset( $_REQUEST['status'] ) )
+				$url_fragment .= '&status=' . $_REQUEST['status'];
+
 			$edit_url     = '<a href="?page=nelioab-experiments&action=edit&id=%1$s&exp_type=%2$s">%3$s</a>';
-			$url          = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s">%4$s</a>';
-			$url_dialog   = '<a href="?page=nelioab-experiments&action=%1$s&id=%2$s&exp_type=%3$s" onclick="javascript:if(isInvalidClick(%5$s)){return false;}">%4$s</a>';
+			$url          = '<a href="' . $url_fragment . '">%4$s</a>';
+			$url_dialog   = '<a href="' . $url_fragment . '" onclick="javascript:if(isInvalidClick(%5$s)){return false;}">%4$s</a>';
 			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s">%3$s</a>';
 			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP ) {
 				include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
@@ -285,11 +289,12 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				case NelioABExperiment::HEATMAP_EXP:
 					return sprintf( $img, 'heatmap', __( 'Heatmap', 'nelioab' ) );
 
-				// case NelioABExperiment::WIDGET_ALT_EXP:
-				// 	return sprintf( $img, 'widget', __( 'Widget', 'nelioab' ) );
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					return sprintf( $img, 'widget', __( 'Widget', 'nelioab' ) );
 
-				// case NelioABExperiment::MENU_ALT_EXP:
-				// 	return sprintf( $img, 'menu', __( 'Menu', 'nelioab' ) );
+				case NelioABExperiment::MENU_ALT_EXP:
+					return sprintf( $img, 'menu', __( 'Menu', 'nelioab' ) );
+
 				default:
 					return '';
 			}

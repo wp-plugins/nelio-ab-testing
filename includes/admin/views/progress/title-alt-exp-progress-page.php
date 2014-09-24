@@ -85,7 +85,7 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 					'</tr>',
 					$set_as_winner, $alt_label,
 					$alt->get_name(),
-					$alt->get_value(), NELIOAB_ASSETS_URL . '/images/loading-small.gif',
+					$alt->get_value(), nelioab_asset_link( '/images/loading-small.gif' ),
 					__( '(Done!)', 'nelioab' ),
 					implode( ' | ', $action_links ) );
 			}
@@ -93,15 +93,15 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
 				_e( 'You are about to override the original title with an alternative. Do you want to continue?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
-				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
-				$exp->get_id(); ?>">
+				echo admin_url(
+					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo NelioABExperiment::TITLE_ALT_EXP; ?>" />
 				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />

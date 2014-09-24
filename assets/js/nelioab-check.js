@@ -17,11 +17,11 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 	$.ajax({
 		type:  'POST',
 		async: false,
-		url:   window.location.href,
+		url:   NelioABChecker.ajaxurl,
 		data: {
+			action: 'nelioab_sync_cookies_and_check',
+			current_url: document.URL,
 			nelioab_cookies: nelioab_get_local_cookies(),
-			nelioab_sync: 'true',
-			nelioab_sync_and_check: 'true',
 		},
 	}).success(function(data) {
 		try {
@@ -46,12 +46,15 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 			else {
 				nelioab_show_body();
 				jQuery(document).ready(function(){
+					if ( typeof( nelioab_add_hidden_fields_on_forms ) == "function" )
+						nelioab_add_hidden_fields_on_forms(jQuery);
 					if ( typeof( nelioabStartHeatmapTracking ) == "function" )
 						nelioabStartHeatmapTracking();
 				});
 			}
 		}
 		catch(e) {
+			nelioab_show_body();
 		}
 	});
 }
@@ -60,12 +63,17 @@ function nelioab_load_alt($) {
 	$.ajax({
 		type:  'POST',
 		async: false,
-		url:   window.location.href,
+		url:   NelioABChecker.permalink,
 		data: {
 			nelioab_cookies:  nelioab_get_local_cookies(),
 			nelioab_load_alt: 'true',
 		},
 		success: function(data) {
+			if ( data.indexOf( 'nelio-ab-testing/assets/js/nelioab-check.min.js' ) != -1 ) {
+				console.log( 'ERROR: nelioab checker script has been included again...' );
+				nelioab_show_body();
+				return;
+			}
 			data = data
 				.replace(
 					/<script src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
@@ -81,7 +89,7 @@ function nelioab_load_alt($) {
 					'} catch ( e ) {}' +
 					'</scr'+'ipt>\n</head>'
 				);
-			$(window).load(function() {
+			$(document).ready(function() {
 				var aux = window.setTimeout(function() {}, 0);
 				while (aux--) window.clearTimeout(aux);
 				document.open();

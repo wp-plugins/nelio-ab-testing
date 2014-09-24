@@ -87,7 +87,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 				$set_as_winner = '';
 
 			echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s</li>',
-				$set_as_winner, $ori_label, $this->ori );
+				$set_as_winner, $ori_label, $this->trunk( $this->ori ) );
 		}
 
 		protected function print_the_real_alternatives() {
@@ -121,7 +121,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 							'style="font-size:96%%;padding-left:5px;padding-right:5px;margin-left:1em;" '.
 							'href="javascript:nelioab_confirm_overriding(\'%4$s\', \'%5$s\', \'%6$s\');">%7$s</a></span></li>',
 							__( 'Done!', 'nelioab' ),
-							NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
+							nelioab_asset_link( '/images/loading-small.gif' ),
 							$winner_button,
 							$alt->get_value(),
 							$theme['Stylesheet'], $theme['Template'],
@@ -136,21 +136,21 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
 				echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s%s',
-					$set_as_winner, $alt_label, $alt->get_name(), $edit_link );
+					$set_as_winner, $alt_label, $this->trunk( $alt->get_name() ), $edit_link );
 
 			}
 		}
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
+			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
 				_e( 'You are about to override the original theme with the alternative. Do you want to continue?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
-				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
-				$exp->get_id(); ?>">
+				echo admin_url(
+					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
 				<input type="hidden" id="stylesheet" name="stylesheet" value="" />
