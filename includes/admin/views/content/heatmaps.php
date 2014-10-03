@@ -99,6 +99,16 @@
 		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
 
 		?>
+		<script type="text/javascript">
+			window.onerror = function(msg, url, line, col, error) {
+				var url = window.location.href;
+				if ( msg.indexOf('SecurityError') >= 0 && url.indexOf( 'retry-with-https=true' ) === -1 ) {
+					window.location.href = 'https://' + url.replace('http://','') + '&retry-with-https=true';
+					return true;
+				}
+				return false;
+			};
+		</script>
 		<div id="phantom" style="width:0px;height:0px;"></div>
 		<div id="wrapper" style="width:100%;height:100%;">
 			<div id="builder" style="

@@ -38,6 +38,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 		private $url;
 
 		public function __construct() {
+			require_once( NELIOAB_UTILS_DIR . '/dtgtm4wp-support.php' );
 			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
 			$this->build_current_url();
@@ -237,10 +238,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == "on" )
 					$url .= 's';
 				$url .= '://';
-				if ( isset( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != '80')
-					$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
-				else
-					$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+				//if ( isset( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != '80')
+				//	$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
+				//else
+				//	$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+				$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 				$this->url = $url;
 			}
 		}

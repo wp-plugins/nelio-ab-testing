@@ -3,11 +3,39 @@ function nelioab_init() {
 	if ( !nelioab_areCookiesEnabled() )
 		return;
 
+	// Making sure that nothing is executed too soon
+	// (when calling show_body, we'll release the holding)
+	jQuery.holdReady( true );
+
 	// Make the body invisible
 	nelioab_hide_body();
 
 	// Synchronize cookies
 	nelioab_sync_cookies_and_load_alternative_if_required(jQuery);
+}
+
+var nelioab_styleNode;
+function nelioab_hide_body() {
+	nelioab_styleNode = document.createElement('style');
+	nelioab_styleNode.setAttribute("type", "text/css");
+	var text = "html{display:none !important;} body{display:none !important;}";
+	if (nelioab_styleNode.styleSheet) {
+		// IE
+		nelioab_styleNode.styleSheet.cssText = "";
+	} else {
+		// Other browsers
+		var textnode = document.createTextNode(text);
+		nelioab_styleNode.appendChild(textnode);
+	}
+	document.getElementsByTagName('head')[0].appendChild(nelioab_styleNode);
+}
+
+function nelioab_show_body() {
+	try {
+		document.getElementsByTagName('head')[0].removeChild(nelioab_styleNode);
+		jQuery.holdReady( false );
+	}
+	catch( e ) {}
 }
 
 function nelioab_sync_cookies_and_load_alternative_if_required($) {
@@ -89,13 +117,22 @@ function nelioab_load_alt($) {
 					'} catch ( e ) {}' +
 					'</scr'+'ipt>\n</head>'
 				);
-			$(document).ready(function() {
+			var docIsReady = function() {
 				var aux = window.setTimeout(function() {}, 0);
 				while (aux--) window.clearTimeout(aux);
+				var aux = window.setInterval(function() {}, 20000) + 1;
+				while (aux--) window.clearInterval(aux);
 				document.open();
 				document.write(data);
 				document.close();
-			});
+			};
+			if (document.addEventListener) {
+				// For all major browsers, except IE 8 and earlier
+				document.addEventListener('DOMContentLoaded',docIsReady);
+			} else if (document.attachEvent) {
+				// For IE 8 and earlier versions
+				document.attachEvent('DOMContentLoaded',docIsReady);
+			}
 		},
 		error: function(data) {
 			nelioab_show_body();

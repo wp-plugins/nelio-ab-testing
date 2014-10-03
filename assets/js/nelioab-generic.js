@@ -63,29 +63,6 @@ function delete_cookie( name ) {
 	document.cookie = name + "=1;path=/;expires=" + thePast.toUTCString();
 }
 
-var nelioab_styleNode;
-function nelioab_hide_body() {
-	nelioab_styleNode = document.createElement('style');
-	nelioab_styleNode.setAttribute("type", "text/css");
-	var text = "html{display:none !important;} body{display:none !important;}";
-	if (nelioab_styleNode.styleSheet) {
-		// IE
-		nelioab_styleNode.styleSheet.cssText = "";
-	} else {
-		// Other browsers
-		var textnode = document.createTextNode(text);
-		nelioab_styleNode.appendChild(textnode);
-	}
-	document.getElementsByTagName('head')[0].appendChild(nelioab_styleNode);
-}
-
-function nelioab_show_body() {
-	try {
-		document.getElementsByTagName('head')[0].removeChild(nelioab_styleNode);
-	}
-	catch( e ) {}
-}
-
 function nelioab_add_hidden_fields_on_forms($) {
 	$('input[name="input_nelioab_form_cookies"]').attr('name', 'nelioab_form_cookies');
 	$('input[name="input_nelioab_form_current_url"]').attr('name', 'nelioab_form_current_url');
@@ -130,3 +107,9 @@ function nelioab_nav_to_external_page($, external_page_link) {
 		},
 	});
 }
+
+jQuery(document).ready(function() {
+	if ( typeof nelioabActivateGoogleTagMgr == 'function' ) {
+		var aux = setTimeout(nelioabActivateGoogleTagMgr,2000);
+	}
+});
