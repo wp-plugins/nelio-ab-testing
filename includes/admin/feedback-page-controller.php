@@ -51,7 +51,6 @@ if ( !class_exists( 'NelioABFeedbackPageController' ) ) {
 		}
 
 		public static function submit_feedback() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 			$the_content = '';

@@ -25,7 +25,7 @@ function nelioab_tweak_gtm4wp( $script ) {
 	$open .= 'console.log( "Loading Google Tag Manager..." );' . "\n";
 	$script = str_replace( '<script>', $open, $script );
 
-	$close .= '; ' . "\n" . 'console.log( "Done!" );}</script>';
+	$close = '; ' . "\n" . 'console.log( "Done!" );}</script>';
 	$script = str_replace( '</script>', $close, $script );
 
 	return $script;

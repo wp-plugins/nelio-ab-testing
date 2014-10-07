@@ -191,11 +191,23 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				</div>
 				<div class="col col-4">
 					<div class="row data">
-						<span class="value"><?php echo $exp->get_original_conversion_rate(); ?>%</span>
+						<?php
+							$val = $exp->get_original_conversion_rate();
+							$val = number_format_i18n( $val, 2 );
+							$val = preg_replace( '/(...)$/', '<span class="decimals">$1</span>', $val );
+							$val .= ' %';
+						?>
+						<span class="value"><?php echo $val; ?></span>
 						<span class="label"><?php _e( 'Original Version\'s Conversion Rate', 'nelioab' ); ?></span>
 					</div>
 					<div class="row data">
-						<span class="value"><?php echo $exp->get_best_alternative_conversion_rate(); ?>%</span>
+						<?php
+							$val = $exp->get_best_alternative_conversion_rate();
+							$val = number_format_i18n( $val, 2 );
+							$val = preg_replace( '/(...)$/', '<span class="decimals">$1</span>', $val );
+							$val .= ' %';
+						?>
+						<span class="value"><?php echo $val; ?></span>
 						<span class="label"><?php _e( 'Best Alternative\'s Conversion Rate', 'nelioab' ); ?></span>
 					</div>
 				</div>

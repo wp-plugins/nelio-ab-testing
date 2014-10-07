@@ -127,7 +127,6 @@ class NelioABHeatmapExperimentController {
 	}
 
 	public function send_heatmap_info_if_required() {
-		require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 		if ( !NelioABAccountSettings::has_quota_left() )
 			die();
 

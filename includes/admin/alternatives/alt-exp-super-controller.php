@@ -123,6 +123,8 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 		protected function compose_basic_alt_exp_using_post_data( $exp ) {
 			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
 			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
+			$exp->set_finalization_mode( $_POST['exp_finalization_mode'] );
+			$exp->set_finalization_value( $_POST['exp_finalization_value'] );
 
 			if ( isset( $_POST['nelioab_alternatives'] ) ) {
 				$alts = json_decode( urldecode( $_POST['nelioab_alternatives'] ) );

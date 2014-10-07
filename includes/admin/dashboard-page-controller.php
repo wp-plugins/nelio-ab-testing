@@ -36,6 +36,10 @@ if ( !class_exists( 'NelioABDashboardPageController' ) ) {
 		public static function generate_html_content() {
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 
+			// Force update results
+			global $nelioab_controller;
+			$nelioab_controller->compute_results_for_running_experiments();
+
 			try {
 				$summary = NelioABExperimentsManager::get_running_experiments_summary();
 			}

@@ -32,7 +32,6 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 		private $are_experiments_loaded;
 
 		public function __construct() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$this->experiments            = array();
 			$this->are_experiments_loaded = false;
 		}
@@ -181,7 +180,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 			$json_data = json_decode( $json_data['body'] );
 			$result = array();
-			if ( $json_data->items ) {
+			if ( isset( $json_data->items ) ) {
 				foreach ( $json_data->items as $item ) {
 					$exp = false;
 					switch ( $item->kind ) {

@@ -31,11 +31,13 @@ var NelioABAdminTable = {
 			return false;
 
 		// Hide the INLINE_EDIT and show the ROW
-		editor.hide();
-		editor.prev().show();
-		NelioABAdminTable.repaint( table );
+		if ( editor.css('display') != 'none' ) {
+			editor.hide();
+			editor.prev().show();
+			NelioABAdminTable.repaint( table );
+			jQuery(table).trigger( 'inline-edit-hidden', [ editor ] );
+		}
 
-		jQuery(table).trigger( 'inline-edit-hidden', [ editor ] );
 		return true;
 	},
 

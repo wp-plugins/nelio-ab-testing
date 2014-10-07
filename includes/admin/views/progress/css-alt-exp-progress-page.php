@@ -41,8 +41,8 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 			return 0; // TODO
 		}
 
-		protected function print_js_function_for_post_data_overriding() {
-			// Nothing to do here, because these experiments do not permit overriding
+		protected function print_js_function_for_post_data_overwriting() {
+			// Nothing to do here, because these experiments do not permit overwriting
 		}
 
 		protected function print_winner_info() {
@@ -65,6 +65,15 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 			}
 		}
 
+
+		protected function print_alternatives_block() {
+			echo '<table id="alternatives-in-progress">';
+			$this->print_the_original_alternative();
+			$this->print_the_real_alternatives();
+			echo '</table>';
+		}
+
+
 		protected function print_the_original_alternative() {
 			// THE ORIGINAL
 			// -----------------------------------------
@@ -76,7 +85,11 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 			else
 				$set_as_winner = '';
 
-			echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s</li>',
+			echo sprintf( '<tr>' .
+				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
+				'<td><strong>%s</strong><br />' .
+				'<small>&nbsp;</small></td>' .
+				'</tr>',
 				$set_as_winner, $ori_label, $this->trunk( $this->get_original_name() ) );
 		}
 
@@ -84,8 +97,8 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 			?>
 			<script>
 				function openCss( css ) {
-					var id = "#css-" + css;
-					var w = window.open("", "blank", "toolbar=no,location=no,width=600,height=350,top=0,left=0,scrollbars=yes");
+					var id = '#css-' + css;
+					var w = window.open('', 'blank', 'toolbar=no,location=no,width=600,height=350,top=0,left=0,scrollbars=yes');
 					w.document.open();
 					w.document.write('<pre>' + jQuery(id).text() + '</pre>');
 					w.document.close();
@@ -98,10 +111,10 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 			$i   = 0;
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
-				$edit_link = '';
+				$action_links = array();
 
 				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
-					$edit_link = sprintf( ' <small>(<a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>)</small></li>',
+					$action_links['edit'] = sprintf( ' <a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
 						admin_url( 'admin.php?page=nelioab-css-edit&exp_id=' . $this->exp->get_id() . '&css_id=' . $alt->get_id() ),
 						__( 'Edit' ) );
 				}
@@ -110,27 +123,30 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 				if ( $this->is_winner( $alt->get_value() ) )
 					$winner_button = '-primary';
 
-				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
-					$edit_link = '';
-				}
-
 				if ( $this->is_winner( $alt->get_value() ) )
 					$set_as_winner = $this->winner_label;
 				else
 					$set_as_winner = '';
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
-				echo '<li>';
-				?>
-				<span id="css-<?php echo $alt->get_id(); ?>" style="display:none;"><?php
-					echo $alt->get_value();
-				?></span>
-				<?php
-				echo sprintf( '<span class="alt-type add-new-h2 %s">%s</span><a href="#" onClick="javascript:openCss(%s)">%s</a>%s',
-					$set_as_winner, $alt_label, $alt->get_id(), $this->trunk( $alt->get_name() ), $edit_link );
-				echo '</li>';
+
+				echo sprintf( '<tr>' .
+					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
+					'<td><strong><a href="javascript:openCss(%4$s);">%3$s</a></strong> ' .
+					'<span id="css-%4$s" style="display:none;">%5$s</span> ' .
+					'<img id="loading-%4$s" style="display:none;width:1em;margin-top:-1em;" src="%6$s" />' .
+					'<strong><small id="success-%4$s" style="display:none;">%7$s</small></strong><br />' .
+					'<small>%8$s&nbsp;</small></td>' .
+					'</tr>',
+					$set_as_winner, $alt_label,
+					$this->trunk( $alt->get_name() ),
+					$alt->get_id(), $alt->get_value(),
+					nelioab_asset_link( '/images/loading-small.gif' ),
+					__( '(Done!)', 'nelioab' ),
+					implode( ' | ', $action_links ) );
 
 			}
+
 		}
 
 		protected function get_labels_for_conversion_rate_js() {

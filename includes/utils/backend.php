@@ -37,7 +37,6 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		}
 
 		public static function remote_post( $url, $params = array(), $skip_status_check = false ) {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$json_params = NelioABBackend::build_json_object_with_credentials( $params );
 			return NelioABBackend::remote_post_raw( $url, $json_params, $skip_status_check );
 		}
@@ -64,8 +63,6 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		}
 
 		public static function make_credential( $skip_check = false ) {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-
 			// Creating the credential
 			$result = array();
 			$result['customerId']         = NelioABAccountSettings::get_customer_id();
@@ -106,24 +103,27 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 	abstract class NelioABErrCodes {
 		// These are Error codes returned by the backend
-		const INVALID_PRODUCT_REG_NUM          = 1;
-		const INVALID_SITE                     = 2;
-		const SITE_IS_NOT_ACTIVE               = 3;
-		const MAX_SITES                        = 4;
-		const NO_MORE_QUOTA                    = 5;
-		const UNPAID_SUBSCRIPTION              = 6;
-		const INVALID_MAIL                     = 7;
-		const SEVERAL_CUSTOMERS_WITH_SAME_MAIL = 8;
-		const TOO_FEW_PARAMETERS               = 9;
-		const INVALID_SITE_URL                 = 10;
-		const INVALID_PARAMETERS               = 11;
-		const INVALID_EXPERIMENT               = 12;
-		const INVALID_ALTERNATIVE              = 13;
-		const RESULTS_NOT_AVAILABLE_YET        = 14;
-		const DEACTIVATED_USER                 = 15;
-		const EXPERIMENT_ID_NOT_FOUND          = 16;
-		const INVALID_GOAL                     = 17;
-		const INVALID_MODIFICATION             = 18;
+		const INVALID_PRODUCT_REG_NUM            = 1;
+		const INVALID_SITE                       = 2;
+		const SITE_IS_NOT_ACTIVE                 = 3;
+		const MAX_SITES                          = 4;
+		const NO_MORE_QUOTA                      = 5;
+		const UNPAID_SUBSCRIPTION                = 6;
+		const INVALID_MAIL                       = 7;
+		const SEVERAL_CUSTOMERS_WITH_SAME_MAIL   = 8;
+		const TOO_FEW_PARAMETERS                 = 9;
+		const INVALID_SITE_URL                   = 10;
+		const INVALID_PARAMETERS                 = 11;
+		const INVALID_EXPERIMENT                 = 12;
+		const INVALID_ALTERNATIVE                = 13;
+		const RESULTS_NOT_AVAILABLE_YET          = 14;
+		const DEACTIVATED_USER                   = 15;
+		const EXPERIMENT_ID_NOT_FOUND            = 16;
+		const INVALID_GOAL                       = 17;
+		const INVALID_MODIFICATION               = 18;
+		const EXPERIMENT_NOT_RUNNING             = 19;
+		const FEATURE_NOT_AVAILABLE_FOR_CUSTOMER = 20;
+		const INVALID_SCHEDULE_DATE              = 21;
 
 		// Error codes corresponding to package details
 		const MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC = 100;
@@ -183,6 +183,13 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'Goal not found.', 'nelioab' );
 				case NelioABErrCodes::INVALID_MODIFICATION:
 					return __( 'The experiment cannot be modified.', 'nelioab' );
+				case NelioABErrCodes::EXPERIMENT_NOT_RUNNING:
+					return __( 'The experiment is not running.', 'nelioab' );
+				case NelioABErrCodes::FEATURE_NOT_AVAILABLE_FOR_CUSTOMER:
+					return __( 'The feature you are trying to use is not available.', 'nelioab' );
+				case NelioABErrCodes::INVALID_SCHEDULE_DATE:
+					return __( 'The experiment cannot be scheduled for the given date.', 'nelioab' );
+
 
 
 				// Error codes corresponding to package details

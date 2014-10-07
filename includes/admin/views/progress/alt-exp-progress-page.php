@@ -97,7 +97,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				$name = __( 'Unnamed', 'nelioab' );
 				$post = get_post( $page->get_reference() );
 				if ( $post ) {
-					$name = $post->post_title;
+					$name = strip_tags( $post->post_title );
 					if ( strlen( $name ) > 30 )
 						$name = substr( $name, 0, 30 ) . '...';
 				}
@@ -153,9 +153,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 		protected abstract function get_original_name();
 		protected abstract function get_original_value();
-		protected abstract function print_js_function_for_post_data_overriding();
+		protected abstract function print_js_function_for_post_data_overwriting();
 
-		private function print_actions_info() {
+		protected function print_actions_info() {
 			$aux  = $this->goal->get_actions();
 			if ( count( $aux ) <= 0 )
 				return;
@@ -183,14 +183,16 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			?></ul><?php
 		}
 
-		private function print_page_accessed_action( $action ) {
+		protected function print_page_accessed_action( $action ) {
 			$indirect = $action->accepts_indirect_navigations();
 			$result  = false;
 
 			if ( $action->is_internal() ) {
 				$post = get_post( $action->get_reference() );
 				if ( $post ) {
-					$name = trim( $post->post_title );
+					$name = trim( strip_tags( $post->post_title ) );
+					if ( strlen( $name ) == 0 )
+						$name = __( '(no title)', 'nelioab' );
 					$link = get_permalink( $post );
 					if ( strlen( $name ) == 0 )
 						$name = $post->ID;
@@ -263,7 +265,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			return $result;
 		}
 
-		private function print_form_submission_action( $action ) {
+		protected function print_form_submission_action( $action ) {
 			$form_id = $action->get_form_id();
 			$name    = false;
 			$result  = false;
@@ -346,11 +348,11 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$conversion_rate   = '&mdash;';
 			$originals_conversion_rate = '&mdash;';
 			if ( $res ) {
-				$total_visitors    = number_format( $res->get_total_visitors(), 0, '', ' ' );
-				$total_conversions = number_format( $res->get_total_conversions(), 0, '', ' ' );
-				$conversion_rate   = number_format( $res->get_total_conversion_rate(), 2 );
+				$total_visitors    = number_format_i18n( $res->get_total_visitors() );
+				$total_conversions = number_format_i18n( $res->get_total_conversions() );
+				$conversion_rate   = number_format_i18n( $res->get_total_conversion_rate(), 2 );
 				$aux = $res->get_alternative_results();
-				$originals_conversion_rate = number_format( $aux[0]->get_conversion_rate(), 2 );
+				$originals_conversion_rate = number_format_i18n( $aux[0]->get_conversion_rate(), 2 );
 			}
 
 			// Winner (if any) details
@@ -358,10 +360,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$the_winner_confidence = $this->get_winning_confidence();
 
 			$best_alt_conversion_rate = $this->get_best_alt_conversion_rate();
-			if ( $best_alt_conversion_rate < 0 )
+			if ( !is_double( $best_alt_conversion_rate ) || $best_alt_conversion_rate < 0 )
 				$best_alt_conversion_rate = '&mdash;';
 			else
-				$best_alt_conversion_rate = number_format( $best_alt_conversion_rate, 2 );
+				$best_alt_conversion_rate = number_format_i18n( $best_alt_conversion_rate, 2 );
 
 			$this->winner_label = sprintf( ' alt-type-winner" title="%s"',
 				sprintf( __( 'Wins with a %s%% confidence', 'nelioab'), $the_winner_confidence ) );
@@ -470,32 +472,94 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					if ( $this->exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
 						<div style="margin:0.5em;margin-top:0em;text-align:right;">
 							<script>
-							function forceStop() {<?php
-								$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
-								$msg = str_replace( '"', '\\"', $msg ); ?>
-								if ( !confirm( "<?php echo $msg; ?>") ) return;
-								smoothTransitions();
-								jQuery.get(
-									"<?php
-										echo admin_url( sprintf(
-											'admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
-											$this->exp->get_id(), $this->exp->get_type() )
-										); ?>",
-									function(data) {
-										data = jQuery.trim( data );
-										if ( data.indexOf("[SUCCESS]") == 0) {
-											location.href = data.replace("[SUCCESS]", "");
-										}
-										else {
-											document.open();
-											document.write(data);
-											document.close();
-										}
+								(function($) {
+									$('#dialog-modal').dialog({
+										dialogClass   : 'wp-dialog',
+										modal         : true,
+										autoOpen      : false,
+										closeOnEscape : true,
+										buttons: [
+											{
+												text: "<?php echo esc_html( __( 'Cancel', 'nelioab' ) ); ?>",
+												click: function() {
+													$(this).dialog('close');
+												}
+											},
+											{
+												text: "<?php echo esc_html( __( 'OK', 'nelioab' ) ); ?>",
+												'class': 'button-primary',
+												click: function() {
+													$(this).dialog('close');
+													nelioabAcceptDialog($(this));
+												}
+											}
+										]
 									});
-							}
+								})(jQuery);
+
+								function nelioabAcceptDialog(dialog) {
+									var action = dialog.data('action');
+									if ( 'stop' == action )
+										nelioabForceStop();
+									else if ( 'edit' == action )
+										nelioabConfirmEditing(dialog.data('href'));
+								}
+
+								function nelioabConfirmEditing( href, dialog ) {
+									if ( 'dialog' == dialog ) {<?php
+										$title = __( 'Edit Alternative', 'nelioab' );
+										$title = str_replace( '"', '\\"', $title );
+										$msg = __( 'Editing an alternative while the experiment is running may invalidate the results of the experiment. Do you really want to continue?', 'nelioab' );
+										$msg = str_replace( '"', '\\"', $msg ); ?>
+										var $dialog = jQuery('#dialog-modal');
+										jQuery('#dialog-content').html("<?php echo $msg; ?>");
+										$dialog.dialog('option', 'title', "<?php echo $title; ?>");
+										$dialog.parent().find('.button-primary .ui-button-text').text("<?php _e( 'Edit' ); ?>");
+										$dialog.data('action','edit');
+										$dialog.data('href',href);
+										$dialog.dialog('open');
+										return;
+									}
+									window.location.href = href;
+								}
+
+								function nelioabForceStop( dialog ) {
+									if ( 'dialog' == dialog ) {<?php
+										$title = __( 'Stop Experiment', 'nelioab' );
+										$title = str_replace( '"', '\\"', $title );
+										$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
+										$msg = str_replace( '"', '\\"', $msg ); ?>
+										var $dialog = jQuery('#dialog-modal');
+										jQuery('#dialog-content').html("<?php echo $msg; ?>");
+										$dialog.dialog('option', 'title', "<?php echo $title; ?>");
+										$dialog.parent().find('.button-primary .ui-button-text').text("<?php _e( 'Stop', 'nelioab' ); ?>");
+										$dialog.data('action','stop');
+										$dialog.dialog('open');
+										return;
+									}
+									smoothTransitions();
+									jQuery.get(
+										"<?php
+											echo admin_url( sprintf(
+												'admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s&forcestop=true',
+												$this->exp->get_id(), $this->exp->get_type() )
+											); ?>",
+										function(data) {
+											data = jQuery.trim( data );
+											if ( data.indexOf("[SUCCESS]") == 0) {
+												location.href = data.replace("[SUCCESS]", "");
+											}
+											else {
+												document.open();
+												document.write(data);
+												document.close();
+											}
+										});
+								}
 							</script>
+
 							<?php
-							echo $this->make_js_button( __( 'Stop Experiment Now', 'nelioab' ), 'javascript:forceStop();' );
+							echo $this->make_js_button( __( 'Stop Experiment Now', 'nelioab' ), 'javascript:nelioabForceStop(\'dialog\');' );
 							?>
 						</div>
 					<?php
@@ -508,7 +572,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				<!-- EXPERIMENT DETAILS -->
 				<div id="exp-info">
 
-					<h2><?php $this->print_experiment_details_title() ?></h2>
+					<h2 style="padding-top:1em;"><?php $this->print_experiment_details_title() ?></h2>
 					<div class="nelioab-row">
 						<div class="nelioab-first-col">
 							<div id="exp-info-gen">
@@ -516,56 +580,113 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									<p><?php echo $exp->get_name(); ?></p>
 								<h3><?php _e( 'Description', 'nelioab' ); ?></h3>
 									<p><?php echo $descr; ?></p>
-							</div>
+								<?php
 
+								if ( $exp->get_status() == NelioABExperimentStatus::RUNNING &&
+								     NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+
+									printf( '<h3>%s</h3>', __( 'Finalization Mode', 'nelioab' ) );
+
+									echo '<p>';
+
+									switch ( $exp->get_finalization_mode() ) {
+
+										case NelioABExperiment::FINALIZATION_MANUAL:
+											_e( 'The experiment can only be stopped manually', 'nelioab' );
+											break;
+
+										case NelioABExperiment::FINALIZATION_AFTER_DATE:
+											$raw_fin_value = $exp->get_finalization_value();
+											$fin_value = __( '24 hours', 'nelioab' );
+											if ( $raw_fin_value >= 2 )
+												$fin_value = __( '48 hours', 'nelioab' );
+											if ( $raw_fin_value >= 5 )
+												$fin_value = __( '5 days', 'nelioab' );
+											if ( $raw_fin_value >= 7 )
+												$fin_value = __( '1 week', 'nelioab' );
+											if ( $raw_fin_value >= 14 )
+												$fin_value = __( '2 weeks', 'nelioab' );
+											if ( $raw_fin_value >= 30 )
+												$fin_value = __( '1 month', 'nelioab' );
+											if ( $raw_fin_value >= 60 )
+												$fin_value = __( '2 months', 'nelioab' );
+											printf(
+												__( 'The experiment will be automatically stopped %s after it was started.', 'nelioab' ),
+												$fin_value
+											);
+											break;
+
+										case NelioABExperiment::FINALIZATION_AFTER_VIEWS:
+											printf(
+												__( 'The experiment will be automatically stopped when the tested page (along with its alternatives) has been seen over %s times.', 'nelioab' ),
+												$exp->get_finalization_value()
+											);
+											break;
+
+										case NelioABExperiment::FINALIZATION_AFTER_CONFIDENCE:
+											printf(
+												__( 'The experiment will be automatically stopped when confidence reaches %s%%.', 'nelioab' ),
+												$exp->get_finalization_value()
+											);
+											break;
+
+									}
+
+									echo '</p>';
+
+								} ?>
+							</div>
+						</div>
+
+						<div class="nelioab-second-col">
 							<div id="exp-info-alts">
 								<h3><?php _e( 'Alternatives', 'nelioab' ); ?></h3>
-
-								<?php
-								if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
-									<script>
-									function nelioab_confirm_editing() {
-										return confirm( "<?php
-											_e( 'Editing an alternative while the experiment is running may invalidate the results of the experiment. Do you really want to continue?', 'nelioab' );
-										?>" );
-									}
-									</script>
-								<?php
-								} ?>
 
 								<?php
 								if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) { ?>
 									<script>
 									<?php
-									$this->print_js_function_for_post_data_overriding();
+									$this->print_js_function_for_post_data_overwriting();
 									?>
 
-									function nelioab_show_the_dialog_for_overriding(id) {
-										$ = jQuery;
-										$(function() {
-											$("#dialog-modal").dialog({
-												title: '<?php echo __( 'Override Original', 'nelioab' ); ?>',
-												resizable: false,
-												width: 500,
-												modal: true,
-												buttons: {
-													"OK": function() {
-														$(this).dialog("close");
-														nelioab_do_override(id);
-													},
-													"Cancel": function() {
-														$(this).dialog("close");
+									(function($) {
+										$('#dialog-modal').dialog({
+											title: '<?php echo esc_html( __( 'Overwrite Original', 'nelioab' ) ); ?>',
+											dialogClass   : 'wp-dialog',
+											modal         : true,
+											autoOpen      : false,
+											closeOnEscape : true,
+											buttons: [
+												{
+													text: "<?php echo esc_html( __( 'Cancel', 'nelioab' ) ); ?>",
+													click: function() {
+														$(this).dialog('close');
+													}
+												},
+												{
+													text: "<?php echo esc_html( __( 'Overwrite', 'nelioab' ) ); ?>",
+													'class': 'button-primary',
+													click: function() {
+														$(this).dialog('close');
+														var id = $(this).data('overwrite-with');
+														nelioab_do_overwrite(id);
 													}
 												}
-											});
+											]
 										});
+									})(jQuery);
+									function nelioab_show_the_dialog_for_overwriting(id) {
+										var aux = jQuery("#dialog-modal");
+										aux.data('overwrite-with', id);
+										aux.dialog('open');
 									}
 
-									function nelioab_do_override(id) {
+									function nelioab_do_overwrite(id) {
 										jQuery(".apply-link").each(function() {
-											jQuery(this).fadeOut(100);
+											var aux = jQuery(this);
+											aux.addClass('disabled');
+											aux.attr('href','javascript:return false;');
 										});
-
 										jQuery("#loading-" + id).delay(120).fadeIn();
 
 										jQuery.ajax({
@@ -573,8 +694,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 											type: 'post',
 											data: jQuery('#apply_alternative').serialize(),
 											success: function(data) {
-												jQuery("#loading-" + id).delay(120).fadeOut(250);
-												jQuery("#success-" + id).delay(500).fadeIn(200).delay(10000).fadeOut(200);
+												jQuery("#loading-" + id).delay(250).fadeOut(250);
+												jQuery("#success-" + id).delay(1000).fadeIn(200).delay(10000).fadeOut(200);
 											}
 										});
 									}
@@ -586,7 +707,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							</div>
 						</div>
 
-						<div class="nelioab-second-col">
+						<div class="nelioab-third-col">
 							<div id="exp-info-goal-actions">
 								<?php
 									$this->print_actions_info();
@@ -605,17 +726,19 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			// If results are available, print them.
 			if ( $res != null ) { ?>
 
+				<h2 style="padding-top:1em;"><?php _e( 'Detailed Results', 'nelioab' ); ?></h2>
+
 				<!-- Summary graphics -->
 				<div style="text-align:center;">
 					<div id="nelioab-visitors" class="nelioab-summary-graphic">
 					</div>
 					<?php $this->print_visitors_js(); ?>
-	
+
 					<div id="nelioab-convrate-and-impfactor">
 						<div id="nelioab-conversion-rate" class="nelioab-summary-graphic">
 						</div>
 						<?php $this->print_conversion_rate_js(); ?>
-		
+
 						<div id="nelioab-improvement-factor" class="nelioab-summary-graphic">
 						</div>
 						<?php $this->print_improvement_factor_js(); ?>
@@ -663,8 +786,14 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			}
 			// Otherwise, show a message stating that no data is available yet
 			else {
-				printf( '<p style="color:#555;font-size:120%%;">%s</p>',
-					__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results.', 'nelioab' ) );
+				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+					printf( '<p style="color:#555;font-size:120%%;">%s</p>',
+						__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results.', 'nelioab' ) );
+				}
+				else {
+					printf( '<p style="color:#555;font-size:120%%;">%s</p>',
+						__( 'The experiment has no results, probably because it was stopped before Nelio A/B Testing could collect any data.', 'nelioab' ) );
+				}
 			}
 		}
 
@@ -681,7 +810,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		abstract protected function print_winner_info();
 
 		protected function trunk( $in ) {
-			return strlen( $in ) > 50 ? substr( $in, 0, 50 ) . "..." : $in;
+			return strlen( $in ) > 50 ? substr( $in, 0, 50 ) . '...' : $in;
 		}
 
 		protected function get_best_alt_conversion_rate() {
@@ -703,7 +832,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$bestg = $this->get_winning_gtest();
 			if ( !$bestg )
 				return -1;
-			return number_format( $bestg->get_certainty(), 2 );
+			return number_format_i18n( $bestg->get_certainty(), 2 );
 		}
 
 		protected function get_winning_gtest() {
@@ -971,7 +1100,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			// one whose conversion rate equals $max_value
 			$data = array();
 			foreach( $alt_results as $aux ) {
-				$rate = $aux->get_conversion_rate();
+				$rate = number_format( $aux->get_conversion_rate(), 2 );
 				$color = 'color:"#7CB5EC"';
 				if ( $rate == $max_value )
 					$color = 'color:"#81D24A"';
@@ -1045,7 +1174,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			// one whose improvement factor equals $max_value
 			$data = array();
 			foreach( $alt_results as $aux ) {
-				$factor = $aux->get_improvement_factor();
+				$factor = number_format( $aux->get_improvement_factor(), 2 );
 				$color = 'color:"#7CB5EC"';
 				if ( $factor == $max_value )
 					$color = 'color:"#81D24A"';

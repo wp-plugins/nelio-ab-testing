@@ -127,7 +127,6 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			$exp_id = parent::save();
 
 			// 2. UPDATE THE ALTERNATIVES
@@ -193,6 +192,9 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			if ( isset( $json_data->description ) )
 				$exp->set_description( $json_data->description );
 			$exp->set_status( $json_data->status );
+			$exp->set_finalization_mode( $json_data->finalizationMode );
+			if ( isset( $json_data->finalizationModeValue ) )
+				$exp->set_finalization_value( $json_data->finalizationModeValue );
 
 			if ( isset( $json_data->goals ) )
 				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );

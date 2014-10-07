@@ -112,7 +112,10 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 			$view->set_basic_info(
 				$experiment->get_id(),
 				$experiment->get_name(),
-				$experiment->get_description() );
+				$experiment->get_description(),
+				$experiment->get_finalization_mode(),
+				$experiment->get_finalization_value()
+			);
 
 			// Experiment specific variables and alternatives
 			$view->set_original_id( $experiment->get_originals_id() );

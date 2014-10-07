@@ -2,11 +2,32 @@
 /*   GENERIC STUFF     */
 /* ------------------- */
 
+.setting-disabled {
+	color: grey;
+}
+
+.form-table.setting-disabled th {
+	color: grey;
+}
+
+.form-table.setting-disabled label.mandatory:before {
+	background-color: grey;
+}
+
+#settings-tabs .nav-tab {
+	cursor: hand;
+	cursor: pointer;
+}
+
+#settings-tabs .nav-tab-active {
+	cursor: default;
+}
+
 .nelio-sect h3 {
-    font-size: 14px;
-    padding: 8px 12px;
-    margin: 0;
-    line-height: 1.4;
+  font-size: 14px;
+  padding: 8px 12px;
+  margin: 0;
+  line-height: 1.4;
 }
 
 label.mandatory:before {
@@ -118,6 +139,11 @@ body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3:first-child #info
 		font-size: 28px;
 		line-height: 100%;
 		display: block;
+	}
+
+	body.toplevel_page_nelioab-dashboard #poststuff .nelio-card div.main span.value span.decimals {
+		color: #AAA;
+		font-size: 80%;
 	}
 
 	body.toplevel_page_nelioab-dashboard #poststuff .nelio-card div.main span.label {
@@ -389,6 +415,7 @@ body #goal-list .nelio-card .actions .action {
 	padding: 1em;
 	border-top: 1px solid #f3f3f3;
 	position:relative;
+	margin-right: 3.2em;
 }
 
 body #goal-list .nelio-card .actions .action:last-child {
@@ -467,13 +494,23 @@ body #goal-list .nelio-card .actions .action input {
 	display: none;
 }
 
-#muplugin-descr .status.installed {
-	color: #00AA00;
+#muplugin-descr .status {
+	padding: 0 0.5em 0em 0.2em;
 }
 
+#muplugin-descr .status.installed {
+	color: #00aa00;
+	background-color: #efffef;
+}
+
+#muplugin-descr .status.outdated {
+	color: #ff5000;
+	background-color: #fcecae;
+}
 
 #muplugin-descr .status.uninstalled {
-	color: #AA0000;
+	color: #aa0000;
+	background-color: #ffdcdc;
 }
 
 

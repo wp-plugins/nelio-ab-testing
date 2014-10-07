@@ -20,15 +20,11 @@
 
 if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
-	include_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
-
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
 	class NelioABHeatmapExpEditionPage extends NelioABAdminAjaxPage {
 
-		protected $exp_id;
-		protected $exp_name;
-		protected $exp_descr;
+		protected $basic_info;
 
 		protected $post_id;
 		protected $form_name;
@@ -42,6 +38,14 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 			$this->other_names = array();
 		}
 
+		public function set_basic_info( $id, $name, $description, $fin_mode, $fin_value ) {
+			$this->basic_info['id'] = $id;
+			$this->basic_info['name'] = $name;
+			$this->basic_info['description'] = $description;
+			$this->basic_info['finalization_mode'] = $fin_mode;
+			$this->basic_info['finalization_value'] = $fin_value;
+		}
+
 		public function add_another_experiment_name( $name ) {
 			array_push( $this->other_names, $name );
 		}
@@ -52,18 +56,6 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 		public function set_form_name( $form_name ) {
 			$this->form_name = $form_name;
-		}
-
-		public function set_experiment_id( $exp_id ) {
-			$this->exp_id = $exp_id;
-		}
-
-		public function set_experiment_name( $exp_name ) {
-			$this->exp_name = $exp_name;
-		}
-
-		public function set_experiment_descr( $exp_descr ) {
-			$this->exp_descr = $exp_descr;
 		}
 
 		public function show_latest_posts_option( $latest_posts = true ) {
@@ -82,7 +74,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 				<input type="hidden" name="<?php echo $this->get_form_name(); ?>" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo NelioABExperiment::HEATMAP_EXP; ?>" />
 				<input type="hidden" name="action" id="action" value="none" />
-				<input type="hidden" name="exp_id" id="exp_id" value="<?php echo $this->exp_id; ?>" />
+				<input type="hidden" name="exp_id" id="exp_id" value="<?php echo $this->basic_info['id']; ?>" />
 				<input type="hidden" name="other_names" id="other_names" value="<?php
 					echo rawurlencode( json_encode( $this->other_names ) );
 				?>" />
@@ -93,6 +85,8 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 			</form>
 			<?php
 			$this->print_validator_js();
+			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+			NelioABHtmlGenerator::print_unsaved_changes_control( '.actions .nelioab-js-button' );
 		}
 
 		protected function print_validator_js() { ?>
@@ -180,12 +174,12 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 			return array(
 				array (
-					'label'     => 'Name',
+					'label'     => __( 'Name', 'nelioab' ),
 					'id'        => 'exp_name',
 					'callback'  => array( &$this, 'print_name_field' ),
 					'mandatory' => true ),
 				array (
-					'label'     => 'Description',
+					'label'     => __( 'Description', 'nelioab' ),
 					'id'        => 'exp_descr',
 					'callback'  => array( &$this, 'print_descr_field' ) ),
 				array (
@@ -193,6 +187,25 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 					'id'        => 'exp_original',
 					'callback'  => array ( &$this, 'print_post_field' ),
 					'mandatory' => true ),
+				array (
+					'label'     => __( 'Finalization Mode', 'nelioab' ),
+					'id'        => 'exp_finalization_mode',
+					'callback'  => array( &$this, 'print_finalization_mode_field' ),
+					'min_plan'  => NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN,
+					'mandatory' => true ),
+			);
+		}
+
+		public function print_finalization_mode_field() {
+			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+			NelioABHtmlGenerator::print_finalization_mode_field(
+				$this->basic_info['finalization_mode'],
+				$this->basic_info['finalization_value'],
+				array(
+					NelioABExperiment::FINALIZATION_MANUAL,
+					NelioABExperiment::FINALIZATION_AFTER_VIEWS,
+					NelioABExperiment::FINALIZATION_AFTER_DATE,
+				)
 			);
 		}
 
@@ -210,7 +223,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 		public function print_name_field() { ?>
 			<input name="exp_name" type="text" id="exp_name" maxlength="250"
-				class="regular-text" value="<?php echo $this->exp_name; ?>" />
+				class="regular-text" value="<?php echo $this->basic_info['name']; ?>" />
 			<span class="description" style="display:block;"><?php
 				_e( 'Set a meaningful, descriptive name for the experiment.', 'nelioab' );
 			?> <small><a href="http://wp-abtesting.com/faqs/why-do-i-need-to-name-an-experiment" target="_blank"><?php
@@ -220,7 +233,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 		public function print_descr_field() { ?>
 			<textarea id="exp_descr" style="width:300px;" maxlength="450"
-				name="exp_descr" cols="45" rows="3"><?php echo $this->exp_descr; ?></textarea>
+				name="exp_descr" cols="45" rows="3"><?php echo $this->basic_info['description']; ?></textarea>
 			<span class="description" style="display:block;"><?php
 					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
 			?> <small><a href="http://wp-abtesting.com/faqs/what-is-the-description-of-an-experiment-used-for" target="_blank"><?php

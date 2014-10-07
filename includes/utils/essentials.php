@@ -17,12 +17,29 @@
  */
 
 /**
+ * This function is called every time the plugins are loaded, and checks
+ * whether our plugin is up-to-date or not. If it isn't, the
+ * nelioab_activate_plugin is called.
+ */
+function nelioab_update_plugin_info_if_required() {
+	$last_available_version = get_option( 'nelioab_last_version_installed', false );
+	if ( $last_available_version !== NELIOAB_PLUGIN_VERSION ) {
+		nelioab_activate_plugin();
+		update_option( 'nelioab_last_version_installed', NELIOAB_PLUGIN_VERSION );
+	}
+}
+
+/**
  * This function is called by the "registed_activation_hook". It is the
  * opposite of the nelioab_deactivate_plugin function. Its aim is to make sure
  * that alternatives (draft post/pages with a metatype) are not visible in the
  * admin area, but can be editted and used.
  */
 function nelioab_activate_plugin() {
+	// Clean old stuff when activating the plugin
+	require_once( NELIOAB_UTILS_DIR . '/cleaner.php' );
+	nelioab_clean();
+
 	// Showing previous page alternatives
 	$args = array(
 		'post_status'    => 'draft',
@@ -46,6 +63,10 @@ function nelioab_activate_plugin() {
 		$post->post_type = 'post';
 		wp_update_post( $post );
 	}
+
+	// Update mu-plugin (if installed)
+	if ( !NelioABSettings::is_performance_muplugin_up_to_date() )
+		NelioABSettings::update_performance_muplugin();
 
 	// Make sure that the cache uses new classes
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );

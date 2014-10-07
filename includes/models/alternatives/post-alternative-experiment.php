@@ -131,7 +131,6 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 		public function create_alternative_copying_content( $name, $src_post_id ) {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 
 			// Retrieve original post
 			$src_post = get_post( $src_post_id, ARRAY_A );
@@ -161,7 +160,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			add_post_meta( $new_post_id, '_is_nelioab_alternative', 'true' );
 
 			// Override all information
-			NelioABWpHelper::override( $new_post_id, $src_post_id );
+			NelioABWpHelper::overwrite( $new_post_id, $src_post_id );
 
 			// Custom Permalinks compatibility
 			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
@@ -201,8 +200,6 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
 			$url = '';
@@ -226,12 +223,14 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				$this->set_status( $this->determine_proper_status() );
 
 			$body = array(
-				'name'           => $this->get_name(),
-				'description'    => $this->get_description(),
-				'originalPost'   => $this->get_originals_id(),
-				'status'         => $this->get_status(),
-				'kind'           => $this->get_textual_type(),
-				'showHeatmap'    => $this->are_heatmaps_tracked(),
+				'name'                  => $this->get_name(),
+				'description'           => $this->get_description(),
+				'originalPost'          => $this->get_originals_id(),
+				'status'                => $this->get_status(),
+				'kind'                  => $this->get_textual_type(),
+				'showHeatmap'           => $this->are_heatmaps_tracked(),
+				'finalizationMode'      => $this->get_finalization_mode(),
+				'finalizationModeValue' => $this->get_finalization_value(),
 			);
 
 			$result = NelioABBackend::remote_post( $url, $body );
@@ -363,7 +362,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				// Delete permanently (skipping Trash)
 				wp_delete_post( $alt->get_value(), true );
 			}
- 		}
+		}
 
 		public function start() {
 			// If the experiment is already running, quit
@@ -467,6 +466,9 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			$exp->set_type_using_text( $json_data->kind );
 			$exp->set_original( $json_data->originalPost );
 			$exp->set_status( $json_data->status );
+			$exp->set_finalization_mode( $json_data->finalizationMode );
+			if ( isset( $json_data->finalizationModeValue ) )
+				$exp->set_finalization_value( $json_data->finalizationModeValue );
 			$exp->track_heatmaps( false );
 			if ( isset( $json_data->showHeatmap ) && $json_data->showHeatmap  )
 				$exp->track_heatmaps( $json_data->showHeatmap );

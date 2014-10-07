@@ -71,7 +71,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		public function init() {
 			// If the user has been disabled... get out of here
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			try {
 				$aux = NelioABAccountSettings::check_user_settings();
 			}
@@ -85,7 +84,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			// -----------------------------
 
 			// No more quota
-			if ( !NelioABAccountSettings::has_quota_left() ) {
+			if ( isset( $_GET['page'] ) && 'nelioab-account' !== $_GET['page'] && !NelioABAccountSettings::has_quota_left() ) {
 				array_push( $this->global_warnings,
 					__( '<b>Warning!</b> There is no more quota available.', 'nelioab' ) );
 			}
@@ -113,7 +112,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// AJAX functions
 			add_action( 'wp_ajax_nelioab_get_html_content', array( $this, 'generate_html_content' ) ) ;
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			add_action( 'wp_ajax_nelioab_install_performance_muplugin', array( 'NelioABSettings', 'toggle_performance_muplugin_installation' ) ) ;
 
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
@@ -150,16 +148,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			}
 		}
 
-		public function add_js_for_dialogs() {
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-dialog' );
-			wp_enqueue_style( 'jquery-style',
-				nelioab_admin_asset_link( '/css/jquery-ui.css' ) );
-			wp_register_style( 'nelioab_dialog_css',
-				nelioab_admin_asset_link( '/css/nelioab-dialog.min.css' ) );
-			wp_enqueue_style( '/css/font-awesome.min.css' );
-		}
-
 		public function load_custom_style_and_scripts() {
 			// We make sure jQuery is loaded:
 			wp_enqueue_script( 'jquery' );
@@ -192,11 +180,18 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				nelioab_admin_asset_link( '/js/post-searcher.min.js' ) );
 			wp_enqueue_script( 'nelioab_form_searcher',
 				nelioab_admin_asset_link( '/js/form-searcher.min.js' ) );
+
+			// Dialog for Experiments Page
+			if ( isset( $_GET['page'] ) && strpos( 'nelioab-', $_GET['page'] ) == 0 ) {
+				wp_enqueue_script( 'jquery-ui-dialog' );
+				wp_enqueue_style( 'wp-jquery-ui-dialog' );
+			}
 		}
 
 		public function exclude_alternative_posts_and_pages( $query ) {
 
-			if ( $query->is_main_query() ) {
+			if ( $query->is_main_query() ||
+			     ( isset( $_POST['action'] ) && 'menu-quick-search' == $_POST['action'] ) ) {
 				$alt_ids = array();
 
 				remove_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
@@ -263,7 +258,9 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'manage_options',
 				$nelioab_menu,
 				null,
-				'div' );
+				null,
+				3
+			);
 
 
 			// Dashboard page
@@ -291,7 +288,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 				case 'progress':
 					require_once( NELIOAB_ADMIN_DIR . '/select-exp-progress-page-controller.php' );
-					add_action( 'admin_head', array( $this, 'add_js_for_dialogs' ) );
 					$page_to_build = array( 'NelioABSelectExpProgressPageController', 'build' );
 
 					break;

@@ -19,7 +19,7 @@
 
 
 
-if( !class_exists( 'NelioABAltExpSummary' ) ) {
+if ( !class_exists( 'NelioABAltExpSummary' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/summaries/experiment-summary.php' );
 	class NelioABAltExpSummary extends NelioABExperimentSummary {
@@ -34,8 +34,12 @@ if( !class_exists( 'NelioABAltExpSummary' ) ) {
 			$this->alternative_info = array();
 		}
 
-		public function set_result_status( $status ) {
+		public function set_result_status( $status, $confidence ) {
 			$this->result_status = NelioABGTest::get_result_status_from_str( $status );
+			if ( NelioABGTest::WINNER == $this->result_status ) {
+				if ( NelioABSettings::get_min_confidence_for_significance() <= $confidence )
+					$this->result_status = NelioABGTest::WINNER_WITH_CONFIDENCE;
+			}
 		}
 
 		public function get_result_status() {
@@ -85,7 +89,7 @@ if( !class_exists( 'NelioABAltExpSummary' ) ) {
 			$visits = $this->get_total_visitors();
 			if ( $visits != 0 )
 				$result = $conv / $visits;
-			return number_format( $result * 100, 0 );
+			return $result * 100;
 		}
 
 		public function get_original_conversion_rate() {
@@ -93,7 +97,7 @@ if( !class_exists( 'NelioABAltExpSummary' ) ) {
 			$result = 0;
 			if ( $original_info['visitors'] != 0 )
 				$result = $original_info['conversions'] / $original_info['visitors'];
-			return number_format( $result * 100, 0 );
+			return $result * 100;
 		}
 
 		public function get_best_alternative_conversion_rate() {
@@ -106,7 +110,7 @@ if( !class_exists( 'NelioABAltExpSummary' ) ) {
 				if ( $aux > $winning_cr )
 					$winning_cr = $aux;
 			}
-			return number_format( $winning_cr * 100, 0 );
+			return $winning_cr * 100;
 		}
 
 		public function get_winning_conversion_rate() {
@@ -118,16 +122,21 @@ if( !class_exists( 'NelioABAltExpSummary' ) ) {
 				if ( $aux > $winning_cr )
 					$winning_cr = $aux;
 			}
-			return number_format( $winning_cr * 100, 0 );
+			return $winning_cr * 100;
 		}
 
 		public function load_json4ae( $json ) {
 			$this->set_name( $json->name );
 			$this->set_type_using_text( $json->kind );
 			$this->set_creation_date( $json->creation );
-			$this->set_result_status( $json->resultStatus );
 			$this->set_total_visitors( $json->visitors );
 			$this->set_total_conversions( $json->conversions );
+
+			$confidence = 0;
+			if ( isset( $json->confidenceInResultStatus ) )
+				$confidence = $json->confidenceInResultStatus;
+			$this->set_result_status( $json->resultStatus, $confidence );
+
 			if ( isset( $json->altVisitors ) ) {
 				for ( $i = 0; $i < count( $json->altVisitors ); ++$i ) {
 					$id = $json->altVisitors[$i]->first;
@@ -140,6 +149,7 @@ if( !class_exists( 'NelioABAltExpSummary' ) ) {
 				for ( $id = 0; $id < $json->alternatives; ++$id )
 					$this->add_alternative_info( -$id, 0, 0 );
 			}
+
 		}
 
 	}//NelioABAltExpSummary

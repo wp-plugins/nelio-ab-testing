@@ -24,13 +24,6 @@ if( !class_exists( 'NelioABExperimentSummary' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	abstract class NelioABExperimentSummary extends NelioABExperiment {
 
-		const UNKNOWN                = 1;
-		const NO_CLEAR_WINNER        = 2;
-		const NOT_ENOUGH_VISITS      = 3;
-		const DROP_VERSION           = 4;
-		const WINNER                 = 5;
-		const WINNER_WITH_CONFIDENCE = 6;
-
 		public function __construct( $id, $type ) {
 			parent::__construct();
 			$this->id = $id;

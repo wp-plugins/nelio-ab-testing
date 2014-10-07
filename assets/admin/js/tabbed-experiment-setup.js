@@ -416,6 +416,10 @@ var NelioABGoalCards = {
 					result.find('.name').attr( 'value', action.name );
 					result.find('.url').attr( 'value', action.url );
 					result.find('.url_mode').attr( 'value', action.url_mode );
+					if ( action.is_indirect )
+						result.find('.direct').attr( 'value', '0' );
+					else
+						result.find('.direct').attr( 'value', '1' );
 				}
 				result.find('.name').on( 'keyup focusout', function() {
 					NelioABGoalCards.validateExternalPage(result, 'name');
@@ -701,6 +705,7 @@ var NelioABGoalCards = {
 						a.name = action.find( '.name' ).attr('value');
 						a.url = action.find( '.url' ).attr('value');
 						a.url_mode = action.find( '.url_mode' ).attr('value');
+						a.is_indirect = action.find( '.direct' ).attr('value') == '0';
 						if ( a.name == '' || a.url == '' )
 							break;
 						g.actions.push(a);

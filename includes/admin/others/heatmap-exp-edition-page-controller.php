@@ -91,9 +91,13 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 
 
 			// Experiment information
-			$view->set_experiment_id( $experiment->get_id() );
-			$view->set_experiment_name( $experiment->get_name() );
-			$view->set_experiment_descr( $experiment->get_description() );
+			$view->set_basic_info(
+				$experiment->get_id(),
+				$experiment->get_name(),
+				$experiment->get_description(),
+				$experiment->get_finalization_mode(),
+				$experiment->get_finalization_value()
+			);
 			$view->set_post_id( $experiment->get_post_id() );
 
 			// Checking whether there are pages or posts available

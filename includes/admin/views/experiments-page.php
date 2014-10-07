@@ -61,16 +61,54 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 			?>
 			<script type="text/javascript">
-			function isInvalidClick(msg_id) {
+			(function($) {
+				$('#dialog-modal').dialog({
+					dialogClass   : 'wp-dialog',
+					modal         : true,
+					autoOpen      : false,
+					closeOnEscape : true,
+					buttons: [
+						{
+							text: "<?php echo esc_html( __( 'Cancel', 'nelioab' ) ); ?>",
+							click: function() {
+								$(this).dialog('close');
+							}
+						},
+						{
+							text: "<?php echo esc_html( __( 'OK', 'nelioab' ) ); ?>",
+							'class': 'button-primary',
+							click: function() {
+								$(this).dialog('close');
+								window.location.href = $(this).data( 'href' );
+							}
+						}
+					]
+				});
+			})(jQuery);
+			function nelioabValidateClick(msg_id, href) {
+				var $dialog = jQuery('#dialog-modal');
+				$dialog.data( 'href', href );
 				switch (msg_id) {
 					case 0:<?php
+						$title = __( 'Start Experiment', 'nelioab' );
+						$title = str_replace( '"', '\\"', $title );
 						$msg = __( 'You are about to start an experiment. Once the experiment has started, you cannot edit it. Do you want to continue?', 'nelioab' );
 						$msg = str_replace( '"', '\\"', $msg ); ?>
-						return !confirm("<?php echo $msg; ?>");
+						jQuery('#dialog-content').html("<?php echo $msg; ?>");
+						$dialog.dialog('option', 'title', "<?php echo $title; ?>");
+						$dialog.parent().find('.button-primary .ui-button-text').text("<?php _e( 'Start', 'nelioab' ); ?>");
+						$dialog.dialog('open');
+						break;
 					case 1:<?php
+						$title = __( 'Stop Experiment', 'nelioab' );
+						$title = str_replace( '"', '\\"', $title );
 						$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
 						$msg = str_replace( '"', '\\"', $msg ); ?>
-						return !confirm("<?php echo $msg; ?>");
+						jQuery('#dialog-content').html("<?php echo $msg; ?>");
+						$dialog.dialog('option', 'title', "<?php echo $title; ?>");
+						$dialog.parent().find('.button-primary .ui-button-text').text("<?php _e( 'Stop', 'nelioab' ); ?>");
+						$dialog.dialog('open');
+						break;
 				}
 			}
 			</script>
@@ -81,11 +119,12 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			</form>
 			<?php
 
-			$status_draft    = NelioABExperimentStatus::DRAFT;
-			$status_ready    = NelioABExperimentStatus::READY;
-			$status_running  = NelioABExperimentStatus::RUNNING;
-			$status_finished = NelioABExperimentStatus::FINISHED;
-			$status_trash    = NelioABExperimentStatus::TRASH;
+			$status_draft     = NelioABExperimentStatus::DRAFT;
+			$status_ready     = NelioABExperimentStatus::READY;
+			$status_scheduled = NelioABExperimentStatus::SCHEDULED;
+			$status_running   = NelioABExperimentStatus::RUNNING;
+			$status_finished  = NelioABExperimentStatus::FINISHED;
+			$status_trash     = NelioABExperimentStatus::TRASH;
 			NelioABHtmlGenerator::print_filters(
 				admin_url( 'admin.php?page=nelioab-experiments' ),
 				array (
@@ -98,6 +137,9 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					array ( 'value' => $status_ready,
 					        'label' => NelioABExperimentStatus::to_string( $status_ready ),
 					        'count' => count( $this->filter_experiments( $status_ready ) ) ),
+					array ( 'value' => $status_scheduled,
+					        'label' => NelioABExperimentStatus::to_string( $status_scheduled ),
+					        'count' => count( $this->filter_experiments( $status_scheduled ) ) ),
 					array ( 'value' => $status_running,
 					        'label' => NelioABExperimentStatus::to_string( $status_running ),
 					        'count' => count( $this->filter_experiments( $status_running ) ) ),
@@ -122,9 +164,13 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		private function filter_experiments( $status = false ) {
 			if ( !$status ) {
 				$result = array();
-				foreach ( $this->experiments as $exp )
+				foreach ( $this->experiments as $exp ) {
+					if ( !NelioABSettings::show_finished_experiments() &&
+					     $exp->get_status() == NelioABExperimentStatus::FINISHED )
+						continue;
 					if ( $exp->get_status() != NelioABExperimentStatus::TRASH )
 						array_push( $result, $exp );
+				}
 				return $result;
 			}
 			else {
@@ -184,7 +230,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 			$edit_url     = '<a href="?page=nelioab-experiments&action=edit&id=%1$s&exp_type=%2$s">%3$s</a>';
 			$url          = '<a href="' . $url_fragment . '">%4$s</a>';
-			$url_dialog   = '<a href="' . $url_fragment . '" onclick="javascript:if(isInvalidClick(%5$s)){return false;}">%4$s</a>';
+			$url_dialog   = '<a href="#" onclick="javascript:nelioabValidateClick(%5$s, \'' . $url_fragment . '\');return false;">%4$s</a>';
 			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s">%3$s</a>';
 			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP ) {
 				include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
@@ -200,10 +246,18 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					);
 					break;
 				case NelioABExperimentStatus::READY:
+					$actions = array();
+					$actions['edit'] = sprintf( $edit_url, $exp->get_id(), $exp->get_type(), __( 'Edit' ) );
+					$actions['start'] = sprintf( $url_dialog, 'start', $exp->get_id(), $exp->get_type(), __( 'Start', 'nelioab' ), 0 );
+					if ( NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN )
+						$actions['schedule'] = sprintf( $url, 'schedule', $exp->get_id(), $exp->get_type(), __( 'Schedule' ) );
+					$actions['trash'] = sprintf( $url, 'trash', $exp->get_id(), $exp->get_type(), __( 'Trash' ) );
+					break;
+				case NelioABExperimentStatus::SCHEDULED:
 					$actions = array(
-						'edit'  => sprintf( $edit_url, $exp->get_id(), $exp->get_type(), __( 'Edit' ) ),
-						'start' => sprintf( $url_dialog, 'start', $exp->get_id(), $exp->get_type(), __( 'Start', 'nelioab' ), 0 ),
-						'trash' => sprintf( $url, 'trash', $exp->get_id(), $exp->get_type(), __( 'Trash' ) ),
+						'start' => sprintf( $url_dialog, 'start', $exp->get_id(), $exp->get_type(), __( 'Start Now', 'nelioab' ), 0 ),
+						'schedule' => sprintf( $url, 'schedule', $exp->get_id(), $exp->get_type(), __( 'Reschedule' ) ),
+						'cancel-schedule' => sprintf( $url, 'cancel-schedule', $exp->get_id(), $exp->get_type(), __( 'Cancel Schedule', 'nelioab' ), 1 ),
 					);
 					break;
 				case NelioABExperimentStatus::RUNNING:
@@ -248,19 +302,21 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$str = NelioABExperimentStatus::to_string( $exp->get_status() );
 			switch( $exp->get_status() ) {
 				case NelioABExperimentStatus::DRAFT:
-					return $this->make_label( $str, '#999999', '#EEEEEE' );
+					return $this->make_label( $str, '#999999', '#eeeeee' );
 				case NelioABExperimentStatus::PAUSED:
-					return $this->make_label( $str, '#999999', '#EEEEEE' );
+					return $this->make_label( $str, '#999999', '#eeeeee' );
 				case NelioABExperimentStatus::READY:
-					return $this->make_label( $str, '#E96500', '#FFF6AD' );
+					return $this->make_label( $str, '#e96500', '#fff6ad' );
+				case NelioABExperimentStatus::SCHEDULED:
+					return $this->make_label( $str, '#fff6ad', '#e96500' );
 				case NelioABExperimentStatus::RUNNING:
-					return $this->make_label( $str, '#266529', '#D1FFD3' );
+					return $this->make_label( $str, '#266529', '#d1ffd3' );
 				case NelioABExperimentStatus::FINISHED:
 					return $this->make_label( $str, '#103269', '#BED6FC' );
 				case NelioABExperimentStatus::TRASH:
-					return $this->make_label( $str, '#802A28', '#FFE0DF' );
+					return $this->make_label( $str, '#802a28', '#ffe0df' );
 				default:
-					return $this->make_label( $str, '#999999', '#EEEEEE' );
+					return $this->make_label( $str, '#999999', '#eeeeee' );
 			}
 		}
 
@@ -318,10 +374,86 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		}
 
 		protected function print_inline_edit_form() {
-			// No inline edit form...
+			// No inline edit form, but I'll use this function to
+			// print the dialog for scheduling experiments
+			if ( NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) { ?>
+				<div id="nelioab-scheduling-dialog" title="<?php
+					_e( 'Experiment Scheduling', 'nelioab' );
+				?>">
+					<p>Schedule experiment start for:</p>
+					<?php
+					require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+					NelioABHtmlGenerator::print_scheduling_picker();
+					?>
+					<p class="error" style="color:red;display:none;"><?php
+						_e( 'Please, specify a full date (month, day, and year) in the future.', 'nelioab' );
+					?></p>
+				</div>
+				<script>
+					jQuery(function($) {<?php
+						$ts = time(); ?>
+						var TODAY_DAY   = '<?php echo date( 'd', $ts ); ?>';
+						var TODAY_MONTH = '<?php echo date( 'm', $ts ); ?>';
+						var TODAY_YEAR  = '<?php echo date( 'Y', $ts ); ?>';
+						var $info = $('#nelioab-scheduling-dialog');
+						$info.dialog({
+							'dialogClass'   : 'wp-dialog',
+							'modal'         : true,
+							'autoOpen'      : false,
+							'closeOnEscape' : true,
+							buttons: [
+								{
+									text: "<?php echo esc_html( __( 'Cancel', 'nelioab' ) ); ?>",
+									click: function() {
+										$(this).dialog('close');
+									}
+								},
+								{
+									text: "<?php echo esc_html( __( 'Schedule', 'nelioab' ) ); ?>",
+									'class': 'button-primary',
+									click: function() {
+										try {
+											var day   = $('#nelioab-scheduling-dialog input.jj').attr('value');
+											var month = $('#nelioab-scheduling-dialog select.mm').attr('value');
+											var year  = $('#nelioab-scheduling-dialog input.aa').attr('value');
+
+											if ( day == undefined ) day = '00';
+											if ( year == undefined ) year = '0000';
+											while ( day.length < 2 ) day = '0' + day;
+											while ( year.length < 4 ) year = '0' + year;
+											if ( year < TODAY_YEAR )
+												throw new Exception();
+											if ( year == TODAY_YEAR && month < TODAY_MONTH )
+												throw new Exception();
+											else if ( year == TODAY_YEAR && month == TODAY_MONTH && day <= TODAY_DAY )
+												throw new Exception();
+
+											var res = year + '-' + month + '-' + day;
+											$( '#nelioab-scheduling-dialog .error').hide();
+											$(this).dialog('close');
+											window.location = $(this).data('url') + '&schedule_date=' + res;
+										}
+										catch ( e ) {
+											$( '#nelioab-scheduling-dialog .error').show();
+										}
+									}
+								}
+							],
+						});
+						$('.row-actions .schedule > a').click(function(event) {
+							event.preventDefault();
+							$('#nelioab-scheduling-dialog input.jj').attr('value', '');
+							$('#nelioab-scheduling-dialog select.mm').attr('value', TODAY_MONTH);
+							$('#nelioab-scheduling-dialog input.aa').attr('value', '');
+							$info.data('url', $(this).attr('href'));
+							$info.dialog( 'open' );
+						});
+					});
+				</script>
+			<?php
+			}
 		}
 
 	}// NelioABExperimentsTable
 }
 
-?>

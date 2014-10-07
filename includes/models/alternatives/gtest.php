@@ -149,15 +149,12 @@ if( !class_exists( 'NelioABGTest' ) ) {
 					return NelioABGTest::DROP_VERSION;
 				case 'WINNER':
 					return NelioABGTest::WINNER;
-				case 'WINNER_WITH_CONFIDENCE':
-					return NelioABGTest::WINNER_WITH_CONFIDENCE;
 				default:
 					return NelioABGTest::UNKNOWN;
 			}
 		}
 
 		public static function generate_status_light( $status ) {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			$cb = '';
 			if ( NelioABSettings::use_colorblind_palette() )
 				$cb = ' status-colorblind';
@@ -166,15 +163,19 @@ if( !class_exists( 'NelioABGTest' ) ) {
 			switch ( $status ) {
 				case NelioABGTest::WINNER_WITH_CONFIDENCE:
 					$light = sprintf( $light, 'tick' . $cb,
-						__( 'There is a clear winner, with a confidence greater than 90%', 'nelioab' ) );
+						sprintf(
+							__( 'There is a clear winner, with a confidence greater than %s%%', 'nelioab' ),
+							NelioABSettings::get_min_confidence_for_significance() ) );
 					break;
 				case NelioABGTest::WINNER:
 					$light = sprintf( $light, 'star' . $cb,
-						__( 'There is a possible winner, but keep in mind the confidence does not reach 90%', 'nelioab' ) );
+						sprintf(
+							__( 'There is a possible winner, but keep in mind the confidence does not reach %s%%', 'nelioab' ),
+							NelioABSettings::get_min_confidence_for_significance() ) );
 					break;
 				case NelioABGTest::NO_CLEAR_WINNER:
 					$light = sprintf( $light, 'clock' . $cb,
-						__( 'There is not enough data to determine any winner yet', 'nelioab' ) );
+						__( 'There is not enough data to determine any winner', 'nelioab' ) );
 					break;
 				case NelioABGTest::NOT_ENOUGH_VISITS:
 					$light = sprintf( $light, 'clock' . $cb,

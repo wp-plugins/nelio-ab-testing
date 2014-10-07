@@ -73,18 +73,24 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 
 			return array(
 				array (
-					'label'     => 'Name',
+					'label'     => __( 'Name', 'nelioab' ),
 					'id'        => 'exp_name',
 					'callback'  => array( &$this, 'print_name_field' ),
 					'mandatory' => true ),
 				array (
-					'label'     => 'Description',
+					'label'     => __( 'Description', 'nelioab' ),
 					'id'        => 'exp_descr',
 					'callback'  => array( &$this, 'print_descr_field' ) ),
 				array (
 					'label'     => $ori_label,
 					'id'        => 'exp_original',
 					'callback'  => array ( &$this, 'print_ori_field' ),
+					'mandatory' => true ),
+				array (
+					'label'     => __( 'Finalization Mode', 'nelioab' ),
+					'id'        => 'exp_finalization_mode',
+					'callback'  => array( &$this, 'print_finalization_mode_field' ),
+					'min_plan'  => NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN,
 					'mandatory' => true ),
 			);
 		}

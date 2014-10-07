@@ -23,7 +23,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 		private $alternatives;
 
 		function __construct( $items ){
-   	   parent::__construct( array(
+			parent::__construct( array(
 				'singular'  => __( 'alternative', 'nelioab' ),
 				'plural'    => __( 'alternatives', 'nelioab' ),
 				'ajax'      => false

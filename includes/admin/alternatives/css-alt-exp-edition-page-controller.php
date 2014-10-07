@@ -88,10 +88,16 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 			$view->set_basic_info(
 				$experiment->get_id(),
 				$experiment->get_name(),
-				$experiment->get_description() );
+				$experiment->get_description(),
+				$experiment->get_finalization_mode(),
+				$experiment->get_finalization_value()
+			);
 
 			// Experiment alternatives
-			$view->set_alternatives( $experiment->get_json4js_alternatives() );
+			$alts = $experiment->get_json4js_alternatives();
+			for ( $i = 0; $i < count( $alts ); ++$i )
+				$alts[$i]['value'] = urlencode( $alts[$i]['value'] );
+			$view->set_alternatives( $alts );
 
 			// Goals
 			$goals = $experiment->get_goals();
@@ -147,6 +153,13 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 		public function build_experiment_from_post_data() {
 			$exp = new NelioABCssAlternativeExperiment( $_POST['exp_id'] );
 			$exp = $this->compose_basic_alt_exp_using_post_data( $exp );
+			if ( isset( $_POST['nelioab_alternatives'] ) ) {
+				$alts = json_decode( urldecode( $_POST['nelioab_alternatives'] ) );
+				for ( $i = 0; $i < count( $alts ); ++$i )
+					if ( isset( $alts[$i]->value ) )
+						$alts[$i]->value = urldecode( $alts[$i]->value );
+				$exp->load_json4js_alternatives( $alts );
+			}
 			global $nelioab_admin_controller;
 			$nelioab_admin_controller->data = $exp;
 		}

@@ -18,8 +18,6 @@
 if ( !class_exists( 'NelioABAccountPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
-	require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-
 	class NelioABAccountPage extends NelioABAdminAjaxPage {
 
 		private $p_style;
@@ -214,6 +212,9 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 									case NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
 										_e( 'You are subscribed to our <b>Professional Plan</b>.', 'nelioab' );
 										break;
+									case NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN:
+										_e( 'You are subscribed to our <b>Enterprise Plan</b>.', 'nelioab' );
+										break;
 								}
 								echo ' ';
 								printf( '<small><a href="%s">%s</a></small>', $this->user_info['subscription_url'],
@@ -223,7 +224,9 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 									printf(
 										'<a href="%2$s">%1$s</a>',
 										__( 'Upgrade to our Professional Plan.', 'nelioab' ),
-										'mailto:support@neliosoftware.com?subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20to%20Professional%20Plan'
+										'mailto:support@neliosoftware.com?' .
+											'subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20to%20Professional%20Plan&' .
+											'body=' . esc_html( 'I\'d like to upgrade to the Professional Plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
 									);
 								}
 							}
@@ -249,17 +252,17 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 				$post_quota = '';
 				if ( !$this->user_info['agency'] ) {
 					if ( isset( $this->user_info['total_quota'] ) )
-						$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please consider buying additional page views as you need them using the button below, or <a href="%s">contact us for an update of your monthly quota</a>.', 'nelioab' ),
-							$this->user_info['total_quota'],
+						$post_quota = sprintf( __( '<br />Your current plan permits up to %1$s page views under test per month. If you need more quota, please consider buying additional page views as you need them using the button below, or <a href="%2$s">contact us for an update of your monthly quota</a>.', 'nelioab' ),
+							number_format_i18n( $this->user_info['total_quota'] ),
 							'mailto:support@neliosoftware.com?subject=Nelio%20A%2FB%20Testing%20-%20Monthly%20Quota%20Update' );
 				}
 				else {
-					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please contact <a href="%1$s">%2$s</a>.', 'nelioab' ),
-							$this->user_info['total_quota'],
+					$post_quota = sprintf( __( '<br />Your current plan permits up to %1$s page views under test per month. If you need more quota, please contact <a href="%2$s">%3$s</a>.', 'nelioab' ),
+							number_format_i18n( $this->user_info['total_quota'] ),
 							$this->user_info['agencymail'],
 							$this->user_info['agencyname'] );
 				}
-	
+
 				if ( isset( $this->user_info['quota'] ) ) { ?>
 					<p style="margin-top:0em;margin-left:3em;max-width:600px;">
 					<b><?php _e( 'Available Quota:', 'nelioab' ); ?></b>
@@ -273,19 +276,18 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 							$quota_color = 'red';
 					?>
 					<b><?php
-						printf( __( '<span %s>%d</span> Page Views' ),
-							"style='font-size:120%;color:$quota_color;'",
-							$the_quota ); ?></b>
+						printf( __( '<span style="font-size:120%%;color:%1$s;">%2$s</span> Page Views' ),
+							$quota_color, number_format_i18n( $the_quota ) ); ?></b>
 					<small>(<a href="http://wp-abtesting.com/faqs/what-is-a-tested-pageview"><?php
 						_e( 'Help', 'nelioab' );
 					?></a>)</small><?php echo $post_quota; ?></p><?php
-	
+
 				if ( !$this->user_info['agency'] ) { ?>
 						<a style="margin-left:3em;margin-bottom:1.5em;" class="button" target="_blank"
 							href="http://sites.fastspring.com/nelio/product/nelioextrapageviewsforthepersonalserviceplan"><?php
 							_e( 'Buy More', 'nelioab' );
 						?></a>
-	
+
 					<?php
 					}
 				} ?>
@@ -394,13 +396,6 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			return $register_js;
 		}
 
-		private function cancel_registration_link() {
-			$cancel_js = 'javascript:' .
-				'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'cancel\');' .
-				'jQuery(\'#nelioab_registration_form\').submit();';
-			return $cancel_js;
-		}
-
 		private function print_table_of_registered_sites() {
 			$sites = array();
 
@@ -416,11 +411,13 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			}
 
 			if( $this->current_site_status == NelioABSite::ACTIVE ) {
+				$live = ( false === $reg_name ) ? 'live' : 'staging';
+
 				array_push( $sites, array(
-						'this_site'   => true,
-						'name'        => $this_url,
-						'reg_name'    => $reg_name,
-						'cancel_link' => $this->cancel_registration_link()
+						'this_site' => true,
+						'name'      => $this_url,
+						'reg_name'  => $reg_name,
+						'live'      => $live,
 					) );
 			}
 
@@ -449,7 +446,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
 	class NelioABRegisteredSitesTable extends NelioABAdminTable {
-		
+
 		function __construct( $items ){
    	   parent::__construct( array(
 				'singular'  => __( 'registered site', 'nelioab' ),
@@ -477,22 +474,49 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			$name = sprintf( $name, '#000000', '#909090' );
 			$name = '<span class="row-title"%s><strong style="font-weight:bold;">' . $name . '</strong>';
 
-			$reg_name = '';
+			$is_live = true;
+			$reg_title = '';
 			if ( $site['reg_name'] !== $site['name'] ) {
+				$is_live = false;
 				$name .= '*';
-				$reg_name = $site['reg_name'];
-				$reg_name = sprintf( __( 'In your account, the site is actually registered as «%s»', 'nelioab' ), $reg_name );
-				$reg_name = ' title="' . esc_html( $reg_name ) . '"';
+				$reg_title = $site['reg_name'];
+				$reg_title = sprintf( __( 'In your account, the site is actually registered as «%s»', 'nelioab' ), $reg_title );
+				$reg_title = ' title="' . esc_html( $reg_title ) . '"';
 			}
-			$name = sprintf( $name, $reg_name );
+			$name = sprintf( $name, $reg_title );
 
-			$name .= ' <strong style="font-variant:small-caps;">(' . __( 'this site', 'neliab' ) . ')</strong> ';
+			$name .= ' <strong style="font-variant:small-caps;">(' . __( 'this site', 'nelioab' ) . ')</strong> ';
+
 			$name .= '</span>';
-			$actions = $this->row_actions( array(
-					'delete' => '<a href="' . $site['cancel_link'] . '">Cancel Registration</a>'
-				) );
 
-			return $name . $actions;
+			if ( $is_live ) {
+				$link = 'javascript:' .
+					'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'deregister\');' .
+					'jQuery(\'#nelioab_registration_form\').submit();';
+				$actions = $this->row_actions( array(
+						'delete' => '<a href="' . $link . '">' . __( 'Cancel Registration', 'nelioab' ) . '</a>'
+					) );
+			}
+			else {
+				$link = 'javascript:' .
+					'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'unlink\');' .
+					'jQuery(\'#nelioab_registration_form\').submit();';
+				$actions = $this->row_actions( array(
+						'delete' => '<a href="' . $link . '">' . __( 'Unlink Site', 'nelioab' ) . '</a>'
+					) );
+			}
+
+			$careful = '';
+			if ( !$is_live ) {
+				$careful = sprintf(
+						'<br><small style="font-weight:normal;"%s>%s</small> ',
+						$reg_title,
+						__( '*The site was registered using a different URL', 'nelioab' )
+					);
+			}
+
+
+			return $name . $careful . $actions;
 		}
 
 		private function make_other_site( $site ) {

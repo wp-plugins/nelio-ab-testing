@@ -32,12 +32,21 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			$this->classes      = array();
 
 			$this->message = false;
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			if ( NelioABSettings::is_upgrade_message_visible() )
+			if ( NelioABSettings::is_upgrade_message_visible() ) {
 				$this->message = sprintf(
 					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing. Track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
-					'mailto:support@neliosoftware.com?subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20to%20Professional%20Plan'
+					'mailto:support@neliosoftware.com?' .
+						'subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20my%20Subscription&' .
+						'body=' . esc_html( 'I\'d like to upgrade my subscription plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
 				);
+			}
+			elseif ( !NelioABSettings::is_performance_muplugin_up_to_date() ) {
+				global $nelioab_admin_controller;
+				$nelioab_admin_controller->error_message = sprintf(
+					__( '<b>Performance MU-Plugin</b>. You\'re currently using an outdated version of Nelio A/B Testing\'s Performance MU-Plugin. We tried to automatically update it, but something went wrong. Please, go to the <a href="%s">Settings</a> page and reinstall the Performance MU-Plugin.', 'nelioab' ),
+					admin_url( 'admin.php?page=nelioab-settings' )
+				) ;
+			}
 		}
 
 		public function set_message( $message ) {
@@ -245,12 +254,35 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			if ( isset( $field['mandatory'] ) && $field['mandatory'] )
 				$is_mandatory = true;
 
+			$can_be_used = true;
+			$explanation = false;
+			if ( isset( $field['min_plan'] ) ) {
+				if ( NelioABAccountSettings::get_subscription_plan() < $field['min_plan'] )
+					$can_be_used = false;
+				switch ( $field['min_plan'] ) {
+					case NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
+						$explanation = __( 'This option is only available for users registered to our Professional Plan.', 'nelioab' );
+						break;
+					case NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN:
+						$explanation = __( 'This option is only available for users registered to our Enterprise Plan.', 'nelioab' );
+						break;
+				}
+			}
+
 			$error = '';
 
 			if ( $this->is_invalid( $field_id ) )
 				$error = ' class="error"';
 			?>
-			<table class="form-table">
+			<table <?php
+				if ( $can_be_used ) {
+					echo 'class="form-table"';
+				}
+				else {
+					echo 'class="form-table setting-disabled"';
+					if ( $explanation )
+						echo ' title="' . $explanation . '"';
+				}?>>
 				<tr valign="top">
 					<th scope="row"<?php echo $error; ?>>
 						<?php if ( $is_mandatory ) { ?>
@@ -259,9 +291,18 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 							<label for="<?php echo $field_id; ?>"><?php echo $field_name; ?></label>
 						<?php } ?>
 					</th>
-					<td>
+					<td class="input_for_<?php echo $field_id; ?>">
 					<?php call_user_func($callback); ?>
 					</td>
+					<?php if ( !$can_be_used ) { ?>
+					<script type="text/javascript">(function($) {
+						var selector = "" +
+						  "td.input_for_<?php echo $field_id; ?> input,"+
+						  "td.input_for_<?php echo $field_id; ?> select,"+
+						  "td.input_for_<?php echo $field_id; ?> textarea";
+						$(selector).attr('disabled','disabled');
+					})(jQuery);</script><?php
+					} ?>
 				</tr>
 			</table>
 		<?php

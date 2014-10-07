@@ -66,8 +66,6 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
 
@@ -92,11 +90,13 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 				$this->set_status( $this->determine_proper_status() );
 
 			$body = array(
-				'name'        => $this->get_name(),
-				'description' => $this->get_description(),
-				'post'        => $this->get_post_id(),
-				'status'      => $this->get_status(),
-				'kind'        => $this->get_textual_type(),
+				'name'                  => $this->get_name(),
+				'description'           => $this->get_description(),
+				'post'                  => $this->get_post_id(),
+				'status'                => $this->get_status(),
+				'kind'                  => $this->get_textual_type(),
+				'finalizationMode'      => $this->get_finalization_mode(),
+				'finalizationModeValue' => $this->get_finalization_value(),
 			);
 
 			$result = NelioABBackend::remote_post( $url, $body );
@@ -183,6 +183,9 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			if ( isset( $json_data->description ) )
 				$exp->set_description( $json_data->description );
 			$exp->set_status( $json_data->status );
+			$exp->set_finalization_mode( $json_data->finalizationMode );
+			if ( isset( $json_data->finalizationModeValue ) )
+				$exp->set_finalization_value( $json_data->finalizationModeValue );
 
 			if ( isset( $json_data->goals ) )
 				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );

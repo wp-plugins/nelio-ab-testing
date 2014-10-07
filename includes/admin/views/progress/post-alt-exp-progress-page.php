@@ -57,10 +57,10 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			return $this->exp->get_originals_id();
 		}
 
-		protected function print_js_function_for_post_data_overriding() { ?>
-			function nelioab_confirm_overriding(id) {
+		protected function print_js_function_for_post_data_overwriting() { ?>
+			function nelioab_confirm_overwriting(id) {
 				jQuery("#apply_alternative #alternative").attr("value",id);
-				nelioab_show_the_dialog_for_overriding(id);
+				nelioab_show_the_dialog_for_overwriting(id);
 			}
 			<?php
 		}
@@ -120,7 +120,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 
 		private function make_link_for_edit( $id ) {
-			return sprintf( ' <a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>',
+			return sprintf( ' <a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
 				admin_url( 'post.php?post=' . $id . '&action=edit' ),
 				__( 'Edit' ) );
 		}
@@ -138,7 +138,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					if ( $alt_id == $exp->get_originals_id() )
 						break;
 					$aux = sprintf(
-						' <a href="javascript:nelioab_confirm_overriding(%1$s);">%2$s</a>',
+						' <a class="apply-link" href="javascript:nelioab_confirm_overwriting(%1$s);">%2$s</a>',
 						$alt_id, __( 'Apply', 'nelioab' ) );
 					array_push( $action_links, $aux );
 					break;
@@ -217,15 +217,14 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		}
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
 				if ( $this->is_ori_page ) {
-					_e( 'You are about to override the original page with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original page with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
 				}
 				else {
-					_e( 'You are about to override the original post with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original post with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
 				}
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php

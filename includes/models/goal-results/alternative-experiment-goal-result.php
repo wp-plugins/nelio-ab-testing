@@ -44,8 +44,12 @@ if( !class_exists( 'NelioABAltExpGoalResult' ) ) {
 			$this->conversions_history   = array();
 		}
 
-		public function set_summary_status( $status ) {
+		public function set_summary_status( $status, $confidence ) {
 			$this->summary_status = $status;
+			if ( NelioABGTest::WINNER == $this->summary_status ) {
+				if ( NelioABSettings::get_min_confidence_for_significance() <= $confidence )
+					$this->summary_status = NelioABGTest::WINNER_WITH_CONFIDENCE;
+			}
 		}
 
 		public function get_summary_status() {

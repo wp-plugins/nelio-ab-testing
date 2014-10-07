@@ -39,7 +39,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 
 		public function __construct() {
 			require_once( NELIOAB_UTILS_DIR . '/dtgtm4wp-support.php' );
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 
 			$this->build_current_url();
 
@@ -73,6 +72,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 				array( &$this->controllers['alt-exp'], 'send_alt_titles_info' ) );
 			add_action( 'wp_ajax_nelioab_send_alt_titles_info',
 				array( &$this->controllers['alt-exp'], 'send_alt_titles_info' ) );
+
+			add_action( 'wp_ajax_nopriv_nelioab_external_page_accessed_action_urls',
+				array( &$this->controllers['alt-exp'], 'get_external_page_accessed_action_urls' ) );
+			add_action( 'wp_ajax_nelioab_external_page_accessed_action_urls',
+				array( &$this->controllers['alt-exp'], 'get_external_page_accessed_action_urls' ) );
 
 			add_action( 'wp_ajax_nopriv_nelioab_sync_cookies_and_check',
 				array( &$this, 'sync_cookies_and_check' ) );
@@ -121,13 +125,14 @@ if ( !class_exists( 'NelioABController' ) ) {
 		}
 
 		public function init() {
-
 			// If the user has been disabled... get out of here
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			try {
 				$aux = NelioABAccountSettings::check_user_settings();
 			}
 			catch ( Exception $e ) {
+				// It is important we add the check here: if the user was deactivated, but it no
+				// longer is, then it's important his settings are rechecked so that we can
+				// re-enable it.
 				if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER )
 					return;
 			}
@@ -157,9 +162,39 @@ if ( !class_exists( 'NelioABController' ) ) {
 			else if ( $dest_post_id )
 				$this->send_navigation_if_required( $dest_post_id, $referer );
 
+			if ( NelioABAccountSettings::get_subscription_plan() >=
+			     NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN )
+				$this->compute_results_for_running_experiments();
+
 			$alt_con = $this->controllers['alt-exp'];
 			$alt_con->update_current_winner_for_running_experiments();
 			die();
+		}
+
+		public function compute_results_for_running_experiments() {
+			// 1. Check if the last check was, at least, 5 minutes ago
+			$now = time();
+			$last_update = get_option( 'nelioab_last_update_of_results', 0 );
+			if ( $now - $last_update < 300 )
+				return;
+			update_option( 'nelioab_last_update_of_results', $now );
+
+			// 2. Check if we have running experiments
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+			if ( count( $running_exps ) == 0 )
+				return;
+
+			// 3. Ask AE to recompute the results
+			$url = sprintf(
+					NELIOAB_BACKEND_URL . '/site/%s/exp/result/compute',
+					NelioABAccountSettings::get_site_id()
+				);
+			$result = NelioABBackend::remote_get( $url );
+
+			// 5. Update the winning alternative info using the latest results available
+			$alt_con = $this->controllers['alt-exp'];
+			$alt_con->update_current_winner_for_running_experiments( 'force_update' );
 		}
 
 		private function send_navigation_if_required( $dest_id, $referer_url, $is_internal = true ) {
@@ -173,8 +208,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 		}
 
 		public function send_navigation_object( $nav ) {
-
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 			// If there's no quota available (and no check is required), quit
@@ -360,9 +393,10 @@ if ( !class_exists( 'NelioABController' ) ) {
 		}
 
 		public function load_jquery() {
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'nelioab_events',
-				nelioab_asset_link( '/js/nelioab-events.min.js' ) );
+			wp_enqueue_script( 'nelioab_alternatives_script_generic',
+				nelioab_asset_link( '/js/nelioab-generic.min.js' ) );
+			wp_localize_script( 'nelioab_alternatives_script_generic',
+				'NelioABGeneric', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 		}
 
 		/**
@@ -372,7 +406,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 		 * so that she can get rid of any old cookies (via JS).
 		 */
 		private function version_control() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			global $NELIOAB_COOKIES;
 			$cookie_name  = NelioABSettings::cookie_prefix() . 'version';
 			$last_version = 0;

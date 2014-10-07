@@ -24,6 +24,7 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		const BETA_SUBSCRIPTION_PLAN         = 0;
 		const BASIC_SUBSCRIPTION_PLAN        = 1;
 		const PROFESSIONAL_SUBSCRIPTION_PLAN = 2;
+		const ENTERPRISE_SUBSCRIPTION_PLAN   = 3;
 
 		public static function get_subscription_plan() {
 			try {
@@ -262,8 +263,12 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 
 		}
 
-		public static function deregister_this_site() {
+		public static function fix_registration_info( $registered, $id = false ) {
+			NelioABAccountSettings::set_has_a_configured_site( 'registered' === $registered );
+			NelioABAccountSettings::set_site_id( $id );
+		}
 
+		public static function deregister_this_site() {
 			try {
 				$json_data = NelioABBackend::remote_post( sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/deactivate',
@@ -273,7 +278,10 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			catch ( Exception $e ) {
 				throw $e;
 			}
+			NelioABAccountSettings::set_has_a_configured_site( false );
+		}
 
+		public static function unlink_this_site() {
 			NelioABAccountSettings::set_has_a_configured_site( false );
 		}
 

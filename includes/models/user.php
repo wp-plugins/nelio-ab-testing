@@ -17,8 +17,6 @@
 
 if ( !class_exists( 'NelioABUser' ) ) {
 
-	require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-
 	class NelioABUser {
 
 		const COOKIE_LIFETIME = 5184000; // 60 days
@@ -29,8 +27,36 @@ if ( !class_exists( 'NelioABUser' ) ) {
 		public static function get_id() {
 			global $NELIOAB_COOKIES;
 
-			if ( isset( $NELIOAB_COOKIES['nelioab_userid'] ) )
-				return $NELIOAB_COOKIES['nelioab_userid'];
+			// Checking whether the user has to participate to experiments or not
+			$is_in_cookie_name     = NelioABSettings::cookie_prefix() . 'is_in';
+			$was_in_cookie_name = NelioABSettings::cookie_prefix() . 'was_in';
+			if ( !isset( $NELIOAB_COOKIES[$is_in_cookie_name] ) ) {
+				$was_in    = false;
+				$prev_perc = false;
+				if ( isset( $NELIOAB_COOKIES[$was_in_cookie_name] ) ) {
+					$value = explode( ':', $NELIOAB_COOKIES[$was_in_cookie_name] );
+					$was_in = $value[0];
+					$prev_perc = $value[1];
+				}
+
+				if ( $was_in )
+					$is_in = $was_in;
+
+				$potu = NelioABSettings::get_percentage_of_tested_users();
+				if ( !$prev_perc || $prev_perc != $potu ) {
+					$is_in = 'no';
+					$rand = mt_rand( 0, 100 );
+					if ( $rand <= $potu )
+						$is_in = 'yes';
+				}
+				nelioab_setcookie( $is_in_cookie_name, $is_in );
+				nelioab_setrawcookie( $was_in_cookie_name, "$is_in:$potu", time() + self::TEN_YEARS );
+			}
+
+			// Retrieving (or creating) the user id
+			$cookie_name =  NelioABSettings::cookie_prefix() . 'userid';
+			if ( isset( $NELIOAB_COOKIES[$cookie_name] ) )
+				return $NELIOAB_COOKIES[$cookie_name];
 
 			if ( function_exists( 'uniqid' ) ) {
 				$user_id = uniqid( 'ui_', true );
@@ -40,29 +66,45 @@ if ( !class_exists( 'NelioABUser' ) ) {
 				update_option( 'nelioab_last_user_id', $user_id );
 				$user_id = 'db_' . $user_id;
 			}
-			$cookie_name =  NelioABSettings::cookie_prefix() . 'userid';
-			nelioab_setcookie( $cookie_name, $user_id, time() + NelioABUser::TEN_YEARS );
+			nelioab_setcookie( $cookie_name, $user_id, time() + self::TEN_YEARS );
 
 			return $user_id;
 		}
 
 		public static function get_alternative_randomly( $options, $winning_option = false ) {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			$num_of_options = count( $options );
-			$use_greedy = NelioABSettings::use_greedy_algorithm();
+			$option_to_ignore = false;
 
-			// Exploitation
-			if ( $use_greedy && $winning_option !== false ) {
-				$exploitation_percentage = NelioABSettings::get_exploitation_percentage();
-				$rand = mt_rand( 0, 100 );
-				if ( $rand < $exploitation_percentage )
-					return $winning_option;
-				$num_of_options = $num_of_options - 1; // The winning should not be used
+			switch ( NelioABSettings::get_algorithm() ) {
+
+				case NelioABSettings::ALGORITHM_PRIORITIZE_ORIGINAL:
+					$original_version = $options[0];
+					$original_percentage = NelioABSettings::get_original_percentage();
+					$rand = mt_rand( 0, 100 );
+					if ( $rand <= $original_percentage )
+						return $original_version;
+					// The original should not be used
+					$num_of_options = $num_of_options - 1;
+					$option_to_ignore = $original_version;
+					break;
+
+				case NelioABSettings::ALGORITHM_GREEDY:
+					if ( $winning_option !== false ) {
+						$exploitation_percentage = NelioABSettings::get_exploitation_percentage();
+						$rand = mt_rand( 0, 100 );
+						if ( $rand <= $exploitation_percentage )
+							return $winning_option;
+						// The winning should not be used
+						$num_of_options = $num_of_options - 1;
+						$option_to_ignore = $options[0];
+					}
+					break;
+
 			}
 
 			// Exploration
 			$value = mt_rand( 0, $num_of_options - 1 ); // Index goes from 0..SIZE-1
-			if ( $use_greedy && $options[$value] == $winning_option )
+			if ( $option_to_ignore && $options[$value] == $option_to_ignore )
 				$value = $num_of_options;
 			return $options[$value];
 		}
@@ -90,13 +132,13 @@ if ( !class_exists( 'NelioABUser' ) ) {
 				return $post_id;
 
 			$cookie_name = NelioABSettings::cookie_prefix() . 'altexp_' . $exp->get_id();
-			$cookie_life = time() + NelioABUser::COOKIE_LIFETIME;
+			$cookie_life = time() + self::COOKIE_LIFETIME;
 
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
 				// Creating the cookie for the experiment information
 				$alternatives = $exp->get_alternatives();
-				array_push( $alternatives, $exp->get_original() );
-				$alt_post = NelioABUser::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
+				array_unshift( $alternatives, $exp->get_original() );
+				$alt_post = self::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
 				$alt_post = $alt_post->get_value();
 
 				// Before setting any cookie, we check that the original and the alternative
@@ -174,13 +216,13 @@ if ( !class_exists( 'NelioABUser' ) ) {
 				return false;
 
 			$cookie_name = NelioABSettings::cookie_prefix() . 'theme_altexp_' . $exp->get_id();
-			$cookie_life = time() + NelioABUser::COOKIE_LIFETIME;
+			$cookie_life = time() + self::COOKIE_LIFETIME;
 
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
 				// Creating the cookie for the experiment information
 				$alternatives = $exp->get_alternatives();
-				array_push( $alternatives, $exp->get_original() );
-				$aux = NelioABUser::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
+				array_unshift( $alternatives, $exp->get_original() );
+				$aux = self::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
 				$alt_id = $aux->get_id();
 
 				// If everything seems to exist, we set the cookie and keep going
@@ -203,7 +245,7 @@ if ( !class_exists( 'NelioABUser' ) ) {
 		public static function get_assigned_theme() {
 			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 
-			$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
+			$alt = self::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
 
 			if ( $alt ) {
 				$themes = wp_get_themes();

@@ -3,6 +3,9 @@ function nelioab_init() {
 	if ( !nelioab_areCookiesEnabled() )
 		return;
 
+	if ( nelioab_get_cookie_by_name( 'nelioab_is_in' ) == 'no' )
+		return;
+
 	// Making sure that nothing is executed too soon
 	// (when calling show_body, we'll release the holding)
 	jQuery.holdReady( true );
@@ -56,13 +59,23 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 			json = JSON.parse(data);
 			cookies = json.cookies;
 			if ( cookies['__nelioab_new_version'] != undefined )
-				clean_cookies();
+				nelioab_clean_cookies();
 			$.each(cookies, function(name, value) {
-				if (nelioab_get_cookie_by_name(name) == undefined)
-					document.cookie = name + "=" + value + ";path=/";
+				if (nelioab_get_cookie_by_name(name) == undefined) {
+					document.cookie = name + '=' + value + ';path=/';
+				}
+				else if (name == 'nelioab_was_in') {
+					nelioab_delete_cookie('nelioab_was_in');
+					document.cookie = name + '=' + value + ';path=/';
+				}
 			});
-			delete_cookie("__nelioab_new_version");
+			nelioab_delete_cookie('__nelioab_new_version');
 			are_cookies_sync = true;
+
+			if ( nelioab_get_cookie_by_name( 'nelioab_is_in' ) == 'no' ) {
+				nelioab_show_body();
+				return;
+			}
 
 			is_load_alt_required = ( json.load_alt == 'LOAD_ALT' );
 			if ( !is_load_alt_required )
@@ -74,6 +87,8 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 			else {
 				nelioab_show_body();
 				jQuery(document).ready(function(){
+					if ( typeof( nelioab_prepare_links_for_nav_to_external_pages ) == "function" )
+						nelioab_prepare_links_for_nav_to_external_pages(jQuery);
 					if ( typeof( nelioab_add_hidden_fields_on_forms ) == "function" )
 						nelioab_add_hidden_fields_on_forms(jQuery);
 					if ( typeof( nelioabStartHeatmapTracking ) == "function" )
@@ -102,16 +117,18 @@ function nelioab_load_alt($) {
 				nelioab_show_body();
 				return;
 			}
+			// Removing jetpack stats scripts from the alternative
 			data = data
 				.replace(
-					/<script src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
-					'<!-- <script src="http://stats.wordpress.com/e-$1 -->\n' +
-					'\t<script>function st_go(a){} function linktracker_init(a,b){}</scr'+'ipt>\n'
+					/<.cript src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
+					'<!-- <scr'+'ipt src="http://stats.wordpress.com/e-$1 -->\n' +
+					'\t<scr'+'ipt>function st_go(a){} function linktracker_init(a,b){}</scr'+'ipt>\n'
 				);
+			// Adding CSS node
 			data = data
 				.replace(
 					/<\/head>/,
-					'<script>try { if ( nelioab_cssExpNode !== undefined )' +
+					'<scr'+'ipt>try { if ( nelioab_cssExpNode !== undefined )' +
 					'document.getElementsByTagName("head")[0].' +
 					'appendChild(nelioab_cssExpNode);' +
 					'} catch ( e ) {}' +

@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.1.4
+Stable tag: 3.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,30 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.2.0 =
+* **New Feature**. Define the percentage of users that participate in an
+experiment (Professional subscribers only).
+* **New Feature**. Prioritize original version over alternatives
+(Professional subscribers only).
+* **New Feature**. Schedule when an experiment has to start (Professional
+subscribers only).
+* **New Feature**. Stop experiments automatically (a) when a minimum number of
+page views has been reached, (b) after a period of time, or (c) when there's a
+winner with a minimum confidence.
+* **New Feature**. Get real-time results (Enterprise subscribers only).
+* Improvement: Dashboard and Progress of the Experiment show the confidence in
+having a winner based on the comparison between the best alternative and the
+original (not two alternatives).
+* Improvement: when creating/editing an experiment, users are now prompted
+before they leave with unsaved changes.
+* Improvement: external page accessed actions can now be "indirect". If the
+user is about to leave your WordPress site in order to go to a goal page,
+and this navigation does not occur from a tested page, we can now track the
+conversion properly.
+* Improvement: MU-plugin is now automatically upgraded when this plugin is
+upgraded.
+* Several improvements and bug fixes.
 
 = 3.1.4 =
 * Bug fix: when one wants to see the heatmap of an experiment, these heatmaps
@@ -511,6 +535,10 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.1.4 =
-Bug fix with heatmaps and some minor improvements.
+= 3.2.0 =
+Several new features for Professional and Enterprise subscribers: experiment
+scheduling, stop experiments automatically, and advanced settings. Moreover,
+and also available to Basic subscribers: improved usage of confidence value,
+unsaved experiments control, MU-Plugin updates, indirect page accessed goals,
+and several tiny improvements and bug fixes.
 

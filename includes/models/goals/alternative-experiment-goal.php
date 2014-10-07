@@ -161,7 +161,13 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			$results->set_conversions_history( $json_data['historyConversions'] );
 			$results->set_first_update( $json_data['firstUpdate'] );
 			$results->set_last_update( $json_data['lastUpdate'] );
-			$results->set_summary_status( NelioABGTest::get_result_status_from_str( $json_data['resultStatus'] ) );
+
+			$confidence = 0;
+			if ( isset( $json_data['resultStatus'] ) )
+				$confidence = $json_data['confidenceInResultStatus'];
+			$results->set_summary_status(
+				NelioABGTest::get_result_status_from_str( $json_data['resultStatus'] ),
+				$confidence );
 
 			$alt_res = new NelioABAltStats( true ); // Original
 			$alt_res->set_name( __( 'Original', 'nelioab' ) );

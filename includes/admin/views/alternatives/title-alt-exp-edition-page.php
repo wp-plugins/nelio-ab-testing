@@ -55,18 +55,24 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 
 			return array(
 				array (
-					'label'     => 'Name',
+					'label'     => __( 'Name', 'nelioab' ),
 					'id'        => 'exp_name',
 					'callback'  => array( &$this, 'print_name_field' ),
 					'mandatory' => true ),
 				array (
-					'label'     => 'Description',
+					'label'     => __( 'Description', 'nelioab' ),
 					'id'        => 'exp_descr',
 					'callback'  => array( &$this, 'print_descr_field' ) ),
 				array (
 					'label'     => $ori_label,
 					'id'        => 'exp_original',
 					'callback'  => array ( &$this, 'print_ori_field' ),
+					'mandatory' => true ),
+				array (
+					'label'     => __( 'Finalization Mode', 'nelioab' ),
+					'id'        => 'exp_finalization_mode',
+					'callback'  => array( &$this, 'print_finalization_mode_field' ),
+					'min_plan'  => NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN,
 					'mandatory' => true ),
 			);
 		}
@@ -79,27 +85,18 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			<a class="button" style="text-align:center;"
 				href="javascript:NelioABEditExperiment.previewOriginal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
 			<span class="description" style="display:block;"><?php
-				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					_e( 'This is the post for which alternatives will be created.', 'nelioab' );
-				else
-					_e( 'This is the page for which alternatives will be created.', 'nelioab' );
-			?> <small><a href="http://wp-abtesting.com/faqs/what-is-the-original-pagepost-of-an-experiment" target="_blank"><?php
+				_e( 'This is the page or post whose title will be tested.', 'nelioab' );
+			?> <small><a href="http://wp-abtesting.com/wordpress-split-multivariate-testing-titles/" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
 
 		protected function print_alternatives() { ?>
 			<h2><?php
-
-				$explanation = __( 'based on an existing page', 'nelioab' );
-				if ( $this->alt_type == NelioABExperiment::POST_ALT_EXP )
-					$explanation = __( 'based on an existing post', 'nelioab' );
-
 				printf( '<a onClick="javascript:%1$s" class="add-new-h2" href="javascript:;">%2$s</a>',
 					'NelioABAltTable.showNewPageOrPostAltForm(jQuery(\'table#alt-table\'), false);',
 					__( 'New Alternative Title', 'nelioab' )
 				);
-
 			?></h2><?php
 
 			$wp_list_table = new NelioABTitleAlternativesTable( $this->alternatives );

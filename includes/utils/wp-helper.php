@@ -22,29 +22,29 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		/**
 		 *
 		 */
-		public static function override( $ori_id, $overriding_id,
+		public static function overwrite( $ori_id, $overwriting_id,
 				$meta = true, $categories = true, $tags = true ) {
 
 			$ori = get_post( $ori_id, ARRAY_A );
 			if ( !$ori )
 				return;
-			$overriding = get_post( $overriding_id, ARRAY_A );
-			if ( !$overriding )
+			$overwriting = get_post( $overwriting_id, ARRAY_A );
+			if ( !$overwriting )
 				return;
 
 			require_once( NELIOAB_UTILS_DIR . '/optimize-press-support.php' );
 			NelioABOptimizePressSupport::make_post_compatible_with_optimizepress(
-				$ori_id, $overriding_id );
+				$ori_id, $overwriting_id );
 
-			$ori['post_title']    = $overriding['post_title'];
-			$ori['post_content']  = $overriding['post_content'];
-			$ori['post_excerpt']  = $overriding['post_excerpt'];
-			$ori['post_parent']   = $overriding['post_parent'];
+			$ori['post_title']    = $overwriting['post_title'];
+			$ori['post_content']  = $overwriting['post_content'];
+			$ori['post_excerpt']  = $overwriting['post_excerpt'];
+			$ori['post_parent']   = $overwriting['post_parent'];
 			wp_update_post( $ori );
 
 			if ( $meta )
-				NelioABWpHelper::copy_meta_info( $overriding_id, $ori_id );
-			NelioABWpHelper::copy_terms( $overriding_id, $ori_id, $categories, $tags );
+				NelioABWpHelper::copy_meta_info( $overwriting_id, $ori_id );
+			NelioABWpHelper::copy_terms( $overwriting_id, $ori_id, $categories, $tags );
 		}
 
 		/**
@@ -165,7 +165,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		 */
 		public static function search_posts() {
 			$term = false;
-			if ( isset( $_POST['term'] ) )
+			if ( isset( $_POST['term'] ) & !empty( $_POST['term'] ) )
 				$term = $_POST['term'];
 
 			$type = false;
@@ -197,6 +197,11 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				'post_status'    => 'publish',
 			);
 
+			if ( 'page' === $type && !$term ) {
+				$args['order'] = 'asc';
+				$args['orderby'] = 'title';
+			}
+
 			$lp_title = __( 'Your latest posts', 'nelioab' );
 			$latest_post_item = false;
 			if ( isset( $_POST['include_latest_posts'] ) || $default_id !== false ) {
@@ -204,7 +209,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 					$latest_post_item = array(
 						'id'        => NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS,
 						'type'      => '',
-						'title'     => $lp_title,
+						'title'     => self::fix_title( $lp_title ),
 						'status'    => '',
 						'date'      => '',
 						'author'    => 'WordPress',
@@ -230,7 +235,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				if ( $post ) {
 					$item = array(
 						'id' => $post->ID,
-						'title' => $post->post_title,
+						'title' => self::fix_title( $post->post_title ),
 					);
 					header( 'Content-Type: application/json' );
 					echo json_encode( array( $item ) );
@@ -254,7 +259,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 					$item = array(
 						'id'        => $post->ID,
 						'type'      => $post->post_type,
-						'title'     => $post->post_title,
+						'title'     => self::fix_title( $post->post_title ),
 						'status'    => $post->post_status,
 						'date'      => $post->post_date,
 						'author'    => get_the_author(),
@@ -311,7 +316,8 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			$args = array(
 				's'              => $term,
 				'posts_per_page' => 20,
-				'orderby'        => 'date',
+				'order'          => 'asc',
+				'orderby'        => 'title',
 			);
 
 			// If there's a default_id set, it means that the user is interested
@@ -323,7 +329,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 						$form = $aux[0];
 						$item = array(
 							'id'        => $form->id(),
-							'title'     => $form->title(),
+							'title'     => self::fix_title( $form->title() ),
 							'type'      => 'Contact Form 7',
 							'thumbnail' => $default_thumbnail,
 						);
@@ -337,7 +343,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 					if ( $form ) {
 						$item = array(
 							'id'        => $form['id'],
-							'title'     => $form['title'],
+							'title'     => self::fix_title( $form['title'] ),
 							'thumbnail' => $default_thumbnail,
 						);
 						header( 'Content-Type: application/json' );
@@ -354,7 +360,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				foreach ( $forms as $form ) {
 					$item = array(
 						'id'        => $form->id(),
-						'title'     => $form->title(),
+						'title'     => self::fix_title( $form->title() ),
 						'type'      => 'Contact Form 7',
 						'thumbnail' => $default_thumbnail,
 					);
@@ -369,7 +375,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 						continue;
 					$item = array(
 						'id'        => $form->id,
-						'title'     => $form->title,
+						'title'     => self::fix_title( $form->title ),
 						'type'      => 'Gravity Form',
 						'thumbnail' => $default_thumbnail,
 					);
@@ -380,6 +386,13 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			header( 'Content-Type: application/json' );
 			echo json_encode( $result );
 			die();
+		}
+
+		private static function fix_title( $title ) {
+			$title = strip_tags( $title );
+			if ( strlen( $title ) == 0 )
+				$title = __( '(no title)', 'nelioab' );
+			return $title;
 		}
 
 		public static function sort_post_search_by_title( $i1, $i2 ) {

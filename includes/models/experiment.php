@@ -36,6 +36,9 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 	 */
 	abstract class NelioABExperiment {
 
+		/**
+		 * EXPERIMENT TYPES
+		 */
 		const UNKNOWN_TYPE   = -1;
 		const NO_TYPE_SET    =  0;
 		const POST_ALT_EXP   =  1;
@@ -46,10 +49,10 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		const MENU_ALT_EXP   =  6;
 
 		// Used for returning from editing a post/page content
-		const PAGE_OR_POST_ALT_EXP  =  5;
+		const PAGE_OR_POST_ALT_EXP = 5;
 
 		const TITLE_ALT_EXP = 6;
-		const HEATMAP_EXP =  7;
+		const HEATMAP_EXP   = 7;
 
 		const UNKNOWN_TYPE_STR  = 'UnknownExperiment';
 		// NO_TYPE_SET_STR; Does not make sense
@@ -61,6 +64,18 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		const TITLE_ALT_EXP_STR = 'TitleAlternativeExperiment';
 		const HEATMAP_EXP_STR   = 'HeatmapExperiment';
 
+		/**
+		 * EXPERIMENT FINALIZATION MODES
+		 */
+		const FINALIZATION_MANUAL           = 0;
+		const FINALIZATION_AFTER_VIEWS      = 1;
+		const FINALIZATION_AFTER_CONFIDENCE = 2;
+		const FINALIZATION_AFTER_DATE       = 3;
+
+
+		/**
+		 * SOME ATTRIBUTES
+		 */
 		protected $id;
 		protected $goals;
 		private $name;
@@ -69,8 +84,22 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		private $creation_date;
 		private $type;
 
+		private $finalization_mode;
+		private $finalization_value;
+
 		public function __construct() {
 			$this->clear();
+		}
+
+		public function clear() {
+			$this->id       = -1;
+			$this->name     = '';
+			$this->descr    = '';
+			$this->status   = NelioABExperimentStatus::DRAFT;
+			$this->type     = NelioABExperiment::NO_TYPE_SET;
+			$this->goals    = array();
+			$this->finalization_mode  = self::FINALIZATION_MANUAL;
+			$this->finalization_value = '';
 		}
 
 		public function get_type() {
@@ -178,13 +207,20 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 			$this->creation_date = $creation_date;
 		}
 
-		public function clear() {
-			$this->id       = -1;
-			$this->name     = '';
-			$this->descr    = '';
-			$this->status   = NelioABExperimentStatus::DRAFT;
-			$this->type     = NelioABExperiment::NO_TYPE_SET;
-			$this->goals    = array();
+		public function set_finalization_mode( $mode ) {
+			$this->finalization_mode = $mode;
+		}
+
+		public function get_finalization_mode() {
+			return $this->finalization_mode;
+		}
+
+		public function set_finalization_value( $value ) {
+			$this->finalization_value = $value;
+		}
+
+		public function get_finalization_value() {
+			return $this->finalization_value;
 		}
 
 		public function get_url_for_making_goal_persistent( $goal ) {
@@ -194,7 +230,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 				default:
 				$type = 'alternativeexp';
 			}
-			if ( $goal->get_id() == -1 ) {
+			if ( $goal->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/exp/%1$s/%2$s/goal/%3$s',
 					$exp_url_fragment, $this->get_id(), $type
@@ -220,7 +256,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 			foreach ( $this->get_goals() as $goal ) {
 				$url = $this->get_url_for_making_goal_persistent( $goal );
 				if ( $goal->has_to_be_deleted() ) {
-					if ( $goal->get_id() != -1 )
+					if ( $goal->get_id() > 0 )
 						$result = NelioABBackend::remote_post( $url );
 				}
 				else {
@@ -232,6 +268,23 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 				}
 			}
 			$this->goals = $remaining_goals;
+		}
+
+		public function schedule( $date ) {
+			$url = sprintf(
+					NELIOAB_BACKEND_URL . '/exp/%2$s/%1$s/schedule',
+					$this->get_id(),$this->get_exp_kind_url_fragment()
+				);
+			$object = array( 'date' => $date );
+			$result = NelioABBackend::remote_post( $url, $object );
+		}
+
+		public function cancel_scheduling() {
+			$url = sprintf(
+					NELIOAB_BACKEND_URL . '/exp/%2$s/%1$s/unschedule',
+					$this->get_id(), $this->get_exp_kind_url_fragment()
+				);
+			$result = NelioABBackend::remote_get( $url );
 		}
 
 		public static function load_goals_from_json( $exp, $json_goals = array() ) {
@@ -269,12 +322,13 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 if ( !class_exists( 'NelioABExperimentStatus' ) ) {
 
 	class NelioABExperimentStatus {
-		const DRAFT    = 1;
-		const PAUSED   = 2;
-		const READY    = 3;
-		const RUNNING  = 4;
-		const FINISHED = 5;
-		const TRASH    = 6;
+		const DRAFT     = 1;
+		const PAUSED    = 2;
+		const READY     = 3;
+		const RUNNING   = 4;
+		const FINISHED  = 5;
+		const TRASH     = 6;
+		const SCHEDULED = 7;
 
 		public static function to_string( $status ) {
 			switch ( $status ) {
@@ -288,6 +342,8 @@ if ( !class_exists( 'NelioABExperimentStatus' ) ) {
 					return __( 'Finished', 'nelioab' );
 				case NelioABExperimentStatus::RUNNING:
 					return __( 'Running', 'nelioab' );
+				case NelioABExperimentStatus::SCHEDULED:
+					return __( 'Scheduled', 'nelioab' );
 				case NelioABExperimentStatus::TRASH:
 					return __( 'Trash' );
 				default:

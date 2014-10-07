@@ -3,11 +3,22 @@
 .js .postbox h3 { cursor:default; }
 #poststuff { min-width:0; }
 
+table#alternatives-in-progress {
+	font-size:13px;
+}
+
 table#alternatives-in-progress tr td:last-child {
 	min-width:350px;
 }
 
 table#alternatives-in-progress tr td:last-child small a { text-decoration:none; }
+
+table#alternatives-in-progress tr td:last-child small a.apply-link.disabled,
+table#alternatives-in-progress tr td:last-child small a.apply-link.disabled:hover {
+	color: #AAA;
+	cursor: default;
+	text-decoration: none;
+}
 
 /* EXPERIMENT SUMMARY */
 
@@ -168,16 +179,25 @@ div#exp-info {
 }
 
 @media (min-width:1280px) {
+	div#exp-info .nelioab-row {
+		display:table;
+	}
+
 	div#exp-info .nelioab-row .nelioab-first-col {
-		width:auto;
-		max-width:45%;
-		display:inline-block;
+		width:31%;
+		display:table-cell;
 	}
 
 	div#exp-info .nelioab-row .nelioab-second-col {
-		width:45%;
-		display:inline-block;
+		width:31%;
+		display:table-cell;
 	}
+
+	div#exp-info .nelioab-row .nelioab-third-col {
+		width:31%;
+		display:table-cell;
+	}
+
 }
 
 

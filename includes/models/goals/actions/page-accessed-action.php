@@ -67,8 +67,8 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 
 		/**
 		 * If the page is external, it returns its reference as a JavaScript
-		 * RegEx string, ready to be used in the client side. Otherwise, it
-		 * returns false.
+		 * RegEx string, ready to be uses as a parameter for the RegExp class
+		 * constructor. Otherwise, it returns false.
 		 *
 		 * @returns if the page is external, it returns its reference as a
 		 *          JavaScript RegEx string, ready to be used in the client
@@ -100,8 +100,6 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 				$url = '^' . $url;
 			if ( !$uses_starts_with && $uses_ends_with )
 				$url = $url . '$';
-
-			$url = '/' . $url . '/';
 
 			return $url;
 		}

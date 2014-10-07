@@ -106,8 +106,6 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
-			require_once( NELIOAB_MODELS_DIR . '/account-settings.php' );
-
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			$url = '';
 			if ( $this->get_id() < 0 ) {
@@ -130,11 +128,13 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 				$this->set_status( $this->determine_proper_status() );
 
 			$body = array(
-				'name'           => $this->get_name(),
-				'description'    => $this->get_description(),
-				'origin'         => $this->get_origins(),
-				'status'         => $this->get_status(),
-				'kind'           => $this->get_textual_type(),
+				'name'                  => $this->get_name(),
+				'description'           => $this->get_description(),
+				'origin'                => $this->get_origins(),
+				'status'                => $this->get_status(),
+				'kind'                  => $this->get_textual_type(),
+				'finalizationMode'      => $this->get_finalization_mode(),
+				'finalizationModeValue' => $this->get_finalization_value(),
 			);
 
 			$result = NelioABBackend::remote_post( $url, $body );

@@ -33,6 +33,9 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 		protected $form_name;
 
 		protected $is_global;
+		protected $tests_a_page;
+
+		protected $finalization_mode;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -65,10 +68,12 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 			return $this->form_name;
 		}
 
-		public function set_basic_info( $id, $name, $description ) {
+		public function set_basic_info( $id, $name, $description, $fin_mode, $fin_value ) {
 			$this->basic_info['id'] = $id;
 			$this->basic_info['name'] = $name;
 			$this->basic_info['description'] = $description;
+			$this->basic_info['finalization_mode'] = $fin_mode;
+			$this->basic_info['finalization_value'] = $fin_value;
 		}
 
 		public function set_alternatives( $alternatives ) {
@@ -156,6 +161,10 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 							$this->get_save_experiment_name(); ?></a>
 					</div>
 				</div>
+				<?php
+				require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+				NelioABHtmlGenerator::print_unsaved_changes_control( '#controllers .button-primary.save, .row-actions .edit-content' );
+				?>
 				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ); ?>"></script>
 				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/admin-table.min.js' ); ?>"></script>
 				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/nelioab-alt-table.min.js' ); ?>"></script>
@@ -183,6 +192,13 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 			?> <small><a href="http://wp-abtesting.com/faqs/what-is-the-description-of-an-experiment-used-for" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
+		}
+
+		public function print_finalization_mode_field() {
+			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+			NelioABHtmlGenerator::print_finalization_mode_field(
+				$this->basic_info['finalization_mode'],
+				$this->basic_info['finalization_value'] );
 		}
 
 		protected function print_basic_info() {
@@ -239,9 +255,21 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 							__( 'whose URL ends with', 'nelioab' ) );
 						$options .= '</select>';
 
-						printf(
-							__( 'A visitor accesses page %1$s, %2$s %3$s', 'nelioab' ),
-							$name, $options, $url );
+						if ( !$this->is_global ) {
+							$indirect  = '<select class="direct">';
+							$indirect .= ' <option value="1">' . __( 'from the tested page', 'nelioab' ) . '</option>';
+							$indirect .= ' <option value="0">' . __( 'from any page', 'nelioab' ) . '</option>';
+							$indirect .= '</select>';
+							printf(
+								__( 'A visitor accesses %4$s the page %1$s, %2$s %3$s', 'nelioab' ),
+								$name, $options, $url, $indirect );
+						}
+						else {
+							printf(
+								__( 'A visitor accesses the page %1$s, %2$s %3$s', 'nelioab' ),
+								$name, $options, $url );
+							printf( '<input type="hidden" class="direct" value="0" />' );
+						}
 					?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
@@ -289,15 +317,27 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 
 			// INDIRECT selectors for pages and posts
 			$p_indirect_real  = '<select class="direct">';
-			$p_indirect_real .= ' <option value="1">' . __( 'directly', 'nelioab' ) . '</option>';
-			$p_indirect_real .= ' <option value="0">' . __( 'directly or indirectly', 'nelioab' ) . '</option>';
+			if ( $this->tests_a_page ) {
+				$p_indirect_real .= ' <option value="1">' . __( 'from the tested page', 'nelioab' ) . '</option>';
+				$p_indirect_real .= ' <option value="0">' . __( 'from any page', 'nelioab' ) . '</option>';
+			}
+			else {
+				$p_indirect_real .= ' <option value="1">' . __( 'from the tested post', 'nelioab' ) . '</option>';
+				$p_indirect_real .= ' <option value="0">' . __( 'from any post', 'nelioab' ) . '</option>';
+			}
 			$p_indirect_real .= '</select>';
 			$p_indirect_hidden = '<input type="hidden" class="direct" value="0" />';
 
 			// INDIRECT selectors (or ANY_PAGE) for forms
 			$f_any_real  = '<select class="any-page">';
-			$f_any_real .= ' <option value="0">' . __( 'from the tested page', 'nelioab' ) . '</option>';
-			$f_any_real .= ' <option value="1">' . __( 'from any page', 'nelioab' ) . '</option>';
+			if ( $this->tests_a_page ) {
+				$f_any_real .= ' <option value="0">' . __( 'from the tested post', 'nelioab' ) . '</option>';
+				$f_any_real .= ' <option value="1">' . __( 'from any post', 'nelioab' ) . '</option>';
+			}
+			else {
+				$f_any_real .= ' <option value="0">' . __( 'from the tested post', 'nelioab' ) . '</option>';
+				$f_any_real .= ' <option value="1">' . __( 'from any post', 'nelioab' ) . '</option>';
+			}
 			$f_any_real .= '</select>';
 			$f_any_hidden = '<input type="hidden" class="any-page" value="1" />';
 
@@ -308,7 +348,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 
 				case 'page':
 					if ( $indirect ) {
-						$text = __( 'A visitor %2$s accesses page %1$s', 'nelioab' );
+						$text = __( 'A visitor accesses %2$s the page %1$s', 'nelioab' );
 						$indirect_selector = $p_indirect_real;
 					}
 					else {
@@ -319,7 +359,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 
 				case 'post':
 					if ( $indirect ) {
-						$text = __( 'A visitor %2$s accesses post %1$s', 'nelioab' );
+						$text = __( 'A visitor accesses %2$s the post %1$s', 'nelioab' );
 						$indirect_selector = $p_indirect_real;
 					}
 					else {
