@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 
@@ -30,10 +32,10 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 			_e( 'Details of the Title Experiment', 'nelioab' );
 		}
 
-		protected function print_js_function_for_post_data_overriding() { ?>
-			function nelioab_confirm_overriding(id, title) {
+		protected function print_js_function_for_post_data_overwriting() { ?>
+			function nelioab_confirm_overwriting(id, title) {
 				jQuery("#apply_alternative #alternative").attr("value",title);
-				nelioab_show_the_dialog_for_overriding(id);
+				nelioab_show_the_dialog_for_overwriting(id);
 			}
 			<?php
 		}
@@ -51,7 +53,7 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 				$name = str_replace( "\\", "\\\\", $name );
 				$name = str_replace( "'", "\\'", $name );
 				$aux = sprintf(
-					' <a href="javascript:nelioab_confirm_overriding(%s, \'%s\');">%s</a>',
+					' <a class="apply-link" href="javascript:nelioab_confirm_overwriting(%s, \'%s\');">%s</a>',
 					$alt_id, $name, __( 'Apply', 'nelioab' ) );
 				return array( $aux );
 			}
@@ -85,7 +87,7 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 					'</tr>',
 					$set_as_winner, $alt_label,
 					$alt->get_name(),
-					$alt->get_value(), NELIOAB_ASSETS_URL . '/images/loading-small.gif',
+					$alt->get_value(), nelioab_asset_link( '/images/loading-small.gif' ),
 					__( '(Done!)', 'nelioab' ),
 					implode( ' | ', $action_links ) );
 			}
@@ -93,15 +95,14 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
-				_e( 'You are about to override the original title with an alternative. Do you want to continue?', 'nelioab' );
+				_e( 'You are about to overwrite the original title with an alternative. Do you want to continue?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
-				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
-				$exp->get_id(); ?>">
+				echo admin_url(
+					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo NelioABExperiment::TITLE_ALT_EXP; ?>" />
 				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />
@@ -128,10 +129,15 @@ if ( !class_exists( 'NelioABTitleAltExpProgressPage' ) ) {
 			return $labels;
 		}
 
+		protected function print_actions_info() { ?>
+			<h3><?php _e( 'Conversion Action', 'nelioab' ); ?></h3>
+			<ul style="margin-left:2em;">
+				<li>- <?php _e( 'The user accesses the tested post in order to, hopefully, further read it', 'nelioab' ); ?></li>
+			</ul>
+			<?php
+		}
+
 	}//NelioABTitleAltExpProgressPage
 
 }
 
-
-
-?>

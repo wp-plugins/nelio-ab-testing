@@ -39,21 +39,21 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 			$old_post_entry = $wpdb->get_var(
 				'SELECT COUNT(*) ' .
 				'FROM ' . $wpdb->prefix . 'optimizepress_post_layouts ' .
-				'WHERE post_id = ' . $old_post_id );
+				'WHERE post_id = ' . $old_post_id . ' AND status = \'publish\'' );
 			if ( $old_post_entry == 0 )
 				return;
 
 			$row = $wpdb->get_row(
 				'SELECT * ' .
 				'FROM ' . $wpdb->prefix . 'optimizepress_post_layouts ' .
-				'WHERE post_id = ' . $old_post_id,
+				'WHERE post_id = ' . $old_post_id . ' AND status = \'publish\'',
 				ARRAY_A );
 
-			$old_post_entry = $wpdb->get_var(
+			$new_post_entry = $wpdb->get_var(
 				'SELECT COUNT(*) ' .
 				'FROM ' . $wpdb->prefix . 'optimizepress_post_layouts ' .
 				'WHERE post_id = ' . $new_post_id );
-			if ( $old_post_entry == 0 ) {
+			if ( $new_post_entry == 0 ) {
 				$wpdb->insert(
 					$wpdb->prefix . 'optimizepress_post_layouts',
 					array ( 'post_id' => $new_post_id ),
@@ -84,7 +84,7 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 						return $template;
 
 					$status = get_post_status( $id );
-					if ( $status == 'draft' || $status == 'publish' ||
+					if ( 'draft' == $status || 'publish' == $status ||
 					     ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 					   ) {
 						if ( get_post_meta( $id, '_' . OP_SN . '_pagebuilder', true ) == 'Y' ) {

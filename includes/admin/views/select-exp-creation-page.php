@@ -28,77 +28,96 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 		}
 
 		public function do_render() {
-			$url = admin_url() . 'admin.php?page=nelioab-add-experiment&experiment-type=';
-
-			// TITLE ONLY
-			$this->do_box(
-				__( 'New A/B Test<br />for Page or Post Titles', 'nelioab' ),
-				'title', $url . NelioABExperiment::TITLE_ALT_EXP );
-
-			// PAGE
-			$this->do_box(
-				__( 'New A/B Test<br />for Pages', 'nelioab' ),
-				'page', $url . NelioABExperiment::PAGE_ALT_EXP );
+			$url = admin_url( 'admin.php?page=nelioab-add-experiment&experiment-type=' );
 
 			// POST
-			$this->do_box(
-				__( 'New A/B Test<br />for Posts', 'nelioab' ),
-				'post', $url . NelioABExperiment::POST_ALT_EXP );
+			$this->print_beautiful_box(
+				'post',
+				__( 'New A/B Test for Posts', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'post', $url . NelioABExperiment::POST_ALT_EXP,
+						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a post and <strong>change whatever you want</strong>: the colors, the text, the layout... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
+					)
+				)
+			);
+
+			// PAGE
+			$this->print_beautiful_box(
+				'page',
+				__( 'New A/B Test for Pages', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'page', $url . NelioABExperiment::PAGE_ALT_EXP,
+						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a page and <strong>change whatever you want</strong>: the colors, the text, the layout... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
+					)
+				)
+			);
+
+			// TITLE ONLY
+			$this->print_beautiful_box(
+				'title',
+				__( 'New A/B Test for Page or Post Titles', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'title', $url . NelioABExperiment::TITLE_ALT_EXP,
+						__( 'With Title Experiments, you\'ll be able to <strong>test different titles and check which one is more appealing</strong> to your users. Every time the title is printed somewhere in your site, it is counted as a visit. When a visitor clicks the link and reads the post, then you have a conversion!', 'nelioab' )
+					)
+				)
+			);
 
 			// THEMES (enabled starting at version 3.4)
 			if ( NelioABWpHelper::is_at_least_version( 3.4 ) ) {
-				$this->do_box(
-					__( 'New A/B Theme Test<br />', 'nelioab' ),
-					'theme', $url . NelioABExperiment::THEME_ALT_EXP );
+				$this->print_beautiful_box(
+					'theme',
+					__( 'New A/B Theme Test ', 'nelioab' ),
+					array( &$this, 'print_new_exp_box',
+					array(
+						'theme', $url . NelioABExperiment::THEME_ALT_EXP,
+						__( 'Would you like to <strong>change your WordPress completely</strong>? Do you want to <strong>test small variations of two child themes</strong>? Then this gives you what you need! Just keep in mind to configure each theme individually before using this kind of experiment.', 'nelioab' )
+						)
+					)
+				);
 			}
 
 
-			// CSS
-			$this->do_box(
-				__( 'New Heatmap Experiment<br />for Page or Post', 'nelioab' ),
-				'heatmap', $url . NelioABExperiment::HEATMAP_EXP );
+			// HEATMAPS
+			$this->print_beautiful_box(
+				'heatmap',
+				__( 'New Heatmap Experiment for Page or Post', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'heatmap', $url . NelioABExperiment::HEATMAP_EXP,
+						__( 'If you don\'t know how to get started with A/B Testing, run a Heatmap Experiment and <strong>discover how your users behave when navigating through your website</strong>! This is one of the easiest ways to get ideas on what to do next.', 'nelioab' )
+					)
+				)
+			);
 
 			// CSS
-			$this->do_box(
-				__( 'New A/B CSS Test<br />', 'nelioab' ),
-				'css', $url . NelioABExperiment::CSS_ALT_EXP );
-
-			// MENU
-//			$this->do_box(
-//				__( 'New A/B Menu Test<br />', 'nelioab' ),
-//				'menu'/*, $url . NelioABExperiment::MENU_ALT_EXP*/ );
-
-			// WIDGET
-			$this->do_box(
-				__( 'New A/B Widget Test<br />', 'nelioab' ),
-				'widget'/*, $url . NelioABExperiment::WIDGET_ALT_EXP*/ );
+			$this->print_beautiful_box(
+				'css',
+				__( 'New A/B CSS Test', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'css', $url . NelioABExperiment::CSS_ALT_EXP,
+						__( 'Do you want to <strong>change the appearence of your WordPress site, but tweaking only small elements here and there</strong>? Then CSS Tests is what you\'re looking for. Create one or more CSS fragments that will be applied to your website and discover which one offers the better results.', 'nelioab' )
+					)
+				)
+			);
 
 		}
 
 
-		private function do_box( $label, $icon, $url = false ) {
-			if ( $url ) {
-				$open_tag  = '<a href="' . $url . '">';
-				$close_tag = '</a>';
-			}
-			else {
-				$open_tag  = '<span class="nelioab-option-disabled">';
-				$close_tag = '</span>';
-			}
-			?>
-			<?php echo $open_tag; ?>
-				<div class="nelioab-option">
-					<div class="nelioab-option-image-holder">
-						&nbsp;
-						<div class="nelioab-option-image nelioab-image nelioab-image-<?php echo $icon; ?>">&nbsp;</div>
-						&nbsp;
-					</div>
-					<p style="line-height:1.2em;margin-top:0em;"><?php echo $label; ?></p>
+		public function print_new_exp_box( $type, $url, $description ) { ?>
+			<a href="<?php echo $url ?>">
+				<div class="nelioab-image nelioab-image-<?php echo $type; ?>">&nbsp;</div>
+				<div class="description">
+					<?php echo $description; ?>
 				</div>
-			<?php echo $close_tag; ?>
-
+			</a>
 			<?php
 		}
+
 
 	}//NelioABSelectExpCreationPage
 

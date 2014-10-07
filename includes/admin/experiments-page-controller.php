@@ -51,8 +51,12 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 				$view->keep_request_param( 'exp_id', $_GET['id'] );
 
 			if ( isset( $_GET['exp_type'] ) )
-				// The ID of the experiment to which the action applies
+				// The type of the experiment (relevant along with its ID)
 				$view->keep_request_param( 'exp_type', $_GET['exp_type'] );
+
+			if ( isset( $_GET['schedule_date'] ) )
+				// Scheduled Date is relevant for scheduling an experiment
+				$view->keep_request_param( 'schedule_date', $_GET['schedule_date'] );
 
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
 		}
@@ -64,6 +68,12 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			     isset( $_REQUEST['exp_type'] ) ) {
 
 				switch ( $_REQUEST['GET_action'] ) {
+					case 'schedule':
+						NelioABExperimentsPageController::schedule_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'], $_REQUEST['schedule_date'] );
+						break;
+					case 'cancel-schedule':
+						NelioABExperimentsPageController::cancel_scheduling_of_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
+						break;
 					case 'start':
 						NelioABExperimentsPageController::start_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
 						break;
@@ -86,6 +96,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 						// attention to the IF checking of ISSET variables...
 				}
 			}
+
+			// Force update results
+			global $nelioab_controller;
+			$nelioab_controller->compute_results_for_running_experiments();
 
 			// Obtain DATA from APPSPOT
 			$mgr = new NelioABExperimentsManager();
@@ -160,6 +174,38 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 						NelioABErrorController::build( $e );
 				}
 
+			}
+		}
+
+		public static function schedule_experiment( $exp_id, $exp_type, $date ) {
+			try {
+				$mgr = new NelioABExperimentsManager();
+				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp->schedule( $date );
+			}
+			catch ( Exception $e ) {
+				global $nelioab_admin_controller;
+				switch ( $e->getCode() ) {
+					case NelioABErrCodes::INVALID_SCHEDULE_DATE:
+						$nelioab_admin_controller->error_message = $e->getMessage();
+						return;
+
+					default:
+						require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+						NelioABErrorController::build( $e );
+				}
+			}
+		}
+
+		public static function cancel_scheduling_of_experiment( $exp_id, $exp_type ) {
+			try {
+				$mgr = new NelioABExperimentsManager();
+				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp->cancel_scheduling();
+			}
+			catch ( Exception $e ) {
+				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+				NelioABErrorController::build( $e );
 			}
 		}
 

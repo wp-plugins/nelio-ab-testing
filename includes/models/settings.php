@@ -17,148 +17,305 @@
 
 if( !class_exists( 'NelioABSettings' ) ) {
 
-	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
-
 	class NelioABSettings {
 
-		const BETA_SUBSCRIPTION_PLAN         = 0;
-		const BASIC_SUBSCRIPTION_PLAN        = 1;
-		const PROFESSIONAL_SUBSCRIPTION_PLAN = 2;
+		const ALGORITHM_PURE_RANDOM         = 0;
+		const ALGORITHM_PRIORITIZE_ORIGINAL = 1;
+		const ALGORITHM_GREEDY              = 2;
+
+		const DEFAULT_CONVERSION_VALUE            = 25;
+		const DEFAULT_CONVERSION_UNIT             = 'USD';
+		const DEFAULT_USE_COLORBLIND_PALETTE      = false;
+		const DEFAULT_SHOW_FINISHED_EXPERIMENTS   = false;
+		const DEFAULT_USE_PHP_COOKIES             = false;
+		const DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE = 90;
+		const DEFAULT_PERCENTAGE_OF_TESTED_USERS  = 100;
+		const DEFAULT_EXPL_RATIO                  = 90;
+		const DEFAULT_ORIGINAL_PERCENTAGE         = 60;
+
+		/**
+		 * @deprecated
+		 */
+		const DEFAULT_IS_GREEDY_ENABLED           = false;
+
+		public static function get_settings() {
+			return get_option( 'nelioab_settings', array() );
+		}
+
+		public static function is_field_enabled_for_current_plan( $field_name ) {
+			$plan = NelioABAccountSettings::get_subscription_plan();
+
+			if ( $plan < NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+				// Nothing here
+			}
+
+			if ( $plan < NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+				switch ( $field_name )  {
+					case 'expl_ratio':
+					case 'ori_perc':
+					case 'min_confidence_for_significance':
+					case 'algorithm':
+					case 'perc_of_tested_users':
+						return false;
+				}
+			}
+
+			return true;
+		}
+
+		public static function sanitize( $input ) {
+			$new_input = array();
+
+			$new_input['def_conv_value'] = self::DEFAULT_CONVERSION_VALUE;
+			if( isset( $input['def_conv_value'] ) )
+				$new_input['def_conv_value'] = sanitize_text_field( $input['def_conv_value'] );
+
+			$new_input['conv_unit'] = self::DEFAULT_CONVERSION_UNIT;
+			if( isset( $input['conv_unit'] ) )
+				$new_input['conv_unit'] = sanitize_text_field( $input['conv_unit'] );
+
+			$new_input['use_colorblind'] = self::DEFAULT_USE_COLORBLIND_PALETTE;
+			if( isset( $input['use_colorblind'] ) ) {
+				$new_input['use_colorblind'] = sanitize_text_field( $input['use_colorblind'] );
+				$new_input['use_colorblind'] = $new_input['use_colorblind'] == '1';
+			}
+
+			$new_input['show_finished_experiments'] = self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
+			if( isset( $input['show_finished_experiments'] ) ) {
+				$new_input['show_finished_experiments'] = sanitize_text_field( $input['show_finished_experiments'] );
+				$new_input['show_finished_experiments'] = $new_input['show_finished_experiments'] == '1';
+			}
+
+			$new_input['algorithm'] = self::ALGORITHM_PURE_RANDOM;
+			if( isset( $input['algorithm'] ) )
+				$new_input['algorithm'] = intval( $input['algorithm'] );
+
+			$new_input['expl_ratio'] = self::DEFAULT_EXPL_RATIO;
+			if( isset( $input['expl_ratio'] ) )
+				$new_input['expl_ratio'] = intval( $input['expl_ratio'] );
+
+			$new_input['ori_perc'] = self::DEFAULT_ORIGINAL_PERCENTAGE;
+			if( isset( $input['ori_perc'] ) )
+				$new_input['ori_perc'] = intval( $input['ori_perc'] );
+
+			$new_input['use_php_cookies'] = self::DEFAULT_USE_PHP_COOKIES;
+			if( isset( $input['use_php_cookies'] ) ) {
+				$new_input['use_php_cookies'] = sanitize_text_field( $input['use_php_cookies'] );
+				$new_input['use_php_cookies'] = $new_input['use_php_cookies'] == '1';
+			}
+
+			$new_input['min_confidence_for_significance'] = self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
+			if( isset( $input['min_confidence_for_significance'] ) )
+				$new_input['min_confidence_for_significance'] = intval( $input['min_confidence_for_significance'] );
+			if ( 100 == $new_input['min_confidence_for_significance'] )
+				$new_input['min_confidence_for_significance'] = 99;
+
+			$new_input['perc_of_tested_users'] = self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
+			if( isset( $input['perc_of_tested_users'] ) )
+				$new_input['perc_of_tested_users'] = intval( $input['perc_of_tested_users'] );
+
+			return $new_input;
+		}
+
+		public static function get_def_conv_value() {
+			if ( !self::is_field_enabled_for_current_plan( 'def_conv_value' ) )
+				return self::DEFAULT_CONVERSION_VALUE;
+			$options = self::get_settings();
+			$result = '';
+			if ( isset( $options['def_conv_value'] ) )
+				$result = $options['def_conv_value'];
+			if ( strlen( $result ) == 0 )
+				$result = self::DEFAULT_CONVERSION_VALUE;
+			return $result;
+		}
+
+		public static function is_performance_muplugin_installed() {
+			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
+			$mu_dir = untrailingslashit( $mu_dir );
+			$mu_plugin = $mu_dir . '/nelioab-performance.php';
+			return file_exists( $mu_plugin );
+		}
+
+		public static function toggle_performance_muplugin_installation() {
+			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
+			$mu_dir = untrailingslashit( $mu_dir );
+			$source = NELIOAB_ROOT_DIR . '/mu-plugins/nelioab-performance.php';
+			$dest = $mu_dir . '/nelioab-performance.php';
+
+			if ( !self::is_performance_muplugin_installed() ) {
+				$result = self::install_performance_muplugin( $mu_dir, $source, $dest );
+			}
+			elseif ( !self::is_performance_muplugin_up_to_date() ) {
+				$result = self::uninstall_performance_muplugin( $dest );
+				if ( $result['status'] !== 'ERROR' )
+					$result = self::install_performance_muplugin( $mu_dir, $source, $dest );
+			}
+			else {
+				$result = self::uninstall_performance_muplugin( $dest );
+			}
+			header( 'Content-Type: application/json' );
+			echo json_encode( $result );
+			die();
+		}
+
+		public static function update_performance_muplugin() {
+			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
+			$mu_dir = untrailingslashit( $mu_dir );
+			$source = NELIOAB_ROOT_DIR . '/mu-plugins/nelioab-performance.php';
+			$dest = $mu_dir . '/nelioab-performance.php';
+			$result = self::uninstall_performance_muplugin( $dest );
+			if ( $result['status'] !== 'ERROR' )
+				$result = self::install_performance_muplugin( $mu_dir, $source, $dest );
+		}
+
+		private static function install_performance_muplugin( $mu_dir, $source, $dest ) {
+			$result = array( 'status' => 'OK', 'error' => '' );
+			if ( !wp_mkdir_p( $mu_dir ) ) {
+				$result['error'] = sprintf(
+					__( '<strong>Error!</strong> The following directory could not be created: <code>%s</code>.', 'nelioab' ),
+					$mu_dir );
+				$result['status'] = 'ERROR';
+			}
+			if ( $result['status'] !== 'ERROR' && !copy( $source, $dest ) ) {
+				$result['error'] = sprintf(
+					__( '<strong>Error!</strong> Could not copy Nelio\'s performance MU-Plugin from <code>%1$s</code> to <code>%2$s</code>.', 'nelioab' ),
+					$source, $dest );
+				$result['status'] = 'ERROR';
+			}
+			return $result;
+		}
+
+		private static function uninstall_performance_muplugin( $dest ) {
+			$result = array( 'status' => 'OK', 'error' => '' );
+			if ( file_exists( $dest ) && !unlink( $dest ) ) {
+				$result['error'] = sprintf(
+						__( '<strong>Error!</strong> Could not remove the Nelio\'s performance MU-Plugin from <code>%s</code>.', 'nelioab' ),
+					$dest );
+				$result['status'] = 'ERROR';
+			}
+			return $result;
+		}
+
+		public static function is_performance_muplugin_up_to_date() {
+			if ( !is_admin() || !function_exists( 'get_plugin_data' ) )
+				return true;
+
+			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
+			$mu_dir = untrailingslashit( $mu_dir );
+			$mu_plugin = $mu_dir . '/nelioab-performance.php';
+
+			if ( !file_exists( $mu_plugin ) )
+				return true;
+
+			$mu_plugin_data = get_plugin_data( $mu_plugin );
+			$installed_version = $mu_plugin_data['Version'];
+
+			$source = NELIOAB_ROOT_DIR . '/mu-plugins/nelioab-performance.php';
+			$source_data = get_plugin_data( $source );
+			$new_version = $source_data['Version'];
+
+			if ( $new_version === $installed_version )
+				return true;
+			else
+				return false;
+		}
+
+		public static function get_conv_unit() {
+			if ( !self::is_field_enabled_for_current_plan( 'conv_unit' ) )
+				return self::DEFAULT_CONVERSION_UNIT;
+			$options = self::get_settings();
+			$result = '';
+			if ( isset( $options['conv_unit'] ) )
+				$result = $options['conv_unit'];
+			if ( strlen( $result ) == 0 )
+				$result = self::DEFAULT_CONVERSION_UNIT;
+			return $result;
+		}
+
+		public static function get_original_percentage() {
+			if ( !self::is_field_enabled_for_current_plan( 'ori_perc' ) )
+				return self::DEFAULT_ORIGINAL_PERCENTAGE;
+			$options = self::get_settings();
+			if ( isset( $options['ori_perc'] ) )
+				return $options['ori_perc'];
+			return self::DEFAULT_ORIGINAL_PERCENTAGE;
+		}
+
+		public static function get_exploitation_percentage() {
+			if ( !self::is_field_enabled_for_current_plan( 'expl_ratio' ) )
+				return self::DEFAULT_EXPL_RATIO;
+			$options = self::get_settings();
+			if ( isset( $options['expl_ratio'] ) )
+				return $options['expl_ratio'];
+			return self::DEFAULT_EXPL_RATIO;
+		}
+
+		public static function use_colorblind_palette() {
+			if ( !self::is_field_enabled_for_current_plan( 'use_colorblind' ) )
+				return self::DEFAULT_USE_COLORBLIND_PALETTE;
+			$options = self::get_settings();
+			if ( isset( $options['use_colorblind'] ) )
+				return $options['use_colorblind'];
+			return self::DEFAULT_USE_COLORBLIND_PALETTE;
+		}
+
+		public static function show_finished_experiments() {
+			if ( !self::is_field_enabled_for_current_plan( 'show_finished_experiments' ) )
+				return self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
+			$options = self::get_settings();
+			if ( isset( $options['show_finished_experiments'] ) )
+				return $options['show_finished_experiments'];
+			return self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
+		}
+
+		public static function use_php_cookies() {
+			if ( !self::is_field_enabled_for_current_plan( 'use_php_cookies' ) )
+				return self::DEFAULT_USE_PHP_COOKIES;
+			$options = self::get_settings();
+			if ( isset( $options['use_php_cookies'] ) )
+				return $options['use_php_cookies'];
+			return self::DEFAULT_USE_PHP_COOKIES;
+		}
+
+
+		public static function get_min_confidence_for_significance() {
+			if ( !self::is_field_enabled_for_current_plan( 'min_confidence_for_significance' ) )
+				return self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
+			$options = self::get_settings();
+			if ( isset( $options['min_confidence_for_significance'] ) )
+				return $options['min_confidence_for_significance'];
+			return self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
+		}
+
+		public static function get_percentage_of_tested_users() {
+			if ( !self::is_field_enabled_for_current_plan( 'perc_of_tested_users' ) )
+				return self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
+			$options = self::get_settings();
+			if ( isset( $options['perc_of_tested_users'] ) )
+				return $options['perc_of_tested_users'];
+			return self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
+		}
+
+		public static function get_algorithm() {
+			if ( !self::is_field_enabled_for_current_plan( 'algorithm' ) )
+				return self::ALGORITHM_PURE_RANDOM;
+			$options = self::get_settings();
+			if ( isset( $options['algorithm'] ) )
+				return $options['algorithm'];
+
+			/**
+			 * We need this check for if the user comes from a previous version. We'll have to
+			 * delete it someday in the future.
+			 * @deprecated
+			 */
+			if ( isset( $options['greedy_enabled'] ) && $options['greedy_enabled'] )
+				return self::ALGORITHM_GREEDY;
+
+			return self::ALGORITHM_PURE_RANDOM;
+		}
 
 		public static function cookie_prefix() {
 			return 'nelioab_';
-		}
-
-		public static function get_subscription_plan() {
-			try {
-				NelioABSettings::check_user_settings();
-			}
-			catch ( Exception $e ) {
-				// Nothing to catch here
-			}
-
-			return get_option(
-				'nelioab_subscription_plan',
-				NelioABSettings::BASIC_SUBSCRIPTION_PLAN );
-		}
-
-		public static function validate_email_and_reg_num( $email, $reg_num ) {
-			update_option( 'nelioab_email', $email );
-			update_option( 'nelioab_reg_num', $reg_num );
-
-			$json_data = null;
-			try {
-				$params = array(
-					'body' => array( 'mail' => $email, 'registrationNumber' => $reg_num )
-				);
-
-				if ( $email == NULL || strlen( $email ) == 0 ) {
-					$err = NelioABErrCodes::INVALID_MAIL;
-					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-				}
-
-				if ( $reg_num == NULL || strlen( $reg_num ) == 0 ) {
-					$err = NelioABErrCodes::INVALID_PRODUCT_REG_NUM;
-					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-				}
-
-				$json_data = NelioABBackend::remote_post_raw(
-					NELIOAB_BACKEND_URL . '/customer/validate',
-					$params, true );
-
-				$json_data = json_decode( $json_data['body'] );
-			}
-			catch ( Exception $e ) {
-				$error = $e->getCode();
-
-				if ( $error == NelioABErrCodes::INVALID_PRODUCT_REG_NUM )
-					NelioABSettings::set_reg_num_validity( false );
-
-				if ( $error == NelioABErrCodes::INVALID_MAIL )
-					NelioABSettings::set_email_validity( false );
-
-				throw $e;
-			}
-
-			NelioABSettings::set_reg_num_validity( true );
-			NelioABSettings::set_email_validity( true );
-			update_option( 'nelioab_customer_id', $json_data->key->id );
-
-			// Store the current subscription plan
-
-			// Check if the current site is already registered for this account
-			$registered = false;
-			$this_url   = get_option( 'siteurl' );
-			$sites_info = NelioABSettings::get_registered_sites_information();
-			$sites      = $sites_info->get_registered_sites();
-			foreach( $sites as $s )
-				if ( $s->get_url() == $this_url )
-					$registered = true;
-
-			if ( $registered )
-				NelioABSettings::register_this_site();
-			else
-				NelioABSettings::set_has_a_configured_site( false );
-		}
-
-		public static function get_customer_id() {
-			return get_option( 'nelioab_customer_id', '' );
-		}
-
-		public static function get_email() {
-			return get_option( 'nelioab_email', '' );
-		}
-
-		private static function set_email_validity( $validity ) {
-			update_option( 'nelioab_is_email_valid', $validity );
-		}
-
-		public static function is_email_valid() {
-			return get_option( 'nelioab_is_email_valid', false );
-		}
-
-		public static function get_reg_num() {
-			return get_option( 'nelioab_reg_num', '' );
-		}
-
-		private static function set_reg_num_validity( $validity ) {
-			update_option( 'nelioab_is_reg_num_valid', $validity );
-		}
-
-		public static function is_reg_num_valid() {
-			return get_option( 'nelioab_is_reg_num_valid', false );
-		}
-
-		public static function has_a_configured_site() {
-			return get_option( 'nelioab_has_a_configured_site', false );
-		}
-
-		public static function set_has_a_configured_site( $configured ) {
-			update_option( 'nelioab_has_a_configured_site', $configured );
-		}
-
-		public static function get_site_id() {
-			return get_option( 'nelioab_site_id', '' );
-		}
-
-		public static function set_site_id( $site_id ) {
-			update_option( 'nelioab_site_id', $site_id );
-		}
-
-		public static function get_site_url() {
-			return get_option( 'nelioab_site_url', false );
-		}
-
-		public static function set_site_url( $site_url ) {
-			update_option( 'nelioab_site_url', $site_url );
-		}
-
-		public static function check_terms_and_conditions( $accepted ) {
-			update_option( 'nelioab_are_tac_accepted', $accepted );
-		}
-
-		public static function are_terms_and_conditions_accepted() {
-			return get_option( 'nelioab_are_tac_accepted', false );
 		}
 
 		public static function set_copy_metadata( $enabled ) {
@@ -185,172 +342,8 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			return get_option( 'nelioab_copy_categories', true );
 		}
 
-		public static function check_user_settings() {
-
-			if ( !NelioABSettings::is_email_valid() ) {
-				$err = NelioABErrCodes::INVALID_MAIL;
-				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-			}
-
-			if ( !NelioABSettings::is_reg_num_valid() ) {
-				$err = NelioABErrCodes::INVALID_PRODUCT_REG_NUM;
-				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-			}
-
-			if ( !NelioABSettings::are_terms_and_conditions_accepted() ) {
-				$err = NelioABErrCodes::NON_ACCEPTED_TAC;
-				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-			}
-
-			if ( !NelioABSettings::has_a_configured_site() ) {
-				$err = NelioABErrCodes::BACKEND_NO_SITE_CONFIGURED;
-				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-			}
-
-			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
-			$last_check = get_option( 'nelioab_last_check_user_settings', $the_past );
-			$now        = time();
-			$offset     = 1800; // sec (== 30min)
-			if ( ( $last_check + $offset ) < $now ) {
-				try {
-					$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
-					$json = NelioABBackend::remote_get( $url, true );
-					$json = json_decode( $json['body'] );
-					NelioABSettings::set_account_as_active();
-					update_option( 'nelioab_subscription_plan', $json->subscriptionPlan );
-					update_option( 'nelioab_last_check_user_settings', $now );
-				}
-				catch ( Exception $e ) {
-					if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER ) {
-						NelioABSettings::set_account_as_active( false );
-						update_option( 'nelioab_last_check_user_settings', $now );
-					}
-				}
-			}
-
-			if ( !NelioABSettings::is_account_active() ) {
-				$err = NelioABErrCodes::DEACTIVATED_USER;
-				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
-			}
-
-			return true;
-		}
-
-		public static function is_account_active() {
-			return get_option( 'nelioab_is_account_active', false );
-		}
-
-		public static function set_account_as_active( $active = true ) {
-			update_option( 'nelioab_is_account_active', $active );
-		}
-
-		public static function get_registered_sites_information() {
-			$res = new NelioABSitesInfo();
-
-			// Set max number of sites
-			$url = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check', NelioABSettings::get_customer_id() );
-			$json_data = NelioABBackend::remote_get( $url, true );
-			$json_data = json_decode( $json_data['body'] );
-			$res->set_max_sites( $json_data->allowedSites );
-
-			// Retrieve information about each site
-			$json_data = NelioABBackend::remote_get( sprintf(
-				NELIOAB_BACKEND_URL . '/customer/%s/site',
-				NelioABSettings::get_customer_id()
-			), true );
-
-			$json_data = json_decode( $json_data['body'] );
-
-			if ( isset( $json_data->items ) ) {
-				foreach ( $json_data->items as $item ) {
-					$id     = $item->key->id;
-					$url    = $item->url;
-					$status = $item->status;
-					$res->add_registered_site( new NelioABSite( $id, $url, $status ) );
-				}
-			}
-
-			return $res;
-		}
-
-		public static function update_registered_sites_if_required( $url ) {
-
-			while ( substr( $url, -1 ) === '/' )
-				$url = substr( $url, 0, strlen( $url ) - 1 );
-
-			if ( NelioABSettings::has_a_configured_site() ) {
-				$id     = NelioABSettings::get_site_id();
-				$params = array(
-					'url' => $url,
-				);
-				try {
-					$json_data = NelioABBackend::remote_post( sprintf(
-						NELIOAB_BACKEND_URL . '/site/%s/update',
-						$id
-					), $params, true );
-					NelioABSettings::set_site_url( $url );
-				}
-				catch ( Exception $e ) {}
-			}
-
-			return $url;
-		}
-
-		public static function register_this_site() {
-
-			try {
-				$params = array( 'url' => get_option( 'siteurl' ) );
-				$json_data = NelioABBackend::remote_post( sprintf(
-					NELIOAB_BACKEND_URL . '/customer/%s/site/activate',
-					NelioABSettings::get_customer_id()
-				), $params, true );
-
-				$json_data = json_decode( $json_data['body'] );
-				NelioABSettings::set_has_a_configured_site( true );
-				NelioABSettings::set_site_id( $json_data->key->id );
-				NelioABSettings::set_site_url( get_option( 'siteurl' ) );
-			}
-			catch ( Exception $e ) {
-				NelioABSettings::set_has_a_configured_site( false );
-				throw $e;
-			}
-
-		}
-
-		public static function deregister_this_site() {
-
-			try {
-				$json_data = NelioABBackend::remote_post( sprintf(
-					NELIOAB_BACKEND_URL . '/site/%s/deactivate',
-					NelioABSettings::get_site_id()
-				), array(), true );
-			}
-			catch ( Exception $e ) {
-				throw $e;
-			}
-
-			NelioABSettings::set_has_a_configured_site( false );
-		}
-
-		public static function has_quota_left() {
-			return get_option( 'nelioab_has_quota_left', true );
-		}
-
-		public static function set_has_quota_left( $has_quota_left ) {
-			update_option( 'nelioab_has_quota_left', $has_quota_left );
-			update_option( 'nelioab_last_quota_check', time() );
-		}
-
-		public static function is_quota_check_required() {
-			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
-			$last_check = get_option( 'nelioab_last_quota_check', $the_past );
-			$now        = time();
-			$offset     = 1800; // seg == 30min
-			return ( ( $the_past + $offset ) < $now );
-		}
-
-		public function is_upgrade_message_visible() {
-			if ( NelioABSettings::get_subscription_plan() != NelioABSettings::BASIC_SUBSCRIPTION_PLAN )
+		public static function is_upgrade_message_visible() {
+			if ( NelioABAccountSettings::get_subscription_plan() != NelioABAccountSettings::BASIC_SUBSCRIPTION_PLAN )
 				return false;
 			$result = get_option( 'nelioab_hide_upgrade_message', false );
 			if ( !$result )
@@ -359,71 +352,11 @@ if( !class_exists( 'NelioABSettings' ) ) {
 				return false;
 		}
 
-		public function hide_upgrade_message() {
+		public static function hide_upgrade_message() {
 			update_option( 'nelioab_hide_upgrade_message', NELIOAB_PLUGIN_VERSION );
 		}
 
 	}//NelioABSettings
 
-
-	class NelioABSitesInfo {
-		private $sites;
-		private $max_sites;
-
-		public function __construct() {
-			$this->sites     = array();
-			$this->max_sites = 1;
-		}
-
-		public function add_registered_site( $site ) {
-			array_push( $this->sites, $site );
-		}
-
-		public function get_registered_sites() {
-			return $this->sites;
-		}
-
-		public function set_max_sites( $max_sites ) {
-			$this->max_sites = $max_sites;
-		}
-
-		public function get_max_sites() {
-			return $this->max_sites;
-		}
-
-	}//NelioABSitesInfo
-
-	class NelioABSite {
-		const INACTIVE          = 0;
-		const ACTIVE            = 1;
-		const NON_MATCHING_URLS = 2;
-		const INVALID_ID        = 3;
-		const NOT_REGISTERED    = 4;
-
-		private $id;
-		private $url;
-		private $status;
-
-		public function __construct( $id, $url, $status ) {
-			$this->id     = $id;
-			$this->url    = $url;
-			$this->status = $status;
-		}
-
-		public function get_id() {
-			return $this->id;
-		}
-
-		public function get_url() {
-			return $this->url;
-		}
-
-		public function get_status() {
-			return $this->status;
-		}
-
-	}//NelioABSite
-
 }
 
-?>

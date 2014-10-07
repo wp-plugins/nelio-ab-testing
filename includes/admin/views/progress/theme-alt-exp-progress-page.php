@@ -46,11 +46,11 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			return $exp->get_original()->get_value();
 		}
 
-		protected function print_js_function_for_post_data_overriding() { ?>
-			function nelioab_confirm_overriding(id, stylesheet, template) {
+		protected function print_js_function_for_post_data_overwriting() { ?>
+			function nelioab_confirm_overwriting(id, stylesheet, template) {
 				jQuery("#apply_alternative #stylesheet").attr("value",stylesheet);
 				jQuery("#apply_alternative #template").attr("value",template);
-				nelioab_show_the_dialog_for_overriding(id);
+				nelioab_show_the_dialog_for_overwriting(id);
 			}
 			<?php
 		}
@@ -75,6 +75,14 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			}
 		}
 
+		protected function print_alternatives_block() {
+			echo '<table id="alternatives-in-progress">';
+			$this->print_the_original_alternative();
+			$this->print_the_real_alternatives();
+			echo '</table>';
+		}
+
+
 		protected function print_the_original_alternative() {
 			// THE ORIGINAL
 			// -----------------------------------------
@@ -86,9 +94,14 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			else
 				$set_as_winner = '';
 
-			echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s</li>',
-				$set_as_winner, $ori_label, $this->ori );
+			echo sprintf( '<tr>' .
+				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
+				'<td><strong>%s</strong><br />' .
+				'<small>&nbsp;</small></td>' .
+				'</tr>',
+				$set_as_winner, $ori_label, $this->trunk( $this->ori ) );
 		}
+
 
 		protected function print_the_real_alternatives() {
 			// REAL ALTERNATIVES
@@ -98,7 +111,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			$the_themes = wp_get_themes();
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
-				$edit_link = '';
+				$action_links = array();
 
 				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
 					$theme = NULL;
@@ -114,17 +127,9 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 						$winner_button = '-primary';
 
 					if ( $theme != NULL ) {
-						$edit_link = sprintf(
-							' <small id="success-%4$s" style="display:none;">(%1$s)</small>' .
-							'<img id="loading-%4$s" style="height:10px;width:10px;display:none;" src="%2$s" />' .
-							'<span class="apply-link"><a class="button%3$s" ' .
-							'style="font-size:96%%;padding-left:5px;padding-right:5px;margin-left:1em;" '.
-							'href="javascript:nelioab_confirm_overriding(\'%4$s\', \'%5$s\', \'%6$s\');">%7$s</a></span></li>',
-							__( 'Done!', 'nelioab' ),
-							NELIOAB_ASSETS_URL . '/images/loading-small.gif?' . NELIOAB_PLUGIN_VERSION,
-							$winner_button,
-							$alt->get_value(),
-							$theme['Stylesheet'], $theme['Template'],
+						$action_links['apply'] = sprintf(
+							' <a class="apply-link" href="javascript:nelioab_confirm_overwriting(\'%1$s\', \'%2$s\', \'%3$s\');">%4$s</a>',
+							$alt->get_value(), $theme['Stylesheet'], $theme['Template'],
 							__( 'Apply', 'nelioab' ) );
 					}
 				}
@@ -135,22 +140,33 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 					$set_as_winner = '';
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
-				echo sprintf( '<li><span class="alt-type add-new-h2 %s">%s</span>%s%s',
-					$set_as_winner, $alt_label, $alt->get_name(), $edit_link );
+				echo sprintf( '<tr>' .
+					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
+					'<td><strong>%3$s</strong> ' .
+					'<img id="loading-%4$s" style="display:none;width:1em;margin-top:-1em;" src="%5$s" />' .
+					'<strong><small id="success-%4$s" style="display:none;">%6$s</small></strong><br />' .
+					'<small>%7$s&nbsp;</small></td>' .
+					'</tr>',
+					$set_as_winner, $alt_label,
+					$this->trunk( $alt->get_name() ),
+					$alt->get_value(),
+					nelioab_asset_link( '/images/loading-small.gif' ),
+					__( '(Done!)', 'nelioab' ),
+					implode( ' | ', $action_links ) );
 
 			}
+
 		}
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
-				_e( 'You are about to override the original theme with the alternative. Do you want to continue?', 'nelioab' );
+				_e( 'You are about to overwrite the original theme with the alternative. Do you want to continue?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
-				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
-				$exp->get_id(); ?>">
+				echo admin_url(
+					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
 				<input type="hidden" id="stylesheet" name="stylesheet" value="" />
