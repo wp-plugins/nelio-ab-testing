@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.2.2 =
+* Bug fix: if the page defines the window.onunload event, Nelio is now able to
+deal with it.
+* Bug fix: script for loading alternatives is no longer included if we're using
+PHP cookies.
+
 
 = 3.2.1 =
 * **New Feature**. We added a new setting for controlling de amount of page

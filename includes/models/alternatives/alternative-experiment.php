@@ -142,6 +142,8 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 		}
 
 		public function load_json4js_alternatives( $json_alts ) {
+			$this->appspot_alternatives = array();
+			$this->local_alternatives = array();
 			foreach ( $json_alts as $json_alt ) {
 				if ( isset( $json_alt->isNew ) && $json_alt->isNew &&
 				     isset( $json_alt->wasDeleted ) && $json_alt->wasDeleted )

@@ -185,16 +185,19 @@ if ( !class_exists( 'NelioABController' ) ) {
 			if ( count( $running_exps ) == 0 )
 				return;
 
-			// 3. Ask AE to recompute the results
-			$url = sprintf(
-					NELIOAB_BACKEND_URL . '/site/%s/exp/result/compute',
-					NelioABAccountSettings::get_site_id()
-				);
-			$result = NelioABBackend::remote_get( $url );
+			try {
+				// 3. Ask AE to recompute the results
+				$url = sprintf(
+						NELIOAB_BACKEND_URL . '/site/%s/exp/result/compute',
+						NelioABAccountSettings::get_site_id()
+					);
+				$result = NelioABBackend::remote_get( $url );
 
-			// 5. Update the winning alternative info using the latest results available
-			$alt_con = $this->controllers['alt-exp'];
-			$alt_con->update_current_winner_for_running_experiments( 'force_update' );
+				// 4. Update the winning alternative info using the latest results available
+				$alt_con = $this->controllers['alt-exp'];
+				$alt_con->update_current_winner_for_running_experiments( 'force_update' );
+			}
+			catch ( Exception $e ) {}
 		}
 
 		private function send_navigation_if_required( $dest_id, $referer_url, $is_internal = true ) {
@@ -355,14 +358,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 			if ( current_user_can( 'delete_users' ) )
 				return;
 
-			// Custom Permalinks Support: making sure that we are not redirected while
-			// loading an alternative...
-			if ( isset( $_POST['nelioab_load_alt'] ) ) {
-				require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
-				if ( NelioABCustomPermalinksSupport::is_plugin_active() )
-					NelioABCustomPermalinksSupport::prevent_template_redirect();
-			}
-
 			// If we are using cookies, the _POST variable 'nelioab_load_alt' is not
 			// going to be automatically set. Therefore, we have to fake that a
 			// "sync_and_check" has been performed before.
@@ -376,6 +371,14 @@ if ( !class_exists( 'NelioABController' ) ) {
 				$load_alt = $alt_con->check_requires_an_alternative( $this->get_current_url() );
 				if ( 'LOAD_ALT' == $load_alt )
 					$_POST['nelioab_load_alt'] = true;
+			}
+
+			// Custom Permalinks Support: making sure that we are not redirected while
+			// loading an alternative...
+			if ( isset( $_POST['nelioab_load_alt'] ) ) {
+				require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
+				if ( NelioABCustomPermalinksSupport::is_plugin_active() )
+					NelioABCustomPermalinksSupport::prevent_template_redirect();
 			}
 
 			add_action( 'wp_enqueue_scripts', array( &$this, 'load_jquery' ) );

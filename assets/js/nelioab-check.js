@@ -139,6 +139,7 @@ function nelioab_load_alt($) {
 				while (aux--) window.clearTimeout(aux);
 				var aux = window.setInterval(function() {}, 20000) + 1;
 				while (aux--) window.clearInterval(aux);
+				window.onbeforeunload = window.onunload = false;
 				document.open();
 				document.write(data);
 				document.close();
