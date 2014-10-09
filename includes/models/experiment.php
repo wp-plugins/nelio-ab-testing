@@ -82,6 +82,9 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		private $descr;
 		private $status;
 		private $creation_date;
+		private $start_date;
+		private $end_date;
+		private $days_since_finalization;
 		private $type;
 
 		private $finalization_mode;
@@ -100,6 +103,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 			$this->goals    = array();
 			$this->finalization_mode  = self::FINALIZATION_MANUAL;
 			$this->finalization_value = '';
+			$this->days_since_finalization = 0;
 		}
 
 		public function get_type() {
@@ -205,6 +209,30 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 
 		public function set_creation_date( $creation_date ) {
 			$this->creation_date = $creation_date;
+		}
+
+		public function get_start_date() {
+			return $this->start_date;
+		}
+
+		public function set_start_date( $start_date ) {
+			$this->start_date = $start_date;
+		}
+
+		public function get_end_date() {
+			return $this->end_date;
+		}
+
+		public function set_end_date( $end_date ) {
+			$this->end_date = $end_date;
+		}
+
+		public function get_days_since_finalization() {
+			return $this->days_since_finalization;
+		}
+
+		public function set_days_since_finalization( $days_since_finalization ) {
+			$this->days_since_finalization = $days_since_finalization;
 		}
 
 		public function set_finalization_mode( $mode ) {

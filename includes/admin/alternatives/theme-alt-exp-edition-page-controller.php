@@ -223,5 +223,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 if ( isset( $_POST['nelioab_edit_ab_theme_exp_form'] ) ) {
 	$controller = NelioABThemeAltExpEditionPageController::get_instance();
 	$controller->manage_actions();
+	if ( !$controller->validate() )
+		$controller->print_ajax_errors();
 }
 

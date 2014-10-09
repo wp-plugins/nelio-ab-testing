@@ -157,9 +157,17 @@ var NelioABEditExperiment = {
 				location.href = data.replace('[SUCCESS]', '');
 			}
 			else {
-				document.open();
-				document.write(data);
-				document.close();
+				try {
+					data = JSON.parse(data);
+					jQuery('#error-message-div').html( data.msg );
+					for ( var i = 0; i < data.ids.length; ++i )
+						jQuery('#' + data.ids[i]).closest('tr').addClass('error');
+					jQuery('#error-message-div').delay(800).fadeIn(150);
+				}
+				catch ( e ) {}
+				jQuery('#ajax-loader').delay(500).fadeOut(150);
+				jQuery('#poststuff').delay(1100).fadeIn(150);
+				NelioABEditExperiment.useTab( 'tab-info' );
 			}
 		});
 	},

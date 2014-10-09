@@ -142,6 +142,29 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 						'<option value="100000">100,000</option>' .
 					'</select>'
 				);
+				$value = NelioABSettings::get_quota_limit_per_exp();
+				if ( -1 != $value ) { ?>
+					<div id="quota-warning" style="display:none;">
+						<div style="width:100%;max-width:100px;padding-top:0.9em;border-bottom:1px solid #ccc;">&nbsp;</div>
+						<p style="font-size:90%;"><?php
+							printf(
+									__( 'According to your global settings, there\'s a Quota Limit of %s page views per experiment. For this experiment, however, the global setting will be overriden.', 'nelioab' ),
+									number_format_i18n( $value )
+								); ?></p>
+					</div>
+					<script>
+						(function($) {
+							var warning = $('#quota-warning');
+							$('.fin-mode-value').on('change', function() {
+								if ( $(this).attr('value') <= <?php echo $value; ?> )
+									warning.hide();
+								else
+									warning.show();
+							});
+						})(jQuery);
+					</script>
+					<?php
+				}
 			?></div>
 			<div class="fin-mode confidence" style="display:none;">
 				<p style="margin-bottom:0.2em;"><strong><?php _e( 'Mode Configuration', 'nelioab' ); ?></strong></p><?php

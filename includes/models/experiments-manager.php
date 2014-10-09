@@ -53,11 +53,25 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 					$exp = new NelioABQuickExperiment( $json_exp->key->id );
 					$exp->set_type_using_text( $json_exp->kind );
 					$exp->set_name( $json_exp->name );
+					$exp->set_status( $json_exp->status );
 					if ( isset( $json_exp->description ) )
 						$exp->set_description( $json_exp->description );
-					$exp->set_status( $json_exp->status );
-					try { $exp->set_creation_date( $json_exp->creation ); }
-					catch ( Exception $exception ) {}
+					if ( isset( $json_exp->creation ) ) {
+						try { $exp->set_creation_date( $json_exp->creation ); }
+						catch ( Exception $exception ) {}
+					}
+					if ( isset( $json_exp->start ) ) {
+						try { $exp->set_start_date( $json_exp->start ); }
+						catch ( Exception $exception ) {}
+					}
+					if ( isset( $json_exp->finalization ) ) {
+						try { $exp->set_end_date( $json_exp->finalization ); }
+						catch ( Exception $exception ) {}
+					}
+					if ( isset( $json_exp->daysFinished ) ) {
+						try { $exp->set_days_since_finalization( $json_exp->daysFinished ); }
+						catch ( Exception $exception ) {}
+					}
 					array_push( $aux, $exp );
 				}
 			}

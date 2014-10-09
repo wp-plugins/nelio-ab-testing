@@ -402,16 +402,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// If everything is OK, we can start it!
 
-			// ...but before, if it is a title experiment, we have to create the goal
-			if ( $this->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
-				require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
-				$goal = new NelioABAltExpGoal( $this );
-				$page = new NelioABPageAccessedAction( $this->get_originals_id() );
-				$page->set_indirect_navigations_enabled( true );
-				$goal->add_action( $page );
-				$this->add_goal( $goal );
-				$this->make_goals_persistent();
-			}
+			// (keep in mind that, if it is a title experiment, we'll create the goal in AE
 
 			// And there we go!
 			$ori_post = get_post( $this->get_originals_id() );

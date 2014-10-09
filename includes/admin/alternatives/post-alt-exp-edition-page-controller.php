@@ -232,5 +232,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 if ( isset( $_POST['nelioab_edit_ab_post_exp_form'] ) ) {
 	$controller = NelioABPostAltExpEditionPageController::get_instance();
 	$controller->manage_actions();
+	if ( !$controller->validate() )
+		$controller->print_ajax_errors();
 }
 

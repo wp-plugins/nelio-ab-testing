@@ -26,12 +26,29 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			parent::__construct( $title );
 			$this->add_class( 'settings-page' );
 			$this->set_icon( 'icon-nelioab' );
+
+			$ae_sync_errors = NelioABSettings::get_unsync_fields();
+			if ( count( $ae_sync_errors ) > 0 ) {
+				$msg = __( 'There was a problem while updating some of your options. The following fields could not be properly updated:</p>%s<p>Please, try it again in a few moments.', 'nelioab' );
+
+				$errors = '<ul>';
+				if ( in_array( 'quota_limit_per_exp', $ae_sync_errors ) )
+					$errors .= '<li>- ' . __( 'Quota Limit per Experiment', 'nelioab' ) . '</li>';
+				if ( in_array( 'notification_email', $ae_sync_errors ) )
+					$errors .= '<li>- ' . __( 'Notification E-Mail', 'nelioab' ) . '</li>';
+				if ( in_array( 'notifications', $ae_sync_errors ) )
+					$errors .= '<li>- ' . __( 'Notifications', 'nelioab' ) . '</li>';
+				$errors .= '</ul>';
+				if ( '<ul></ul>' == $errors )
+					$errors = '';
+				$errors = str_replace( '<ul', '<ul style="padding-left:1em;"', $errors );
+
+				global $nelioab_admin_controller;
+				$nelioab_admin_controller->error_message = sprintf( $msg, $errors );
+			}
 		}
 
-		public function do_render() {
-			// Set class property
-			$this->options = NelioABSettings::get_settings();
-			?>
+		public function do_render() { ?>
 			<div id="nelioab-settings" class="wrap">
 				<form method="post" action="options.php">
 					<h3 id="settings-tabs" class="nav-tab-wrapper" style="margin:0em;padding:0em;padding-left:2em;margin-bottom:2em;"><?php
@@ -119,6 +136,15 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				'nelioab_basic_section'
 			);
 
+			add_settings_field(
+				'email',
+				self::prepare_basic_label( __( 'Notification E-Mail', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_notification_email_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section'
+			);
+
 //			add_settings_field(
 //				'def_conv_value',
 //				self::prepare_basic_label( __( 'Default Conversion Value', 'nelioab' ) ),
@@ -152,10 +178,19 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			);
 
 			add_settings_field(
+				'quota_limit_for_exp',
+				self::prepare_pro_label( __( 'Quota Limit per Experiment', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_quota_limit_per_experiment_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
+
+			add_settings_field(
 				'min_confidence_for_significance',
 				self::prepare_pro_label( __( 'Min. Confidence', 'nelioab' ) ),
 				// -------------------------------------------------------------
-				array( 'NelioABSettingsPage', 'print_min_confidence_for_significance' ),
+				array( 'NelioABSettingsPage', 'print_min_confidence_for_significance_field' ),
 				'nelioab-settings',
 				'nelioab_pro_section'
 			);
@@ -164,7 +199,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				'perc_of_tested_users',
 				self::prepare_pro_label( __( 'Num. of Tested Users', 'nelioab' ) ),
 				// -------------------------------------------------------------
-				array( 'NelioABSettingsPage', 'print_perc_of_tested_users' ),
+				array( 'NelioABSettingsPage', 'print_perc_of_tested_users_field' ),
 				'nelioab-settings',
 				'nelioab_pro_section'
 			);
@@ -185,6 +220,15 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				add_settings_field(
 					'expl_ratio', '', array( 'NelioABSettingsPage', 'print_expl_ratio_field' ),
 					'nelioab-settings', 'nelioab_pro_section' );
+
+			add_settings_field(
+				'notifications',
+				self::prepare_pro_label( __( 'Notifications', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_notifications_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
 
 
 			// ===============================================================
@@ -354,7 +398,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		public static function print_algorithm_field() {
 			$field_name = 'algorithm';
 			printf(
-				'<select id="%1$s" name="nelioab_settings[%1$s]" style="width:100%;" %2$s>',
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
 				$field_name, self::get_pro_details()
 			);
 			?>
@@ -375,10 +419,36 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 		}
 
+		public static function print_quota_limit_per_experiment_field() {
+			$limit = NelioABSettings::get_quota_limit_per_exp();
+			$field_name = 'quota_limit_per_exp';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_pro_details()
+			);
+			?>
+				<option value='-1'><?php _e( 'Unlimited', 'nelioab' ); ?></option>
+			<?php
+			$options = array( 500, 1000, 1500, 2500, 3000 );
+			if ( NelioABAccountSettings::get_subscription_plan() >=
+			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN )
+				array_push( $options, 4000, 5000, 7500, 10000 );
+			foreach ( $options as $v ) {
+				printf( '<option value="%2$s" %3$s>%1$s</option>',
+					sprintf( __( '%s page views', 'nelioab' ), number_format_i18n( $v ) ),
+					strval( $v ),
+					( $limit == $v ) ? 'selected="selected"' : ''
+				);
+			}
+			?>
+			</select>
+			<?php
+		}
+
 		public static function print_colorblindness_field() {
 			$field_name = 'use_colorblind';
 			printf(
-				'<select id="%1$s" name="nelioab_settings[%1$s]" style="width:100%;" %2$s>',
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
 				$field_name, self::get_basic_details()
 			);
 			?>
@@ -391,23 +461,100 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 		}
 
+		public static function print_notification_email_field() {
+			$field_name = 'notification_email';
+			printf(
+				'<div class="nelio-sect"><input type="text" id="%1$s" name="nelioab_settings[%1$s]" style="max-width:400px;width:100%%;" value="%3$s" placeholder="%4$s" %2$s></div>',
+				$field_name, self::get_basic_details(),
+				esc_html( NelioABSettings::get_notification_email() ),
+				sprintf( __( 'Default: %s', 'nelioab' ), esc_html( NelioABAccountSettings::get_email() ) )
+			);
+			?>
+			<br><span class="description"><?php
+				printf(
+					__( 'If you type an e-mail address, all Nelio A/B Testing notifications will be sent to both the new address and «%s».', 'nelioab' ),
+					NelioABAccountSettings::get_email()
+				);
+			?></span>
+			<script>
+				(function($) {
+					var mail = $('#<?php echo $field_name; ?>');
+					var form = $('#nelioab-settings');
+					var save;
+					function validateMail() {
+						var x = mail.attr('value');
+						if ( x.length == 0 )
+							return true;
+						var atpos = x.indexOf('@');
+						var dotpos = x.lastIndexOf('.');
+						if (atpos< 1 || dotpos<atpos+2 || dotpos+2>=x.length)
+							return false;
+						return true;
+					}
+					function control() {
+						if ( validateMail() ) {
+							mail.removeClass('error');
+							save.removeClass('disabled');
+							form.unbind('submit', returnFalse);
+						}
+						else {
+							mail.addClass('error');
+							save.addClass('disabled');
+							form.on('submit', returnFalse);
+						}
+					}
+					function returnFalse() { return false; }
+					mail.on('keyup focusout', control);
+					$(document).ready(function() {
+						save = $('#submit');
+						control();
+					});
+				})(jQuery);
+			</script>
+			<?php
+		}
+
+		public static function print_notifications_field() {
+			$cb = '<p><input type="checkbox" id="%1$s" name="nelioab_settings[%1$s]" %3$s %4$s />%2$s</p>';
+			printf( $cb, 'notify_exp_finalization',
+					__( 'Notify me when an experiment is automatically stopped.', 'nelioab' ),
+					self::checked( NelioABSettings::is_notification_enabled( NelioABSettings::NOTIFICATION_EXP_FINALIZATION ) ),
+					self::get_pro_details()
+				);
+		}
+
+		private static function checked( $checked ) {
+			if ( $checked )
+				return 'checked="checked"';
+			else
+				return '';
+		}
+
 		public static function print_show_finished_experiments_field() {
 			$field_name = 'show_finished_experiments';
 			printf(
-				'<select id="%1$s" name="nelioab_settings[%1$s]" style="width:100%;" %2$s>',
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
 				$field_name, self::get_basic_details()
 			);
 			?>
-				<option value='0'><?php _e( 'Hide Finished Experiments from the List of All Experiments', 'nelioab' ); ?></option>
-				<option value='1'<?php
-					if ( NelioABSettings::show_finished_experiments() )
+				<option value='<?php
+					echo NelioABSettings::FINISHED_EXPERIMENTS_HIDE_ALL;
+					?>'><?php _e( 'Hide Finished Experiments', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::FINISHED_EXPERIMENTS_SHOW_RECENT; ?>'<?php
+					if ( NelioABSettings::FINISHED_EXPERIMENTS_SHOW_RECENT == NelioABSettings::show_finished_experiments() )
 						echo ' selected="selected"';
-				?>><?php _e( 'Show Finished Experiments in the List of All Experiments', 'nelioab' ); ?></option>
+				?>><?php _e( 'Show Recently Finished Experiments', 'nelioab' ); ?></option>
+				<option
+					value='<?php echo NelioABSettings::FINISHED_EXPERIMENTS_SHOW_ALL; ?>'<?php
+					if ( NelioABSettings::FINISHED_EXPERIMENTS_SHOW_ALL == NelioABSettings::show_finished_experiments() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Show All Finished Experiments', 'nelioab' ); ?></option>
 			</select>
 			<?php
 		}
 
-		public static function print_min_confidence_for_significance() {
+		public static function print_min_confidence_for_significance_field() {
 			$field_name = 'min_confidence_for_significance';
 			printf(
 				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="50" max="100" step="5" value="%2$s" %3$s /><br>',
@@ -433,7 +580,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 		}
 
-		public static function print_perc_of_tested_users() {
+		public static function print_perc_of_tested_users_field() {
 			$field_name = 'perc_of_tested_users';
 			printf(
 				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="10" max="100" step="5" value="%2$s" %3$s /><br>',
@@ -522,7 +669,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		public static function print_cookies_field() {
 			$field_name = 'use_php_cookies';
 			printf(
-				'<select id="%1$s" name="nelioab_settings[%1$s]" style="width:100%;" %2$s>',
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
 				$field_name, self::get_basic_details()
 			);
 			?>

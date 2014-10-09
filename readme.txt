@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,22 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.2.1 =
+* **New Feature**. We added a new setting for controlling de amount of page
+views an experiment can take before being automatically stopped. Never again
+waster your quota! (Professional and Enterprise users only).
+* New Setting: Define whether you want to receive e-mail alerts when your
+experiments are automatically stopped and, if you want to, the address that's
+to be notified (Enterprise users only).
+* Improved experiment list page. See the date that is most relevant to an
+experiment depending on its state (e.g. creation date for _Draft_ and _Ready_
+experiments, start date for _Running_ experiments, or end date _finished
+experiments_).
+* Improved visualization of finished experiments: in the list of all
+experiments, (a) include all finished experiments, (b) include only those that
+are recently finished (during the last week), or (c) include none at all.
+* Bug fix with navigations to external pages that go to https.
 
 = 3.2.0 =
 * **New Feature**. Define the percentage of users that participate in an
@@ -535,10 +551,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.2.0 =
-Several new features for Professional and Enterprise subscribers: experiment
-scheduling, stop experiments automatically, and advanced settings. Moreover,
-and also available to Basic subscribers: improved usage of confidence value,
-unsaved experiments control, MU-Plugin updates, indirect page accessed goals,
-and several tiny improvements and bug fixes.
+= 3.2.1 =
+Advanced quota control, customizable e-mail alerts, improved visualization of
+finished experiments, and some minor fixes.
 

@@ -15,7 +15,7 @@
  */
 
 
-if( !class_exists( 'NelioABSettings' ) ) {
+if ( !class_exists( 'NelioABSettings' ) ) {
 
 	class NelioABSettings {
 
@@ -23,15 +23,24 @@ if( !class_exists( 'NelioABSettings' ) ) {
 		const ALGORITHM_PRIORITIZE_ORIGINAL = 1;
 		const ALGORITHM_GREEDY              = 2;
 
+		const FINISHED_EXPERIMENTS_HIDE_ALL    = 0;
+		const FINISHED_EXPERIMENTS_SHOW_ALL    = 1;
+		const FINISHED_EXPERIMENTS_SHOW_RECENT = 2;
+
+		const NOTIFICATION_EXP_FINALIZATION = 'exp-finalization';
+
 		const DEFAULT_CONVERSION_VALUE            = 25;
 		const DEFAULT_CONVERSION_UNIT             = 'USD';
 		const DEFAULT_USE_COLORBLIND_PALETTE      = false;
-		const DEFAULT_SHOW_FINISHED_EXPERIMENTS   = false;
+		const DEFAULT_SHOW_FINISHED_EXPERIMENTS   = 2;
 		const DEFAULT_USE_PHP_COOKIES             = false;
 		const DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE = 90;
 		const DEFAULT_PERCENTAGE_OF_TESTED_USERS  = 100;
 		const DEFAULT_EXPL_RATIO                  = 90;
 		const DEFAULT_ORIGINAL_PERCENTAGE         = 60;
+		const DEFAULT_QUOTA_LIMIT_PER_EXP         = -1;
+		const DEFAULT_NOTIFICATIONS               = ' exp-finalization ';
+
 
 		/**
 		 * @deprecated
@@ -56,6 +65,8 @@ if( !class_exists( 'NelioABSettings' ) ) {
 					case 'min_confidence_for_significance':
 					case 'algorithm':
 					case 'perc_of_tested_users':
+					case 'quota_limit_per_exp':
+					case 'notifications':
 						return false;
 				}
 			}
@@ -67,54 +78,109 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			$new_input = array();
 
 			$new_input['def_conv_value'] = self::DEFAULT_CONVERSION_VALUE;
-			if( isset( $input['def_conv_value'] ) )
+			if ( isset( $input['def_conv_value'] ) )
 				$new_input['def_conv_value'] = sanitize_text_field( $input['def_conv_value'] );
 
 			$new_input['conv_unit'] = self::DEFAULT_CONVERSION_UNIT;
-			if( isset( $input['conv_unit'] ) )
+			if ( isset( $input['conv_unit'] ) )
 				$new_input['conv_unit'] = sanitize_text_field( $input['conv_unit'] );
 
 			$new_input['use_colorblind'] = self::DEFAULT_USE_COLORBLIND_PALETTE;
-			if( isset( $input['use_colorblind'] ) ) {
+			if ( isset( $input['use_colorblind'] ) ) {
 				$new_input['use_colorblind'] = sanitize_text_field( $input['use_colorblind'] );
 				$new_input['use_colorblind'] = $new_input['use_colorblind'] == '1';
 			}
 
 			$new_input['show_finished_experiments'] = self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
-			if( isset( $input['show_finished_experiments'] ) ) {
-				$new_input['show_finished_experiments'] = sanitize_text_field( $input['show_finished_experiments'] );
-				$new_input['show_finished_experiments'] = $new_input['show_finished_experiments'] == '1';
-			}
+			if ( isset( $input['show_finished_experiments'] ) )
+				$new_input['show_finished_experiments'] = intval( $input['show_finished_experiments'] );
 
 			$new_input['algorithm'] = self::ALGORITHM_PURE_RANDOM;
-			if( isset( $input['algorithm'] ) )
+			if ( isset( $input['algorithm'] ) )
 				$new_input['algorithm'] = intval( $input['algorithm'] );
 
 			$new_input['expl_ratio'] = self::DEFAULT_EXPL_RATIO;
-			if( isset( $input['expl_ratio'] ) )
+			if ( isset( $input['expl_ratio'] ) )
 				$new_input['expl_ratio'] = intval( $input['expl_ratio'] );
 
 			$new_input['ori_perc'] = self::DEFAULT_ORIGINAL_PERCENTAGE;
-			if( isset( $input['ori_perc'] ) )
+			if ( isset( $input['ori_perc'] ) )
 				$new_input['ori_perc'] = intval( $input['ori_perc'] );
 
 			$new_input['use_php_cookies'] = self::DEFAULT_USE_PHP_COOKIES;
-			if( isset( $input['use_php_cookies'] ) ) {
+			if ( isset( $input['use_php_cookies'] ) ) {
 				$new_input['use_php_cookies'] = sanitize_text_field( $input['use_php_cookies'] );
 				$new_input['use_php_cookies'] = $new_input['use_php_cookies'] == '1';
 			}
 
 			$new_input['min_confidence_for_significance'] = self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
-			if( isset( $input['min_confidence_for_significance'] ) )
+			if ( isset( $input['min_confidence_for_significance'] ) )
 				$new_input['min_confidence_for_significance'] = intval( $input['min_confidence_for_significance'] );
 			if ( 100 == $new_input['min_confidence_for_significance'] )
 				$new_input['min_confidence_for_significance'] = 99;
 
 			$new_input['perc_of_tested_users'] = self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
-			if( isset( $input['perc_of_tested_users'] ) )
+			if ( isset( $input['perc_of_tested_users'] ) )
 				$new_input['perc_of_tested_users'] = intval( $input['perc_of_tested_users'] );
 
+			// SYNC SOME SETTINGS WITH GOOGLE APP ENGINE
+			try {
+				$limit = self::get_quota_limit_per_exp();
+				if ( isset( $input['quota_limit_per_exp'] ) )
+					$limit = intval( $input['quota_limit_per_exp'] );
+
+				$email = '';
+				if ( isset( $input['notification_email'] ) )
+					$email = trim( $input['notification_email'] );
+
+				$notifications = ' ';
+				if ( isset( $input['notify_exp_finalization'] ) && 'on' == $input['notify_exp_finalization'] )
+					$notifications .= self::NOTIFICATION_EXP_FINALIZATION . ' ';
+
+				// Attributes to control if sync was OK
+				$new_input['quota_limit_per_exp'] = self::get_quota_limit_per_exp();
+				$new_input['notification_email']  = self::get_notification_email();
+				$new_input['notifications']       = self::get_notifications();
+
+				$new_input['try_quota_limit_per_exp'] = $limit;
+				$new_input['try_notification_email']  = $email;
+				$new_input['try_notifications']       = $notifications;
+
+				// Send data to Google
+				$url = sprintf(
+						NELIOAB_BACKEND_URL . '/site/%s/settings',
+						NelioABAccountSettings::get_site_id()
+					);
+				$object = array(
+						'notificationEmail' => $email,
+						'notifications'     => $notifications,
+						'quotaLimit'        => $limit,
+					);
+				$result = NelioABBackend::remote_post( $url, $object );
+
+				$new_input['quota_limit_per_exp'] = $limit;
+				$new_input['notification_email']  = $email;
+				$new_input['notifications']  = $notifications;
+			}
+			catch ( Exception $e ) {
+			}
+
 			return $new_input;
+		}
+
+		public static function get_unsync_fields( $new_options = false ) {
+			$options = self::get_settings();
+			if ( !$new_options )
+				$new_options = $options;
+			$names = array( 'quota_limit_per_exp', 'notification_email', 'notifications' );
+			$result = array();
+			foreach ( $names as $n ) {
+				if ( !isset( $new_options['try_' . $n] ) )
+					continue;
+				if ( !isset( $options[$n] ) || $options[$n] !== $new_options['try_' . $n] )
+					array_push( $result, $n );
+			}
+			return $result;
 		}
 
 		public static function get_def_conv_value() {
@@ -294,6 +360,37 @@ if( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $options['perc_of_tested_users'] ) )
 				return $options['perc_of_tested_users'];
 			return self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
+		}
+
+		public static function get_quota_limit_per_exp() {
+			if ( !self::is_field_enabled_for_current_plan( 'quota_limit_per_exp' ) )
+				return self::DEFAULT_QUOTA_LIMIT_PER_EXP;
+			$options = self::get_settings();
+			if ( isset( $options['quota_limit_per_exp'] ) )
+				return $options['quota_limit_per_exp'];
+			return self::DEFAULT_QUOTA_LIMIT_PER_EXP;
+		}
+
+		public static function get_notification_email() {
+			if ( !self::is_field_enabled_for_current_plan( 'notification_email' ) )
+				return '';
+			$options = self::get_settings();
+			if ( isset( $options['notification_email'] ) )
+				return $options['notification_email'];
+			return '';
+		}
+
+		public static function get_notifications() {
+			if ( !self::is_field_enabled_for_current_plan( 'notifications' ) )
+				return self::DEFAULT_NOTIFICATIONS;
+			$options = self::get_settings();
+			if ( isset( $options['notifications'] ) )
+				return $options['notifications'];
+			return self::DEFAULT_NOTIFICATIONS;
+		}
+
+		public static function is_notification_enabled( $notification ) {
+			return strpos( self::get_notifications(), ' ' . $notification . ' ' ) !== false;
 		}
 
 		public static function get_algorithm() {

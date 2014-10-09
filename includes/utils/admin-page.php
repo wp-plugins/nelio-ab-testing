@@ -42,10 +42,12 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			}
 			elseif ( !NelioABSettings::is_performance_muplugin_up_to_date() ) {
 				global $nelioab_admin_controller;
-				$nelioab_admin_controller->error_message = sprintf(
-					__( '<b>Performance MU-Plugin</b>. You\'re currently using an outdated version of Nelio A/B Testing\'s Performance MU-Plugin. We tried to automatically update it, but something went wrong. Please, go to the <a href="%s">Settings</a> page and reinstall the Performance MU-Plugin.', 'nelioab' ),
-					admin_url( 'admin.php?page=nelioab-settings' )
-				) ;
+				if ( NULL == $nelioab_admin_controller->error_message ) {
+					$nelioab_admin_controller->error_message = sprintf(
+						__( '<b>Performance MU-Plugin</b>. You\'re currently using an outdated version of Nelio A/B Testing\'s Performance MU-Plugin. We tried to automatically update it, but something went wrong. Please, go to the <a href="%s">Settings</a> page and reinstall the Performance MU-Plugin.', 'nelioab' ),
+						admin_url( 'admin.php?page=nelioab-settings' )
+					) ;
+				}
 			}
 		}
 

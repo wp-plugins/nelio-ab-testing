@@ -164,10 +164,15 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		private function filter_experiments( $status = false ) {
 			if ( !$status ) {
 				$result = array();
+				$filter_finished = NelioABSettings::show_finished_experiments();
 				foreach ( $this->experiments as $exp ) {
-					if ( !NelioABSettings::show_finished_experiments() &&
-					     $exp->get_status() == NelioABExperimentStatus::FINISHED )
-						continue;
+					if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
+						if ( NelioABSettings::FINISHED_EXPERIMENTS_HIDE_ALL == $filter_finished )
+							continue;
+						if ( NelioABSettings::FINISHED_EXPERIMENTS_SHOW_RECENT == $filter_finished &&
+						     $exp->get_days_since_finalization() > 7 )
+							continue;
+					}
 					if ( $exp->get_status() != NelioABExperimentStatus::TRASH )
 						array_push( $result, $exp );
 				}
@@ -200,11 +205,10 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 		function get_columns(){
 			return array(
-				'type'        => '',
-				'name'        => __( 'Name', 'nelioab' ),
-				// 'description' => __( 'Description', 'nelioab' ),
-				'status'      => __( 'Status', 'nelioab' ),
-				'creation'    => __( 'Creation Date', 'nelioab' ),
+				'type'          => '',
+				'name'          => __( 'Name', 'nelioab' ),
+				'status'        => __( 'Status', 'nelioab' ),
+				'relevant_date' => __( 'Relevant Date', 'nelioab' ),
 			);
 		}
 
@@ -213,7 +217,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		}
 
 		public function get_jquery_sortable_columns() {
-			return array( 'name', 'status', 'creation' );
+			return array( 'name', 'status', 'relevant_date' );
 		}
 
 		function get_display_functions() {
@@ -290,11 +294,42 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			);
 		}
 
-		public function column_creation( $exp ) {
+		public function column_relevant_date( $exp ) {
 			include_once( NELIOAB_UTILS_DIR . '/formatter.php' );
-			$res = sprintf( '<span style="display:none;">%s</span>%s',
-				strtotime( $exp->get_creation_date() ),
-				NelioABFormatter::format_date( $exp->get_creation_date() ) );
+			$date = '<span style="display:none;">%s</span><span title="%s">%s</span>';
+
+			switch ( $exp->get_status() ) {
+
+				case NelioABExperimentStatus::FINISHED:
+					$res = sprintf( $date,
+						strtotime( $exp->get_end_date() ),
+						__( 'Finalization Date', 'nelioab' ),
+						NelioABFormatter::format_date( $exp->get_end_date() ) );
+					break;
+
+				case NelioABExperimentStatus::RUNNING:
+					$res = sprintf( $date,
+						strtotime( $exp->get_start_date() ),
+						__( 'Start Date', 'nelioab' ),
+						NelioABFormatter::format_date( $exp->get_start_date() ) );
+					break;
+
+				case NelioABExperimentStatus::SCHEDULED:
+					$res = sprintf( $date,
+						strtotime( $exp->get_start_date() ),
+						__( 'Scheduled Date', 'nelioab' ),
+						NelioABFormatter::format_date( $exp->get_start_date() ) );
+					break;
+
+				default:
+					$res = sprintf( $date,
+						strtotime( $exp->get_creation_date() ),
+						__( 'Creation Date', 'nelioab' ),
+						NelioABFormatter::format_date( $exp->get_creation_date() ) );
+					break;
+
+			}
+
 			return $res;
 		}
 

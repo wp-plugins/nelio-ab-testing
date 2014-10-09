@@ -303,17 +303,11 @@ class NelioABAlternativeExperimentController {
 				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
 				'permalink' => $permalink,
 			) );
-
-		wp_enqueue_script( 'tapas_script',
-			nelioab_asset_link( '/js/tapas.min.js' ) );
 	}
 
 	public function load_nelioab_scripts_for_alt() {
 		wp_enqueue_script( 'nelioab_alternatives_script_alt',
 			nelioab_asset_link( '/js/nelioab-alt.min.js' ) );
-
-		wp_enqueue_script( 'tapas_script',
-			nelioab_asset_link( '/js/tapas.min.js' ) );
 	}
 
 	public function include_css_alternative_fragments_if_any() {
@@ -349,6 +343,8 @@ class NelioABAlternativeExperimentController {
 					     $type == NelioABAction::EXTERNAL_PAGE_ACCESSED ) {
 						if ( $action->is_external() ) {
 							$ae_url = $action->get_reference();
+							$ae_url = preg_replace( '/^https:\/\//', 'http://', $ae_url );
+							$ae_url = preg_replace( '/\/$/', '', $ae_url );
 							$regex_url = $action->get_regex_reference4js();
 							if ( !in_array( $ae_url, $result['ae_hrefs'] ) ) {
 								array_push( $result['ae_hrefs'], $ae_url );

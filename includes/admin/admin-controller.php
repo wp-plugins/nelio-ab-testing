@@ -149,13 +149,21 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function load_custom_style_and_scripts() {
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX )
+				return;
+
+			if ( isset( $_POST['nelioab_save_exp_post'] ) )
+				return;
+
 			// We make sure jQuery is loaded:
 			wp_enqueue_script( 'jquery' );
 
 			// Custom CSS for GRAPHICS and RESULTS (experiment progress)
-			wp_register_style( 'nelioab_progress_css',
-				nelioab_admin_asset_link( '/css/progress.min.css' ) );
-			wp_enqueue_style( 'nelioab_progress_css' );
+			if ( $this->is_page( 'exp-progress' ) ) {
+				wp_register_style( 'nelioab_progress_css',
+					nelioab_admin_asset_link( '/css/progress.min.css' ) );
+				wp_enqueue_style( 'nelioab_progress_css' );
+			}
 
 			wp_register_style( 'nelioab_tab_type_css',
 				nelioab_admin_asset_link( '/css/nelioab-tab-type.min.css' ) );
@@ -170,22 +178,61 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ) );
 
 			// Post Searcher
-			wp_enqueue_style( 'nelioab_select2_css',
-				nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.css' ) );
-			wp_enqueue_script( 'nelioab_select2',
-				nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.js' ) );
-			wp_enqueue_style( 'nelioab_post_searcher_css',
-				nelioab_admin_asset_link( '/css/post-searcher.css' ) );
-			wp_enqueue_script( 'nelioab_post_searcher',
-				nelioab_admin_asset_link( '/js/post-searcher.min.js' ) );
-			wp_enqueue_script( 'nelioab_form_searcher',
-				nelioab_admin_asset_link( '/js/form-searcher.min.js' ) );
+			if ( $this->is_page( array( 'nelioab-add-experiment', 'edit-exp', 'nelioab-css-edit' ) ) ) {
+				wp_enqueue_style( 'nelioab_select2_css',
+					nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.css' ) );
+				wp_enqueue_script( 'nelioab_select2',
+					nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.js' ) );
+				wp_enqueue_style( 'nelioab_post_searcher_css',
+					nelioab_admin_asset_link( '/css/post-searcher.css' ) );
+				wp_enqueue_script( 'nelioab_post_searcher',
+					nelioab_admin_asset_link( '/js/post-searcher.min.js' ) );
+				wp_enqueue_script( 'nelioab_form_searcher',
+					nelioab_admin_asset_link( '/js/form-searcher.min.js' ) );
+			}
 
 			// Dialog for Experiments Page
 			if ( isset( $_GET['page'] ) && strpos( 'nelioab-', $_GET['page'] ) == 0 ) {
 				wp_enqueue_script( 'jquery-ui-dialog' );
 				wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			}
+		}
+
+		protected function is_page( $pages ) {
+			if ( !is_array( $pages ) )
+				$pages = array( $pages );
+			foreach ( $pages as $page )
+				if ( $this->do_check_is_page( $page ) )
+					return true;
+			return false;
+		}
+
+		private function do_check_is_page( $page ) {
+			if ( !isset( $_GET['page'] ) )
+				return false;
+
+			if ( strpos( $page, 'nelioab' ) === 0 && $page == $_GET['page'] )
+				return true;
+
+			switch( $page ) {
+
+				case 'edit-exp':
+					if ( 'nelioab-experiments' == $_GET['page'] &&
+					     isset( $_GET['action'] ) &&
+					     'edit' == $_GET['action'] )
+						return true;
+					break;
+
+				case 'exp-progress':
+					if ( 'nelioab-experiments' == $_GET['page'] &&
+					     isset( $_GET['action'] ) &&
+					     'progress' == $_GET['action'] )
+						return true;
+					break;
+
+			}
+
+			return false;
 		}
 
 		public function exclude_alternative_posts_and_pages( $query ) {

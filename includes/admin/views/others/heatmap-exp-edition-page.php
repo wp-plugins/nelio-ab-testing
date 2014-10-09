@@ -71,6 +71,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 		protected function do_render() { ?>
 			<form class="nelio-exp-form" id="<?php echo $this->get_form_name(); ?>" method="post" style="max-width:750px;">
+				<input type="hidden" name="nelioab_save_exp_post" value="true" />
 				<input type="hidden" name="<?php echo $this->get_form_name(); ?>" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo NelioABExperiment::HEATMAP_EXP; ?>" />
 				<input type="hidden" name="action" id="action" value="none" />

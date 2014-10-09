@@ -471,13 +471,13 @@ body #goal-list .nelio-card .actions .action input {
 	text-align: center;
 }
 
-#nelioab-experiment-list-table .wp-list-table .column-creation {
+#nelioab-experiment-list-table .wp-list-table .column-relevant_date {
 	width: 260px;
 	min-width: 260px;
 }
 
 @media (max-width:900px) {
-	#nelioab-experiment-list-table .wp-list-table .column-creation {
+	#nelioab-experiment-list-table .wp-list-table .column-relevant_date {
 		display:none;
 }	}
 

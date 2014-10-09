@@ -110,6 +110,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				NelioABHomeUrl = "<?php echo home_url(); ?>";
 			</script>
 			<form id="<?php echo $this->get_form_name(); ?>" method="post" class="nelio-exp-form">
+				<input type="hidden" name="nelioab_save_exp_post" value="true" />
 				<input type="hidden" name="<?php echo $this->get_form_name(); ?>" value="true" />
 				<input type="hidden" name="exp_id" id="exp_id" value="<?php echo $this->basic_info['id']; ?>" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $this->get_alt_exp_type(); ?>" />

@@ -129,6 +129,30 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 			return new NelioABHeatmapExpEditionPage( $title );
 		}
 
+		public function print_ajax_errors() {
+			global $nelioab_admin_controller;
+			if ( !is_array( $nelioab_admin_controller->validation_errors ) ||
+			     count( $nelioab_admin_controller->validation_errors ) == 0 )
+				return;
+
+			$result = array(
+					'msg' => '',
+					'ids' => array(),
+				);
+			$msg = '<p>';
+			$msg .= __( 'The following errors have been encountered:', 'nelioab' );
+			$msg .= '</p><ul>';
+			foreach( $nelioab_admin_controller->validation_errors as $error ) {
+				array_push( $result['ids'], $error[0] );
+				$msg .= '<li> - ' . $error[1] . '</li>';
+			}
+			$msg .= '</ul>';
+
+			$result['msg'] = $msg;
+			echo json_encode( $result );
+			die();
+		}
+
 		public function validate() {
 			global $nelioab_admin_controller;
 			$exp = $nelioab_admin_controller->data;
@@ -216,4 +240,6 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 if ( isset( $_POST['nelioab_edit_heatmap_exp_form'] ) ) {
 	$controller = NelioABHeatmapExpEditionPageController::get_instance();
 	$controller->manage_actions();
+	if ( !$controller->validate() )
+		$controller->print_ajax_errors();
 }

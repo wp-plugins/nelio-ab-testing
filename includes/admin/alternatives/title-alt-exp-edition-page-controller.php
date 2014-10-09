@@ -154,5 +154,7 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPageController' ) ) {
 if ( isset( $_POST['nelioab_edit_ab_title_exp_form'] ) ) {
 	$controller = NelioABTitleAltExpEditionPageController::get_instance();
 	$controller->manage_actions();
+	if ( !$controller->validate() )
+		$controller->print_ajax_errors();
 }
 

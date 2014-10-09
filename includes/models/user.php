@@ -215,8 +215,14 @@ if ( !class_exists( 'NelioABUser' ) ) {
 			if ( $exp == NULL )
 				return false;
 
-			$cookie_name = NelioABSettings::cookie_prefix() . 'theme_altexp_' . $exp->get_id();
+			$cookie_name = NelioABSettings::cookie_prefix() . 'global_altexp_' . $exp->get_id();
 			$cookie_life = time() + self::COOKIE_LIFETIME;
+
+			// COMPATIBILITY WITH OLDER VERSIONS
+			$cookie_compat_name = NelioABSettings::cookie_prefix() . 'theme_altexp_' . $exp->get_id();
+			if ( isset( $NELIOAB_COOKIES[$cookie_compat_name] ) && !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
+				$NELIOAB_COOKIES[$cookie_name] = $NELIOAB_COOKIES[$cookie_compat_name];
+			}
 
 			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
 				// Creating the cookie for the experiment information
