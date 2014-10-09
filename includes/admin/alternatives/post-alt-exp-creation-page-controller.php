@@ -41,7 +41,10 @@ if ( !class_exists( 'NelioABPostAltExpCreationPageController' ) ) {
 		}
 
 		public function create_view( $alt_type ) {
-			$title = __( 'Add Experiment', 'nelioab' );
+			if ( $alt_type == NelioABExperiment::PAGE_ALT_EXP )
+				$title = __( 'Add Page Experiment', 'nelioab' );
+			else
+				$title = __( 'Add Post Experiment', 'nelioab' );
 			return new NelioABPostAltExpCreationPage( $title, $alt_type );
 		}
 
@@ -54,4 +57,3 @@ if ( isset( $_POST['nelioab_new_ab_post_exp_form'] ) ) {
 	$controller->manage_actions();
 }
 
-?>

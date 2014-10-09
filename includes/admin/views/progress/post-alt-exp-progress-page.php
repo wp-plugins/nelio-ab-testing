@@ -43,7 +43,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			// Original title
 			$exp = $this->exp;
 			$aux = get_post( $exp->get_originals_id() );
-			$this->ori = sprintf( __( 'id is %s', 'nelioab' ), $aux->ID );
+			$this->ori = sprintf( __( 'Unknown (post_id is %s)', 'nelioab' ), $exp->get_originals_id() );
 			$this->is_ori_page = true;
 			if ( $aux ) {
 				$this->ori = trim( $aux->post_title );
@@ -57,10 +57,10 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			return $this->exp->get_originals_id();
 		}
 
-		protected function print_js_function_for_post_data_overriding() { ?>
-			function nelioab_confirm_overriding(id) {
+		protected function print_js_function_for_post_data_overwriting() { ?>
+			function nelioab_confirm_overwriting(id) {
 				jQuery("#apply_alternative #alternative").attr("value",id);
-				nelioab_show_the_dialog_for_overriding(id);
+				nelioab_show_the_dialog_for_overwriting(id);
 			}
 			<?php
 		}
@@ -120,8 +120,8 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 
 		private function make_link_for_edit( $id ) {
-			return sprintf( ' <a href="javascript:if(nelioab_confirm_editing()) window.location.href=\'%s\'">%s</a>',
-				admin_url() . '/post.php?post=' . $id . '&action=edit',
+			return sprintf( ' <a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
+				admin_url( 'post.php?post=' . $id . '&action=edit' ),
 				__( 'Edit' ) );
 		}
 
@@ -138,7 +138,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					if ( $alt_id == $exp->get_originals_id() )
 						break;
 					$aux = sprintf(
-						' <a href="javascript:nelioab_confirm_overriding(%1$s);">%2$s</a>',
+						' <a class="apply-link" href="javascript:nelioab_confirm_overwriting(%1$s);">%2$s</a>',
 						$alt_id, __( 'Apply', 'nelioab' ) );
 					array_push( $action_links, $aux );
 					break;
@@ -161,12 +161,18 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			else
 				$set_as_winner = '';
 
+			if ( $link )
+				$link = sprintf( '<strong><a href="%s" target="_blank">%s</a></strong>',
+					$link, $this->trunk( $this->ori ) );
+			else
+				$link = '<strong>' . $this->trunk( $this->ori ) . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
+
 			echo sprintf( '<tr>' .
 				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
-				'<td><strong><a href="%s" target="_blank">%s</a></strong><br />' .
+				'<td>%s<br />' .
 				'<small>%s&nbsp;</small></td>' .
 				'</tr>',
-				$set_as_winner, $ori_label, $link, $this->ori, implode( ' | ', $action_links ) );
+				$set_as_winner, $ori_label, $link, implode( ' | ', $action_links ) );
 		}
 
 		protected function print_the_real_alternatives() {
@@ -187,16 +193,23 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					$set_as_winner = '';
 
 				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
+
+				if ( $link )
+					$link = sprintf( '<strong><a href="%s" target="_blank">%s</a></strong>',
+						$link, $this->trunk( $alt->get_name() ) );
+				else
+					$link = '<strong>' . $this->trunk( $alt->get_name() ) . '</strong> <small>' . __( '(Not found)', 'nelioab' ) . '</small>';
+
 				echo sprintf( '<tr>' .
 					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
-					'<td><strong><a href="%3$s" target="_blank">%4$s</a></strong> ' .
-					'<img id="loading-%5$s" style="display:none;width:1em;margin-top:-1em;" src="%6$s" />' .
-					'<strong><small id="success-%5$s" style="display:none;">%7$s</small></strong><br />' .
-					'<small>%8$s&nbsp;</small></td>' .
+					'<td>%3$s ' .
+					'<img id="loading-%4$s" style="display:none;width:1em;margin-top:-1em;" src="%5$s" />' .
+					'<strong><small id="success-%4$s" style="display:none;">%6$s</small></strong><br />' .
+					'<small>%7$s&nbsp;</small></td>' .
 					'</tr>',
 					$set_as_winner, $alt_label,
-					$link, $alt->get_name(),
-					$alt->get_value(), NELIOAB_ASSETS_URL . '/images/loading-small.gif',
+					$link,
+					$alt->get_value(), nelioab_asset_link( '/images/loading-small.gif' ),
 					__( '(Done!)', 'nelioab' ),
 					implode( ' | ', $action_links ) );
 			}
@@ -204,20 +217,19 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		}
 
 		protected function print_dialog_content() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			$exp = $this->exp;
 			?>
 			<p><?php
 				if ( $this->is_ori_page ) {
-					_e( 'You are about to override the original page with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original page with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
 				}
 				else {
-					_e( 'You are about to override the original post with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original post with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
 				}
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
-				echo admin_url() . 'admin.php?page=nelioab-experiments&action=progress&id=' .
-				$exp->get_id(); ?>">
+				echo admin_url(
+					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
 				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />
