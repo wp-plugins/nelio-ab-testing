@@ -96,13 +96,12 @@ if ( !class_exists( 'NelioABPostAltExpProgressPageController' ) ) {
 				$tags       = isset( $_POST['copy_tags'] ) && $_POST['copy_tags'] == 'on';
 				$meta       = isset( $_POST['copy_meta'] ) && $_POST['copy_meta'] == 'on';
 
-				require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 				NelioABSettings::set_copy_metadata( $meta );
 				NelioABSettings::set_copy_categories( $categories );
 				NelioABSettings::set_copy_tags( $tags );
 
 				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-				NelioABWPHelper::override( $ori_id, $alt_id, $meta, $categories, $tags );
+				NelioABWPHelper::overwrite( $ori_id, $alt_id, $meta, $categories, $tags );
 				echo 'OK';
 				die();
 			}

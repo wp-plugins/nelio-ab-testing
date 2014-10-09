@@ -23,19 +23,32 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		protected $title_action;
 		protected $icon_id;
 		protected $message;
+		protected $classes;
 
 		public function __construct( $title = '' ) {
-			$this->title            = $title;
-			$this->title_action     = '';
-			$this->icon_id          = 'icon-options-general';
+			$this->title        = $title;
+			$this->title_action = '';
+			$this->icon_id      = 'icon-options-general';
+			$this->classes      = array();
 
 			$this->message = false;
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-			if ( NelioABSettings::is_upgrade_message_visible() )
+			if ( NelioABSettings::is_upgrade_message_visible() ) {
 				$this->message = sprintf(
-					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing: track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
-					'mailto:info@wp-abtesting.com?subject=Request%20-%20Upgrade%20to%20Professional%20Plan'
+					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing. Track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
+					'mailto:support@neliosoftware.com?' .
+						'subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20my%20Subscription&' .
+						'body=' . esc_html( 'I\'d like to upgrade my subscription plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
 				);
+			}
+			elseif ( !NelioABSettings::is_performance_muplugin_up_to_date() ) {
+				global $nelioab_admin_controller;
+				if ( NULL == $nelioab_admin_controller->error_message ) {
+					$nelioab_admin_controller->error_message = sprintf(
+						__( '<b>Performance MU-Plugin</b>. You\'re currently using an outdated version of Nelio A/B Testing\'s Performance MU-Plugin. We tried to automatically update it, but something went wrong. Please, go to the <a href="%s">Settings</a> page and reinstall the Performance MU-Plugin.', 'nelioab' ),
+						admin_url( 'admin.php?page=nelioab-settings' )
+					) ;
+				}
+			}
 		}
 
 		public function set_message( $message ) {
@@ -55,10 +68,13 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		public function print_page_buttons() {
 		}
 
-		public function render() {
-			?>
-			<script type="text/javascript" src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/tablesorter.min.js'; ?>"></script>
-			<div class="wrap">
+		public function add_class( $class ) {
+			array_push( $this->classes, $class );
+		}
+
+		public function render() { ?>
+			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tablesorter.min.js' ); ?>"></script>
+			<div class="wrap <?php echo implode( ' ', $this->classes ); ?>">
 				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
 				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>
 				<?php
@@ -68,12 +84,10 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 						$this->print_errors();
 				?>
 				<br />
-				<div id="poststuff">
-					<?php $this->do_render(); ?>
-					<br />
-					<div class="actions"><?php
-						$this->print_page_buttons(); ?>
-					</div>
+				<?php $this->do_render(); ?>
+				<br />
+				<div class="actions"><?php
+					$this->print_page_buttons(); ?>
 				</div>
 			</div>
 			<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
@@ -195,7 +209,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		}
 
 		protected function make_section( $section_title, $fields ) { ?>
-			<div class="stuffbox">
+			<div class="nelio-sect stuffbox">
 				<h3><label><?php echo $section_title; ?></label></h3>
 				<div class="inside"><?php
 					foreach ( $fields as $field ) {
@@ -209,6 +223,31 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			</div><?php
 		}
 
+		protected function print_beautiful_box( $id, $title, $callback = false ) {
+			$this->print_linked_beautiful_box( $id, $title, false, $callback );
+		}
+
+		protected function print_linked_beautiful_box( $id, $title, $link=false, $callback = false ) { ?>
+			<div id="<?php echo $id; ?>" class="postbox nelio-card">
+				<?php if ( $link ) echo "<a href='$link' target='_blank' class='simple'>"; ?>
+					<h3><span><?php echo $title; ?></span></h3>
+				<?php if ( $link ) echo "</a>"; ?>
+				<div class="inside">
+				<?php if ( $link ) echo "<a href='$link' target='_blank' class='simple'>"; ?>
+					<div class="main"><?php
+						if ( $callback ) {
+							if ( is_array( $callback ) && count( $callback ) > 2 )
+								call_user_func_array( array( $callback[0], $callback[1] ), $callback[2] );
+							else
+								call_user_func( $callback );
+						}
+						?>
+					</div>
+				<?php if ( $link ) echo "</a>"; ?>
+				</div>
+			</div><?php
+		}
+
 		protected function make_field( $field ) {
 			$field_name   = $field['label'];
 			$field_id     = $field['id'];
@@ -217,28 +256,55 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			if ( isset( $field['mandatory'] ) && $field['mandatory'] )
 				$is_mandatory = true;
 
-			$pre_err = '';
-			$post_err = '';
-
-			if ( $this->is_invalid( $field_id ) ) {
-				$pre_err = '<strong style="color:red;">';
-				$post_err = '</strong>';
+			$can_be_used = true;
+			$explanation = false;
+			if ( isset( $field['min_plan'] ) ) {
+				if ( NelioABAccountSettings::get_subscription_plan() < $field['min_plan'] )
+					$can_be_used = false;
+				switch ( $field['min_plan'] ) {
+					case NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
+						$explanation = __( 'This option is only available for users registered to our Professional Plan.', 'nelioab' );
+						break;
+					case NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN:
+						$explanation = __( 'This option is only available for users registered to our Enterprise Plan.', 'nelioab' );
+						break;
+				}
 			}
+
+			$error = '';
+
+			if ( $this->is_invalid( $field_id ) )
+				$error = ' class="error"';
 			?>
-			<table class="form-table">
+			<table <?php
+				if ( $can_be_used ) {
+					echo 'class="form-table"';
+				}
+				else {
+					echo 'class="form-table setting-disabled"';
+					if ( $explanation )
+						echo ' title="' . $explanation . '"';
+				}?>>
 				<tr valign="top">
-					<th scope="row">
-						<?php echo $pre_err; ?>
+					<th scope="row"<?php echo $error; ?>>
 						<?php if ( $is_mandatory ) { ?>
-							<label for="<?php echo $field_id; ?>"><b>* <?php echo $field_name; ?></b></label>
+							<label class="mandatory" for="<?php echo $field_id; ?>"><?php echo $field_name; ?></label>
 						<?php } else { ?>
 							<label for="<?php echo $field_id; ?>"><?php echo $field_name; ?></label>
-						<?php }
-						echo $post_err; ?>
+						<?php } ?>
 					</th>
-					<td>
+					<td class="input_for_<?php echo $field_id; ?>">
 					<?php call_user_func($callback); ?>
 					</td>
+					<?php if ( !$can_be_used ) { ?>
+					<script type="text/javascript">(function($) {
+						var selector = "" +
+						  "td.input_for_<?php echo $field_id; ?> input,"+
+						  "td.input_for_<?php echo $field_id; ?> select,"+
+						  "td.input_for_<?php echo $field_id; ?> textarea";
+						$(selector).attr('disabled','disabled');
+					})(jQuery);</script><?php
+					} ?>
 				</tr>
 			</table>
 		<?php

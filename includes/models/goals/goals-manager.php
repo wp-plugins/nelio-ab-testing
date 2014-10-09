@@ -21,16 +21,20 @@
 if( !class_exists( 'NelioABGoalsManager' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/goals/goal.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/actions/action.php' );
+
 	abstract class NelioABGoalsManager {
 
 		public static function load_goal_from_json( $exp, $json ) {
 
 			switch ( $json->kind ) {
-				case NelioABGoal::PAGE_ACCESSED_GOAL_STR:
-				require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
-				$goal = NelioABPageAccessedGoal::decode_from_appengine( $exp, $json );
+
+				case NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL_STR:
+				require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
+				$goal = NelioABAltExpGoal::decode_from_appengine( $exp, $json );
 				$exp->add_goal( $goal );
 				break;
+
 			}
 
 		}
@@ -42,12 +46,37 @@ if( !class_exists( 'NelioABGoalsManager' ) ) {
 				'isMainGoal' => $goal->is_main_goal()
 			);
 			switch ( $goal->get_kind() ) {
-				case NelioABGoal::PAGE_ACCESSED_GOAL:
-					$pages = array();
-					foreach ( $goal->get_pages() as $page )
-						array_push( $pages, $page->encode_for_appengine() );
-					$res['pages'] = $pages;
+
+				case NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL:
+					$page_accessed_actions = array();
+					$form_actions = array();
+					$order = 0;
+					foreach ( $goal->get_actions() as $action ) {
+						$encoded_action = $action->encode_for_appengine();
+						switch( $action->get_type() ) {
+
+							case NelioABAction::PAGE_ACCESSED:
+							case NelioABAction::POST_ACCESSED:
+							case NelioABAction::EXTERNAL_PAGE_ACCESSED:
+								$order++;
+								$encoded_action['order'] = $order;
+								array_push( $page_accessed_actions, $encoded_action );
+								break;
+
+							case NelioABAction::SUBMIT_CF7_FORM:
+							case NelioABAction::SUBMIT_GRAVITY_FORM:
+								$order++;
+								$encoded_action['order'] = $order;
+								array_push( $form_actions, $encoded_action );
+								break;
+
+						}
+					}
+
+					$res['pageAccessedActions'] = $page_accessed_actions;
+					$res['formActions'] = $form_actions;
 					break;
+
 			}
 			return $res;
 		}
@@ -56,4 +85,3 @@ if( !class_exists( 'NelioABGoalsManager' ) ) {
 
 }
 
-?>

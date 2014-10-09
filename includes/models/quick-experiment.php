@@ -21,20 +21,10 @@ if( !class_exists( 'NelioABQuickExperiment' ) ) {
 
 	final class NelioABQuickExperiment extends NelioABExperiment {
 
-		private $type;
-
 		public function __construct( $id ) {
 			parent::__construct();
 			$this->id   = $id;
-			$this->type = -1;
-		}
-
-		public function get_type() {
-			return $this->type;
-		}
-
-		public function set_type( $type ) {
-			$this->type = $type;
+			$this->set_type( -1 );
 		}
 
 		public function save() {

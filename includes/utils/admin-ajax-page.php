@@ -39,7 +39,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 		public function get_content_with_ajax_and_render( $controller_file, $controller_class ) {
 			$this->is_data_pending  = true;
 
-			$controller_file = str_replace( '\\', '\\\\"', $controller_file );
+			$controller_file = str_replace( '\\', '\\\\', $controller_file );
 			$controller_file = str_replace( '"', '\\"', $controller_file );
 
 			$this->controller_file  = $controller_file;
@@ -48,8 +48,8 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			$this->render();
 		}
 
-		public function render() {
-			?><script type="text/javascript" src="<?php echo NELIOAB_ADMIN_ASSETS_URL . '/js/tablesorter.min.js'; ?>"></script><?php
+		public function render() { ?>
+			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tablesorter.min.js' ); ?>"></script><?php
 			$is_data_pending_loader = 'display:none;';
 			$is_data_pending_data = 'display:visible;';
 			if ( $this->is_data_pending) {
@@ -172,7 +172,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				jQuery(document).ready(function() {
 
 					var data = {
-						"action"	 : "get_html_content",<?php
+						"action" : "nelioab_get_html_content",<?php
 						foreach ( $this->post_params as $param )
 							echo "\n\t\t\t\t\t\t\"$param[0]\" : \"$param[1]\",";
 						?>
@@ -194,7 +194,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 							jQuery("#ajax-loader").html(
 							"<?php
 								printf( "<img src='%s' alt='%s' />",
-									NELIOAB_ASSETS_URL . '/admin/images/error-icon.png?' . NELIOAB_PLUGIN_VERSION,
+									nelioab_asset_link( '/admin/images/error-icon.png' ),
 									__( 'Funny image to graphically notify of an error.', 'nelioab' )
          				); ?>" +
 							"<h2 style='color:#555;margin:0px;padding:0px;'><?php

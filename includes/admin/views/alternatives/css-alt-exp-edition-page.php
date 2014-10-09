@@ -1,17 +1,20 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -24,13 +27,18 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 
 		protected $alternatives;
 
-		protected $show_new_form;
-
 		public function __construct( $title ) {
 			parent::__construct( $title );
+			$this->set_icon( 'icon-nelioab' );
 			$this->set_form_name( 'nelioab_edit_ab_css_exp_form' );
-			$this->show_new_form   = false;
 			$this->alternatives    = array();
+
+			$this->is_global = true;
+
+			// Prepare tabs
+			$this->add_tab( 'info', __( 'General', 'nelioab' ), array( $this, 'print_basic_info' ) );
+			$this->add_tab( 'alts', __( 'Alternatives', 'nelioab' ), array( $this, 'print_alternatives' ) );
+			$this->add_tab( 'goals', __( 'Goals', 'nelioab' ), array( $this, 'print_goals' ) );
 		}
 
 		public function set_alternatives( $alternatives ) {
@@ -41,177 +49,43 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 			return NelioABExperiment::CSS_ALT_EXP;
 		}
 
-		public function show_quickedit_box() {
-			$this->show_new_form   = true;
+		protected function get_save_experiment_name() {
+			return _e( 'Save', 'nelioab' );
 		}
 
 		protected function get_basic_info_elements() {
 			return array(
 				array (
-					'label'     => 'Name',
+					'label'     => __( 'Name', 'nelioab' ),
 					'id'        => 'exp_name',
 					'callback'  => array( &$this, 'print_name_field' ),
 					'mandatory' => true ),
 				array (
-					'label'     => 'Description',
+					'label'     => __( 'Description', 'nelioab' ),
 					'id'        => 'exp_descr',
 					'callback'  => array( &$this, 'print_descr_field' ) ),
 				array (
-					'label'     => __( 'Goal Pages and Posts', 'nelioab' ),
-					'id'        => 'exp_goal',
-					'callback'  => array ( &$this, 'print_goal_field' ),
+					'label'     => __( 'Finalization Mode', 'nelioab' ),
+					'id'        => 'exp_finalization_mode',
+					'callback'  => array( &$this, 'print_finalization_mode_field' ),
+					'min_plan'  => NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN,
 					'mandatory' => true ),
 			);
 		}
 
 		protected function print_alternatives() { ?>
-			<h2 style="padding-top:2em;"><?php
+			<h2><?php
 
-				_e( 'Alternatives', 'nelioab' );
-				echo ' ' . $this->make_form_action_link(
-					__( 'New Alternative CSS', 'nelioab' ),
-					$this->form_name, 'show_quickedit_box'
+				printf( '<a onClick="javascript:%1$s" class="add-new-h2" href="javascript:;">%2$s</a>',
+					'NelioABAltTable.showNewPageOrPostAltForm(jQuery(\'table#alt-table\'), false);',
+					__( 'New Alternative CSS', 'nelioab' )
 				);
 
 			?></h2><?php
 
-			$wp_list_table = new NelioABCssAlternativesTable(
-				$this->alternatives,
-				$this->get_form_name(),
-				$this->show_new_form );
+			$wp_list_table = new NelioABCssAlternativesTable( $this->alternatives );
 			$wp_list_table->prepare_items();
 			$wp_list_table->display();
-		}
-
-		protected function print_validator_js() { ?>
-			<script type="text/javascript">
-			jQuery(document).ready(function() {
-				var $ = jQuery;
-
-				// Global form
-				checkSubmit(jQuery);
-				checkNewAlt(jQuery);
-				$("#exp_name").bind( "change paste keyup", function() { checkSubmit(jQuery); } );
-				$("#exp_goal").bind( "change", function() { checkSubmit(jQuery); } );
-				$("#active_goals").bind('NelioABGoalsChanged', function() { checkSubmit(jQuery); } );
-
-				// Alternatives
-				$("#new_alt_name").bind( "change paste keyup", function() { checkNewAlt(jQuery); } );
-			});
-
-			function checkSubmit($) {
-				if ( validateGeneral($) )
-					$(".actions > .button-primary").removeClass("button-primary-disabled");
-				else
-					$(".actions > .button-primary").addClass("button-primary-disabled");
-			}
-
-			function checkNewAlt($) {
-				if ( validateSubmitAlt($) )
-					enableSaveAlt();
-				else
-					disableSaveAlt();
-			}
-
-			function validateGeneral($) {
-
-				try {
-					aux = $("#exp_name").attr("value");
-					if ( aux == undefined )
-						return false;
-					aux = $.trim( aux );
-					if ( aux.length == 0 )
-						return false;
-				} catch ( e ) {}
-
-				try {
-					if ( jQuery("#new-alt-form").size() == 1 )
-						return false;
-				} catch ( e ) {}
-
-				if ( !is_there_one_goal_at_least() )
-					return false;
-
-				return true;
-			}
-
-			function validateSubmitAlt($) {
-				try {
-					aux = $("#new_alt_name").attr("value");
-					if ( aux == undefined )
-						return false;
-					aux = $.trim( aux );
-					if ( aux.length == 0 )
-						return false;
-				} catch ( e ) {}
-
-				return true;
-			}
-
-			altSaveFunction = null;
-			function disableSaveAlt() {
-				try {
-					jQuery("#new-alt-form a.save").addClass("button-primary-disabled");
-					if (altSaveFunction == null)
-						altSaveFunction = jQuery("#new-alt-form a.save")[0].onclick;
-					jQuery("#new-alt-form a.save")[0].onclick = null;
-				} catch (e) {}
-			}
-
-			function enableSaveAlt() {
-				try {
-					jQuery("#new-alt-form a.save").removeClass("button-primary-disabled");
-					if (altSaveFunction != null)
-						jQuery("#new-alt-form a.save")[0].onclick = altSaveFunction;
-				} catch (e) {}
-			}
-
-			function validateAlternative() {
-			}
-
-			function submitAndRedirect(action,force) {
-				if ( !force ) {
-					var primaryEnabled = true;
-					jQuery(".nelioab-js-button").each(function() {
-						if ( jQuery(this).hasClass("button-primary") &&
-						     jQuery(this).hasClass("button-primary-disabled") )
-						primaryEnabled = false;
-					});
-					if ( !primaryEnabled )
-						return;
-				}
-				smoothTransitions();
-				jQuery("#action").attr('value', action);
-				jQuery.post(
-					location.href,
-					jQuery("#<?php echo $this->form_name; ?>").serialize()
-				).success(function(data) {
-					data = jQuery.trim( data );
-					if ( data.indexOf("[SUCCESS]") == 0) {
-						location.href = data.replace("[SUCCESS]", "");
-					}
-					else {
-						document.open();
-						document.write(data);
-						document.close();
-					}
-				});
-			}
-
-			</script>
-			<?php
-		}
-
-		public function print_page_buttons() {
-			echo $this->make_js_button(
-					_x( 'Update', 'action', 'nelioab' ),
-					'javascript:submitAndRedirect(\'validate\',false)',
-					false, true
-				);
-			echo $this->make_js_button(
-					_x( 'Cancel', 'nelioab' ),
-					'javascript:submitAndRedirect(\'cancel\',true)'
-				);
 		}
 
 	}//NelioABCssAltExpEditionPage
@@ -219,23 +93,46 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/alternatives-table.php' );
 	class NelioABCssAlternativesTable extends NelioABAlternativesTable {
 
-		private $show_new_form;
+		function __construct( $items ){
+			parent::__construct( $items );
+		}
 
-		function __construct( $items, $form_name, $show_new_form = false ){
-			parent::__construct( $items, $form_name );
-			$this->show_new_form = $show_new_form;
+		public function column_name( $alt ){
+
+			//Build row actions
+			$actions = array(
+				'rename'	=> $this->make_quickedit_button( __( 'Rename', 'nelioab' ) ),
+
+				'edit-content'	=> sprintf(
+						'<a style="cursor:pointer;" onClick="javascript:' .
+							'NelioABAltTable.editContent(jQuery(this).closest(\'tr\'));' .
+							'">%s</a>',
+						__( 'Save Experiment & Edit Content' ) ),
+
+				'delete'	=> sprintf(
+						'<a style="cursor:pointer;" onClick="javascript:' .
+							'NelioABAltTable.remove(jQuery(this).closest(\'tr\'));' .
+							'">%s</a>',
+						__( 'Delete' ) ),
+			);
+
+			//Return the title contents
+			return sprintf(
+				'<span class="row-title alt-name">%1$s</span>%2$s',
+				/*%1$s*/ $alt['name'],
+				/*%2$s*/ $this->row_actions( $actions )
+			);
 		}
 
 		public function extra_tablenav( $which ) {
-			if ( $which == 'top' ){
+			if ( 'top' == $which ){
 				$text = __( 'Please, <b>add one or more</b> CSS fragments as alternatives.', 'nelioab' );
 				echo $text;
 			}
 		}
 
 		public function display_rows_or_placeholder() {
-			if ( $this->show_new_form )
-				$this->print_new_alt_form();
+			$this->print_new_alt_form();
 
 			$title = __( 'Original: Default CSS without any additions', 'nelioab' );
 			$expl = __( 'This original version of this experiment is not using any alternative CSS at all.', 'nelioab' );
@@ -259,10 +156,6 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 				__( 'Save Experiment & Edit CSS', 'nelioab' ) );
 		}
 
-		protected function hide_quick_actions() {
- 			return $this->show_new_form;
-		}
-
 		protected function print_additional_info_for_new_alt_form() {
 			// Nothing in here
 		}
@@ -274,8 +167,15 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 			<?php
 		}
 
+		protected function get_inline_edit_title() {
+			return __( 'Rename CSS Alternative', 'nelioab' );
+		}
+
+		protected function get_inline_name_field_label() {
+			return __( 'Name', 'nelioab' );
+		}
+
 	}// NelioABCssAlternativesTable
 
 }
 
-?>

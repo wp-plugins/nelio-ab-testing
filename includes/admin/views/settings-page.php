@@ -1,538 +1,692 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
  * This script is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
 if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
-	require_once( NELIOAB_UTILS_DIR . '/admin-ajax-page.php' );
-	require_once( NELIOAB_MODELS_DIR . '/settings.php' );
-
-	class NelioABSettingsPage extends NelioABAdminAjaxPage {
-
-		private $p_style;
-		private $email;
-		private $is_email_valid;
-		private $reg_num;
-		private $is_reg_num_valid;
-		private $tac;
-		private $sites;
-		private $max_sites;
-		private $user_info;
-
-		private $current_site_status;
-		private $error_retrieving_registered_sites;
+	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
+	class NelioABSettingsPage extends NelioABAdminPage {
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
-			$this->p_style          = '';
-			$this->email            = '';
-			$this->reg_num          = '';
-			$this->is_reg_num_valid = false;
-			$this->tac              = false;
-			$this->sites            = array();
-			$this->max_sites        = 1;
+			$this->add_class( 'settings-page' );
+			$this->set_icon( 'icon-nelioab' );
 
-			$this->error_retrieving_registered_sites = false;
-		}
+			$ae_sync_errors = NelioABSettings::get_unsync_fields();
+			if ( count( $ae_sync_errors ) > 0 ) {
+				$msg = __( 'There was a problem while updating some of your options. The following fields could not be properly updated:</p>%s<p>Please, try it again in a few moments.', 'nelioab' );
 
-		public function set_current_site_status( $site_status ) {
-			$this->current_site_status = $site_status;
-		}
+				$errors = '<ul>';
+				if ( in_array( 'quota_limit_per_exp', $ae_sync_errors ) )
+					$errors .= '<li>- ' . __( 'Quota Limit per Experiment', 'nelioab' ) . '</li>';
+				if ( in_array( 'notification_email', $ae_sync_errors ) )
+					$errors .= '<li>- ' . __( 'Notification E-Mail', 'nelioab' ) . '</li>';
+				if ( in_array( 'notifications', $ae_sync_errors ) )
+					$errors .= '<li>- ' . __( 'Notifications', 'nelioab' ) . '</li>';
+				$errors .= '</ul>';
+				if ( '<ul></ul>' == $errors )
+					$errors = '';
+				$errors = str_replace( '<ul', '<ul style="padding-left:1em;"', $errors );
 
-		public function set_user_info( $user_info ) {
-			$this->user_info = $user_info;
-		}
-
-		public function set_email( $email ) {
-			$this->email = $email;
-		}
-
-		public function set_email_validity( $is_email_valid ) {
-			$this->is_email_valid = $is_email_valid;
-		}
-
-		public function set_reg_num( $reg_num ) {
-			$this->reg_num = $reg_num;
-		}
-
-		public function set_reg_num_validity( $is_reg_num_valid ) {
-			$this->is_reg_num_valid = $is_reg_num_valid;
-		}
-
-		public function set_error_retrieving_registered_sites() {
-			$this->error_retrieving_registered_sites = true;
-		}
-
-		public function set_tac_checked( $tac ) {
-			$this->tac = $tac;
-		}
-
-		public function set_registered_sites( $sites ) {
-			$this->sites = $sites;
-		}
-
-		public function set_max_sites( $max_sites ) {
-			$this->max_sites = $max_sites;
-		}
-
-		protected function do_render() { ?>
-			<form id="nelioab_account_form" method="post">
-
-				<?php
-					if ( !$this->is_email_valid ) {
-						_e( '<p>Don\'t you have an account yet? <a href="http://wp-abtesting.com/subscription-plans/">Subscribe now!</a></p>', 'nelioab' );
-						echo '<br /><br />';
-					}
-				?>
-
-				<input type="hidden" name="nelioab_account_form" value="true" />
-
-				<?php
-				$this->make_section(
-					__( 'Nelio AB Testing &ndash; Account Access Details', 'nelioab' ),
-					array(
-						array (
-							'label'     => __( 'E-Mail', 'nelioab' ),
-							'id'        => 'settings_email',
-							'callback'  => array( &$this, 'print_email_field' ),
-							'mandatory' => true ),
-						array (
-							'label'     => __( 'Registration Number', 'nelioab' ),
-							'id'        => 'settings_reg_num',
-							'callback'  => array( &$this, 'print_reg_num_field' ),
-							'mandatory' => true ),
-						array (
-							'label'     => __( 'I have read and accept the <a href="http://wp-abtesting.com/terms-conditions" target="_blank">Terms and Conditions</a> of this service.', 'nelioab' ),
-							'id'        => 'settings_tac',
-							'mandatory' => true,
-							'checkbox'  => true,
-							'checked'   => $this->tac,
-							'pre'       => '<br />' ),
-					) );
-				?>
-
-			</form>
-
-			<?php echo $this->make_submit_button(
-					__( 'Access', 'nelioab' ),
-					'nelioab_account_form'
-				); ?>
-
-
-			<br /><br /><br />
-			<?php
-				$print_plans = true;
-				if ( isset( $this->user_info['status'] ) &&
-				   ( $this->user_info['status'] == 1 ||
-				      $this->user_info['status'] == 2 ) )
-					$print_plans = false;
-
-				if ( $print_plans ) {
-					$this->set_message(
-						__( 'Haven\'t you subscribed to any of our plans? <b><a href="http://wp-abtesting.com/subscription-plans/" target="_blank">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>14-day free trial period</b>.', 'nelioab' ) );
-				}
-			?>
-			<h2 style="margin-bottom:0px;padding-bottom:0px;"><?php
-				$is_status_defined = false;
-				$status_fg_color = '#777777';
-				$status_bg_color = '#EFEFEF';
-				$status_text     = __( 'UNDEFINED', 'nelioab' );
-
-				if ( isset( $this->user_info['status'] ) ) {
-					if ( $this->user_info['status'] == 1 ) {
-						$status_fg_color = '#008800';
-						$status_bg_color = '#D9FFD9';
-						$status_text     = __( 'ACTIVE', 'nelioab' );
-						$is_status_defined = true;
-					}
-					else if ( $this->user_info['status'] == 2 ) {
-						$status_fg_color = '#CC0000';
-						$status_bg_color = '#FD9D9';
-						$status_text     = __( 'NOT ACTIVE', 'nelioab' );
-						$is_status_defined = true;
-					}
-				}
-
-				if ( !$this->tac ) {
-					$status_fg_color = '#777777';
-					$status_bg_color = '#EFEFEF';
-					$status_text     = __( 'UNKNOWN', 'nelioab' );
-				}
-
-				$status_title = sprintf(
-					'<span style="color:%s;background-color:%s;font-size:0.5em;" class="add-new-h2">%s</span>',
-					$status_fg_color, $status_bg_color, $status_text );
-
-				echo __( 'Account Information', 'nelioab' ) . '&nbsp;&nbsp;' . $status_title;
-
-			?></h2>
-
-			<?php
-			if ( !$this->tac || !$is_status_defined ) {
-				echo '<p>' .
-					__( 'Please, fill in all required fields in order to view your account details and use our service.', 'nelioab' ) . '</p>';
+				global $nelioab_admin_controller;
+				$nelioab_admin_controller->error_message = sprintf( $msg, $errors );
 			}
-			else { ?>
+		}
 
-				<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
-				<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
+		public function do_render() { ?>
+			<div id="nelioab-settings" class="wrap">
+				<form method="post" action="options.php">
+					<h3 id="settings-tabs" class="nav-tab-wrapper" style="margin:0em;padding:0em;padding-left:2em;margin-bottom:2em;"><?php
+						$tab = '<span id="tab-%1$s" class="nav-tab %2$s">%3$s</span>';
 
-				<h3><?php _e( 'Subscription Details', 'nelioab' ); ?></h3>
-				<p style="margin-top:0em;margin-left:3em;"><?php
-					if ( !isset( $this->user_info['subscription_url'] ) ) {
-						_e( 'No subscription information available.', 'nelioab' );
-					}
-					else if ( $this->user_info['subscription_url'] == 'BETA' ) {
-						_e( 'You are using a <b>beta free-pass</b>.', 'nelioab' );
-					}
-					else {
-						if ( $this->user_info['subscription_plan'] == 0 ) {
-							printf( '%s<br /><a href="%s">%s</a>',
-								__( 'You are using the <b>Free Trial</b> version of Nelio A/B Testing.', 'nelioab' ),
-								$this->user_info['subscription_url'],
-								__( 'Subscribe now and continue using our service!', 'nelioab' ) );
-						}
-						else {
-							if ( ! $this->user_info['agency'] ) {
-								switch ( $this->user_info['subscription_plan'] ) {
-									case NelioABSettings::BASIC_SUBSCRIPTION_PLAN:
-										_e( 'You are subscribed to our <b>Basic Plan</b>.', 'nelioab' );
-										break;
-									case NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
-										_e( 'You are subscribed to our <b>Professional Plan</b>.', 'nelioab' );
-										break;
-								}
-								echo ' ';
-								printf( '<small><a href="%s">%s</a></small>', $this->user_info['subscription_url'],
-									__( 'Check your subscription details.', 'nelioab' ) );
-								if ( $this->user_info['subscription_plan'] == NelioABSettings::BASIC_SUBSCRIPTION_PLAN ) {
-									echo '<br />';
-									printf(
-										'<a href="%2$s">%1$s</a>',
-										__( 'Upgrade to our Professional Plan.', 'nelioab' ),
-										'mailto:info@wp-abtesting.com?subject=Request%20-%20Upgrade%20to%20Professional%20Plan'
-									);
-								}
+						printf( $tab, 'basic', 'nav-tab-active',
+							__( 'Basic', 'nelioab' ) );
+
+						printf( $tab, 'pro', '',
+							__( 'Advanced', 'nelioab' ) );
+
+
+					?></h3>
+					<?php
+						// This prints out all hidden setting fields
+						settings_fields( 'nelioab_settings_group' );
+						do_settings_sections( 'nelioab-settings' );
+						submit_button();
+					?>
+				</form>
+			</div>
+			<script type="text/javascript">
+			(function($) {
+				$('#nelioab-settings #tab-basic').click(function() {
+					$('#nelioab-settings .nav-tab-active').removeClass('nav-tab-active');
+					$('#nelioab-pro-section').hide();
+					$(this).addClass('nav-tab-active');
+					$('#nelioab-basic-section').show();
+				});
+				$('#nelioab-settings #tab-pro').click(function() {
+					$('#nelioab-settings .nav-tab-active').removeClass('nav-tab-active');
+					$('#nelioab-basic-section').hide();
+					$(this).addClass('nav-tab-active');
+					$('#nelioab-pro-section').show();
+				});
+			})(jQuery);
+			</script>
+		<?php
+		}
+
+		public static function register_settings() {
+
+			register_setting(
+				'nelioab_settings_group',
+				'nelioab_settings',
+				array( 'NelioABSettings', 'sanitize' )
+			);
+
+			// ===============================================================
+			// ===============================================================
+			//    BASIC SETTINGS
+			// ===============================================================
+			// ===============================================================
+
+			add_settings_section(
+				'nelioab_basic_section', '',
+				array( 'NelioABSettingsPage', 'print_basic_section' ),
+				'nelioab-settings'
+			);
+
+			add_settings_field(
+				'show_finished_experiments',
+				self::prepare_basic_label( __( 'Experiment List', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_show_finished_experiments_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section'
+			);
+
+			add_settings_field(
+				'use_php_cookies',
+				self::prepare_basic_label( __( 'PHP cookies', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_cookies_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section'
+			);
+
+			add_settings_field(
+				'use_colorblind_palette',
+				self::prepare_basic_label( __( 'Icons and Colors', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_colorblindness_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section'
+			);
+
+			add_settings_field(
+				'email',
+				self::prepare_basic_label( __( 'Notification E-Mail', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_notification_email_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section'
+			);
+
+//			add_settings_field(
+//				'def_conv_value',
+//				self::prepare_basic_label( __( 'Default Conversion Value', 'nelioab' ) ),
+//				// -------------------------------------------------------------
+//				array( 'NelioABSettingsPage', 'print_def_conv_value_field' ),
+//				'nelioab-settings',
+//				'nelioab_basic_section'
+//			);
+//
+//			add_settings_field(
+//				'conv_unit',
+//				self::prepare_basic_label( 'Conversion Unit' ),
+//				// -------------------------------------------------------------
+//				array( 'NelioABSettingsPage', 'print_conv_unit_field' ),
+//				'nelioab-settings',
+//				'nelioab_basic_section'
+//			);
+
+
+
+			// ===============================================================
+			// ===============================================================
+			//    PROFESSIONAL SETTINGS
+			// ===============================================================
+			// ===============================================================
+
+			add_settings_section(
+				'nelioab_pro_section', '',
+				array( 'NelioABSettingsPage', 'print_pro_section' ),
+				'nelioab-settings'
+			);
+
+			add_settings_field(
+				'quota_limit_for_exp',
+				self::prepare_pro_label( __( 'Quota Limit per Experiment', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_quota_limit_per_experiment_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
+
+			add_settings_field(
+				'min_confidence_for_significance',
+				self::prepare_pro_label( __( 'Min. Confidence', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_min_confidence_for_significance_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
+
+			add_settings_field(
+				'perc_of_tested_users',
+				self::prepare_pro_label( __( 'Num. of Tested Users', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_perc_of_tested_users_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
+
+			add_settings_field(
+				'algorithm',
+				self::prepare_pro_label( __( 'Algorithm', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_algorithm_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
+
+				add_settings_field(
+					'ori_perc', '', array( 'NelioABSettingsPage', 'print_ori_perc_field' ),
+					'nelioab-settings', 'nelioab_pro_section' );
+
+				add_settings_field(
+					'expl_ratio', '', array( 'NelioABSettingsPage', 'print_expl_ratio_field' ),
+					'nelioab-settings', 'nelioab_pro_section' );
+
+			add_settings_field(
+				'notifications',
+				self::prepare_pro_label( __( 'Notifications', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_notifications_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
+
+
+			// ===============================================================
+			add_settings_section(
+				'nelioab_fake_section', '',
+				array( 'NelioABSettingsPage', 'close_last_section' ),
+				'nelioab-settings'
+			);
+
+		}
+
+		public static function print_basic_section() {
+			echo '<div id="nelioab-basic-section">';
+			self::print_mu_plugin_row();
+		}
+
+		public static function print_pro_section() {
+			echo '</div>';
+			echo '<div id="nelioab-pro-section" style="display:none;">';
+			if ( NelioABAccountSettings::get_subscription_plan() <
+			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+				echo '<p>';
+				printf(
+					__( 'The following settings can only be modified by users subscribed to our <b>Professional</b> or <b>Enterprise Plans</b>.<br>If you want to have a finer control of the plugin\'s settings, <a target="_blank" href="%s">please upgrade your current subscription</a>.', 'nelioab' ),
+					'mailto:support@neliosoftware.com?' .
+						'subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20my%20Subscription&' .
+						'body=' . esc_html( 'I\'d like to upgrade my subscription plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
+				);
+				echo '</p>';
+			}
+		}
+
+		public static function close_last_section() {
+			echo '</div>';
+		}
+
+		private static function get_basic_details( $classes = '' ) {
+			return sprintf( ' class="basic %s" ', $classes );
+		}
+
+		private static function get_pro_details( $classes = '' ) {
+			$result = '';
+			if ( NelioABAccountSettings::get_subscription_plan() <
+			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+				$result .= 'disabled="disabled" ';
+				$classes .= ' setting-disabled';
+			}
+			$result .= sprintf( ' class="pro %s" ', $classes );
+			return $result;
+		}
+
+		private static function prepare_basic_label( $label ) {
+			return '<span class="basic-setting-label">' . $label . '</span>';
+		}
+
+		private static function prepare_pro_label( $label ) {
+			if ( NelioABAccountSettings::get_subscription_plan() <
+			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN )
+				return '<span class="pro-setting-label setting-disabled">' . $label . '</span>';
+			else
+				return '<span class="pro-setting-label">' . $label . '</span>';
+		}
+
+		public static function print_mu_plugin_row() { ?>
+			<table class="form-table">
+				<tbody><tr>
+					<th scope="row">AJAX Performance</th>
+					<td><?php
+						self::print_mu_plugin_settings();
+					?></td>
+				</tr></tbody>
+			</table>
+			<?php
+		}
+
+		public static function print_mu_plugin_settings() {
+			$status = __( 'In order to boost response times of all AJAX requests triggered by Nelio A/B Testing, we include a tiny <a %1$s>Must Use Plugin</a> that disables other plugins when they\'re not necessary.<br><br><strong>AJAX Performance MU-Plugin Status: <span class="status %2$s">%3$s</span></strong>.<br><span class="explanation">%4$s</span>', 'nelioab' );
+			if ( NelioABSettings::is_performance_muplugin_installed() &&
+			     NelioABSettings::is_performance_muplugin_up_to_date() ) {
+				$status = sprintf( $status,
+					'target="_blank" href="http://codex.wordpress.org/Must_Use_Plugins"',
+					'installed', __( 'Installed', 'nelioab' ),
+					__( 'In order to uninstall the plugin, please use the previous «Uninstall» button.', 'nelioab' ) );
+				$button = __( 'Uninstall', 'nelioab' );
+			}
+			elseif ( NelioABSettings::is_performance_muplugin_installed() ) {
+				$status = sprintf( $status,
+					'target="_blank" href="http://codex.wordpress.org/Must_Use_Plugins"',
+					'outdated', __( 'Outdated', 'nelioab' ),
+					__( 'In order to update the plugin, please use the previous «Update» button.', 'nelioab' ) );
+				$button = __( 'Update', 'nelioab' );
+			}
+			else {
+				$status = sprintf( $status,
+					'target="_blank" href="http://codex.wordpress.org/Must_Use_Plugins"',
+					'uninstalled', __( 'Not Installed', 'nelioab' ),
+					__( 'In order to install the plugin, please use the previous «Install» button.', 'nelioab' ) );
+				$button = __( 'Install', 'nelioab' );
+			}
+			printf( '<a id="muplugin-installer" class="button">%s</a>', $button );
+			?>
+			<span
+				id="muplugin-descr" class="description"
+				style="display:block;margin-top:0.4em;"><?php echo $status; ?></span>
+			<span
+				id="muplugin-installation-feedback" class="description"
+				style="display:block;margin-top:0.4em;display:none;"></span>
+			<script type="text/javascript">
+			(function($){
+				$("#muplugin-installer").click(function() {
+					var descr = $("#muplugin-descr");
+					var button = $(this);
+					if ( button.hasClass("disabled") )
+						return;
+					button.addClass( "disabled" );
+					$.post( ajaxurl, {action:"nelioab_install_performance_muplugin"}, function(response) {
+						if ( response.status === "OK" ) {
+							button.text( "<?php _e( "Done!", "nelioab" ) ?>" );
+							var s = descr.find(".status").first();
+							var e = descr.find(".explanation").first();
+							if ( s.hasClass( "outdated" ) ) {
+								s.removeClass("outdated");
+								s.addClass("installed");
+								s.text( "<?php _e( 'Installed', 'nelioab' ); ?>" );
+							}
+							else if ( s.hasClass( "installed" ) ){
+								s.removeClass("installed");
+								s.addClass("uninstalled");
+								s.text( "<?php _e( 'Not Installed', 'nelioab' ); ?>" );
 							}
 							else {
-								switch ( $this->user_info['subscription_plan'] ) {
-									case NelioABSettings::BASIC_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Basic Plan</b>, thanks to %s.', 'nelioab' ),
-											$this->user_info['agencyname'] );
-										echo '<br />';
-										break;
-									case NelioABSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Professional Plan</b>, thanks to %s.', 'nelioab' ),
-											$this->user_info['agencyname'] );
-										echo '<br />';
-										break;
-								}
+								s.removeClass("uninstalled");
+								s.addClass("installed");
+								s.text( "<?php _e( 'Installed', 'nelioab' ); ?>" );
 							}
+							e.css('visibility','hidden');
 						}
-					}
-				?></p>
-
-				<?php
-				$post_quota = '';
-				if ( !$this->user_info['agency'] ) {
-					if ( isset( $this->user_info['total_quota'] ) )
-						$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please consider buying additional page views as you need them using the button below, or <a href="%s">contact us for an update of your monthly quota</a>.', 'nelioab' ),
-							$this->user_info['total_quota'],
-							'mailto:info@wp-abtesting.com' );
-				}
-				else {
-					$post_quota = sprintf( __( '<br />Your current plan permits up to %d page views under test per month. If you need more quota, please contact <a href="%s">%s</a>.', 'nelioab' ),
-							$this->user_info['total_quota'],
-							$this->user_info['agencymail'],
-							$this->user_info['agencyname'] );
-				}
-	
-				if ( isset( $this->user_info['quota'] ) ) { ?>
-					<p style="margin-top:0em;margin-left:3em;max-width:600px;">
-					<b><?php _e( 'Available Quota:', 'nelioab' ); ?></b>
-					<?php
-						$the_total_quota = $this->user_info['total_quota'];
-						$the_quota       = $this->user_info['quota'];
-						$quota_color     = '#00AA00';
-						if ( $the_quota < ( $the_total_quota * 0.15 ) )
-							$quota_color = '#FF9532';
-						if ( $the_quota < ( $the_total_quota * 0.05 ) )
-							$quota_color = 'red';
-					?>
-					<b><?php
-						printf( __( '<span %s>%d</span> Page Views' ),
-							"style='font-size:120%;color:$quota_color;'",
-							$the_quota ); ?></b>
-					<small>(<a href="http://wp-abtesting.com/faqs/what-is-a-tested-pageview"><?php
-						_e( 'Help', 'nelioab' );
-					?></a>)</small><?php echo $post_quota; ?></p><?php
-	
-				if ( !$this->user_info['agency'] ) { ?>
-						<a style="margin-left:3em;margin-bottom:1.5em;" class="button" target="_blank"
-							href="http://sites.fastspring.com/nelio/product/nelioextrapageviewsforthepersonalserviceplan"><?php
-							_e( 'Buy More', 'nelioab' );
-						?></a>
-	
-					<?php
-					}
-				} ?>
-
-
-				<?php if ( $this->is_email_valid && $this->is_reg_num_valid && $this->tac ) { ?>
-
-					<?php
-					if ( $this->error_retrieving_registered_sites ) { ?>
-						<h3><?php _e( 'Registered Sites', 'nelioab' ); ?></h3><?php
-
-
-						?><p style="margin-top:0em;margin-left:3em;"><?php
-							echo __( 'There was an error while retrieving the list of all registered sites to this account.', 'nelioab' );
-
-						if ( NelioABSettings::has_a_configured_site() ) {
-								echo __( 'Nonetheless, please note this site is registered to your account, which means you can still use all plugin\'s functionalities.', 'nelioab' );
+						else {
+							var feedback = $("#muplugin-installation-feedback");
+							feedback.html( response.error );
+							descr.hide();
+							feedback.css("display","block");
 						}
-
-						?></p><?php
-
-					}
-					else {
-						$print_table = true;
-						$sites = array();
-
-						switch( $this->current_site_status ) {
-							case NelioABSite::NON_MATCHING_URLS: ?>
-								<h3><?php _e( 'Registered Sites', 'nelioab' ); ?></h3><?php
-								$this->print_site_non_matching();
-								$print_table = false;
-								break;
-
-							case NelioABSite::ACTIVE:
-								$this->print_table_of_registered_sites();
-								break;
-
-							default:
-								?> <h3><?php _e( 'This Site is Not Registered', 'nelioab' ); ?></h3> <?php
-								$can_register = count( $this->sites ) < $this->max_sites;
-								if ( $can_register )
-									$this->print_site_should_be_registered();
-								else
-									$this->print_site_cannot_be_registered();
-
-								$this->print_table_of_registered_sites();
-						} ?>
-
-						<form id="nelioab_registration_form" method="post">
-							<input type="hidden" name="nelioab_registration_form" value="true" />
-							<input type="hidden" id="nelioab_registration_action" name="nelioab_registration_action" value="" />
-						</form>
-
-					<?php
-					}
-					?>
-
-				<?php
-				}
-			}
+					} );
+				});
+			})(jQuery);
+			</script>
+			<?php
 		}
 
-		public function print_email_field() { ?>
-			<input name="settings_email" type="text" id="settings_email" maxlength="400"
-				class="regular-text" value="<?php echo $this->email; ?>"/><?php
-		}
-
-		public function print_reg_num_field() { ?>
-			<input name="settings_reg_num" type="text" id="settings_reg_num" maxlength="26"
-				class="regular-text" value="<?php echo $this->reg_num; ?>"/><?php
-			if ( $this->is_email_valid) {
-				if ( $this->is_reg_num_valid ) { ?>
-					<span style="color:#00AA00; font-weight:bold;"><?php _e( 'OK', 'nelioab' ); ?></span><?php
-				}
-				else { ?>
-					<span style="color:red; font-weight:bold;"><?php _e( 'INVALID', 'nelioab' ); ?></span><?php
-				}
-			}
-		}
-
-		private function print_site_non_matching() {
-			echo '<p>Error #001 - Non matching URLs.<br />Please, report this error to Nelio using the Feedback form.</p>';
-		}
-
-		private function print_site_should_be_registered() {
-			$style = 'style="' . $this->p_style . 'margin-left:3em;font-size:120%%;line-height:1.3em;"';
-			echo sprintf( "<p $style>%s <strong><a href=\"%s\">%s</a></strong></p>\n",
-				__( 'This site is not yet registered to your account.', 'nelioab' ),
-				$this->do_registration_link(),
-				__( 'Register it now!', 'nelioab' ) );
-		}
-
-		private function print_site_cannot_be_registered() {
-			$style = 'style="' . $this->p_style . 'margin-left:3em;font-size:120%%;line-height:1.3em;"';
-			echo sprintf( "<p $style>%s</p><p $style>%s</p>\n",
-				__( 'It looks like this site is not connected to you account. In order to use our service in this site, first you have to register it. Unfortunately, you already reached the maximum number of sites allowed by your current subscription plan (see the table below).', 'nelioab' ),
-				sprintf( __( 'Please, <a href="%s"><b>upgrade your <i>Nelio A/B Testing</i> subscription</b></a> so that you can register and manage more sites, or <b>access one of the other sites to cancel its subscription</b> and try again. Keep in mind that canceling the registration of a site may cause permanent loss of all experiments associated to that site.', 'nelioab' ),
-					'http://wp-abtesting.com/inquiry-subscription-plans' )
+		public static function print_def_conv_value_field() {
+			$field_name = 'def_conv_value';
+			printf(
+				'<input type="text" id="%1$s" name="nelioab_settings[%1$s]" value="%2$s" placeholder="%3$s" disabled="disabled" $4%s />',
+				$field_name, NelioABSettings::get_def_conv_value(), NelioABSettings::DEFAULT_CONVERSION_VALUE, self::get_pro_details()
 			);
 		}
 
-		private function do_registration_link() {
-			$register_js = 'javascript:' .
-				'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'register\');' .
-				'jQuery(\'#nelioab_registration_form\').submit();';
-			return $register_js;
+		public static function print_conv_unit_field() {
+			$field_name = 'conv_unit';
+			printf(
+				'<input type="text" id="%1$s" name="nelioab_settings[%1$s]" value="%2$s" placeholder="%3$s" %4$s />',
+				$field_name, NelioABSettings::get_conv_unit(), NelioABSettings::DEFAULT_CONVERSION_UNIT, self::get_basic_details()
+			);
 		}
 
-		private function cancel_registration_link() {
-			$cancel_js = 'javascript:' .
-				'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'cancel\');' .
-				'jQuery(\'#nelioab_registration_form\').submit();';
-			return $cancel_js;
+		public static function print_algorithm_field() {
+			$field_name = 'algorithm';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_pro_details()
+			);
+			?>
+				<option value='<?php
+					echo NelioABSettings::ALGORITHM_PURE_RANDOM; ?>'><?php
+						_e( 'Default - Pure Random', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::ALGORITHM_PRIORITIZE_ORIGINAL; ?>' <?php
+					if ( NelioABSettings::get_algorithm() == NelioABSettings::ALGORITHM_PRIORITIZE_ORIGINAL )
+						echo ' selected="selected"'; ?>><?php
+						_e( 'Prioritize Original Version', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::ALGORITHM_GREEDY; ?>' <?php
+					if ( NelioABSettings::get_algorithm() == NelioABSettings::ALGORITHM_GREEDY )
+						echo ' selected="selected"'; ?>><?php
+						_e( 'Prioritize Winner (Greedy)', 'nelioab' ); ?></option>
+			</select>
+			<?php
 		}
 
-		private function print_table_of_registered_sites() {
-			$sites = array();
-
-			$other_sites = array();
-			$this_url    = get_option( 'siteurl' );
-			foreach( $this->sites as $site )
-				if ( $site->get_url() != $this_url )
-					array_push( $other_sites, $site );
-
-			if( $this->current_site_status == NelioABSite::ACTIVE ) {
-				array_push( $sites, array(
-						'this_site'   => true,
-						'name'        => $this_url,
-						'cancel_link' => $this->cancel_registration_link()
-					) );
+		public static function print_quota_limit_per_experiment_field() {
+			$limit = NelioABSettings::get_quota_limit_per_exp();
+			$field_name = 'quota_limit_per_exp';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_pro_details()
+			);
+			?>
+				<option value='-1'><?php _e( 'Unlimited', 'nelioab' ); ?></option>
+			<?php
+			$options = array( 500, 1000, 1500, 2500, 3000 );
+			if ( NelioABAccountSettings::get_subscription_plan() >=
+			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN )
+				array_push( $options, 4000, 5000, 7500, 10000 );
+			foreach ( $options as $v ) {
+				printf( '<option value="%2$s" %3$s>%1$s</option>',
+					sprintf( __( '%s page views', 'nelioab' ), number_format_i18n( $v ) ),
+					strval( $v ),
+					( $limit == $v ) ? 'selected="selected"' : ''
+				);
 			}
+			?>
+			</select>
+			<?php
+		}
 
-			foreach ( $other_sites as $site )
-				array_push( $sites, array(
-						'this_site' => false,
-						'name'      => $site->get_url(),
-						'goto_link' => $site->get_url()
-					) );
+		public static function print_colorblindness_field() {
+			$field_name = 'use_colorblind';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='0'><?php _e( 'Regular Palette', 'nelioab' ); ?></option>
+				<option value='1'<?php
+					if ( NelioABSettings::use_colorblind_palette() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Colorblind Palette', 'nelioab' ); ?></option>
+			</select>
+			<?php
+		}
 
-			for ( $i = count( $sites ); $i < $this->max_sites; ++$i )
-				array_push( $sites, array(
-						'this_site' => false,
-						'name'      => __( 'Empty Slot', 'nelioab' )
-					) );
+		public static function print_notification_email_field() {
+			$field_name = 'notification_email';
+			printf(
+				'<div class="nelio-sect"><input type="text" id="%1$s" name="nelioab_settings[%1$s]" style="max-width:400px;width:100%%;" value="%3$s" placeholder="%4$s" %2$s></div>',
+				$field_name, self::get_basic_details(),
+				esc_html( NelioABSettings::get_notification_email() ),
+				sprintf( __( 'Default: %s', 'nelioab' ), esc_html( NelioABAccountSettings::get_email() ) )
+			);
+			?>
+			<br><span class="description"><?php
+				printf(
+					__( 'If you type an e-mail address, all Nelio A/B Testing notifications will be sent to both the new address and «%s».', 'nelioab' ),
+					NelioABAccountSettings::get_email()
+				);
+			?></span>
+			<script>
+				(function($) {
+					var mail = $('#<?php echo $field_name; ?>');
+					var form = $('#nelioab-settings');
+					var save;
+					function validateMail() {
+						var x = mail.attr('value');
+						if ( x.length == 0 )
+							return true;
+						var atpos = x.indexOf('@');
+						var dotpos = x.lastIndexOf('.');
+						if (atpos< 1 || dotpos<atpos+2 || dotpos+2>=x.length)
+							return false;
+						return true;
+					}
+					function control() {
+						if ( validateMail() ) {
+							mail.removeClass('error');
+							save.removeClass('disabled');
+							form.unbind('submit', returnFalse);
+						}
+						else {
+							mail.addClass('error');
+							save.addClass('disabled');
+							form.on('submit', returnFalse);
+						}
+					}
+					function returnFalse() { return false; }
+					mail.on('keyup focusout', control);
+					$(document).ready(function() {
+						save = $('#submit');
+						control();
+					});
+				})(jQuery);
+			</script>
+			<?php
+		}
 
-			echo '<div id="registered-sites-table" style="margin-left:2em;">';
-			$aux = new NelioABRegisteredSitesTable( $sites );
-			$aux->prepare_items();
-			$aux->display();
-			echo '</div>';
+		public static function print_notifications_field() {
+			$cb = '<p><input type="checkbox" id="%1$s" name="nelioab_settings[%1$s]" %3$s %4$s />%2$s</p>';
+			printf( $cb, 'notify_exp_finalization',
+					__( 'Notify me when an experiment is automatically stopped.', 'nelioab' ),
+					self::checked( NelioABSettings::is_notification_enabled( NelioABSettings::NOTIFICATION_EXP_FINALIZATION ) ),
+					self::get_pro_details()
+				);
+		}
+
+		private static function checked( $checked ) {
+			if ( $checked )
+				return 'checked="checked"';
+			else
+				return '';
+		}
+
+		public static function print_show_finished_experiments_field() {
+			$field_name = 'show_finished_experiments';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='<?php
+					echo NelioABSettings::FINISHED_EXPERIMENTS_HIDE_ALL;
+					?>'><?php _e( 'Hide Finished Experiments', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::FINISHED_EXPERIMENTS_SHOW_RECENT; ?>'<?php
+					if ( NelioABSettings::FINISHED_EXPERIMENTS_SHOW_RECENT == NelioABSettings::show_finished_experiments() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Show Recently Finished Experiments', 'nelioab' ); ?></option>
+				<option
+					value='<?php echo NelioABSettings::FINISHED_EXPERIMENTS_SHOW_ALL; ?>'<?php
+					if ( NelioABSettings::FINISHED_EXPERIMENTS_SHOW_ALL == NelioABSettings::show_finished_experiments() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Show All Finished Experiments', 'nelioab' ); ?></option>
+			</select>
+			<?php
+		}
+
+		public static function print_min_confidence_for_significance_field() {
+			$field_name = 'min_confidence_for_significance';
+			printf(
+				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="50" max="100" step="5" value="%2$s" %3$s /><br>',
+				$field_name, NelioABSettings::get_min_confidence_for_significance(), self::get_pro_details()
+			);
+			?>
+			<span <?php echo self::get_pro_details( 'description' ); ?> id="value_<?php echo $field_name; ?>"></span>
+			<script type="text/javascript">
+				jQuery("#<?php echo $field_name; ?>").on("input change", function() {
+					var str = "<?php
+						$str = __( 'Minimum confidence value is set to <strong>{value}%</strong>.<br>The confidence value tells you how "trustable" is the fact that one alternative is better than the original.', 'nelioab' );
+						$str = str_replace( '"', '\\"', $str );
+						echo $str;
+					?>";
+					var value = jQuery(this).attr('value');
+					if ( value == '100' )
+						value = '99';
+					str = str.replace( '{value}', value );
+					jQuery("#value_<?php echo $field_name; ?>").html(str);
+				});
+				jQuery("#<?php echo $field_name; ?>").trigger("change");
+			</script>
+			<?php
+		}
+
+		public static function print_perc_of_tested_users_field() {
+			$field_name = 'perc_of_tested_users';
+			printf(
+				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="10" max="100" step="5" value="%2$s" %3$s /><br>',
+				$field_name, NelioABSettings::get_percentage_of_tested_users(), self::get_pro_details()
+			);
+			?>
+			<span <?php echo self::get_pro_details( 'description' ); ?> id="value_<?php echo $field_name; ?>"></span>
+			<script type="text/javascript">
+				jQuery("#<?php echo $field_name; ?>").on("input change", function() {
+					var str = "<?php
+						$str = __( '<strong>{value}%</strong> of the users that access your site will participate in the running experiments.', 'nelioab' );
+						$str = str_replace( '"', '\\"', $str );
+						echo $str;
+					?>";
+					var value = jQuery(this).attr('value');
+					str = str.replace( '{value}', value );
+					jQuery("#value_<?php echo $field_name; ?>").html(str);
+				});
+				jQuery("#<?php echo $field_name; ?>").trigger("change");
+			</script>
+			<?php
+		}
+
+		public static function print_ori_perc_field() {
+			$field_name = 'ori_perc';
+			echo '<b>' . self::prepare_pro_label( __( 'Original Percentage', 'nelioab' ) ) . '</b><br><br>';
+			printf(
+				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="55" max="95" step="5" value="%2$s" %3$s /><br>',
+				$field_name, NelioABSettings::get_original_percentage(), self::get_pro_details()
+			);
+			?>
+			<span <?php echo self::get_pro_details( 'description' ); ?> id="value_<?php echo $field_name; ?>"></span>
+			<script type="text/javascript">
+				jQuery("#algorithm").on("change", function() {
+					var option = jQuery("#<?php echo $field_name; ?>").parent().parent();
+					if ( jQuery(this).attr('value') == <?php echo NelioABSettings::ALGORITHM_PRIORITIZE_ORIGINAL; ?> ) option.show();
+					else option.hide();
+				});
+				jQuery("#algorithm").trigger("change");
+				jQuery("#<?php echo $field_name; ?>").on("input change", function() {
+					var str = "<?php
+						$str = __( '<strong>{value}%</strong> of your visitors will see the original version of the experiment.<br>The rest of the users will see the other alternatives.', 'nelioab' );
+						$str = str_replace( '"', '\\"', $str );
+						echo $str;
+					?>";
+					var value = jQuery(this).attr('value');
+					str = str.replace( '{value}', value );
+					jQuery("#value_<?php echo $field_name; ?>").html(str);
+				});
+				jQuery("#<?php echo $field_name; ?>").trigger("change");
+			</script>
+			<?php
+		}
+
+		public static function print_expl_ratio_field() {
+			$field_name = 'expl_ratio';
+			echo '<b>' . self::prepare_pro_label( __( 'Exploitation or Exploration', 'nelioab' ) ) . '</b><br><br>';
+			printf(
+				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="10" max="90" step="5" value="%2$s" %3$s /><br>',
+				$field_name, NelioABSettings::get_exploitation_percentage(), self::get_pro_details()
+			);
+			?>
+			<span <?php echo self::get_pro_details( 'description' ); ?> id="value_<?php echo $field_name; ?>"></span>
+			<script type="text/javascript">
+				jQuery("#algorithm").on("change", function() {
+					var option = jQuery("#<?php echo $field_name; ?>").parent().parent();
+					if ( jQuery(this).attr('value') == <?php echo NelioABSettings::ALGORITHM_GREEDY; ?> ) option.show();
+					else option.hide();
+				});
+				jQuery("#algorithm").trigger("change");
+				jQuery("#<?php echo $field_name; ?>").on("input change", function() {
+					var str = "<?php
+						$str = __( '<strong>{value}%</strong> of your visitors will see the winning alternative.<br>The rest of the users will see the other alternatives.', 'nelioab' );
+						$str = str_replace( '"', '\\"', $str );
+						echo $str;
+					?>";
+					var value = jQuery(this).attr('value');
+					str = str.replace( '{value}', value );
+					jQuery("#value_<?php echo $field_name; ?>").html(str);
+				});
+				jQuery("#<?php echo $field_name; ?>").trigger("change");
+			</script>
+			<?php
+		}
+
+		public static function print_cookies_field() {
+			$field_name = 'use_php_cookies';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='0'><?php _e( 'Disabled (use JavaScript)', 'nelioab' ); ?></option>
+				<option value='1'<?php
+					if ( NelioABSettings::use_php_cookies() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Enabled', 'nelioab' ); ?></option>
+			</select>
+			<br><span class="description"><?php
+				_e( 'Select how alternatives are loaded. With PHP cookies, page load times might be faster, because regular cookies reduce the amount of queries your visitors will perform to your server. However, they cannot be used everywhere (for instance, <a href="http://wpengine.com">WPEngine</a> does not permit them). If you are not sure, use JavaScript.',
+					'nelioab' );
+			?></span>
+			<?php
 		}
 
 	}//NelioABSettingsPage
 
-
-	require_once( NELIOAB_UTILS_DIR . '/admin-table.php' );
-	class NelioABRegisteredSitesTable extends NelioABAdminTable {
-		
-		function __construct( $items ){
-   	   parent::__construct( array(
-				'singular'  => __( 'registered site', 'nelioab' ),
-				'plural'    => __( 'registered sites', 'nelioab' ),
-				'ajax'      => false
-			)	);
-			$this->set_items( $items );
-		}
-
-		public function get_columns() {
-			return array(
-				'name' => __( 'Registered Sites', 'nelioab' ),
-			);
-		}
-
-		public function column_name( $site ) {
-			if ( $site['this_site'] )
-				return $this->make_this_site( $site );
-			else
-				return $this->make_other_site( $site );
-		}
-
-		private function make_this_site( $site ) {
-			$name = $this->beautify_url( $site['name'] );
-			$name = sprintf( $name, '#000000', '#909090' );
-			$name = '<span class="row-title">' . 
-				'<strong style="font-weight:bold;">' . $name . '</strong> ' .
-				'<strong style="font-variant:small-caps;">(' . __( 'this site', 'neliab' ) . ')</strong> ' .
-				'</span>';
-			$actions = $this->row_actions( array(
-					'delete' => '<a href="' . $site['cancel_link'] . '">Cancel Registration</a>'
-				) );
-
-			return $name . $actions;
-		}
-
-		private function make_other_site( $site ) {
-			if ( isset( $site['goto_link'] ) ) {
-				$name = $this->beautify_url( $site['name'] );
-				$name = sprintf( $name, '#404040', '#AAAAAA' );
-				$name = '<span class="row-title" style="font-weight:normal;">' . $name . '</span>';
-				$actions = $this->row_actions( array(
-						'edit-content' => '<a href="' . $site['goto_link'] . '">Go to this site</a>'
-					) );
-			}
-			else {
-				$style   = 'color:#AAAAAA;font-weight:normal;font-style:italic;';
-				$name    = '<span class="row-title" style="' . $style . '">' . $site['name'] . '</span>';
-				$actions = $this->row_actions( array( 'none' => '&nbsp;' ) );
-			}
-
-			return $name . $actions;
-		}
-
-		private function beautify_url( $url ) {
-			$result = '<span style="color:%2$s">';
-			if ( strpos( $url, 'http://' ) === 0 ) {
-				$result .= 'http://</span>';
-				$url = substr( $url, 7 );
-			}
-			else if ( strpos( $url, 'https://' ) === 0 ) {
-				$result .= 'https://</span>';
-				$url = substr( $url, 8 );
-			}
-			$result .= '<span style="color:%1$s">';
-
-			$first_slash = strpos( $url, '/' );
-			if ( $first_slash ) {
-				$result .= substr( $url, 0, $first_slash );
-				$result .= '</span><span style="color:%2$s">';
-				$result .= substr( $url, $first_slash );
-				$result .= '</span>';
-			}
-			else {
-				$result .= substr( $url, 0, strlen( $url ) );
-				$result .= '</span><span style="color:%2$s"></span>';
-			}
-
-			return $result;
-		}
-
-		public function print_column_headers( $with_id = true ) {
-			if ( $with_id )
-				parent::print_column_headers();
-		}
-
-	}//NelioABRegisteredSitesTable
 }
 
-
-
-?>

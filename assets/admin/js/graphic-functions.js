@@ -3,13 +3,10 @@
  */
 if (!String.prototype.nelioabformat) {
   String.prototype.nelioabformat = function() {
-	var args = arguments;
-	return this.replace(/{(\d+)}/g, function(match, number) {
-	  return typeof args[number] != 'undefined'
-		? args[number]
-		: match
-	  ;
-	});
+		var args = arguments;
+		return this.replace(/{(\d+)}/g, function(match, number) {
+		  return typeof args[number] != 'undefined' ? args[number] : match;
+		});
   };
 }
 
@@ -36,14 +33,14 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 			text: labels['title'],
 			style: {
 				 color: '#464646',
-				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				 fontFamily: "'Open Sans', sans-serif",
 			}
 		},
 		subtitle: {
 			text: labels['subtitle'],
 			style: {
 				 color: '#808080',
-				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				 fontFamily: "'Open Sans', sans-serif",
 			}
 		},
 		xAxis: {
@@ -53,14 +50,14 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 				text: null,
 				style: {
 					 color: '#464646',
-					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontFamily: "'Open Sans', sans-serif",
 					 fontWeight: "normal",
 				},
 			},
 			labels: {
 				style: {
 					 color: '#464646',
-					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontFamily: "'Open Sans', sans-serif",
 					 fontWeight: "normal",
 				},
 			}
@@ -70,7 +67,7 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 				text: labels['yaxis'],
 				style: {
 					color: '#464646',
-					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontFamily: "'Open Sans', sans-serif",
 					fontWeight: "normal",
 				}
 			},
@@ -91,7 +88,7 @@ function makeConversionRateGraphic(divName, labels, categories, data) {
 					color: 'black',
 					style: {
 						 color: '#464646',
-						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontFamily: "'Open Sans', sans-serif",
 						 fontWeight: "normal",
 					},
 					formatter: function () {
@@ -153,14 +150,14 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 			text: labels['title'],
 			style: {
 				 color: '#464646',
-				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				 fontFamily: "'Open Sans', sans-serif",
 			}
 		},
 		subtitle: {
 			text: labels['subtitle'],
 			style: {
 				 color: '#808080',
-				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				 fontFamily: "'Open Sans', sans-serif",
 			}
 		},
 		xAxis: {
@@ -172,7 +169,7 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 			labels: {
 				style: {
 					 color: '#464646',
-					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontFamily: "'Open Sans', sans-serif",
 					 fontWeight: "normal",
 				},
 			}
@@ -182,7 +179,7 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 				text: labels['yaxis'],
 				style: {
 					color: '#464646',
-					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontFamily: "'Open Sans', sans-serif",
 					fontWeight: "normal",
 				}
 			},
@@ -202,7 +199,7 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
 					color: 'black',
 					style: {
 						 color: '#464646',
-						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontFamily: "'Open Sans', sans-serif",
 						 fontWeight: "normal",
 					},
 					formatter: function () {
@@ -297,14 +294,14 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 			text: labels['title'],
 			style: {
 				 color: '#464646',
-				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				 fontFamily: "'Open Sans', sans-serif",
 			}
 		},
 		subtitle: {
 			text: labels['subtitle'],
 			style: {
 				 color: '#808080',
-				 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				 fontFamily: "'Open Sans', sans-serif",
 			}
 		},
 		tooltip: {
@@ -314,13 +311,13 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 			categories: categories,
 			style: {
 				color: '#464646',
-				fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+				fontFamily: "'Open Sans', sans-serif",
 				fontWeight: "normal",
 			},
 			labels: {
 				style: {
 					color: '#464646',
-					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontFamily: "'Open Sans', sans-serif",
 					fontWeight: "normal",
 					paddingLeft: 20,
 				},
@@ -332,7 +329,7 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 				text: null,
 				style: {
 					color: '#464646',
-					fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					fontFamily: "'Open Sans', sans-serif",
 					fontWeight: "normal",
 				}
 			},
@@ -346,10 +343,12 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 		},
 		series: [{
 			name: labels['visitors'],
-			data: visitors
+			data: visitors,
+			color: '#009BD9',
 		}, {
 			name: labels['conversions'],
-			data: conversions
+			data: conversions,
+			color: '#003245',
 		}]
 	});
 }
@@ -381,7 +380,7 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 				text: labels['title'],
 				style: {
 					 color: '#464646',
-					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontFamily: "'Open Sans', sans-serif",
 				}
 		  },
 		  subtitle: {
@@ -390,7 +389,7 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 					 labels['subtitle2'],
 				style: {
 					 color: '#808080',
-					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontFamily: "'Open Sans', sans-serif",
 				}
 		  },
 		  xAxis: {
@@ -406,7 +405,7 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 					 align: 'low',
 					 style: {
 						 color: '#464646',
-						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontFamily: "'Open Sans', sans-serif",
 						 fontWeight: "normal",
 					 }
 				},
@@ -493,7 +492,7 @@ function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, starti
 				text: labels['title'],
 				style: {
 					 color: '#464646',
-					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontFamily: "'Open Sans', sans-serif",
 				}
 		  },
 		  subtitle: {
@@ -502,7 +501,7 @@ function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, starti
 					 labels['subtitle2'],
 				style: {
 					 color: '#808080',
-					 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+					 fontFamily: "'Open Sans', sans-serif",
 				}
 		  },
 		  xAxis: {
@@ -518,7 +517,7 @@ function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, starti
 					 align: 'low',
 					 style: {
 						 color: '#464646',
-						 fontFamily: "Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif",
+						 fontFamily: "'Open Sans', sans-serif",
 						 fontWeight: "normal",
 					 }
 				},

@@ -72,7 +72,11 @@ if( !class_exists( 'NelioABAltStats' ) ) {
 		}
 
 		public function get_conversion_rate() {
-			return number_format( floatval( $this->conversion_rate ), 2 );
+			return floatval( $this->conversion_rate );
+		}
+
+		public function get_conversion_rate_text() {
+			return number_format_i18n( floatval( $this->conversion_rate ), 2 ) . ' %';
 		}
 
 		public function set_improvement_factor( $improvement_factor ) {
@@ -82,17 +86,13 @@ if( !class_exists( 'NelioABAltStats' ) ) {
 		public function get_improvement_factor() {
 			if ( $this->is_original() )
 				return '-';
-			return number_format( floatval( $this->improvement_factor ), 2 );
-		}
-
-		public function get_conversion_rate_text() {
-			return  $this->get_conversion_rate() . ' %';
+			return floatval( $this->improvement_factor );
 		}
 
 		public function get_improvement_factor_text() {
 			if ( $this->is_original() )
 				return '-';
-			return  $this->get_improvement_factor() . ' %';
+			return number_format_i18n( floatval( $this->improvement_factor ), 2 ) . ' %';
 		}
 
 		public function is_original() {

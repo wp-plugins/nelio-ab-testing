@@ -40,7 +40,7 @@ if ( !class_exists( 'NelioABCssAltExpCreationPageController' ) ) {
 		}
 
 		public function create_view() {
-			$title = __( 'Add Experiment', 'nelioab' );
+			$title = __( 'Add CSS Experiment', 'nelioab' );
 			return new NelioABCssAltExpCreationPage( $title );
 		}
 
