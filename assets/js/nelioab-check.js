@@ -124,16 +124,6 @@ function nelioab_load_alt($) {
 					'<!-- <scr'+'ipt src="http://stats.wordpress.com/e-$1 -->\n' +
 					'\t<scr'+'ipt>function st_go(a){} function linktracker_init(a,b){}</scr'+'ipt>\n'
 				);
-			// Adding CSS node
-			data = data
-				.replace(
-					/<\/head>/,
-					'<scr'+'ipt>try { if ( nelioab_cssExpNode !== undefined )' +
-					'document.getElementsByTagName("head")[0].' +
-					'appendChild(nelioab_cssExpNode);' +
-					'} catch ( e ) {}' +
-					'</scr'+'ipt>\n</head>'
-				);
 			var docIsReady = function() {
 				var aux = window.setTimeout(function() {}, 0);
 				while (aux--) window.clearTimeout(aux);

@@ -159,7 +159,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			wp_enqueue_script( 'jquery' );
 
 			// Custom CSS for GRAPHICS and RESULTS (experiment progress)
-			if ( $this->is_page( 'exp-progress' ) ) {
+			if ( $this->is_page( array( 'exp-progress', 'nelioab-dashboard' ) ) ) {
 				wp_register_style( 'nelioab_progress_css',
 					nelioab_admin_asset_link( '/css/progress.min.css' ) );
 				wp_enqueue_style( 'nelioab_progress_css' );

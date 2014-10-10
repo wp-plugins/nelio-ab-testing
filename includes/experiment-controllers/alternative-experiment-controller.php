@@ -753,12 +753,22 @@ class NelioABAlternativeExperimentController {
 		//if ( $the_menu )
 		//	$nav['activeMenu'] = '' . $the_menu->get_id();
 
+		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $nav['destination'] )
+			$nav['destination'] = NelioABController::WRONG_NAVIGATION_DESTINATION;
+		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $nav['actualDestination'] )
+			$nav['actualDestination'] = NelioABController::WRONG_NAVIGATION_DESTINATION;
+
 		return $nav;
 	}
 
+	private function get_form_hidden_field_names() {
+		return array( 'nelioab_form_cookies', 'nelioab_form_current_url' );
+	}
+
 	public function add_hidden_fields_to_gf( $form ) {
-		$this->add_hidden_field_to_gf( $form, 'nelioab_form_cookies' );
-		$this->add_hidden_field_to_gf( $form, 'nelioab_form_current_url' );
+		$field_names = $this->get_form_hidden_field_names();
+		foreach ( $field_names as $field_name )
+			$this->add_hidden_field_to_gf( $form, $field_name );
 		return $form;
 	}
 
@@ -790,8 +800,10 @@ class NelioABAlternativeExperimentController {
 		$original_id = $this->get_original_related_to( $post->ID );
 		$hf_template = '<input type="hidden" name="%1$s" value="%2$s" />';
 
-		$hidden_fields  = sprintf( $hf_template, 'nelioab_form_cookies', '' );
-		$hidden_fields .= sprintf( $hf_template, 'nelioab_form_current_url', '' );
+		$field_names = $this->get_form_hidden_field_names();
+		$hidden_fields = '';
+		foreach ( $field_names as $field_name )
+			$hidden_fields .= sprintf( $hf_template, $field_name, '' );
 
 		return $hidden_fields . $fields;
 	}
@@ -821,6 +833,9 @@ class NelioABAlternativeExperimentController {
 			return;
 
 		if ( !isset( $_POST['nelioab_form_current_url'] ) )
+			return;
+
+		if ( strlen( trim( $_POST['nelioab_form_current_url'] ) ) === 0 )
 			return;
 
 		// Constructing FORM EVENT object:

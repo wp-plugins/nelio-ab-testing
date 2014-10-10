@@ -101,7 +101,7 @@
 		?>
 		<script type="text/javascript">
 			window.onerror = function(msg, url, line, col, error) {
-				var url = window.location.href;
+				var url = document.URL;
 				if ( msg.indexOf('SecurityError') >= 0 && url.indexOf( 'retry-with-https=true' ) === -1 ) {
 					window.location.href = 'https://' + url.replace('http://','') + '&retry-with-https=true';
 					return true;
@@ -465,7 +465,7 @@
 		jQuery.ajax({
 			type:'POST',
 			async:true,
-			url:window.location.href,
+			url:document.URL,
 			data: {load_from_appengine:'true'},
 		}).success(function(data) {
 			jQuery("#container").html(data);

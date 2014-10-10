@@ -130,17 +130,19 @@ function nelioab_delete_cookie( name ) {
 }
 
 function nelioab_add_hidden_fields_on_forms($) {
-	$('input[name="input_nelioab_form_cookies"]').attr('name', 'nelioab_form_cookies');
-	$('input[name="input_nelioab_form_current_url"]').attr('name', 'nelioab_form_current_url');
+	$(document).on('submit', function() {
+		$('input[name="input_nelioab_form_cookies"]').attr('name', 'nelioab_form_cookies');
+		$('input[name="input_nelioab_form_current_url"]').attr('name', 'nelioab_form_current_url');
 
-	$('input[name="nelioab_form_cookies"]').attr('value',
-		encodeURIComponent( JSON.stringify( nelioab_get_local_cookies() )
-			.replace( "'", "%27") )
-		);
-	$('input[name="nelioab_form_current_url"]').attr('value',
-		encodeURIComponent( JSON.stringify( document.URL )
-			.replace( "'", "%27") )
-		);
+		$('input[name="nelioab_form_cookies"]').attr('value',
+			encodeURIComponent( JSON.stringify( nelioab_get_local_cookies() )
+				.replace( "'", "%27") )
+			);
+		$('input[name="nelioab_form_current_url"]').attr('value',
+			encodeURIComponent( JSON.stringify( document.URL )
+				.replace( "'", "%27") )
+			);
+	});
 }
 
 function nelioab_prepare_links_for_nav_to_external_pages($) {
@@ -184,7 +186,7 @@ function nelioab_nav($) {
 			action: 'nelioab_send_navigation',
 			current_url: document.URL,
 			ori_url: document.referrer,
-			dest_url: window.location.href,
+			dest_url: document.URL,
 			nelioab_cookies: nelioab_get_local_cookies(),
 		},
 	});
@@ -198,7 +200,7 @@ function nelioab_nav_to_external_page($, external_page_link) {
 		data: {
 			action: 'nelioab_send_navigation',
 			current_url: document.URL,
-			ori_url: window.location.href,
+			ori_url: document.URL,
 			dest_url: external_page_link,
 			nelioab_cookies: nelioab_get_local_cookies(),
 			is_external_page: 'yes',

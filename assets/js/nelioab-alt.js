@@ -6,6 +6,6 @@ jQuery(document).ready(function(){
 		nelioab_add_hidden_fields_on_forms(jQuery);
 	if ( typeof( nelioabStartHeatmapTracking ) == "function" )
 		nelioabStartHeatmapTracking();
-	if ( undefined !== nelioab_cssExpNode  )
+	if ( typeof( nelioab_cssExpNode  ) !== 'undefined' )
 		document.getElementsByTagName("head")[0].appendChild(nelioab_cssExpNode);
 });

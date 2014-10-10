@@ -33,6 +33,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 		const FRONT_PAGE__YOUR_LATEST_POSTS      = -100;
 		const NAVIGATION_ORIGIN_FROM_THE_OUTSIDE = -101;
 		const NAVIGATION_ORIGIN_IS_UNKNOWN       = -102;
+		const WRONG_NAVIGATION_DESTINATION       = -103;
 
 		private $controllers;
 		private $url;
@@ -321,6 +322,12 @@ if ( !class_exists( 'NelioABController' ) ) {
 				$shop_page_id = woocommerce_get_page_id( 'shop' );
 				if ( get_permalink( $shop_page_id ) == $url )
 					$the_id = $shop_page_id;
+			}
+
+			if ( 0 === $the_id && strpos( $url, '?' ) !== false && strlen( get_option( 'permalink_structure', '' ) ) > 0 ) {
+				$url_without_get_params = preg_replace( '/\?.*$/', '', $url );
+				echo 'a tomar pol culo!'; die();
+				$the_id = $this->url_or_front_page_to_postid( $url_without_get_params );
 			}
 
 			if ( 0 === $the_id )

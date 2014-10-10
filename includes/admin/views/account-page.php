@@ -219,6 +219,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 								echo ' ';
 								printf( '<small><a href="%s">%s</a></small>', $this->user_info['subscription_url'],
 									__( 'Check your subscription details.', 'nelioab' ) );
+
 								if ( $this->user_info['subscription_plan'] == NelioABAccountSettings::BASIC_SUBSCRIPTION_PLAN ) {
 									echo '<br />';
 									printf(
@@ -229,6 +230,18 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 											'body=' . esc_html( 'I\'d like to upgrade to the Professional Plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
 									);
 								}
+
+								if ( $this->user_info['subscription_plan'] == NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+									echo '<br />';
+									printf(
+										'<a href="%2$s">%1$s</a>',
+										__( 'Upgrade to our Enterprise Plan.', 'nelioab' ),
+										'mailto:support@neliosoftware.com?' .
+											'subject=Nelio%20A%2FB%20Testing%20-%20Upgrade%20to%20Enterprise%20Plan&' .
+											'body=' . esc_html( 'I\'d like to upgrade to the Enterprise Plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
+									);
+								}
+
 							}
 							else {
 								switch ( $this->user_info['subscription_plan'] ) {
@@ -239,6 +252,11 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 										break;
 									case NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
 										printf( __( 'You are subscribed to our <b>Professional Plan</b>, thanks to %s.', 'nelioab' ),
+											$this->user_info['agencyname'] );
+										echo '<br />';
+										break;
+									case NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN:
+										printf( __( 'You are subscribed to our <b>Enterprise Plan</b>, thanks to %s.', 'nelioab' ),
 											$this->user_info['agencyname'] );
 										echo '<br />';
 										break;

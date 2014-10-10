@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.2.3 =
+* Bug fix: the submission of a multi-paged Gravity Form is now working
+properly.
+* Bug fix: some pages with GET parameters where not properly tracked. This
+should be fixed, now.
+
 
 = 3.2.2 =
 * Bug fix: if the page defines the window.onunload event, Nelio is now able to
@@ -558,7 +565,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.2.1 =
+= 3.2.3 =
 Advanced quota control, customizable e-mail alerts, improved visualization of
 finished experiments, and some minor fixes.
 

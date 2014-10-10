@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2014-10-09 12:19:48+00:00\n"
+"POT-Creation-Date: 2014-10-10 13:42:28+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -101,7 +101,7 @@ msgstr ""
 #: includes/admin/views/alternatives/alternatives-table.php:109
 #: includes/admin/views/content/css-edit.php:158
 #: includes/admin/views/content/css-edit.php:176
-#: includes/admin/views/settings-page.php:325
+#: includes/admin/views/settings-page.php:322
 msgid "Update"
 msgstr ""
 
@@ -362,19 +362,27 @@ msgstr ""
 msgid "Check your subscription details."
 msgstr ""
 
-#: includes/admin/views/account-page.php:226
+#: includes/admin/views/account-page.php:227
 msgid "Upgrade to our Professional Plan."
 msgstr ""
 
-#: includes/admin/views/account-page.php:236
+#: includes/admin/views/account-page.php:238
+msgid "Upgrade to our Enterprise Plan."
+msgstr ""
+
+#: includes/admin/views/account-page.php:249
 msgid "You are subscribed to our <b>Basic Plan</b>, thanks to %s."
 msgstr ""
 
-#: includes/admin/views/account-page.php:241
+#: includes/admin/views/account-page.php:254
 msgid "You are subscribed to our <b>Professional Plan</b>, thanks to %s."
 msgstr ""
 
-#: includes/admin/views/account-page.php:255
+#: includes/admin/views/account-page.php:259
+msgid "You are subscribed to our <b>Enterprise Plan</b>, thanks to %s."
+msgstr ""
+
+#: includes/admin/views/account-page.php:273
 msgid ""
 "<br />Your current plan permits up to %1$s page views under test per month. "
 "If you need more quota, please consider buying additional page views as you "
@@ -382,21 +390,21 @@ msgid ""
 "update of your monthly quota</a>."
 msgstr ""
 
-#: includes/admin/views/account-page.php:260
+#: includes/admin/views/account-page.php:278
 msgid ""
 "<br />Your current plan permits up to %1$s page views under test per month. "
 "If you need more quota, please contact <a href=\"%2$s\">%3$s</a>."
 msgstr ""
 
-#: includes/admin/views/account-page.php:268
+#: includes/admin/views/account-page.php:286
 msgid "Available Quota:"
 msgstr ""
 
-#: includes/admin/views/account-page.php:279
+#: includes/admin/views/account-page.php:297
 msgid "<span style=\"font-size:120%%;color:%1$s;\">%2$s</span> Page Views"
 msgstr ""
 
-#: includes/admin/views/account-page.php:282
+#: includes/admin/views/account-page.php:300
 #: includes/admin/views/alternatives/alt-exp-page.php:184
 #: includes/admin/views/alternatives/alt-exp-page.php:194
 #: includes/admin/views/alternatives/alternatives-table.php:71
@@ -407,51 +415,51 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-#: includes/admin/views/account-page.php:288
+#: includes/admin/views/account-page.php:306
 msgid "Buy More"
 msgstr ""
 
-#: includes/admin/views/account-page.php:300
-#: includes/admin/views/account-page.php:319
-#: includes/admin/views/account-page.php:461
+#: includes/admin/views/account-page.php:318
+#: includes/admin/views/account-page.php:337
+#: includes/admin/views/account-page.php:479
 msgid "Registered Sites"
 msgstr ""
 
-#: includes/admin/views/account-page.php:304
+#: includes/admin/views/account-page.php:322
 msgid ""
 "There was an error while retrieving the list of all registered sites to this "
 "account."
 msgstr ""
 
-#: includes/admin/views/account-page.php:307
+#: includes/admin/views/account-page.php:325
 msgid ""
 "Nonetheless, please note this site is registered to your account, which "
 "means you can still use all plugin's functionalities."
 msgstr ""
 
-#: includes/admin/views/account-page.php:329
+#: includes/admin/views/account-page.php:347
 msgid "This Site is Not Registered"
 msgstr ""
 
-#: includes/admin/views/account-page.php:363
+#: includes/admin/views/account-page.php:381
 #: includes/admin/views/experiments-page.php:78
 #: includes/admin/views/progress/alt-exp-progress-page.php:489
 msgid "OK"
 msgstr ""
 
-#: includes/admin/views/account-page.php:366
+#: includes/admin/views/account-page.php:384
 msgid "INVALID"
 msgstr ""
 
-#: includes/admin/views/account-page.php:378
+#: includes/admin/views/account-page.php:396
 msgid "This site is not yet registered to your account."
 msgstr ""
 
-#: includes/admin/views/account-page.php:380
+#: includes/admin/views/account-page.php:398
 msgid "Register it now!"
 msgstr ""
 
-#: includes/admin/views/account-page.php:386
+#: includes/admin/views/account-page.php:404
 msgid ""
 "It looks like this site is not connected to you account. In order to use our "
 "service in this site, first you have to register it. Unfortunately, you "
@@ -459,7 +467,7 @@ msgid ""
 "subscription plan (see the table below)."
 msgstr ""
 
-#: includes/admin/views/account-page.php:387
+#: includes/admin/views/account-page.php:405
 msgid ""
 "Please, <a href=\"%s\"><b>upgrade your <i>Nelio A/B Testing</i> "
 "subscription</b></a> so that you can register and manage more sites, or "
@@ -468,35 +476,35 @@ msgid ""
 "permanent loss of all experiments associated to that site."
 msgstr ""
 
-#: includes/admin/views/account-page.php:434
+#: includes/admin/views/account-page.php:452
 msgid "Empty Slot"
 msgstr ""
 
-#: includes/admin/views/account-page.php:452
+#: includes/admin/views/account-page.php:470
 msgid "registered site"
 msgstr ""
 
-#: includes/admin/views/account-page.php:453
+#: includes/admin/views/account-page.php:471
 msgid "registered sites"
 msgstr ""
 
-#: includes/admin/views/account-page.php:483
+#: includes/admin/views/account-page.php:501
 msgid "In your account, the site is actually registered as «%s»"
 msgstr ""
 
-#: includes/admin/views/account-page.php:488
+#: includes/admin/views/account-page.php:506
 msgid "this site"
 msgstr ""
 
-#: includes/admin/views/account-page.php:497
+#: includes/admin/views/account-page.php:515
 msgid "Cancel Registration"
 msgstr ""
 
-#: includes/admin/views/account-page.php:505
+#: includes/admin/views/account-page.php:523
 msgid "Unlink Site"
 msgstr ""
 
-#: includes/admin/views/account-page.php:514
+#: includes/admin/views/account-page.php:532
 msgid "*The site was registered using a different URL"
 msgstr ""
 
@@ -2087,61 +2095,61 @@ msgid ""
 "your website and discover which one offers the better results."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:34
+#: includes/admin/views/settings-page.php:32
 msgid ""
 "There was a problem while updating some of your options. The following "
 "fields could not be properly updated:</p>%s<p>Please, try it again in a few "
 "moments."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:38
-#: includes/admin/views/settings-page.php:185
+#: includes/admin/views/settings-page.php:36
+#: includes/admin/views/settings-page.php:182
 msgid "Quota Limit per Experiment"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:40
-#: includes/admin/views/settings-page.php:144
+#: includes/admin/views/settings-page.php:38
+#: includes/admin/views/settings-page.php:141
 msgid "Notification E-Mail"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:42
-#: includes/admin/views/settings-page.php:229
+#: includes/admin/views/settings-page.php:40
+#: includes/admin/views/settings-page.php:226
 msgid "Notifications"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:61
+#: includes/admin/views/settings-page.php:58
 msgid "Basic"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:64
+#: includes/admin/views/settings-page.php:61
 msgid "Advanced"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:117
+#: includes/admin/views/settings-page.php:114
 msgid "Experiment List"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:126
+#: includes/admin/views/settings-page.php:123
 msgid "PHP cookies"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:135
+#: includes/admin/views/settings-page.php:132
 msgid "Icons and Colors"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:194
+#: includes/admin/views/settings-page.php:191
 msgid "Min. Confidence"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:203
+#: includes/admin/views/settings-page.php:200
 msgid "Num. of Tested Users"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:212
+#: includes/admin/views/settings-page.php:209
 msgid "Algorithm"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:258
+#: includes/admin/views/settings-page.php:255
 msgid ""
 "The following settings can only be modified by users subscribed to our "
 "<b>Professional</b> or <b>Enterprise Plans</b>.<br>If you want to have a "
@@ -2149,7 +2157,7 @@ msgid ""
 "\">please upgrade your current subscription</a>."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:311
+#: includes/admin/views/settings-page.php:308
 msgid ""
 "In order to boost response times of all AJAX requests triggered by Nelio A/B "
 "Testing, we include a tiny <a %1$s>Must Use Plugin</a> that disables other "
@@ -2158,143 +2166,143 @@ msgid ""
 "class=\"explanation\">%4$s</span>"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:316
-#: includes/admin/views/settings-page.php:358
-#: includes/admin/views/settings-page.php:368
+#: includes/admin/views/settings-page.php:313
+#: includes/admin/views/settings-page.php:355
+#: includes/admin/views/settings-page.php:365
 msgid "Installed"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:317
+#: includes/admin/views/settings-page.php:314
 msgid ""
 "In order to uninstall the plugin, please use the previous «Uninstall» button."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:318
+#: includes/admin/views/settings-page.php:315
 msgid "Uninstall"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:323
+#: includes/admin/views/settings-page.php:320
 msgid "Outdated"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:324
+#: includes/admin/views/settings-page.php:321
 msgid "In order to update the plugin, please use the previous «Update» button."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:330
-#: includes/admin/views/settings-page.php:363
+#: includes/admin/views/settings-page.php:327
+#: includes/admin/views/settings-page.php:360
 msgid "Not Installed"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:331
+#: includes/admin/views/settings-page.php:328
 msgid ""
 "In order to install the plugin, please use the previous «Install» button."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:332
+#: includes/admin/views/settings-page.php:329
 msgid "Install"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:352
+#: includes/admin/views/settings-page.php:349
 msgid "Done!"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:410
+#: includes/admin/views/settings-page.php:407
 msgid "Default - Pure Random"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:415
+#: includes/admin/views/settings-page.php:412
 msgid "Prioritize Original Version"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:420
+#: includes/admin/views/settings-page.php:417
 msgid "Prioritize Winner (Greedy)"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:433
+#: includes/admin/views/settings-page.php:430
 msgid "Unlimited"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:441
+#: includes/admin/views/settings-page.php:438
 msgid "%s page views"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:458
+#: includes/admin/views/settings-page.php:455
 msgid "Regular Palette"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:462
+#: includes/admin/views/settings-page.php:459
 msgid "Colorblind Palette"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:473
+#: includes/admin/views/settings-page.php:470
 msgid "Default: %s"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:478
+#: includes/admin/views/settings-page.php:475
 msgid ""
 "If you type an e-mail address, all Nelio A/B Testing notifications will be "
 "sent to both the new address and «%s»."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:523
+#: includes/admin/views/settings-page.php:520
 msgid "Notify me when an experiment is automatically stopped."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:545
+#: includes/admin/views/settings-page.php:542
 msgid "Hide Finished Experiments"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:550
+#: includes/admin/views/settings-page.php:547
 msgid "Show Recently Finished Experiments"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:555
+#: includes/admin/views/settings-page.php:552
 msgid "Show All Finished Experiments"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:571
+#: includes/admin/views/settings-page.php:568
 msgid ""
 "Minimum confidence value is set to <strong>{value}%</strong>.<br>The "
 "confidence value tells you how \"trustable\" is the fact that one "
 "alternative is better than the original."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:597
+#: includes/admin/views/settings-page.php:594
 msgid ""
 "<strong>{value}%</strong> of the users that access your site will "
 "participate in the running experiments."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:612
+#: includes/admin/views/settings-page.php:609
 msgid "Original Percentage"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:628
+#: includes/admin/views/settings-page.php:625
 msgid ""
 "<strong>{value}%</strong> of your visitors will see the original version of "
 "the experiment.<br>The rest of the users will see the other alternatives."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:643
+#: includes/admin/views/settings-page.php:640
 msgid "Exploitation or Exploration"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:659
+#: includes/admin/views/settings-page.php:656
 msgid ""
 "<strong>{value}%</strong> of your visitors will see the winning alternative."
 "<br>The rest of the users will see the other alternatives."
 msgstr ""
 
-#: includes/admin/views/settings-page.php:679
+#: includes/admin/views/settings-page.php:676
 msgid "Disabled (use JavaScript)"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:683
+#: includes/admin/views/settings-page.php:680
 msgid "Enabled"
 msgstr ""
 
-#: includes/admin/views/settings-page.php:686
+#: includes/admin/views/settings-page.php:683
 msgid ""
 "Select how alternatives are loaded. With PHP cookies, page load times might "
 "be faster, because regular cookies reduce the amount of queries your "
