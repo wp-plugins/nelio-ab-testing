@@ -326,7 +326,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 
 			if ( 0 === $the_id && strpos( $url, '?' ) !== false && strlen( get_option( 'permalink_structure', '' ) ) > 0 ) {
 				$url_without_get_params = preg_replace( '/\?.*$/', '', $url );
-				echo 'a tomar pol culo!'; die();
 				$the_id = $this->url_or_front_page_to_postid( $url_without_get_params );
 			}
 

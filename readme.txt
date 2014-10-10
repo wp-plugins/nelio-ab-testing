@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.2.3
+Stable tag: 3.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -150,7 +150,7 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
-= 3.2.3 =
+= 3.2.4 =
 * Bug fix: the submission of a multi-paged Gravity Form is now working
 properly.
 * Bug fix: some pages with GET parameters where not properly tracked. This
@@ -165,9 +165,9 @@ PHP cookies.
 
 
 = 3.2.1 =
-* **New Feature**. We added a new setting for controlling the amount of page
+* **New Feature**. We added a new setting for controlling de amount of page
 views an experiment can take before being automatically stopped. Never again
-waste your quota! (Professional and Enterprise users only).
+waster your quota! (Professional and Enterprise users only).
 * New Setting: Define whether you want to receive e-mail alerts when your
 experiments are automatically stopped and, if you want to, the address that's
 to be notified (Enterprise users only).
@@ -565,7 +565,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.2.3 =
+= 3.2.4 =
 Advanced quota control, customizable e-mail alerts, improved visualization of
 finished experiments, and some minor fixes.
 
