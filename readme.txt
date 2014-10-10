@@ -165,9 +165,9 @@ PHP cookies.
 
 
 = 3.2.1 =
-* **New Feature**. We added a new setting for controlling de amount of page
+* **New Feature**. We added a new setting for controlling the amount of page
 views an experiment can take before being automatically stopped. Never again
-waster your quota! (Professional and Enterprise users only).
+waste your quota! (Professional and Enterprise users only).
 * New Setting: Define whether you want to receive e-mail alerts when your
 experiments are automatically stopped and, if you want to, the address that's
 to be notified (Enterprise users only).
