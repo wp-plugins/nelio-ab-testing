@@ -32,7 +32,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			parent::clear();
 			$this->set_type( NelioABExperiment::CSS_ALT_EXP );
 			$this->new_ids = array();
-			$this->original_appspot_css = $this->do_create_css_alternative( 'FakeOriginalCss' );
+			$this->original_appspot_css = $this->create_css_alternative( 'FakeOriginalCss' );
 		}
 
 		public function get_original() {
@@ -53,20 +53,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			parent::set_appspot_alternatives( $aux );
 		}
 
-		public function encode_appspot_alternatives() {
-			$aux = array();
-			array_push( $aux, $this->get_original()->json() );
-			foreach ( $this->get_appspot_alternatives() as $alt )
-				array_push( $aux, $alt->json() );
-			return base64_encode( json_encode( $aux ) );
-		}
-
 		public function create_css_alternative( $name ) {
-			$alt = $this->do_create_css_alternative( $name );
-			$this->add_local_alternative( $alt );
-		}
-
-		private function do_create_css_alternative( $name ) {
 			$alts = $this->get_alternatives();
 			$fake_post_id = -1;
 			foreach ( $alts as $aux )
@@ -86,16 +73,22 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 		}
 
 		public function save() {
+			// 0. WE CHECK WHETHER THE EXPERIMENT IS COMPLETELY NEW OR NOT
+			// -------------------------------------------------------------------------
+			$is_new = $this->get_id() < 0;
+
+
 			// 1. SAVE THE EXPERIMENT AND ITS GOALS
 			// -------------------------------------------------------------------------
 			$exp_id = parent::save();
 
+
 			// 2. UPDATE THE ALTERNATIVES
 			// -------------------------------------------------------------------------
 
-			// 2.0. FIRST OF ALL, WE CREATE A FAKE ORIGINAL
+			// 2.0. FIRST OF ALL, WE CREATE A FAKE ORIGINAL FOR NEW EXPERIMENTS
 
-			if ( $this->get_original()->get_id() < 0 ) {
+			if ( $is_new && $this->get_original()->get_id() < 0 ) {
 				$body = array(
 					'name'    => $this->get_original()->get_name(),
 					'content' => '',
@@ -105,6 +98,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 					$result = NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 						$body );
+					$this->get_original()->set_id( $result );
 				}
 				catch ( Exception $e ) {
 				}
@@ -179,7 +173,11 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+			$this_exp_origins = $this->get_origins();
+			array_push( $this_exp_origins, -1 );
 			foreach ( $running_exps as $running_exp ) {
+				if ( $running_exp->get_id() == $this->get_id() )
+					continue;
 				switch ( $running_exp->get_type() ) {
 					case NelioABExperiment::THEME_ALT_EXP:
 						$err_str = sprintf(
@@ -187,11 +185,13 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 							$running_exp->get_name() );
 						throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
 					case NelioABExperiment::CSS_ALT_EXP:
-						if ( in_array( $this->get_post_id(), $this->get_origins() ) || in_array( -1, $this->get_origins() ) ) {
-							$err_str = sprintf(
-								__( 'The experiment cannot be started, because there is a CSS experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
-								$running_exp->get_name() );
-							throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+						foreach( $this_exp_origins as $origin_id ) {
+							if ( in_array( $origin_id, $running_exp->get_origins() ) ) {
+								$err_str = sprintf(
+									__( 'The experiment cannot be started, because there is a CSS experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+									$running_exp->get_name() );
+								throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+							}
 						}
 					case NelioABExperiment::HEATMAP_EXP:
 						$err_str = __( 'The experiment cannot be started, because there is one (or more) heatmap experiments running. Please make sure to stop any running heatmap experiment before starting the new one.', 'nelioab' );
@@ -212,9 +212,12 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			if ( isset( $json_data->description ) )
 				$exp->set_description( $json_data->description );
 			$exp->set_status( $json_data->status );
+			$exp->set_finalization_mode( $json_data->finalizationMode );
+			if ( isset( $json_data->finalizationModeValue ) )
+				$exp->set_finalization_value( $json_data->finalizationModeValue );
+
 			if ( isset( $json_data->goals ) )
-				foreach ( $json_data->goals as $goal )
-					NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );
 
 			$alternatives = array();
 			if ( isset( $json_data->alternatives ) ) {

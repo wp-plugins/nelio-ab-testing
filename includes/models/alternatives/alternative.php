@@ -21,6 +21,7 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 		private $id;
 		private $name;
 		private $value;
+		private $based_on;
 		private $was_removed;
 		private $is_dirty;
 
@@ -30,6 +31,7 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 			$this->value       = -1;
 			$this->was_removed = false;
 			$this->is_dirty    = false;
+			$this->based_on    = false;
 		}
 
 		public function set_id( $id ) {
@@ -72,26 +74,44 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 			return $this->is_dirty;
 		}
 
-		public function json() {
+		public function is_based_on_a_post() {
+			if ( $this->based_on && $this->based_on > 0 )
+				return true;
+			else
+				return false;
+		}
+
+		public function set_base_post( $pid ) {
+			$this->based_on = $pid;
+		}
+
+		public function get_base_post() {
+			return $this->based_on;
+		}
+
+		public function json4js() {
 			return array(
-				'id'            => $this->id,
-				'name'          => $this->name,
-				'value'         => $this->value,
-				'was_removed'   => $this->was_removed,
-				'is_dirty'      => $this->is_dirty,
+				'id'         => $this->id,
+				'name'       => $this->name,
+				'value'      => $this->value,
+				'base'       => $this->based_on,
+				'wasDeleted' => $this->was_removed,
+				'isDirty'    => $this->is_dirty,
 			);
 		}
 
-		public function load_json( $json ) {
-			$this->name          = $json->name;
-			$this->value         = $json->value;
-			$this->id            = $json->id;
-			$this->was_removed   = $json->was_removed;
-			$this->is_dirty      = $json->is_dirty;
+		public static function build_alternative_using_json4js( $json_alt ) {
+			$alt = new NelioABAlternative();
+			$alt->id            = $json_alt->id;
+			$alt->name          = $json_alt->name;
+			$alt->value         = isset( $json_alt->value ) ? $json_alt->value : -1;
+			$alt->based_on      = isset( $json_alt->base ) ? $json_alt->base : false;
+			$alt->was_removed   = isset( $json_alt->wasDeleted ) && $json_alt->wasDeleted;
+			$alt->is_dirty      = isset( $json_alt->isDirty ) && $json_alt->isDirty;
+			return $alt;
 		}
 
 	}//NelioABAlternative
 
 }
 
-?>

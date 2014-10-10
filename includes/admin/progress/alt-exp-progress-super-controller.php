@@ -21,9 +21,6 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 
 	abstract class NelioABAltExpProgressSuperController {
 
-		public abstract static function build();
-		public abstract static function generate_html_content();
-
 		public abstract function apply_alternative();
 
 		public function manage_actions() {
@@ -34,9 +31,12 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 			) {
 				require_once( NELIOAB_ADMIN_DIR . '/experiments-page-controller.php' );
 				NelioABExperimentsPageController::stop_experiment( $_GET['id'], $_GET['exp_type'] );
-				echo sprintf(
-					'[SUCCESS]%sadmin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s',
-					admin_url(), $_GET['id'], $_GET['exp_type'] );
+				echo '[SUCCESS]' .
+					admin_url(
+						sprintf(
+							'admin.php?page=nelioab-experiments&action=progress&id=%s&exp_type=%s',
+							$_GET['id'], $_GET['exp_type'] )
+					);
 				die();
 			}
 
@@ -51,4 +51,3 @@ if ( !class_exists( 'NelioABAltExpProgressSuperController' ) ) {
 
 }
 
-?>

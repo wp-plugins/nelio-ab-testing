@@ -51,7 +51,6 @@ if ( !class_exists( 'NelioABFeedbackPageController' ) ) {
 		}
 
 		public static function submit_feedback() {
-			require_once( NELIOAB_MODELS_DIR . '/settings.php' );
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
 			$the_content = '';
@@ -60,7 +59,7 @@ if ( !class_exists( 'NelioABFeedbackPageController' ) ) {
 
 			$url       = NELIOAB_FEEDBACK_URL . '/feedback';
 			$data      = array(
-					'mail'    => NelioABSettings::get_email(),
+					'mail'    => NelioABAccountSettings::get_email(),
 					'content' => $the_content,
 					'app'     => 'nelioab',
 					'status'  => 1,
