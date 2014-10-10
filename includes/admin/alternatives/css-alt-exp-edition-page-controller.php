@@ -19,7 +19,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
-	require_once( NELIOAB_MODELS_DIR . '/goals/page-accessed-goal.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/css-alt-exp-edition-page.php' );
 
@@ -56,12 +56,25 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 
 			global $nelioab_admin_controller;
 			$experiment = NULL;
+			$other_names = array();
 			if ( !empty( $nelioab_admin_controller->data ) ) {
 				$experiment = $nelioab_admin_controller->data;
 			}
 			else {
 				$experiment = new NelioABCssAlternativeExperiment( -1 );
 				$experiment->clear();
+			}
+
+			// ...and we also recover other experiment names (if any)
+			if ( isset( $_POST['other_names'] ) ) {
+				$other_names = json_decode( urldecode( $_POST['other_names'] ) );
+			}
+			else {
+				$mgr = new NelioABExperimentsManager();
+				foreach( $mgr->get_experiments() as $aux ) {
+					if ( $aux->get_id() != $experiment->get_id() )
+						array_push( $other_names, $aux->get_name() );
+				}
 			}
 
 
@@ -72,48 +85,37 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 			$view = $this->create_view();
 
 			// Experiment information
-			$view->set_experiment_id( $experiment->get_id() );
-			$view->set_experiment_name( $experiment->get_name() );
-			$view->set_experiment_descr( $experiment->get_description() );
+			$view->set_basic_info(
+				$experiment->get_id(),
+				$experiment->get_name(),
+				$experiment->get_description(),
+				$experiment->get_finalization_mode(),
+				$experiment->get_finalization_value()
+			);
+
+			// Experiment alternatives
+			$alts = $experiment->get_json4js_alternatives();
+			for ( $i = 0; $i < count( $alts ); ++$i )
+				$alts[$i]['value'] = urlencode( $alts[$i]['value'] );
+			$view->set_alternatives( $alts );
+
+			// Goals
 			$goals = $experiment->get_goals();
-			if ( count( $goals ) > 0 )
-				$view->set_goal( $goals[0] );
-			else
-				$view->set_goal( new NelioABPageAccessedGoal( $experiment ) );
-			$view->set_alternatives( $experiment->get_alternatives() );
-			$view->set_encoded_appspot_alternatives( $experiment->encode_appspot_alternatives() );
-			$view->set_encoded_local_alternatives( $experiment->encode_local_alternatives() );
+			foreach ( $goals as $goal )
+				$view->add_goal( $goal->json4js() );
 
-			$list_of_pages = get_pages();
-			$options_for_posts = array(
-				'posts_per_page' => -1,
-				'orderby'        => 'title',
-				'order'          => 'asc' );
-			$list_of_posts = get_posts( $options_for_posts );
-
-			$view->set_wp_pages( $list_of_pages );
-			$view->set_wp_posts( $list_of_posts );
-			if ( isset( $_POST['action'] ) ) {
-				if ( $_POST['action'] == 'show_quickedit_box' )
-					$view->show_quickedit_box();
+			if ( count( $goals ) == 0 ) {
+				$new_goal = new NelioABAltExpGoal( $experiment );
+				$new_goal->set_name( __( 'Default', 'nelioab' ) );
+				$view->add_goal( $new_goal->json4js() );
 			}
+
 			return $view;
 		}
 
 		public function create_view() {
-			$title = __( 'Edit Experiment', 'nelioab' );
+			$title = __( 'Edit CSS Experiment', 'nelioab' );
 			return new NelioABCssAltExpEditionPage( $title );
-		}
-
-		public function add_alternative() {
-			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
-
-			if ( isset( $_POST['new_alt_name'] ) ) {
-				$alt_name = stripslashes( $_POST['new_alt_name'] );
-				$exp = $nelioab_admin_controller->data;
-				$exp->create_css_alternative( $alt_name );
-			}
 		}
 
 		public function validate() {
@@ -128,7 +130,6 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 		public function edit_alternative_content() {
 			// 1. Save any local changes
 			global $nelioab_admin_controller;
-			$this->build_experiment_from_post_data();
 			$experiment = $nelioab_admin_controller->data;
 			try {
 				$experiment->save();
@@ -145,21 +146,20 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 				$css_alt_id = $_POST['content_to_edit'];
 				$css_alt_id = $experiment->get_real_id_for_alt( $css_alt_id );
 			}
-			echo '[SUCCESS]' . admin_url() . 'admin.php?page=nelioab-css-edit&exp_id=' . $exp_id . '&css_id=' . $css_alt_id;
+			echo '[SUCCESS]' . admin_url( 'admin.php?page=nelioab-css-edit&exp_id=' . $exp_id . '&css_id=' . $css_alt_id );
 			die();
 		}
 
 		public function build_experiment_from_post_data() {
 			$exp = new NelioABCssAlternativeExperiment( $_POST['exp_id'] );
-			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
-			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
-
-			$exp->load_encoded_appspot_alternatives( $_POST['appspot_alternatives'] );
-			$exp->load_encoded_local_alternatives( $_POST['local_alternatives'] );
-
-			$exp_goal = $this->build_goal_from_post_data( $exp );
-			$exp->add_goal( $exp_goal );
-
+			$exp = $this->compose_basic_alt_exp_using_post_data( $exp );
+			if ( isset( $_POST['nelioab_alternatives'] ) ) {
+				$alts = json_decode( urldecode( $_POST['nelioab_alternatives'] ) );
+				for ( $i = 0; $i < count( $alts ); ++$i )
+					if ( isset( $alts[$i]->value ) )
+						$alts[$i]->value = urldecode( $alts[$i]->value );
+				$exp->load_json4js_alternatives( $alts );
+			}
 			global $nelioab_admin_controller;
 			$nelioab_admin_controller->data = $exp;
 		}
@@ -170,18 +170,9 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 
 			parent::manage_actions();
 
-			if ( $_POST['action'] == 'add_alt' )
-				$this->add_alternative();
-
-			if ( $_POST['action'] == 'show_quickedit_box' )
-				$this->build_experiment_from_post_data();
-
 			if ( $_POST['action'] == 'edit_alt_content' )
 				if ( $this->validate() )
 					$this->edit_alternative_content();
-
-			if ( $_POST['action'] == 'hide_new_alt_box' )
-				$this->build_experiment_from_post_data();
 
 		}
 
@@ -192,6 +183,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 if ( isset( $_POST['nelioab_edit_ab_css_exp_form'] ) ) {
 	$controller = NelioABCssAltExpEditionPageController::get_instance();
 	$controller->manage_actions();
+	if ( !$controller->validate() )
+		$controller->print_ajax_errors();
 }
 
-?>

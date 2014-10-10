@@ -1,14 +1,17 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
@@ -55,6 +58,7 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 			require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
 			NelioABCssAlternativeExperiment::update_css_alternative(
 				$css_id, $_REQUEST['css_alt_name'], urldecode( $_REQUEST['css_alt_value'] ) );
+			NelioABExperimentsManager::update_running_experiments_cache( true );
 		}
 
 		try {
@@ -81,39 +85,42 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 
 	protected function do_render() { ?>
 
-		<script>
-		</script>
-
 		<div id="post-body" class="metabox-holder columns-2">
 		<form id="css_edit_value" method="POST" action="#">
 			<input type="hidden" name="css_save_alt" id="css_save_alt" value="true"></input>
 			<div id="post-body-content">
-				
+
 				<div id="titlediv">
 
 					<div id="titlewrap">
 						<label class="screen-reader-text" id="title-prompt-text" for="title">Enter title here</label>
 						<input type="text" name="post_title" size="30" value="<?php
 							echo $this->css_alt->get_name();
-						?>" id="title" autocomplete="off">
+						?>" id="title" autocomplete="off"></input>
 					</div>
 
 					<div class="inside">
 						<div id="postdivrich" class="postarea edit-form-section">
 							<div id="wp-content-wrap" class="wp-core-ui wp-editor-wrap tmce-active">
-								<link rel="stylesheet" id="editor-buttons-css" href="http://localhost/wordpress/wp-includes/css/editor.min.css?ver=3.8" type="text/css" media="all">
 								<div class="wp-editor-tabs">
-									<a id="content-html" class="wp-switch-editor switch-html" onclick="switchEditors.switchto(this);">Plain</a>
+									<br>
+									<!-- <a id="content-html" class="wp-switch-editor switch-html" onclick="switchEditors.switchto(this);">Plain</a> -->
 									<!-- <a id="content-tmce" class="wp-switch-editor switch-tmce" onclick="switchEditors.switchto(this);">Visual</a> -->
 								</div>
 							</div>
-
-							<div id="wp-content-editor-container" class="wp-editor-container">
-								<textarea class="wp-editor-area" style="height:426px;resize:none;width:100%;" cols="40" name="content" id="content"><?php
-									echo $this->css_alt->get_value();
-								?></textarea>
-							</div>
-
+								<input type="hidden" id="content" name="content"></input>
+								<pre id="editor"><?php echo $this->css_alt->get_value() ?></pre>
+								<script type="text/javascript" src="<?php
+									echo nelioab_admin_asset_link( '/lib/ace-editor/ace.js' ); ?>"></script>
+								<script type="text/javascript">
+									var nelioabCssEditor = ace.edit('editor');
+									nelioabCssEditor.setTheme('ace/theme/tomorrow');
+									nelioabCssEditor.session.setMode('ace/mode/css');
+									nelioabCssEditor.setAutoScrollEditorIntoView(true);
+									nelioabCssEditor.setOption('minLines', 20);
+									nelioabCssEditor.setOption('maxLines', 100);
+									nelioabCssEditor.setFontSize(15);
+								</script>
 						</div>
 					</div>
 
@@ -122,73 +129,44 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 
 			<div id="postbox-container-1" class="postbox-container">
 
-				<div id="side-sortables" class="meta-box-sortables ui-sortable">
+				<div id="save_nelioab_alternative_box" class="meta-box-sortables ui-sortable">
 					<div id="submitdiv" class="postbox">
-						<h3 style="cursor:auto;"><span><?php _e( 'Update' ); ?></span></h3>
+
+						<script>
+							var nelioab_style_metabox = document.createElement("style");
+							nelioab_style_metabox.setAttribute("type", "text/css");
+							nelioab_style_metabox.innerHTML = "#save_nelioab_alternative_box h3.hndle { " +
+								"background:none; " +
+								"background-color:#298cba; " +
+								"color:white; " +
+								"text-shadow:#000 0 1px 0; " +
+								"border: 1px solid #298cba;" +
+								"background: #298cba;" +
+								"background: -moz-linear-gradient(bottom, #298cba 0%, #41a9cc 100%);" +
+								"background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#298cba), color-stop(100%,#41a9cc));" +
+								"background: -webkit-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
+								"background: -o-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
+								"background: -ms-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
+								"background: linear-gradient(bottom top, #298cba 0%,#41a9cc 100%);" +
+							"}" +
+							"#favorite-actions, #message, .add-new-h2, .tablenav, #edit-slug-box { display:none; }" +
+							"#save_nelioab_alternative_box .handlediv { color:#afe0f7; }" +
+							"#save_nelioab_alternative_box .handlediv:hover { visibility:visible; color:white; }";
+							document.getElementsByTagName('head')[0].appendChild(nelioab_style_metabox);
+						</script>
+
+						<h3 style="cursor:auto;" class="hndle"><span><?php _e( 'Update' ); ?></span></h3>
 						<div class="inside">
 							<div class="submitbox" id="submitpost">
 
 								<div style="margin:1em;">
 									<p><?php _e( 'Select a page or post for preview', 'nelioab' ) ?></p>
 									<?php
-											$wp_pages = get_pages();
-											$options_for_posts = array(
-												'posts_per_page' => -1,
-												'orderby'        => 'title',
-												'order'          => 'asc' );
-											$wp_posts = get_posts( $options_for_posts );
-
+										require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
+										NelioABHtmlGenerator::print_full_searcher( 'post-options' );
 									?>
-									<select id="goal_options" style="width:240px !important;" class="required">
-										<option id="select_goal_label" value="-1"><?php _e( 'Preview with...', 'nelioab' ); ?></option>
-										<?php
-										if ( !get_option( 'page_on_front', 0 ) ) { ?>
-											<optgroup id="latest-posts" label="<?php _e( 'Dynamic Front Page', 'nelioab' ); ?>">
-												<option
-													id="goal-0"
-													value="<?php echo NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS; ?>"
-													title="<?php _e( 'Your latest posts' ); ?>"><?php
-													_e( 'Your latest posts' ); ?></option>
-											</optgroup><?php
-										}
-										$counter = 1;
-										if ( count( $wp_pages ) > 0 ) { ?>
-											<optgroup id="page-options" label="<?php _e( 'WordPress Pages' ); ?>">
-											<?php
-											foreach ( $wp_pages as $p ) {
-												$title = $p->post_title;
-												$short = $title;
-												if ( strlen( $short ) > 50 )
-													$short = substr( $short, 0, 50 ) . '...';
-												$title = str_replace( '"', '\'\'', $title ); ?>
-												<option
-													id="goal-<?php echo $counter; ++$counter; ?>"
-													value="<?php echo $p->ID; ?>"
-													title="<?php echo $title; ?>"><?php
-													echo $short; ?></option><?php
-											} ?>
-											</optgroup><?php
-										}
-										if ( count( $wp_posts ) > 0 ) { ?>
-											<optgroup id="post-options" label="<?php _e( 'WordPress Posts' ); ?>"><?php
-											foreach ( $wp_posts as $p ) {
-												$title = $p->post_title;
-												$short = $title;
-												if ( strlen( $short ) > 50 )
-													$short = substr( $short, 0, 50 ) . '...';
-												$title = str_replace( '"', '\'\'', $title ); ?>
-												<option
-													id="goal-<?php echo $counter; ++$counter; ?>"
-													value="<?php echo $p->ID; ?>"
-													title="<?php echo $title; ?>"><?php
-													echo $short; ?></option><?php
-											} ?>
-											</optgroup><?php
-										}
-										?>
-									</select>
 								</div>
-	
+
 								<div class="misc-pub-section" style="min-height:4em;">
 									<div style="float:right;margin-top:1em;">
 										<input name="original_publish" type="hidden" id="original_publish" value="Update">
@@ -196,25 +174,30 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 											class="button-primary" id="publish"
 											tabindex="5"
 											value="<?php _e( 'Update' ); ?>" />
+										<script type="text/javascript">
+										jQuery( "#css_edit_value" ).on( 'submit', function() {
+											jQuery("#content").attr('value', nelioabCssEditor.getValue());
+										});
+										</script>
 									</div>
 									<div style="float:right;margin-top:1em;margin-right:1em;">
 										<div id="preview-action">
-											<?php
-												$url = admin_url();
-												$url = add_query_arg( array(
-													'nelioab-page' => 'save-css',
-													'preview' => 'true',
-													'nelioab_preview_css' => $_REQUEST['css_id'] ), $url );
-											?>
 											<a id="preview-button" class="preview button" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a>
 											<input type="hidden" name="wp-preview" id="wp-preview" value="" />
 										</div>
 									</div>
 								</div>
+								<?php
+									$url = admin_url( 'admin.php' );
+									$url = add_query_arg( array(
+										'nelioab-page' => 'save-css',
+										'preview' => 'true',
+										'nelioab_preview_css' => $_REQUEST['css_id'] ), $url );
+								?>
 								<script>
 									jQuery("#preview-button").click(function(e) {
-										var aux = jQuery("#goal_options").attr('value');
-										if ( aux == -1 ) return;
+										var aux = jQuery("#post-options").attr('value');
+										if ( aux == -1 || aux == "" || aux == undefined ) return;
 										if ( aux == <?php echo NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS; ?> ) aux = "";
 										else aux = "&p=" + aux;
 										jQuery("#css_edit_value").attr('action', "<?php echo $url ?>" + aux);
@@ -224,11 +207,11 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 										jQuery("#css_edit_value").attr('target', '');
 									});
 								</script>
-	
+
 								<div style="margin:10px;">
 									<b><?php _e( 'Go back to...', 'nelioab' ); ?></b>
 									<?php
-									$url        = admin_url() . 'admin.php?page=nelioab-experiments';
+									$url        = admin_url( 'admin.php?page=nelioab-experiments' );
 									$exp_id     = $this->experiment->get_id();
 									$exp_status = $this->experiment->get_status();
 									?>
@@ -238,13 +221,13 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 										switch( $exp_status ){
 											case NelioABExperimentStatus::DRAFT:
 											case NelioABExperimentStatus::READY:
-									   		?><li><a href="<?php
-													echo $url . '&action=edit&id=' . $exp_id . '&exp_type=' . $this->experiment->get_type(); ?>"><?php
+												?><li><a href="<?php
+													echo $url . '&action=edit&ctab=tab-alts&id=' . $exp_id . '&exp_type=' . $this->experiment->get_type(); ?>"><?php
 													 _e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
 												break;
 											case NelioABExperimentStatus::RUNNING:
 											case NelioABExperimentStatus::FINISHED:
-									   		?><li><a href="<?php
+												?><li><a href="<?php
 													echo $url . '&action=progress&id=' . $exp_id . '&exp_type=' . $this->experiment->get_type(); ?>"><?php
 													_e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
 												break;
@@ -255,13 +238,9 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 										}
 										?>
 									   <li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>
+									   <li><a href="<?php echo admin_url( 'admin.php?page=nelioab-dashboard' ); ?>"><?php _e( 'The Dashboard', 'nelioab' ); ?></a></li>
 									</ul>
 								</div>
-	
-	
-	
-	
-	
 							</div>
 						</div>
 					</div>
@@ -276,4 +255,3 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 
 }
 
-?>
