@@ -25,9 +25,6 @@ elseif ( isset( $_POST['nelioab_form_cookies'] ) )
 	$NELIOAB_COOKIES = (array) json_decode( urldecode( $_POST['nelioab_form_cookies'] ) );
 
 function nelioab_setrawcookie( $name, $value, $expire=0 ) {
-	if ( NelioABSettings::use_php_cookies() )
-		setcookie( $name, $value, $expire );
-
 	global $NELIOAB_COOKIES;
 	if ( $expire ) {
 		// FORMAT: "Day, dd Mon year hh:mm:ss GMT"

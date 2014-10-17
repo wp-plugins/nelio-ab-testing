@@ -222,6 +222,17 @@ if ( !class_exists( 'NelioABController' ) ) {
 			if ( $nav['origin'] == $nav['destination'] )
 				return;
 
+			// Adding more information about navigations
+			if ( isset( $_SERVER['HTTP_USER_AGENT'] ) )
+				$nav['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
+			else
+				$nav['userAgent'] = 'unknown';
+
+			if ( function_exists( 'uniqid' ) )
+				$nav['session'] = uniqid();
+			else
+				$nav['session'] = time();
+
 			$url = sprintf(
 				NELIOAB_BACKEND_URL . '/site/%s/nav',
 				NelioABAccountSettings::get_site_id()
@@ -363,21 +374,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 			// ... or an ADMIN
 			if ( current_user_can( 'delete_users' ) )
 				return;
-
-			// If we are using cookies, the _POST variable 'nelioab_load_alt' is not
-			// going to be automatically set. Therefore, we have to fake that a
-			// "sync_and_check" has been performed before.
-			if ( NelioABSettings::use_php_cookies() ) {
-				global $NELIOAB_COOKIES;
-				$NELIOAB_COOKIES = array();
-				foreach( $_COOKIE as $key => $value )
-					$NELIOAB_COOKIES[$key] = $value;
-				$aux = $this->update_cookies();
-				$alt_con = $this->controllers['alt-exp'];
-				$load_alt = $alt_con->check_requires_an_alternative( $this->get_current_url() );
-				if ( 'LOAD_ALT' == $load_alt )
-					$_POST['nelioab_load_alt'] = true;
-			}
 
 			// Custom Permalinks Support: making sure that we are not redirected while
 			// loading an alternative...

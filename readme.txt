@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.2.4
+Stable tag: 3.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,15 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.2.5 =
+* Support for PHP cookies has been dropped.
+* Bug fix: affiliate links and other GET params in Gravity Forms are no longer
+lost when submitting a form from within a tested page.
+* Bug fix: no more 404 errors when (trying to) view heatmaps on some WordPress
+installations that do not locate plugins under the wp-content dir.
+* Some other minor improvements.
+
 
 = 3.2.4 =
 * Bug fix: the submission of a multi-paged Gravity Form is now working
@@ -565,7 +574,6 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.2.4 =
-Advanced quota control, customizable e-mail alerts, improved visualization of
-finished experiments, and some minor fixes.
+= 3.2.5 =
+Dropped support for PHP Cookies and some improvements with Gravity Forms.
 
