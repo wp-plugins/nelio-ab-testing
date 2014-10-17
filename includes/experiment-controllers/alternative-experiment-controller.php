@@ -72,12 +72,17 @@ class NelioABAlternativeExperimentController {
 					array( 'NelioABMemberAccessSupport', 'unhook_redirections' ) );
 		}
 		else {
-			if ( !NelioABSettings::use_php_cookies() ) {
-				// If the "nelioab_load_alt" POST param is not set, we have to return the
-				// page with the JS file that is able to load an alternative and do all
-				// the required stuff
-				add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_check_scripts' ) );
-			}
+			// If the "nelioab_load_alt" POST param is not set, we have to return the
+			// page with the JS file that is able to load an alternative and do all
+			// the required stuff
+			add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_check_scripts' ) );
+
+			/**
+			 * Support with other plugins.
+			 * Compatibility tweaks for preventing autotriggering of Google Tag Manager
+			 */
+			require_once( NELIOAB_UTILS_DIR . '/dtgtm4wp-support.php' );
+			NelioABDtGtm4WpSupport::nelioab_tweak_dtgtm4wp();
 		}
 
 		// Make sure that the title is replaced everywhere

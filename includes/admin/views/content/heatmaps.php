@@ -61,8 +61,10 @@
 			$counter = 0;
 			if ( isset( $result->data ) ) {
 				foreach ( $result->data as $heatmap ) {
-					$value = json_decode( $heatmap->value );
-					$counter += $value->max;
+					if ( isset( $heatmap->value ) ) {
+						$value = json_decode( $heatmap->value );
+						$counter += $value->max;
+					}
 				}
 			}
 			if ( $counter == 0 ) {
