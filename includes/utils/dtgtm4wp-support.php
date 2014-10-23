@@ -18,17 +18,28 @@
  */
 
 
-add_filter( 'gtm4wp_get_the_gtm_tag', 'nelioab_tweak_gtm4wp' );
-function nelioab_tweak_gtm4wp( $script ) {
+if ( !class_exists( 'NelioABDtGtm4WpSupport' ) ) {
 
-	$open = '<script>function nelioabActivateGoogleTagMgr() {' . "\n";
-	$open .= 'console.log( "Loading Google Tag Manager..." );' . "\n";
-	$script = str_replace( '<script>', $open, $script );
+	abstract class NelioABDtGtm4WpSupport {
 
-	$close = '; ' . "\n" . 'console.log( "Done!" );}</script>';
-	$script = str_replace( '</script>', $close, $script );
+		public static function nelioab_tweak_dtgtm4wp() {
+			add_filter( 'dtgtm4wp_get_the_gtm_tag',
+				array( 'NelioABDtGtm4WpSupport', 'do_nelioab_tweak_dtgtm4wp' ) );
+		}
 
-	return $script;
+		public static function do_nelioab_tweak_dtgtm4wp( $script ) {
+			$open = '<script>function nelioabActivateGoogleTagMgr() {' . "\n";
+			$open .= 'console.log( "Loading Google Tag Manager..." );' . "\n";
+			$script = str_replace( '<script>', $open, $script );
+
+			$close = '; ' . "\n" . 'console.log( "Done!" )}' . "\n";
+			$close .= 'jQuery(document).trigger("nelioab-gtm-ready")</script>';
+			$script = str_replace( '</script>', $close, $script );
+
+			return $script;
+		}
+
+	}//NelioABDtGtm4WpSupport
 
 }
 

@@ -108,9 +108,8 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			foreach ( $this->summary as $exp ) {
 				switch( $exp->get_type() ) {
 					case NelioABExperiment::HEATMAP_EXP:
-							$progress_url = NelioABWPHelper::get_unsecured_site_url() .
-							'/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME .
-							'/heatmaps.php?id=%1$s&exp_type=%2$s';
+						$progress_url = str_replace( 'https://', 'http://',
+							admin_url( 'admin.php?nelioab-page=heatmaps&id=%1$s&exp_type=%2$s' ) );
 						$this->print_linked_beautiful_box(
 							$exp->get_id(),
 							$this->get_beautiful_title( $exp ),
