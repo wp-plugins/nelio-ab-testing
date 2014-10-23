@@ -223,9 +223,10 @@ class NelioABAlternativeExperimentController {
 		if ( !isset( $_POST['nelioab_load_alt'] ) )
 			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
 
-		// WARNING: I check whether the function exists, because there are some (random)
-		// times in which calling "current_user_can" results in a fatal error :-S
-		if ( !function_exists( 'is_super_admin' ) || is_super_admin() )
+		// WARNING: I check whether the function 'wp_get_current_user" exists,
+		// because the latter depends on this one and, sometimes, this one is
+		// not available, generating a fatal error :-S
+		if ( !function_exists( 'wp_get_current_user' ) || is_super_admin() )
 			return $stylesheet;
 		$theme = $this->get_actual_theme();
 		return $theme['Stylesheet'];
@@ -236,9 +237,10 @@ class NelioABAlternativeExperimentController {
 		if ( !isset( $_POST['nelioab_load_alt'] ) )
 			remove_filter( 'stylesheet', array( &$this, 'modify_template' ) );
 
-		// WARNING: I check whether the function exists, because there are some (random)
-		// times in which calling "current_user_can" results in a fatal error :-S
-		if ( !function_exists( 'is_super_admin' ) || is_super_admin() )
+		// WARNING: I check whether the function 'wp_get_current_user" exists,
+		// because the latter depends on this one and, sometimes, this one is
+		// not available, generating a fatal error :-S
+		if ( !function_exists( 'wp_get_current_user' ) || is_super_admin() )
 			return $template;
 		$theme = $this->get_actual_theme();
 		return $theme['Template'];
