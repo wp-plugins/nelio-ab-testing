@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.2.5
+Stable tag: 3.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.2.6 =
+* Bug fix: in the Dashboard view, Heatmap experiments do no longer return a
+404 page not found error.
+* Bug fix: some Heatmaps generated a JavaScript exception (and the page got
+stuck in "Loading"). This is now fixed.
+
 
 = 3.2.5 =
 * Support for PHP cookies has been dropped.
@@ -574,6 +581,6 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.2.5 =
-Dropped support for PHP Cookies and some improvements with Gravity Forms.
+= 3.2.6 =
+A couple of bug fixes with Heatmap experiments.
 

@@ -225,7 +225,7 @@ class NelioABAlternativeExperimentController {
 
 		// WARNING: I check whether the function exists, because there are some (random)
 		// times in which calling "current_user_can" results in a fatal error :-S
-		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
+		if ( !function_exists( 'is_super_admin' ) || is_super_admin() )
 			return $stylesheet;
 		$theme = $this->get_actual_theme();
 		return $theme['Stylesheet'];
@@ -238,7 +238,7 @@ class NelioABAlternativeExperimentController {
 
 		// WARNING: I check whether the function exists, because there are some (random)
 		// times in which calling "current_user_can" results in a fatal error :-S
-		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
+		if ( !function_exists( 'is_super_admin' ) || is_super_admin() )
 			return $template;
 		$theme = $this->get_actual_theme();
 		return $theme['Template'];

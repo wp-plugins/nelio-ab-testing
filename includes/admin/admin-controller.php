@@ -101,7 +101,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 
 			// If the current user is NOT admin, do not show the plugin
-			if ( !current_user_can( 'delete_users' ) )
+			if ( !is_super_admin() )
 				return;
 
 			$this->process_special_pages();

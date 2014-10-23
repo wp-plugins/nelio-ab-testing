@@ -332,7 +332,13 @@
 				var data = [];
 				for( var path in src.data ) {
 					var partial_hm = src.data[path];
-					var elem = jQuery(path, document.getElementById('content').contentWindow.document);
+					var elem;
+					try {
+						elem = jQuery(path, document.getElementById('content').contentWindow.document);
+					}
+					catch ( e ) {
+						continue;
+					}
 
 					var pl = elem.css('padding-left');   if ( pl == undefined ) pl = "0";
 					var pr = elem.css('padding-right');  if ( pr == undefined ) pr = "0";

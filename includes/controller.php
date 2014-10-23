@@ -355,7 +355,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 		}
 
 		public function init_admin_stuff() {
-			if ( !current_user_can( 'delete_users' ) )
+			if ( !is_super_admin() )
 				return;
 
 			$dir = NELIOAB_DIR . '/experiment-controllers';
@@ -372,7 +372,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 				return;
 
 			// ... or an ADMIN
-			if ( current_user_can( 'delete_users' ) )
+			if ( is_super_admin() )
 				return;
 
 			// Custom Permalinks Support: making sure that we are not redirected while
