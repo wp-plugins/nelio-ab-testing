@@ -56,17 +56,25 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		protected function process_special_pages() {
-			if ( !isset( $_GET['nelioab-page'] ) )
+			global $pagenow;
+			if ( 'admin.php' !== $pagenow || !isset( $_GET['nelioab-page'] ) )
 				return;
 
 			switch( $_GET['nelioab-page'] ) {
+
 				case 'save-css':
 					update_option( 'nelioab_css_' . $_GET['nelioab_preview_css'], $_POST['content'] );
 					$url = get_option('home');
 					$url = add_query_arg( $_GET, $url );
-					header( "Location: $url" ) ;
+					header( "Location: $url" );
 					die();
+
+				case 'heatmaps':
+					require_once( NELIOAB_ADMIN_DIR . '/views/content/heatmaps.php' );
+					die();
+
 			}
+
 		}
 
 		public function init() {
@@ -93,7 +101,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 
 			// If the current user is NOT admin, do not show the plugin
-			if ( !current_user_can( 'delete_users' ) )
+			if ( !is_super_admin() )
 				return;
 
 			$this->process_special_pages();

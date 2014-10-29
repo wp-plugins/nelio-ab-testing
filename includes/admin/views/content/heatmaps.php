@@ -61,8 +61,10 @@
 			$counter = 0;
 			if ( isset( $result->data ) ) {
 				foreach ( $result->data as $heatmap ) {
-					$value = json_decode( $heatmap->value );
-					$counter += $value->max;
+					if ( isset( $heatmap->value ) ) {
+						$value = json_decode( $heatmap->value );
+						$counter += $value->max;
+					}
 				}
 			}
 			if ( $counter == 0 ) {
@@ -330,7 +332,13 @@
 				var data = [];
 				for( var path in src.data ) {
 					var partial_hm = src.data[path];
-					var elem = jQuery(path, document.getElementById('content').contentWindow.document);
+					var elem;
+					try {
+						elem = jQuery(path, document.getElementById('content').contentWindow.document);
+					}
+					catch ( e ) {
+						continue;
+					}
 
 					var pl = elem.css('padding-left');   if ( pl == undefined ) pl = "0";
 					var pr = elem.css('padding-right');  if ( pr == undefined ) pr = "0";
@@ -467,8 +475,9 @@
 			async:true,
 			url:document.URL,
 			data: {load_from_appengine:'true'},
-		}).success(function(data) {
-			jQuery("#container").html(data);
+			success: function(data) {
+				jQuery("#container").html(data);
+			},
 		});
 	</script>
 
