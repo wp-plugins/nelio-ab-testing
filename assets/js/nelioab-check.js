@@ -59,51 +59,55 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 			current_url: document.URL,
 			nelioab_cookies: nelioab_get_local_cookies(),
 		},
-	}).success(function(data) {
-		try {
-			json = JSON.parse(data);
-			cookies = json.cookies;
-			if ( cookies['__nelioab_new_version'] != undefined )
-				nelioab_clean_cookies();
-			$.each(cookies, function(name, value) {
-				if (nelioab_get_cookie_by_name(name) == undefined) {
-					document.cookie = name + '=' + value + ';path=/';
-				}
-				else if (name == 'nelioab_was_in') {
-					nelioab_delete_cookie('nelioab_was_in');
-					document.cookie = name + '=' + value + ';path=/';
-				}
-			});
-			nelioab_delete_cookie('__nelioab_new_version');
-			are_cookies_sync = true;
-
-			if ( nelioab_get_cookie_by_name( 'nelioab_is_in' ) == 'no' ) {
-				nelioab_show_body();
-				return;
-			}
-
-			is_load_alt_required = ( json.load_alt == 'LOAD_ALT' );
-			if ( !is_load_alt_required )
-				nelioab_nav($);
-
-			if ( are_cookies_sync && is_load_alt_required ) {
-				nelioab_load_alt(jQuery);
-			}
-			else {
-				nelioab_show_body();
-				jQuery(document).ready(function(){
-					if ( typeof( nelioab_prepare_links_for_nav_to_external_pages ) == 'function' )
-						nelioab_prepare_links_for_nav_to_external_pages(jQuery);
-					if ( typeof( nelioab_add_hidden_fields_on_forms ) == 'function' )
-						nelioab_add_hidden_fields_on_forms(jQuery);
-					if ( typeof( nelioabStartHeatmapTracking ) == 'function' )
-						nelioabStartHeatmapTracking();
+		success: function(data) {
+			try {
+				json = JSON.parse(data);
+				cookies = json.cookies;
+				if ( cookies['__nelioab_new_version'] != undefined )
+					nelioab_clean_cookies();
+				$.each(cookies, function(name, value) {
+					if (nelioab_get_cookie_by_name(name) == undefined) {
+						document.cookie = name + '=' + value + ';path=/';
+					}
+					else if (name == 'nelioab_was_in') {
+						nelioab_delete_cookie('nelioab_was_in');
+						document.cookie = name + '=' + value + ';path=/';
+					}
 				});
+				nelioab_delete_cookie('__nelioab_new_version');
+				are_cookies_sync = true;
+
+				if ( nelioab_get_cookie_by_name( 'nelioab_is_in' ) == 'no' ) {
+					nelioab_show_body();
+					return;
+				}
+
+				is_load_alt_required = ( json.load_alt == 'LOAD_ALT' );
+				if ( !is_load_alt_required )
+					nelioab_nav($);
+
+				if ( are_cookies_sync && is_load_alt_required ) {
+					nelioab_load_alt(jQuery);
+				}
+				else {
+					nelioab_show_body();
+					jQuery(document).ready(function(){
+						if ( typeof( nelioab_prepare_links_for_nav_to_external_pages ) == 'function' )
+							nelioab_prepare_links_for_nav_to_external_pages(jQuery);
+						if ( typeof( nelioab_add_hidden_fields_on_forms ) == 'function' )
+							nelioab_add_hidden_fields_on_forms(jQuery);
+						if ( typeof( nelioabStartHeatmapTracking ) == 'function' )
+							nelioabStartHeatmapTracking();
+					});
+				}
 			}
-		}
-		catch(e) {
+			catch(e) {
+				nelioab_show_body();
+			}
+		},
+		error: function() {
 			nelioab_show_body();
-		}
+		},
 	});
 }
 

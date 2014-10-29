@@ -475,8 +475,9 @@
 			async:true,
 			url:document.URL,
 			data: {load_from_appengine:'true'},
-		}).success(function(data) {
-			jQuery("#container").html(data);
+			success: function(data) {
+				jQuery("#container").html(data);
+			},
 		});
 	</script>
 
