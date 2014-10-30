@@ -196,8 +196,8 @@ function nelioab_load_alt($) {
 			// Removing jetpack stats scripts from the alternative
 			data = data
 				.replace(
-					/<.cript src="https?:\/\/stats.wordpress.com\/e-([^\n]*)\n/g,
-					'<!-- <scr'+'ipt src="http://stats.wordpress.com/e-$1 -->\n' +
+					/<.cript src="https?:\/\/stats.(wordpress|wp).com\/e-([^\n]*)\n/g,
+					'<!-- <scr'+'ipt src="http://stats.$1.com/e-$2 -->\n' +
 					'\t<scr'+'ipt>function st_go(a){} function linktracker_init(a,b){}</scr'+'ipt>\n'
 				);
 			var docIsReady = function() {

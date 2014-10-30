@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.2.7
+Stable tag: 3.2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,6 +149,12 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.2.8 =
+* Bug fix: external links with special characters (such as, for instance,
+a question mark) are now properly tracked.
+* Buf fix: compatibility issuse with JetPack and IE10 are now fixed
+
 
 = 3.2.7 =
 * Bug fix: on some installations, if admin_ajax.php returns an error, the
@@ -586,6 +592,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.2.7 =
-Bug fix with admin_ajax.php and blank screens.
+= 3.2.8 =
+Bug fix with admin_ajax.php and blank screens, JetPack compatibility, and other
+fixes.
 
