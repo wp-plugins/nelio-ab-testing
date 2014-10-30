@@ -33,7 +33,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 		const DEFAULT_CONVERSION_UNIT             = 'USD';
 		const DEFAULT_USE_COLORBLIND_PALETTE      = false;
 		const DEFAULT_SHOW_FINISHED_EXPERIMENTS   = 2;
-		const DEFAULT_USE_PHP_COOKIES             = false;
 		const DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE = 90;
 		const DEFAULT_PERCENTAGE_OF_TESTED_USERS  = 100;
 		const DEFAULT_EXPL_RATIO                  = 90;
@@ -106,12 +105,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			$new_input['ori_perc'] = self::DEFAULT_ORIGINAL_PERCENTAGE;
 			if ( isset( $input['ori_perc'] ) )
 				$new_input['ori_perc'] = intval( $input['ori_perc'] );
-
-			$new_input['use_php_cookies'] = self::DEFAULT_USE_PHP_COOKIES;
-			if ( isset( $input['use_php_cookies'] ) ) {
-				$new_input['use_php_cookies'] = sanitize_text_field( $input['use_php_cookies'] );
-				$new_input['use_php_cookies'] = $new_input['use_php_cookies'] == '1';
-			}
 
 			$new_input['min_confidence_for_significance'] = self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
 			if ( isset( $input['min_confidence_for_significance'] ) )
@@ -333,16 +326,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				return $options['show_finished_experiments'];
 			return self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
 		}
-
-		public static function use_php_cookies() {
-			if ( !self::is_field_enabled_for_current_plan( 'use_php_cookies' ) )
-				return self::DEFAULT_USE_PHP_COOKIES;
-			$options = self::get_settings();
-			if ( isset( $options['use_php_cookies'] ) )
-				return $options['use_php_cookies'];
-			return self::DEFAULT_USE_PHP_COOKIES;
-		}
-
 
 		public static function get_min_confidence_for_significance() {
 			if ( !self::is_field_enabled_for_current_plan( 'min_confidence_for_significance' ) )

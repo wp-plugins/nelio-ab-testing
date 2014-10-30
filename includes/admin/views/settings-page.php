@@ -119,15 +119,6 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			);
 
 			add_settings_field(
-				'use_php_cookies',
-				self::prepare_basic_label( __( 'PHP cookies', 'nelioab' ) ),
-				// -------------------------------------------------------------
-				array( 'NelioABSettingsPage', 'print_cookies_field' ),
-				'nelioab-settings',
-				'nelioab_basic_section'
-			);
-
-			add_settings_field(
 				'use_colorblind_palette',
 				self::prepare_basic_label( __( 'Icons and Colors', 'nelioab' ) ),
 				// -------------------------------------------------------------
@@ -663,26 +654,6 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				});
 				jQuery("#<?php echo $field_name; ?>").trigger("change");
 			</script>
-			<?php
-		}
-
-		public static function print_cookies_field() {
-			$field_name = 'use_php_cookies';
-			printf(
-				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
-				$field_name, self::get_basic_details()
-			);
-			?>
-				<option value='0'><?php _e( 'Disabled (use JavaScript)', 'nelioab' ); ?></option>
-				<option value='1'<?php
-					if ( NelioABSettings::use_php_cookies() )
-						echo ' selected="selected"';
-				?>><?php _e( 'Enabled', 'nelioab' ); ?></option>
-			</select>
-			<br><span class="description"><?php
-				_e( 'Select how alternatives are loaded. With PHP cookies, page load times might be faster, because regular cookies reduce the amount of queries your visitors will perform to your server. However, they cannot be used everywhere (for instance, <a href="http://wpengine.com">WPEngine</a> does not permit them). If you are not sure, use JavaScript.',
-					'nelioab' );
-			?></span>
 			<?php
 		}
 
