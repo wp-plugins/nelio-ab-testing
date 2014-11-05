@@ -136,11 +136,11 @@ function nelioab_add_hidden_fields_on_forms($) {
 
 		$('input[name="nelioab_form_cookies"]').attr('value',
 			encodeURIComponent( JSON.stringify( nelioab_get_local_cookies() )
-				.replace( "'", "%27") )
+				.replace( /'/g, "%27") )
 			);
 		$('input[name="nelioab_form_current_url"]').attr('value',
 			encodeURIComponent( JSON.stringify( document.URL )
-				.replace( "'", "%27") )
+				.replace( /'/g, "%27") )
 			);
 	});
 }

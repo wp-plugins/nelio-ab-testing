@@ -105,7 +105,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 
 			// Finally, we check if we need to load an alternative
 			$alt_con  = $this->controllers['alt-exp'];
-			$load_alt = $alt_con->check_requires_an_alternative( $_SERVER['HTTP_REFERER'] );
+			$load_alt = $alt_con->check_requires_an_alternative( $_POST['current_url'] );
 			$result   = array(
 				'cookies'  => $cookies,
 				'load_alt' => $load_alt );
@@ -301,6 +301,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 				return NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE;
 
 			$the_id = url_to_postid( $url );
+			if ( !$the_id )
+				$the_id = url_to_postid( str_replace( 'https://', 'http://', $url ) );
 
 			// Checking if the source page was the Landing Page
 			// This is a special case, because it might be the case that the

@@ -58,9 +58,10 @@ class NelioABAlternativeExperimentController {
 			 * Compatibility tweaks for testing OptimizePress pages.
 			 */
 			require_once( NELIOAB_UTILS_DIR . '/optimize-press-support.php' );
-			if ( NelioABOptimizePressSupport::is_optimize_press_active() )
-				add_filter( 'template_include',
-					array( 'NelioABOptimizePressSupport', 'op_template_include' ) );
+			if ( NelioABOptimizePressSupport::is_optimize_press_active() ) {
+				add_filter( 'template_redirect',
+					array( 'NelioABOptimizePressSupport', 'apply_abtesting_to_optimize_press_pages' ) );
+			}
 
 			/**
 			 * Support with other plugins.
