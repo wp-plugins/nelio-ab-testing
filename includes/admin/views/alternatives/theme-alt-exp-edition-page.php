@@ -191,7 +191,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					$(document).on('save-experiment', function() {
 						$( '#nelioab_selected_themes' ).attr('value',
 							encodeURIComponent( JSON.stringify( NelioABSelectedThemes ) )
-								.replace( "'", "%27") );
+								.replace( /'/g, "%27") );
 					});
 
 					$(document).on( 'tab-changed', function( e, tabId ) {

@@ -263,9 +263,9 @@ var NelioABAltTable = {
 	},
 
 	save: function() {
-		jQuery('#nelioab_alternatives').attr('value', 
+		jQuery('#nelioab_alternatives').attr('value',
 			encodeURIComponent( JSON.stringify( NelioABAltTable.alts ) )
-				.replace( "'", "%27") );
+				.replace( /'/g, "%27") );
 	},
 
 };

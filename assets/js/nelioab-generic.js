@@ -136,11 +136,11 @@ function nelioab_add_hidden_fields_on_forms($) {
 
 		$('input[name="nelioab_form_cookies"]').attr('value',
 			encodeURIComponent( JSON.stringify( nelioab_get_local_cookies() )
-				.replace( "'", "%27") )
+				.replace( /'/g, "%27") )
 			);
 		$('input[name="nelioab_form_current_url"]').attr('value',
 			encodeURIComponent( JSON.stringify( document.URL )
-				.replace( "'", "%27") )
+				.replace( /'/g, "%27") )
 			);
 	});
 }
@@ -208,11 +208,31 @@ function nelioab_nav_to_external_page($, external_page_link) {
 	});
 }
 
-jQuery(document).ready(function() {
+(function() {
+	var isGtmReady = false;
+	var shouldGtmBeCalled = false;
+	var isGtmCalled = false;
 
-	if ( typeof nelioabActivateGoogleTagMgr == 'function' ) {
-		setTimeout(nelioabActivateGoogleTagMgr,2000);
+	function callGtmActivationFunction() {
+		if ( isGtmReady && shouldGtmBeCalled && typeof nelioabActivateGoogleTagMgr == 'function' && !isGtmCalled ) {
+			isGtmCalled = true;
+			nelioabActivateGoogleTagMgr();
+		}
 	}
+
+	jQuery(document).on('nelioab-gtm-ready', function() {
+		isGtmReady = true;
+		callGtmActivationFunction();
+	});
+
+	jQuery(document).on('nelioab-gtm-call', function() {
+		shouldGtmBeCalled = true;
+		callGtmActivationFunction();
+	});
+
+})();
+
+jQuery(document).ready(function() {
 
 	jQuery('a').click(function(e) {
 		var target = e.currentTarget;
