@@ -139,6 +139,22 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 				var NelioABSelectedThemes;
 				(function($) {
 
+					<?php
+					require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+					$colorscheme = NelioABWpHelper::get_current_colorscheme();
+					?>
+					nelioab_cssExpNode = document.createElement('style');
+					nelioab_cssExpNode.setAttribute('type', 'text/css');
+					nelioab_cssExpNode.innerHTML = '' +
+						'.nelioab-selected .theme-image-selector { ' +
+						'  border-color:<?php echo $colorscheme['primary']; ?> !important;' +
+						'} ' +
+						'.nelioab-theme.nelioab-selected, .nelioab-theme.nelioab-selected:hover { ' +
+						'  background:<?php echo $colorscheme['primary']; ?> !important;' +
+						'}';
+					document.getElementsByTagName('head')[0].appendChild(nelioab_cssExpNode);
+
+
 					NelioABSelectedThemes = JSON.parse( decodeURIComponent(
 							jQuery('#nelioab_selected_themes').attr('value')
 						)	);

@@ -35,6 +35,7 @@ var NelioABFormSearcher = {
 				results: function (data) {
 					if ( filter !== undefined )
 						data = filter( elem, data );
+					elem.data('last-search', data);
 					return { results:data };
 				}
 			},
@@ -66,7 +67,11 @@ var NelioABFormSearcher = {
 				},
 			}).done(function(data) {
 				var item = data[0];
+				var search = [];
+				search.push( data[0] );
+				elem.data('last-search', search);
 				NelioABFormSearcher.doSetDefault( elem, item.title, item.id );
+				elem.trigger('default-value-loaded');
 			});
 	},
 

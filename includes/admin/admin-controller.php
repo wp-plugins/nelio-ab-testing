@@ -38,6 +38,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		public $validation_errors;
 		public $data;
 
+		private $widget_exp_controller;
+
 		/**
 		 * The class constructor
 		 *
@@ -52,7 +54,17 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			$this->global_warnings   = array();
 			$this->validation_errors = array();
 			$this->data              = NULL;
-			add_filter( 'init', array( $this, 'init' ) );
+
+			if ( isset( $_GET['action'] ) && 'clean-and-deactivate' == $_GET['action'] &&
+			     isset( $_GET['plugin'] ) && 'nelio-ab-testing' == $_GET['plugin'] ) {
+				add_filter( 'admin_init', array( $this, 'deactivate_plugin' ) );
+			}
+			else {
+				add_filter( 'init', array( $this, 'init' ) );
+			}
+
+			require_once( NELIOAB_ADMIN_DIR . '/widget-exp-admin-controller.php' );
+			$this->widget_exp_controller = new NelioABWidgetExpAdminController();
 		}
 
 		protected function process_special_pages() {
@@ -97,9 +109,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					__( '<b>Warning!</b> There is no more quota available.', 'nelioab' ) );
 			}
 
-			// -----------------------------
-
-
 			// If the current user is NOT admin, do not show the plugin
 			if ( !is_super_admin() )
 				return;
@@ -112,6 +121,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			// Some hooks
 			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 
+			add_filter( 'plugin_action_links',  array( $this, 'add_plugin_action_links') , 10, 2);
 			add_action( 'admin_menu', array( $this, 'create_nelioab_admin_pages' ) );
 				require_once( NELIOAB_ADMIN_DIR . '/views/settings-page.php' );
 				add_action( 'admin_init', array( 'NelioABSettingsPage', 'register_settings' ) );
@@ -130,6 +140,11 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// TODO: this hook has to be placed inside the proper controller (don't know how, yet)
 			add_action( 'admin_enqueue_scripts', array( &$this, 'load_custom_style_and_scripts' ) );
+		}
+
+		public function deactivate_plugin() {
+			// Clean and Deactivate Nelio A/B Testing
+				deactivate_plugins( NELIOAB_PLUGIN_ID, false, is_network_admin() );
 		}
 
 		public function add_css_for_creation_page() {
@@ -163,6 +178,9 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			if ( isset( $_POST['nelioab_save_exp_post'] ) )
 				return;
 
+			if ( $this->is_page( array( 'add-headline-exp', 'edit-headline-exp' ) ) )
+					wp_enqueue_media();
+
 			// We make sure jQuery is loaded:
 			wp_enqueue_script( 'jquery' );
 
@@ -185,6 +203,21 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			wp_enqueue_script( 'nelioab_graphic_functions',
 				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ) );
 
+			wp_register_style( 'font_awesome_css',
+				nelioab_admin_asset_link( '/css/font-awesome.min.css' ) );
+			wp_enqueue_style( 'font_awesome_css' );
+
+			wp_enqueue_script( 'd3',
+				nelioab_admin_asset_link( '/js/d3.v3.min.js' ) );
+
+			if ( $this->is_page( 'nelioab-dashboard' ) ) {
+				wp_register_style( 'cal_heatmap_css',
+					nelioab_admin_asset_link( '/css/cal-heatmap.min.css' ) );
+				wp_enqueue_style( 'cal_heatmap_css' );
+				wp_enqueue_script( 'cal_heatmap',
+					nelioab_admin_asset_link( '/js/cal-heatmap.min.js' ) );
+			}
+
 			// Post Searcher
 			if ( $this->is_page( array( 'nelioab-add-experiment', 'edit-exp', 'nelioab-css-edit' ) ) ) {
 				wp_enqueue_style( 'nelioab_select2_css',
@@ -199,8 +232,13 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					nelioab_admin_asset_link( '/js/form-searcher.min.js' ) );
 			}
 
-			// Dialog for Experiments Page
+			// Dialog for all nelio pages
+			global $pagenow;
 			if ( isset( $_GET['page'] ) && strpos( 'nelioab-', $_GET['page'] ) == 0 ) {
+				wp_enqueue_script( 'jquery-ui-dialog' );
+				wp_enqueue_style( 'wp-jquery-ui-dialog' );
+			}
+			else if ( 'plugins.php' == $pagenow ) {
 				wp_enqueue_script( 'jquery-ui-dialog' );
 				wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			}
@@ -222,6 +260,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			if ( strpos( $page, 'nelioab' ) === 0 && $page == $_GET['page'] )
 				return true;
 
+			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+
 			switch( $page ) {
 
 				case 'edit-exp':
@@ -235,6 +275,20 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					if ( 'nelioab-experiments' == $_GET['page'] &&
 					     isset( $_GET['action'] ) &&
 					     'progress' == $_GET['action'] )
+						return true;
+					break;
+
+				case 'add-headline-exp':
+					if ( 'nelioab-add-experiment' == $_GET['page'] &&
+						isset( $_GET['experiment-type'] ) &&
+						NelioABExperiment::HEADLINE_ALT_EXP == $_GET['experiment-type'] )
+						return true;
+					break;
+
+				case 'edit-headline-exp':
+					if ( 'nelioab-experiments' == $_GET['page'] &&
+						isset( $_GET['action'] ) && 'edit' == $_GET['action'] &&
+						isset( $_GET['exp_type'] ) && NelioABExperiment::HEADLINE_ALT_EXP == $_GET['exp_type'] )
 						return true;
 					break;
 
@@ -292,6 +346,51 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			}
 		}
 
+		public function add_plugin_action_links( $links, $file ) {
+			if ( $file == plugin_basename( NELIOAB_PLUGIN_ID ) && is_plugin_active( $file ) ) {
+				$dashboard_link  = '<a id="nelioab-clean-button" href="%4$s" style="cursor:hand;cursor:pointer;">%1$s</a>';
+				$dashboard_link .= '<div title="%2$s" id="nelioab-clean-dialog" style="display:none;">%3$s</div>';
+				$dashboard_link .= '<script type="text/javascript" style="display:none;">';
+				$dashboard_link .= 'jQuery(document).ready(function() {';
+				$dashboard_link .= '  var $aux = jQuery("#nelioab-clean-dialog").dialog({';
+				$dashboard_link .= '    dialogClass   : "wp-dialog",';
+				$dashboard_link .= '    modal         : true,';
+				$dashboard_link .= '    autoOpen      : false,';
+				$dashboard_link .= '    closeOnEscape : true,';
+				$dashboard_link .= '    buttons: [';
+				$dashboard_link .= '      {';
+				$dashboard_link .= '        text: "' . __( "Cancel", "nelioab" ) .'",';
+				$dashboard_link .= '        click: function() {';
+				$dashboard_link .= '          jQuery(this).dialog("close");';
+				$dashboard_link .= '        }';
+				$dashboard_link .= '      },';
+				$dashboard_link .= '      {';
+				$dashboard_link .= '        text: "' . __( 'Clean', 'nelioab' ) . '",';
+				$dashboard_link .= '        "class": "button-primary",';
+				$dashboard_link .= '        click: function() {';
+				$dashboard_link .= '          jQuery(this).dialog("close");';
+				$dashboard_link .= '          window.location.href = jQuery("#nelioab-clean-button").attr("href");';
+				$dashboard_link .= '        }';
+				$dashboard_link .= '      }';
+				$dashboard_link .= '    ]';
+				$dashboard_link .= '  });';
+				$dashboard_link .= '  jQuery("#nelioab-clean-button").click(function(e){e.preventDefault();$aux.dialog("open");});';
+				$dashboard_link .= '});';
+				$dashboard_link .= '</script>';
+
+				$dashboard_link = sprintf( $dashboard_link,
+						__( 'Clean and Deactivate', 'nelioab' ),
+						__( 'Warning!', 'nelioab' ),
+						__( 'You are about to clean all your A/B testing data. This operation cannot be undone. Are you sure you want to continue?', 'nelioab' ),
+						wp_nonce_url(
+							admin_url( 'plugins.php?action=clean-and-deactivate&plugin=nelio-ab-testing' ),
+							'clean-and-deactivate-plugin_' . NELIOAB_PLUGIN_ID )
+					);
+				array_unshift( $links, $dashboard_link );
+			}
+			return $links;
+		}
+
 		/**
 		 * This function creates all the relevant pages for our plugin.
 		 * These pages appear in the Dashboard.
@@ -314,7 +413,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$nelioab_menu,
 				null,
 				null,
-				3
+				NelioABSettings::get_menu_location() . '.000023510' // 2N.3E.5L.1I.0O
 			);
 
 
@@ -382,7 +481,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				'nelioab-account',
 				array( 'NelioABAccountPageController', 'build' ) );
 
-			// Feedback page
+			// Settings page
 			// ----------------------------------------------------------------------
 			require_once( NELIOAB_ADMIN_DIR . '/settings-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
@@ -463,23 +562,17 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function print_alternative_box() { ?>
-			<div id="submitdiv">
+			<div id="submitdiv"><?php
+				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+				$colorscheme = NelioABWpHelper::get_current_colorscheme();
+				?>
 				<script>
 					var nelioab_style_metabox = document.createElement("style");
 					nelioab_style_metabox.setAttribute("type", "text/css");
 					nelioab_style_metabox.innerHTML = "#save_nelioab_alternative_box h3.hndle { " +
-						"background:none; " +
-						"background-color:#298cba; " +
-						"color:white; " +
-						"text-shadow:#000 0 1px 0; " +
-						"border: 1px solid #298cba;" +
-						"background: #298cba;" +
-						"background: -moz-linear-gradient(bottom, #298cba 0%, #41a9cc 100%);" +
-						"background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#298cba), color-stop(100%,#41a9cc));" +
-						"background: -webkit-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
-						"background: -o-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
-						"background: -ms-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
-						"background: linear-gradient(bottom top, #298cba 0%,#41a9cc 100%);" +
+						"color:<?php echo $colorscheme['foreground']; ?>; " +
+						"background: <?php echo $colorscheme['focus']; ?>;" +
+						"border: 1px solid <?php echo $colorscheme['focus']; ?>;" +
 					"}" +
 					"#favorite-actions, #message, .add-new-h2, .tablenav, #edit-slug-box { display:none; }" +
 					"#save_nelioab_alternative_box .handlediv { color:#afe0f7; }" +
@@ -499,11 +592,22 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 							<div id="preview-action">
 								<?php
 									$preview_link = admin_url( 'admin.php' );
-									$preview_link = add_query_arg( array(
-										'preview' => 'true',
-										'post'    => $_GET['post'] ), $preview_link );
+									$type = 'post';
+									if ( get_post_type( $_GET['post'] ) == 'page' ) {
+										$preview_link = add_query_arg( array(
+												'page_id' => $_GET['post'],
+												'preview' => 'true',
+												'nelioab_original_id' => $_GET['nelioab_original_id'],
+											), trailingslashit( home_url() ) );
+										?><a class="preview button" href="<?php echo $preview_link; ?>" target="nelioab-preview" id="page-preview" tabindex="4"><?php _e( 'Preview' ); ?></a><?php
+									}
+									else {
+										$preview_link = add_query_arg( array(
+											'preview' => 'true',
+											'post'    => $_GET['post'] ), $preview_link );
+										?><a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a><?php
+									}
 								?>
-								<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a>
 								<input type="hidden" name="wp-preview" id="wp-preview" value="" />
 							</div>
 						</div>

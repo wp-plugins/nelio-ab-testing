@@ -38,35 +38,6 @@ jQuery.fn.extend({
 		return 'html' + path;
 	},
 
-	replaceText: function( search, replace, text_only ) {
-		var pattern_found = false;
-		var aux = this.each(function(){
-			var node = this.firstChild,
-				val,
-				new_val,
-				remove = [];
-			if ( node ) {
-				do {
-					if ( node.nodeType === 3 ) {
-						val = node.nodeValue;
-						new_val = val.replace( search, replace );
-						if ( new_val !== val ) {
-							pattern_found = true;
-							if ( !text_only && /</.test( new_val ) ) {
-								jQuery(node).before( new_val );
-								remove.push( node );
-							} else {
-								node.nodeValue = new_val;
-							}
-						}
-					}
-				} while ( node = node.nextSibling );
-			}
-			remove.length && jQuery(remove).remove();
-		});
-		return pattern_found;
-	},
-
 });
 
 
@@ -102,6 +73,28 @@ function nelioab_get_local_cookies() {
 		var cookieName = cookie.substr(0, cookie.indexOf('=')).trim();
 		var cookieVal = cookie.substr(cookie.indexOf('=')+1, cookie.length).trim();
 		if (cookieName.indexOf("nelioab_") == 0)
+			result += " " + JSON.stringify(cookieName) + ":" +
+				JSON.stringify(cookieVal) + ",";
+	}
+	if ( result[result.length-1] == "," )
+		result = result.substring(0, result.length-1) + " ";
+	result += "}";
+	return JSON.parse(result);
+}
+
+function nelioab_get_local_cookies_for_alt_loading() {
+	var result = "{";
+	var allCookies = document.cookie.split(';');
+	for (var i = 0; i <= allCookies.length; ++i) {
+		var cookie = allCookies[i];
+		if (cookie == undefined)
+			continue;
+		var cookieName = cookie.substr(0, cookie.indexOf('=')).trim();
+		var cookieVal = cookie.substr(cookie.indexOf('=')+1, cookie.length).trim();
+		if (cookieName.indexOf("nelioab_altexp_") == 0)
+			result += " " + JSON.stringify(cookieName) + ":" +
+				JSON.stringify(cookieVal) + ",";
+		else if (cookieName.indexOf("nelioab_global_altexp_") == 0)
 			result += " " + JSON.stringify(cookieName) + ":" +
 				JSON.stringify(cookieVal) + ",";
 	}
@@ -234,13 +227,13 @@ function nelioab_nav_to_external_page($, external_page_link) {
 
 jQuery(document).ready(function() {
 
-	jQuery('a').click(function(e) {
-		var target = e.currentTarget;
+	jQuery(document).click(function(e) {
+		var target = jQuery(e.target).closest('a');
 		var dest = undefined;
-		try { dest = target.href; } catch (e) {}
+		try { dest = target.attr('href'); } catch (e) {}
 		if ( dest != undefined ) {
 			e.type = 'byebye';
-			jQuery(document).trigger( e, [ jQuery(this), dest ] );
+			jQuery(document).trigger( e, [ target, dest ] );
 		}
 	});
 

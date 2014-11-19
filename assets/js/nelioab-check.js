@@ -47,9 +47,6 @@ function nelioab_show_body() {
 }
 
 function nelioab_sync_cookies_and_load_alternative_if_required($) {
-	var are_cookies_sync = false;
-	var is_load_alt_required = false;
-
 	$.ajax({
 		type:  'POST',
 		async: false,
@@ -70,34 +67,35 @@ function nelioab_sync_cookies_and_load_alternative_if_required($) {
 						document.cookie = name + '=' + value + ';path=/';
 					}
 					else if (name == 'nelioab_was_in') {
-						nelioab_delete_cookie('nelioab_was_in');
+						nelioab_delete_cookie(name);
 						document.cookie = name + '=' + value + ';path=/';
+					}
+					if ( value == '__delete_cookie' ) {
+						nelioab_delete_cookie(name);
 					}
 				});
 				nelioab_delete_cookie('__nelioab_new_version');
-				are_cookies_sync = true;
 
 				if ( nelioab_get_cookie_by_name( 'nelioab_is_in' ) == 'no' ) {
 					nelioab_show_body();
 					return;
 				}
 
-				is_load_alt_required = ( json.load_alt == 'LOAD_ALT' );
-				if ( !is_load_alt_required )
-					nelioab_nav($);
-
-				if ( are_cookies_sync && is_load_alt_required ) {
-					nelioab_load_alt(jQuery);
+				if ( 'LOAD_ALTERNATIVE' == json.load_alt ) {
+					nelioab_load_alt(jQuery, json.mode, 'nelioab_load_alt');
+				}
+				else if ( 'LOAD_CONSISTENT_VERSION' == json.load_alt ) {
+					nelioab_load_alt(jQuery, json.mode, 'nelioab_load_consistent_version');
 				}
 				else {
+					nelioab_nav($);
 					nelioab_show_body();
 					jQuery(document).ready(function(){
 						if ( typeof( nelioab_prepare_links_for_nav_to_external_pages ) == 'function' )
 							nelioab_prepare_links_for_nav_to_external_pages(jQuery);
 						if ( typeof( nelioab_add_hidden_fields_on_forms ) == 'function' )
 							nelioab_add_hidden_fields_on_forms(jQuery);
-						if ( typeof( nelioabStartHeatmapTracking ) == 'function' )
-							nelioabStartHeatmapTracking();
+						nelioabStartHeatmapTracking();
 					});
 				}
 			}
@@ -172,21 +170,22 @@ function nelioabMergeUrlParams( priority, inherit ) {
 	return priority;
 }
 
-function nelioab_load_alt($) {
+function nelioab_load_alt($, mode, load) {
 	var aux;
 	var url = document.URL;
 	var permalink = NelioABChecker.permalink;
 
 	permalink = nelioabMergeUrlParams( permalink, url );
 
+	data = {};
+	data['nelioab_cookies'] = nelioab_get_local_cookies_for_alt_loading();
+	data[load] = 'true';
+
 	$.ajax({
-		type:  'POST',
+		type:  mode,
 		async: false,
 		url:   permalink,
-		data: {
-			nelioab_cookies:  nelioab_get_local_cookies(),
-			nelioab_load_alt: 'true',
-		},
+		data: data,
 		success: function(data) {
 			if ( data.indexOf( 'nelio-ab-testing/assets/js/nelioab-check.min.js' ) != -1 ) {
 				console.log( 'ERROR #1: nelioab checker script has been included again...' );

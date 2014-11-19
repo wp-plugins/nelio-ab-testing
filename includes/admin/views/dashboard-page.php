@@ -50,6 +50,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				echo '</center>';
 			}
 			else {
+				echo '<h3>' . __( 'Running Experiments', 'nelioab' ) . '</h3>';
 				$this->print_cards();
 			}
 		}
@@ -134,17 +135,14 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 		public function get_beautiful_title( $exp ) {
 			$img = '<div class="tab-type tab-type-%1$s" alt="%2$s" title="%2$s"></div>';
 			switch ( $exp->get_type() ) {
-				case NelioABExperiment::TITLE_ALT_EXP:
-					$img = sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
-					break;
 				case NelioABExperiment::PAGE_ALT_EXP:
 					$img = sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
 					break;
 				case NelioABExperiment::POST_ALT_EXP:
 					$img = sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
 					break;
-				case NelioABExperiment::TITLE_ALT_EXP:
-					$img = sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					$img = sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
 					break;
 				case NelioABExperiment::THEME_ALT_EXP:
 					$img = sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
@@ -170,7 +168,13 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			else
 				$light = '';
 
-			$name = '<span class="exp-title">' . $exp->get_name() . '</span>';
+			$title = '';
+			$name = $exp->get_name();
+			if ( strlen( $name ) > 50 ) {
+				$title = ' title="' . esc_html( $name ) . '"';
+				$name = substr( $name, 0, 50 ) . '...';
+			}
+			$name = '<span class="exp-title"'. $title .'>' . $name . '</span>';
 			$status = '<span id="info-summary">' . $light . '</span>';
 
 			return $img . $name . $status;
@@ -235,7 +239,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 						case NelioABExperiment::POST_ALT_EXP:
 							$color = '#F19C00';
 							break;
-						case NelioABExperiment::TITLE_ALT_EXP:
+						case NelioABExperiment::HEADLINE_ALT_EXP:
 							$color = '#79B75D';
 							break;
 						case NelioABExperiment::THEME_ALT_EXP:
@@ -243,6 +247,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 							break;
 						case NelioABExperiment::CSS_ALT_EXP:
 							$color = '#6EBEC5';
+							break;
+						case NelioABExperiment::WIDGET_ALT_EXP:
+							$color = '#2A508D';
 							break;
 						default:
 							$color = '#CCCCCC';

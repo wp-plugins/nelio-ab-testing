@@ -135,7 +135,8 @@ if ( !class_exists( 'NelioABAltExpSummary' ) ) {
 			$confidence = 0;
 			if ( isset( $json->confidenceInResultStatus ) )
 				$confidence = $json->confidenceInResultStatus;
-			$this->set_result_status( $json->resultStatus, $confidence );
+			if ( isset( $json->resultStatus ) )
+				$this->set_result_status( $json->resultStatus, $confidence );
 
 			if ( isset( $json->altVisitors ) ) {
 				for ( $i = 0; $i < count( $json->altVisitors ); ++$i ) {

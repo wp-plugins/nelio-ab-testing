@@ -123,8 +123,9 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 
 		private function make_link_for_edit( $id ) {
+			$exp = $this->exp;
 			return sprintf( ' <a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
-				admin_url( 'post.php?post=' . $id . '&action=edit' ),
+				admin_url( 'post.php?post=' . $id . '&action=edit&' . '&nelioab_original_id=' . $exp->get_originals_id() ),
 				__( 'Edit' ) );
 		}
 
@@ -224,15 +225,17 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			?>
 			<p><?php
 				if ( $this->is_ori_page ) {
-					_e( 'You are about to overwrite the original page with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original page with the content of an alternative. Please, remember <strong>this operation cannot be undone</strong>. Are you sure you want to overwrite it?', 'nelioab' );
 				}
 				else {
-					_e( 'You are about to overwrite the original post with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original post with the content of an alternative. Please, remember <strong>this operation cannot be undone</strong>. Are you sure you want to overwrite it?', 'nelioab' );
 				}
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
 				echo admin_url(
-					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
+					'admin.php?page=nelioab-experiments&action=progress&' .
+					'id=' . $exp->get_id() . '&' .
+					'type=' . $exp->get_type() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
 				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />

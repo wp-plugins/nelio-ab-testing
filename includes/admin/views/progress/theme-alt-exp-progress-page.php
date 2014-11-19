@@ -162,7 +162,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			$exp = $this->exp;
 			?>
 			<p><?php
-				_e( 'You are about to overwrite the original theme with the alternative. Do you want to continue?', 'nelioab' );
+				_e( 'You are about to overwrite the original theme with the alternative. Are you sure you want to overwrite your current theme?', 'nelioab' );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
 				echo admin_url(

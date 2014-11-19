@@ -90,7 +90,7 @@
 		}
 
 		// Prepare the content
-		$page_on_front = get_option( 'page_on_front' );
+		$page_on_front = nelioab_get_page_on_front();
 		if ( !$page_on_front && !$post_id ) // if the home page is the list of posts and the experiment is for the home page
 			$url = get_option( 'home' ); // the url should be the home page
 		else  // otherwise (1 - the heatmaps is NOT for the home page or 2 - the home page is a specific page, the heatmaps should display that page
@@ -116,7 +116,7 @@
 			<div id="builder" style="
 					display:none;
 					z-index:11;
-					background-color:#585c62;
+					background-color:#32363f;
 					color:white;
 					font-size:15px;
 					text-align:center;
@@ -135,9 +135,22 @@
 					_e( 'Building heatmap...<br>This might take a while. Please, wait.', 'nelioab' );
 				?></p>
 			</div>
+
+			<script type="text/javascript">
+				var nelioab__framekiller = true;
+				window.onbeforeunload = function() {
+					if ( nelioab__framekiller ) {
+						return "<?php echo str_replace( '"', '\\"', str_replace( '\\', '\\\\',
+								__( 'Apparently, there\'s a script that\'s trying to overwrite the location in the address bar and take you somewhere else. Please, in order to see the Heatmaps and Clickmaps of this experiment, make sure you stay in this page and don\'t leave.', 'nelioab' )
+							) ); ?>";
+					}
+				};
+			</script>
 			<iframe id="content" name="content" frameborder="0"
 				src="<?php echo $url; ?>"
 				style="background-color:white;width:0px;height:0px;"></iframe>
+			<script type="text/javascript">document.getElementById('content').onload = function() { nelioab__framekiller = false; }</script>
+
 		</div>
 		<script>
 			var NelioABHeatmapLabels = { hm:{}, cm:{} };<?php ?>
@@ -162,136 +175,6 @@
 			NelioABHeatmapLabels.cm.hd        = "<?php echo esc_html( __( 'Regular Desktop Monitor', 'nelioab' ) ); ?>";
 			NelioABHeatmapLabels.cm.hdNo      = "<?php echo esc_html( __( 'Regular Desktop Monitor (no Clickmap available)', 'nelioab' ) ); ?>";
 
-		</script>
-		<script>
-			var nelioabHeatmapScale = 0.75;
-			var nelioabHoveringDevice = null;
-			var nelioabSwitchToClickEnabled = true;
-			$("#view-clicks").click(function() {
-				if ( !nelioabSwitchToClickEnabled ) return;
-				nelioabSwitchToClickEnabled = false;
-				nelioab__show_clicks = !nelioab__show_clicks;
-				if ( nelioab__show_clicks )
-					$("#view-clicks").text( NelioABHeatmapLabels.hm.view );
-				else
-					$("#view-clicks").text( NelioABHeatmapLabels.cm.view );
-				highlightData( nelioab__show_clicks );
-				switchHeatmap();
-			});
-			$("#devices a").each(function() {
-				$(this).mouseenter(function() {
-					nelioabHoveringDevice = $(this);
-					var size = $(this).attr('data-viewport').split('x');
-					var w=size[0], h=size[1], sw=w, sh=h;
-					if ( w != 'auto' ) { sw=Math.ceil(w*nelioabHeatmapScale), sh=Math.ceil(h*nelioabHeatmapScale); }
-					$("#phantom").width(sw);$("#phantom").height(sh);$("#phantom").css('margin-left',-(sw/2));
-				});
-				$(this).mouseleave(function() {
-					$("#phantom").width(0);$("#phantom").height(0);$("#phantom").css('margin-left',0);
-				});
-				$(this).click(function() {
-					nelioab__current_type = $(this).attr('id');
-					switchHeatmap();
-					$("#devices .active").each(function() { $(this).removeClass("active"); } );
-					var size = $(this).attr('data-viewport').split('x');
-					scaleTo( size[0], size[1],nelioabHeatmapScale );
-					$(this).addClass("active");
-				});
-			});
-			function scaleTo(w,h,scale) {
-				var sw=w, sh=h;
-				if ( w != 'auto' ) { sw=Math.ceil(w*scale), sh=Math.ceil(h*scale); }
-				if ( w == 'auto' ) {
-					$("#wrapper > iframe").css('width','100%');$("#wrapper > iframe").css('height','100%');
-					$("#wrapper > iframe").removeClass("scaled");
-					$("#wrapper").css('width','100%');$("#wrapper").css('height','100%');
-					$("#wrapper").css('margin-top','0px');
-				} else {
-					$("#wrapper > iframe").css('width',w);$("#wrapper > iframe").css('height',h);
-					$("#wrapper > iframe").addClass("scaled");
-					$("#wrapper").css('width',sw);$("#wrapper").css('height',sh);
-					$("#wrapper").css('margin-top','25px');
-				}
-			}
-			function switchHeatmap() {
-				document.getElementById('content').contentWindow.clearHeatmapObject();
-				jQuery("#builder").show();
-				setTimeout('doSwitchHeatmap()', 400);
-			}
-			function doSwitchHeatmap() {
-				var nelioabHeatmapObject;
-				var key = '#' + nelioab__current_type;
-				switch( nelioab__current_type ) {
-					case 'mobile':
-						var size = jQuery(key).attr('data-viewport').split('x');
-						var w=size[0], h=size[1];
-						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
-						if ( nelioab__phone.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone, nelioab__phone);
-						if ( nelioab__phone_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_phone_click, nelioab__phone_click );
-						jQuery("#builder").hide();
-						if ( nelioab__show_clicks ) {
-							jQuery("#visitors-count").html( nelioab__pre_phone_click.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__phone_click );
-						}
-						else {
-							jQuery("#visitors-count").html( nelioab__pre_phone.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__phone );
-						}
-						break;
-					case 'tablet':
-						var size = jQuery(key).attr('data-viewport').split('x');
-						var w=size[0], h=size[1];
-						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
-						if ( nelioab__tablet.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet, nelioab__tablet);
-						if ( nelioab__tablet_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_tablet_click, nelioab__tablet_click );
-						jQuery("#builder").hide();
-						if ( nelioab__show_clicks ) {
-							jQuery("#visitors-count").html( nelioab__pre_tablet_click.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__tablet_click );
-						}
-						else {
-							jQuery("#visitors-count").html( nelioab__pre_tablet.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__tablet );
-						}
-						break;
-					case 'desktop':
-						var size = jQuery(key).attr('data-viewport').split('x');
-						var w=size[0], h=size[1];
-						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
-						if ( nelioab__desktop.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop, nelioab__desktop);
-						if ( nelioab__desktop_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_desktop_click, nelioab__desktop_click );
-						jQuery("#builder").hide();
-						if ( nelioab__show_clicks ) {
-							jQuery("#visitors-count").html( nelioab__pre_desktop_click.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__desktop_click );
-						}
-						else {
-							jQuery("#visitors-count").html( nelioab__pre_desktop.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__desktop );
-						}
-						break;
-					case 'hd':
-						var size = jQuery(key).attr('data-viewport').split('x');
-						var w=size[0], h=size[1];
-						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject(w,h);
-						if ( nelioab__hd.max == -1 && !nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd, nelioab__hd);
-						if ( nelioab__hd_click.max == -1 && nelioab__show_clicks ) buildHeatmap( nelioab__pre_hd_click, nelioab__hd_click );
-						jQuery("#builder").hide();
-						if ( nelioab__show_clicks ) {
-							jQuery("#visitors-count").html( nelioab__pre_hd_click.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__hd_click );
-						}
-						else {
-							jQuery("#visitors-count").html( nelioab__pre_hd.views );
-							nelioabHeatmapObject.store.setDataSet( nelioab__hd );
-						}
-						break;
-					default:
-						nelioabHeatmapObject = document.getElementById('content').contentWindow.createHeatmapObject();
-						nelioabHeatmapObject.store.setDataSet( nelioab__nodata );
-				}
-				nelioabSwitchToClickEnabled = true;
-			}
 			<?php
 			foreach ( $result->data as $heatmap ) {
 				$name = $heatmap->resolution;
@@ -315,83 +198,7 @@
 			<?php
 			}
 			?>
-			</script>
-			<script>
-			var nelioab__phone = { "max":-1, "data":[] };
-			var nelioab__tablet = { "max":-1, "data":[] };
-			var nelioab__desktop = { "max":-1, "data":[] };
-			var nelioab__hd = { "max":-1, "data":[] };
 
-			var nelioab__phone_click = { "max":-1, "data":[] };
-			var nelioab__tablet_click = { "max":-1, "data":[] };
-			var nelioab__desktop_click = { "max":-1, "data":[] };
-			var nelioab__hd_click = { "max":-1, "data":[] };
-
-			function buildHeatmap( src, dest ) {
-				dest.max = 0;
-				var data = [];
-				for( var path in src.data ) {
-					var partial_hm = src.data[path];
-					var elem;
-					try {
-						elem = jQuery(path, document.getElementById('content').contentWindow.document);
-					}
-					catch ( e ) {
-						continue;
-					}
-
-					var pl = elem.css('padding-left');   if ( pl == undefined ) pl = "0";
-					var pr = elem.css('padding-right');  if ( pr == undefined ) pr = "0";
-					var pt = elem.css('padding-top');    if ( pt == undefined ) pt = "0";
-					var pb = elem.css('padding-bottom'); if ( pb == undefined ) pb = "0";
-
-					pl = Math.round( pl.replace(/[^0-9\.]/g,'') );
-					pr = Math.round( pr.replace(/[^0-9\.]/g,'') );
-					pt = Math.round( pt.replace(/[^0-9\.]/g,'') );
-					pb = Math.round( pb.replace(/[^0-9\.]/g,'') );
-
-					if ( !elem.is(':visible') )
-						continue;
-					var w = elem.width() + pl + pr;
-					var h = elem.height() + pt + pb;
-					var offset_x = Math.round(elem.offset().left) - pl;
-					var offset_y = Math.round(elem.offset().top) - pt;
-					for ( var i = 0; i < partial_hm.data.length; ++i ) {
-						var val = partial_hm.data[i];
-						var x = offset_x + Math.round( w * val.x );
-						var y = offset_y + Math.round( h * val.y );
-						count = addPointCount( data, x, y, val.count );
-						if ( count > dest.max )
-							dest.max = count;
-					}
-				}
-				dest.data = data;
-			}
-
-			function addPointCount( data, x, y, count ) {
-				var new_count = 0;
-				var found = false;
-				var elem;
-				for( var i = 0; i < data.length; ++i ) {
-					var elem = data[i];
-					if ( elem.x == x && elem.y == y ) {
-						elem.count += count;
-						new_count = elem.count;
-						found = true;
-						break;
-					}
-				}
-				if ( !found ) {
-					elem = { 'x': x, 'y': y, 'count': count };
-					new_count = elem.count;
-					data.push( elem );
-				}
-				return new_count;
-			}
-
-			var nelioab__nodata = { "max":0, "data":[] };
-			var nelioab__show_clicks = false;
-			var nelioab__current_type = 'desktop';
 			$("#content").load(function() {
 				if ( nelioab__pre_desktop.max + nelioab__pre_desktop_click.max > 0 ) nelioab__current_type = 'desktop';
 				else if ( nelioab__pre_hd.max + nelioab__pre_hd_click.max > 0 ) nelioab__current_type = 'hd';
@@ -403,20 +210,9 @@
 				scaleTo( size[0], size[1], nelioabHeatmapScale );
 				switchHeatmap();
 			});
-			function highlightData(isClick) {
-				var values;
-				if ( isClick ) values = NelioABHeatmapLabels.cm;
-				else values = NelioABHeatmapLabels.hm;
-				if ( nelioab__pre_phone_click.max > 0 ) $("#mobile").attr('title',values.phone).removeClass("disabled");
-				else $("#mobile").attr('title',values.phoneNo).addClass("disabled");
-				if ( nelioab__pre_tablet_click.max > 0 ) $("#tablet").attr('title',values.tablet).removeClass("disabled");
-				else $("#tablet").attr('title',values.tabletNo).addClass("disabled");
-				if ( nelioab__pre_desktop_click.max > 0 ) $("#desktop").attr('title',values.desktop).removeClass("disabled");
-				else $("#desktop").attr('title',values.desktopNo).addClass("disabled");
-				if ( nelioab__pre_hd_click.max > 0 ) $("#hd").attr('title',values.hd).removeClass("disabled");
-				else $("#hd").attr('title',values.hdNo).addClass("disabled");
-			}
-		</script><?php
+
+		</script>
+		<?php
 		die();
 	}
 ?>
@@ -433,6 +229,7 @@
 
 <body>
 	<script src="<?php echo nelioab_admin_asset_link( '/js/jquery4hm.min.js' ); ?>"></script>
+	<script src="<?php echo nelioab_admin_asset_link( '/js/heatmap-viewer.min.js' ); ?>"></script>
 
 	<div id="toolbar" data-resizer="basic">
 		<ul id="devices">
