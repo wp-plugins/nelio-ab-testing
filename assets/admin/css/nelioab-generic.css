@@ -179,7 +179,7 @@ body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3:first-child #info
 		height:48px;
 		display:block;
 		content:'';
-		background-image: url( '../images/heatmap-icons.png?version=3.0.0' );
+		background-image: url( '../images/heatmap-icons.png?version=3.3.0' );
 		background-size: 96px 96px;
 	}
 
@@ -445,6 +445,51 @@ body #goal-list .nelio-card .actions .action input {
 	font-size:100%;
 }
 
+/* -------------------- */
+/* EDITING ALTERNATIVES */
+/* -------------------- */
+
+#alt-table > thead > tr > th.column-headline_image {
+	width:48px;
+}
+
+#alt-table tr td div.headline_image_holder {
+	width:30%;
+	max-width:120px;
+	display:inline-block;
+	vertical-align:top;
+	position:relative;
+}
+
+#alt-table tr td div.headline_image_hover {
+	width: 100px;
+	height: 100px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 100px;
+	color: white;
+	font-weight: bold;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	cursor: pointer;
+	background: rgba(0,0,0,0.8);
+	color: white;
+  filter: alpha(opacity=0);
+	opacity: 0;
+	-webkit-transition: opacity .15s ease-in-out;
+	-moz-transition: opacity .15s ease-in-out;
+	-ms-transition: opacity .15s ease-in-out;
+	-o-transition: opacity .15s ease-in-out;
+	transition: opacity .15s ease-in-out;
+}
+
+#alt-table tr td div.headline_image_hover:hover {
+  filter: alpha(opacity=1);
+	opacity: 1;
+}
+
+
 /* ------------------- */
 /* LIST OF EXPERIMENTS */
 /* ------------------- */
@@ -520,14 +565,14 @@ body #goal-list .nelio-card .actions .action input {
 
 #toplevel_page_nelioab-experiments div.wp-menu-image,
 #toplevel_page_nelioab-dashboard div.wp-menu-image {
-	background-image: url('../images/menu.png?version=3.0.0');
+	background-image: url('../images/menu.png?version=3.3.0');
 	background-position: 0px -32px;
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 	#toplevel_page_nelioab-experiments div.wp-menu-image,
 	#toplevel_page_nelioab-dashboard div.wp-menu-image {
-		background-image: url('../images/2x/menu.png?version=3.0.0');
+		background-image: url('../images/2x/menu.png?version=3.3.0');
 		background-size: 30px 64px;
 	}
 }
@@ -546,22 +591,15 @@ body #goal-list .nelio-card .actions .action input {
 }
 
 #icon-nelioab {
-	background-image: url('../images/icons32.png?version=3.0.0');
+	background-image: url('../images/icons32.png?version=3.3.0');
 	background-position: -12px -6px;
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 #icon-nelioab {
-	background-image: url('../images/2x/icons32.png?version=3.0.0');
+	background-image: url('../images/2x/icons32.png?version=3.3.0');
 	background-size: 58px 45px;
 	}
-}
-.button-primary-disabled, .button-primary[disabled], .button-primary:disabled {
-	cursor: default;
-}
-
-.button-primary-disabled:hover, .button-primary[disabled]:hover, .button-primary:disabled:hover {
-	border: 1px solid #298cba !important;
 }
 
 
@@ -577,15 +615,15 @@ body #goal-list .nelio-card .actions .action input {
 }
 
 .nelioab-warning {
-	background:       url( '../images/warning.png?version=3.0.0' );
-	background-image: url( '../images/warning.png?version=3.0.0' );
+	background:       url( '../images/warning.png?version=3.3.0' );
+	background-image: url( '../images/warning.png?version=3.3.0' );
 }
 
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-warning {
-	background:       url( '../images/2x/warning.png?version=3.0.0' );
-	background-image: url( '../images/2x/warning.png?version=3.0.0' );
+	background:       url( '../images/2x/warning.png?version=3.3.0' );
+	background-image: url( '../images/2x/warning.png?version=3.3.0' );
 	background-size: 18px 18px;
 } }
 

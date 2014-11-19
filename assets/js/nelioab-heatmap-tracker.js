@@ -12,11 +12,13 @@ function nelioab_hmdata_for_elem() {
 
 nelioab_hmdata.prototype = {
 	addDataPoint: function(path, x, y){
-		if(x < 0 || x == undefined || y < 0 || y == undefined)
+		if(typeof x == 'undefined' || x < 0 || typeof y == 'undefined' || y < 0)
+			return;
+		if ( 0 === path )
 			return;
 		var data = this.data;
 		var hm_for_elem = false;
-		if ( data[path] != undefined )
+		if ( typeof data[path] != 'undefined' )
 			hm_for_elem = data[path];
 		if ( !hm_for_elem ) {
 			hm_for_elem = new nelioab_hmdata_for_elem();
@@ -54,10 +56,10 @@ nelioab_hmdata_for_elem.prototype = {
 		var exportData = [];
 		for(var one in data){
 			// jump over undefined indexes
-			if(one === undefined)
+			if(typeof one == 'undefined' || !data.hasOwnProperty(one))
 				continue;
 			for(var two in data[one]) {
-				if(two === undefined)
+				if(typeof two == 'undefined' || !data[one].hasOwnProperty(two))
 					continue;
 				exportData.push({x: one, y: two, count: data[one][two]});
 			}
@@ -94,12 +96,12 @@ var nelioab_desktop_data_click = new nelioab_hmdata();
 var nelioab_hd_data_click      = new nelioab_hmdata();
 
 
-function nelioabStartHeatmapTracking() {
+function nelioabDoStartHeatmapTracking( mode ) {
 	nelioab_actual_data = nelioab_selectDatastore(jQuery(window).width());
 	nelioab_actual_data_click = nelioab_selectClickDatastore(jQuery(window).width());
 
 	var body = jQuery(document);
-	
+
 	var active = true,
 		idle = false,
 		focus = true,
@@ -111,23 +113,23 @@ function nelioabStartHeatmapTracking() {
 		stop = false,
 		touch = false,
 		timeout = false;
-		
+
 	// activate capture mode
 	setInterval(function(){
 		if (!stop) {
 			active = true;
 		}
 	}, 80);
-	
+
 	// check whether the mouse is idling
 	var idlechecker = setInterval(function(){
 		if(over && focus && !simulate && !stop && !touch){
-			// if it's idling -> start the simulation 
+			// if it's idling -> start the simulation
 			// and add the last x/y coords
 			simulate = setInterval(function(){
 				nelioab_actual_data.addDataPoint(path, nx, ny);
 			}, 1000);
-			
+
 			timeout = setTimeout(function(){
 				if(simulate && !stop){
 					clearInterval(simulate);
@@ -137,41 +139,64 @@ function nelioabStartHeatmapTracking() {
 			},10000);
 		}
 	}, 150);
-	
-	var add = function( e, isclick ) {
-		if ( e.pageX == undefined || e.pageY == undefined ) return;
-		var target = jQuery(e.target);
 
-		try {
-			path = target.getFullPath();
+	var add;
+	if ( 'HTML_HEATMAP_TRACKING' == mode ) {
+		path = 'html>body';
+		add = function( e, isclick ) {
+			if ( typeof e.pageX == 'undefined' || typeof e.pageY == 'undefined' ) return;
+
+			var width = jQuery('body').width();
+			var height = jQuery('body').height();
+			var posX = e.pageX;
+			var posY = Math.floor( e.pageY / 40 ) * 40 + 20;
+
+			if ( posY > height )
+				posY = Math.floor( (height - 20) / 40 ) * 40 + 20;
+
+			nx = normalizer(posX,width);
+			ny = parseFloat(posY/height).toFixed(5);
+
+			if (isclick) nelioab_actual_data_click.addDataPoint(path, nx, ny);
+			nelioab_actual_data.addDataPoint(path, nx, ny);
 		}
-		catch ( e ) {
-			return;
-		}
+	}
+	else {
+		add = function( e, isclick ) {
+			if ( typeof e.pageX == 'undefined' || typeof e.pageY == 'undefined' ) return;
+			var target = jQuery(e.target);
 
-		var pl = target.css('padding-left');   if ( pl == undefined ) pl = "0";
-		var pr = target.css('padding-right');  if ( pr == undefined ) pr = "0";
-		var pt = target.css('padding-top');    if ( pt == undefined ) pt = "0";
-		var pb = target.css('padding-bottom'); if ( pb == undefined ) pb = "0";
+			try {
+				path = target.getFullPath();
+			}
+			catch ( e ) {
+				return;
+			}
 
-		pl = Math.round( pl.replace(/[^0-9\.]/g,'') );
-		pr = Math.round( pr.replace(/[^0-9\.]/g,'') );
-		pt = Math.round( pt.replace(/[^0-9\.]/g,'') );
-		pb = Math.round( pb.replace(/[^0-9\.]/g,'') );
+			var pl = target.css('padding-left');   if ( typeof pl == 'undefined' ) pl = "0";
+			var pr = target.css('padding-right');  if ( typeof pr == 'undefined' ) pr = "0";
+			var pt = target.css('padding-top');    if ( typeof pt == 'undefined' ) pt = "0";
+			var pb = target.css('padding-bottom'); if ( typeof pb == 'undefined' ) pb = "0";
 
-		var width = target.width() + pl + pr;
-		var height = target.height() + pt + pb;
-		var posX = e.pageX - target.offset().left - pl;
-		var posY = e.pageY - target.offset().top - pt;
+			pl = Math.round( pl.replace(/[^0-9\.]/g,'') );
+			pr = Math.round( pr.replace(/[^0-9\.]/g,'') );
+			pt = Math.round( pt.replace(/[^0-9\.]/g,'') );
+			pb = Math.round( pb.replace(/[^0-9\.]/g,'') );
 
-		nx = normalizer( posX, width );
-		ny = normalizer( posY, height );
-		if ( nx == Infinity || nx == NaN ) nx = "0";
-		if ( ny == Infinity || ny == NaN ) ny = "0";
+			var width = target.width() + pl + pr;
+			var height = target.height() + pt + pb;
+			var posX = e.pageX - target.offset().left - pl;
+			var posY = e.pageY - target.offset().top - pt;
 
-		if (isclick) nelioab_actual_data_click.addDataPoint(path, nx, ny);
-		nelioab_actual_data.addDataPoint(path, nx, ny);
-	};
+			nx = normalizer( posX, width );
+			ny = normalizer( posY, height );
+			if ( nx == Infinity || nx == NaN ) nx = "0";
+			if ( ny == Infinity || ny == NaN ) ny = "0";
+
+			if (isclick) nelioab_actual_data_click.addDataPoint(path, nx, ny);
+			nelioab_actual_data.addDataPoint(path, nx, ny);
+		};
+	}
 
 	var normalizer = function( position, length ) {
 		if ( length <= 50 )
@@ -216,7 +241,7 @@ function nelioabStartHeatmapTracking() {
 	body.mousemove(function(e) {
 	    if (touch) return;
 		over = true;
-		
+
 		if(simulate){
 			clearInterval(simulate);
 			simulate = false;
@@ -225,17 +250,17 @@ function nelioabStartHeatmapTracking() {
 			clearTimeout(timeout);
 			stop = false;
 		}
- 
+
 		if(active && focus){
 			add(e, false);
 			active = false;
 		}
 	});
-	
+
 	// Mouse events
 	body.click(function(e){
 		over = true;
-		
+
 		if(simulate){
 			clearInterval(simulate);
 			simulate = false;
@@ -244,24 +269,24 @@ function nelioabStartHeatmapTracking() {
 			clearTimeout(timeout);
 			stop = false;
 		}
-		
+
 		if ( !touch )
 			add(e, true);
 	});
-	
+
 	body.mouseleave(function(){
 		over = false;
 	});
-	
+
 	body.mouseenter(function(){
 		over = true;
 	});
-	
+
 	// Touch events
 	jQuery('body').bind('touchstart', function(e){
 		touch = true;
 		var touchlist = e.originalEvent.touches;
-		for (var i=0; i<touchlist.length; i++) { 
+		for (var i=0; i<touchlist.length; i++) {
 			// loop through all touch points currently in contact with surface
 			add(touchlist[i], true);
 		}
@@ -364,3 +389,24 @@ function nelioabStartHeatmapTracking() {
 		nelioab_actual_data_click = nelioab_selectClickDatastore(jQuery(window).width());
 	});
 }
+
+
+function nelioabStartHeatmapTracking() {
+	jQuery.ajax({
+		type: 'POST',
+		async: true,
+		url: NelioABHMTracker.ajaxurl,
+		data: {
+				action: 'nelioab_track_heatmaps_for_post',
+				post:   NelioABHMTracker.post_id,
+			},
+		success: function(result) {
+				if ( 'DONT_TRACK_HEATMAPS' == result )
+					return;
+				nelioabDoStartHeatmapTracking( result );
+			}
+	});
+
+}
+
+

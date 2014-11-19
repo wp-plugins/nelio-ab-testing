@@ -36,7 +36,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 		public function set_type( $type ) {
 			parent::set_type( $type );
-			if ( $type == NelioABExperiment::TITLE_ALT_EXP )
+			if ( $type == NelioABExperiment::HEADLINE_ALT_EXP )
 				$this->track_heatmaps( false );
 			else
 				$this->track_heatmaps( true );
@@ -177,7 +177,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( $this->get_originals_id() < 0 )
 				return NelioABExperimentStatus::DRAFT;
 
-			if ( $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
+			if ( $this->get_type() != NelioABExperiment::HEADLINE_ALT_EXP ) {
 				if ( count( $this->get_goals() ) == 0 )
 					return NelioABExperimentStatus::DRAFT;
 				foreach ( $this->get_goals() as $goal )
@@ -189,7 +189,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 		}
 
 		public function add_local_alternative( $alt ) {
-			if ( $this->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
+			if ( $this->get_type() == NelioABExperiment::HEADLINE_ALT_EXP ) {
 				$fake_post_id = -1;
 				foreach ( $this->get_alternatives() as $aux )
 					if ( $aux->get_value() <= $fake_post_id )
@@ -282,7 +282,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				if ( $alt->was_removed() )
 					continue;
 
-				if ( $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
+				if ( $this->get_type() != NelioABExperiment::HEADLINE_ALT_EXP ) {
 					if ( $alt->is_based_on_a_post() ) {
 						$new_id = $this->create_alternative_copying_content( $alt->get_name(), $alt->get_base_post() );
 						if ( $new_id )
@@ -377,7 +377,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 				if ( $running_exp->get_type() != NelioABExperiment::PAGE_ALT_EXP &&
 				     $running_exp->get_type() != NelioABExperiment::POST_ALT_EXP &&
-				     $running_exp->get_type() != NelioABExperiment::TITLE_ALT_EXP )
+				     $running_exp->get_type() != NelioABExperiment::HEADLINE_ALT_EXP )
 					continue;
 
 				if ( $running_exp->get_originals_id() == $this->get_originals_id() ) {
@@ -391,7 +391,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 							__( 'The experiment cannot be started, because there is another experiment running that is testing the same post. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
 							$running_exp->get_name() );
 					}
-					else /* if ( $running_exp->get_type() == NelioABExperiment::TITLE_ALT_EXP ) */ {
+					else /* if ( $running_exp->get_type() == NelioABExperiment::HEADLINE_ALT_EXP ) */ {
 						$err_str = sprintf(
 							__( 'The experiment cannot be started, because there is another experiment that is testing the title of the same page. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
 							$running_exp->get_name() );
@@ -406,7 +406,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// And there we go!
 			$ori_post = get_post( $this->get_originals_id() );
-			if ( $ori_post && $this->get_type() != NelioABExperiment::TITLE_ALT_EXP ) {
+			if ( $ori_post && $this->get_type() != NelioABExperiment::HEADLINE_ALT_EXP ) {
 				foreach ( $this->get_alternatives() as $alt ) {
 					$alt_post = get_post( $alt->get_value() );
 					if ( $alt_post ) {

@@ -151,7 +151,8 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 			$exp->set_finalization_value( $_POST['exp_finalization_value'] );
 
 			if ( isset( $_POST['nelioab_alternatives'] ) ) {
-				$alts = json_decode( urldecode( $_POST['nelioab_alternatives'] ) );
+				$alts = stripslashes( $_POST['nelioab_alternatives'] );
+				$alts = json_decode( urldecode( $alts ) );
 				$exp->load_json4js_alternatives( $alts );
 			}
 

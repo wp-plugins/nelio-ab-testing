@@ -92,7 +92,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					case 0:<?php
 						$title = __( 'Start Experiment', 'nelioab' );
 						$title = str_replace( '"', '\\"', $title );
-						$msg = __( 'You are about to start an experiment. Once the experiment has started, you cannot edit it. Do you want to continue?', 'nelioab' );
+						$msg = __( 'You are about to start an experiment. Once the experiment has started, you cannot edit it. Are you sure you want to start the experiment?', 'nelioab' );
 						$msg = str_replace( '"', '\\"', $msg ); ?>
 						jQuery('#dialog-content').html("<?php echo $msg; ?>");
 						$dialog.dialog('option', 'title', "<?php echo $title; ?>");
@@ -102,7 +102,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					case 1:<?php
 						$title = __( 'Stop Experiment', 'nelioab' );
 						$title = str_replace( '"', '\\"', $title );
-						$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
+						$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Are you sure you want to stop the experiment?', 'nelioab' );
 						$msg = str_replace( '"', '\\"', $msg ); ?>
 						jQuery('#dialog-content').html("<?php echo $msg; ?>");
 						$dialog.dialog('option', 'title', "<?php echo $title; ?>");
@@ -238,7 +238,10 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$progress_url = '<a href="?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s">%3$s</a>';
 			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP ) {
 				include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-				$progress_url = '<a href="' . NelioABWPHelper::get_unsecured_site_url() . '/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME . '/heatmaps.php?id=%1$s&exp_type=%2$s">%3$s</a>';
+				$progress_url = '<a href="' .
+					str_replace( 'https://', 'http://',
+						admin_url( 'admin.php?nelioab-page=heatmaps&id=%1$s&exp_type=%2$s' ) ) .
+					'">%3$s</a>';
 			}
 
 			$actions = array();
@@ -283,6 +286,14 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 						'delete'  => sprintf( $url, 'delete', $exp->get_id(), $exp->get_type(), __( 'Delete Permanently' ) ),
 					);
 					break;
+			}
+
+			$related_post = $exp->get_related_post_id();
+			if ( isset( $actions['start'] ) && $related_post && $related_post > 0 && get_post_status( $related_post ) !== 'publish' ) {
+				$label = sprintf( '<span style="cursor:default;" title="%s">%s</span>',
+					esc_html( __( 'The experiment cannot be started because the tested element has not been published yet', 'nelioab' ) ),
+					__( 'Start' ) );
+				$actions['start'] = $label;
 			}
 
 			//Build row actions
@@ -359,17 +370,14 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$img = '<div class="tab-type tab-type-%1$s" alt="%2$s" title="%2$s"></div>';
 
 			switch( $exp->get_type() ) {
-				case NelioABExperiment::TITLE_ALT_EXP:
-					return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
-
 				case NelioABExperiment::PAGE_ALT_EXP:
 					return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
 
 				case NelioABExperiment::POST_ALT_EXP:
 					return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
 
-				case NelioABExperiment::TITLE_ALT_EXP:
-					return sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					return sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
 
 				case NelioABExperiment::THEME_ALT_EXP:
 					return sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
@@ -426,10 +434,10 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				</div>
 				<script>
 					jQuery(function($) {<?php
-						$ts = time(); ?>
-						var TODAY_DAY   = '<?php echo date( 'd', $ts ); ?>';
-						var TODAY_MONTH = '<?php echo date( 'm', $ts ); ?>';
-						var TODAY_YEAR  = '<?php echo date( 'Y', $ts ); ?>';
+						$ts = time() + 86400; ?>
+						var TOMORROW_DAY   = '<?php echo date( 'd', $ts ); ?>';
+						var TOMORROW_MONTH = '<?php echo date( 'm', $ts ); ?>';
+						var TOMORROW_YEAR  = '<?php echo date( 'Y', $ts ); ?>';
 						var $info = $('#nelioab-scheduling-dialog');
 						$info.dialog({
 							'dialogClass'   : 'wp-dialog',
@@ -456,11 +464,11 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 											if ( year == undefined ) year = '0000';
 											while ( day.length < 2 ) day = '0' + day;
 											while ( year.length < 4 ) year = '0' + year;
-											if ( year < TODAY_YEAR )
+											if ( year < TOMORROW_YEAR )
 												throw new Exception();
-											if ( year == TODAY_YEAR && month < TODAY_MONTH )
+											if ( year == TOMORROW_YEAR && month < TOMORROW_MONTH )
 												throw new Exception();
-											else if ( year == TODAY_YEAR && month == TODAY_MONTH && day <= TODAY_DAY )
+											else if ( year == TOMORROW_YEAR && month == TOMORROW_MONTH && day < TOMORROW_DAY )
 												throw new Exception();
 
 											var res = year + '-' + month + '-' + day;
@@ -477,9 +485,9 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 						});
 						$('.row-actions .schedule > a').click(function(event) {
 							event.preventDefault();
-							$('#nelioab-scheduling-dialog input.jj').attr('value', '');
-							$('#nelioab-scheduling-dialog select.mm').attr('value', TODAY_MONTH);
-							$('#nelioab-scheduling-dialog input.aa').attr('value', '');
+							$('#nelioab-scheduling-dialog input.jj').attr('value', TOMORROW_DAY);
+							$('#nelioab-scheduling-dialog select.mm').attr('value', TOMORROW_MONTH);
+							$('#nelioab-scheduling-dialog input.aa').attr('value', TOMORROW_YEAR);
 							$info.data('url', $(this).attr('href'));
 							$info.dialog( 'open' );
 						});

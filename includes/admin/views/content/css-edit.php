@@ -130,24 +130,17 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 			<div id="postbox-container-1" class="postbox-container">
 
 				<div id="save_nelioab_alternative_box" class="meta-box-sortables ui-sortable">
-					<div id="submitdiv" class="postbox">
-
+					<div id="submitdiv" class="postbox"><?php
+						require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+						$colorscheme = NelioABWpHelper::get_current_colorscheme();
+						?>
 						<script>
 							var nelioab_style_metabox = document.createElement("style");
 							nelioab_style_metabox.setAttribute("type", "text/css");
 							nelioab_style_metabox.innerHTML = "#save_nelioab_alternative_box h3.hndle { " +
-								"background:none; " +
-								"background-color:#298cba; " +
-								"color:white; " +
-								"text-shadow:#000 0 1px 0; " +
-								"border: 1px solid #298cba;" +
-								"background: #298cba;" +
-								"background: -moz-linear-gradient(bottom, #298cba 0%, #41a9cc 100%);" +
-								"background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#298cba), color-stop(100%,#41a9cc));" +
-								"background: -webkit-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
-								"background: -o-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
-								"background: -ms-linear-gradient(bottom, #298cba 0%,#41a9cc 100%);" +
-								"background: linear-gradient(bottom top, #298cba 0%,#41a9cc 100%);" +
+								"color:<?php echo $colorscheme['foreground']; ?>; " +
+								"background: <?php echo $colorscheme['focus']; ?>;" +
+								"border: 1px solid <?php echo $colorscheme['focus']; ?>;" +
 							"}" +
 							"#favorite-actions, #message, .add-new-h2, .tablenav, #edit-slug-box { display:none; }" +
 							"#save_nelioab_alternative_box .handlediv { color:#afe0f7; }" +
@@ -163,7 +156,7 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 									<p><?php _e( 'Select a page or post for preview', 'nelioab' ) ?></p>
 									<?php
 										require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
-										NelioABHtmlGenerator::print_full_searcher( 'post-options' );
+										NelioABHtmlGenerator::print_full_searcher( 'post-options', false, 'show-drafts' );
 									?>
 								</div>
 

@@ -4,8 +4,7 @@ jQuery(document).ready(function(){
 		nelioab_prepare_links_for_nav_to_external_pages(jQuery);
 	if ( typeof( nelioab_add_hidden_fields_on_forms ) == "function" )
 		nelioab_add_hidden_fields_on_forms(jQuery);
-	if ( typeof( nelioabStartHeatmapTracking ) == "function" )
-		nelioabStartHeatmapTracking();
 	if ( typeof( nelioab_cssExpNode  ) !== 'undefined' )
 		document.getElementsByTagName("head")[0].appendChild(nelioab_cssExpNode);
+	nelioabStartHeatmapTracking();
 });

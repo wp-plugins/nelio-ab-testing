@@ -35,8 +35,12 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 		}
 
 		public static function build() {
-			$title = __( 'Results of the Experiment', 'nelioab' );
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
 
+			$title = __( 'Results of the Experiment', 'nelioab' );
 			$view = new NelioABEmptyAjaxPage( $title );
 
 			$controller = NelioABSelectExpProgressPageController::attempt_to_load_proper_controller();
@@ -65,7 +69,7 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 			$experiments_manager = new NelioABExperimentsManager();
 			$experiment = null;
 			try {
-				$exp_id = -1;
+				$exp_id = -time();
 				if ( isset( $_POST['id'] ) )
 					$exp_id = $_POST['id'];
 
@@ -91,9 +95,9 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 
 			// Determine the proper controller and give it the control...
 			switch ( $type ) {
-				case NelioABExperiment::TITLE_ALT_EXP:
-					require_once( NELIOAB_ADMIN_DIR . '/progress/title-alt-exp-progress-page-controller.php' );
-					return 'NelioABTitleAltExpProgressPageController';
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/progress/headline-alt-exp-progress-page-controller.php' );
+					return 'NelioABHeadlineAltExpProgressPageController';
 
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
@@ -107,6 +111,10 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 				case NelioABExperiment::CSS_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/progress/css-alt-exp-progress-page-controller.php' );
 					return 'NelioABCssAltExpProgressPageController';
+
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/progress/widget-alt-exp-progress-page-controller.php' );
+					return 'NelioABWidgetAltExpProgressPageController';
 
 				case NelioABExperiment::HEATMAP_EXP:
 					// Nothing to be done in here...

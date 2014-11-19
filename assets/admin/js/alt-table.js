@@ -104,7 +104,7 @@ var NelioABAltTable = {
 		var table = NelioABAltTable.getTable();
 
 		var newName = jQuery('#new_alt_name').attr('value');
-		var copyFrom = jQuery('#new_alt_postid').attr('value');
+		var copyFrom = jQuery('#based_on').attr('value');
 		if ( !NelioABAltTable.validateName( 0, newName ) )
 			return;
 
@@ -159,14 +159,14 @@ var NelioABAltTable = {
 
 	showNewPageOrPostAltForm: function(table, copyingContent) {
 		if ( copyingContent ) {
-			var aux = table.find('#new_alt_postid');
+			var aux = table.find('#based_on');
 			var info = NelioABPostSearcher.getInfo( jQuery('#exp_original') );
 			NelioABPostSearcher.doSetDefault( aux, info.label, info.value );
 			table.find('.new-alt-form .copying-content').show();
 		}
 		else {
 			table.find('.new-alt-form .copying-content').hide();
-			table.find('#new_alt_postid').attr('value', -1 );
+			table.find('#based_on').attr('value', -1 );
 		}
 		table.find('.new-alt-form').show();
 		if ( table.find('#qe_alt_name').attr('value').trim() == 0 )
@@ -263,35 +263,10 @@ var NelioABAltTable = {
 	},
 
 	save: function() {
-		jQuery('#nelioab_alternatives').attr('value', 
+		jQuery('#nelioab_alternatives').attr('value',
 			encodeURIComponent( JSON.stringify( NelioABAltTable.alts ) )
-				.replace( "'", "%27") );
+				.replace( /'/g, "%27") );
 	},
 
 };
-
-(function($) {
-
-	// PREPARING BASIC INFO
-	NelioABEditExperiment.init();
-
-
-	// PRINTING THE LIST OF ALTERNATIVES
-	var alts = JSON.parse( decodeURIComponent(
-			jQuery('#nelioab_alternatives').attr('value')
-		) );
-
-	var altsTable = NelioABAltTable.getTable();
-	if ( altsTable ) {
-		NelioABAltTable.init(alts);
-		for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
-			var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
-			newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
-			newRow.show();
-			altsTable.append(newRow);
-		}
-		NelioABAdminTable.repaint( NelioABAltTable.getTable() );
-	}
-
-})(jQuery);
 
