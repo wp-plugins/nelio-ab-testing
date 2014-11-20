@@ -96,10 +96,16 @@
 		else  // otherwise (1 - the heatmaps is NOT for the home page or 2 - the home page is a specific page, the heatmaps should display that page
 			$url = get_permalink( $post_id );
 
-		if ( !$url )
-			$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
+		$aux = get_post_type( $post_id );
+		if ( !$url ) {
+			if ( 'page' == $aux )
+				$url = add_query_arg( array( 'page_id' => $post_id ), get_option( 'home' ) );
+			else
+				$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
+		}
+		if ( 'page' == $aux && isset( $_GET['ori'] ) )
+			$url = add_query_arg( array( 'nelioab_original_id' => $_GET['ori'] ), $url );
 		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
-
 		?>
 		<script type="text/javascript">
 			window.onerror = function(msg, url, line, col, error) {

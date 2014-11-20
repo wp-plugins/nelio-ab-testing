@@ -127,6 +127,42 @@ function nelioab_deactivate_plugin() {
 }
 
 /**
+ * Remind users that they have to clean their cache after an update
+ */
+if ( get_option( 'nelioab_cache_notice', false ) !== NELIOAB_PLUGIN_VERSION  )
+	add_action( 'admin_notices', 'nelioab_add_cache_notice' );
+function nelioab_add_cache_notice() {
+	global $pagenow;
+	if ( 'plugins.php' == $pagenow )
+		return;
+	$message = sprintf(
+			__( 'You\'ve recently upgraded to <strong>Nelio A/B Testing %s</strong>. <strong>If you\'re running a cache system</strong> (such as <em>W3 Total Cache</em> or <em>WP Super Cache</em>) <strong>or if your server is behind a CDN</strong>, please <strong>clean all your caches</strong>. Otherwise, you may serve old versions of our tracking scripts and, therefore, the plugin may not work properly.', 'nelioab' ),
+			NELIOAB_PLUGIN_VERSION
+		);
+	?>
+	<div class="updated">
+		<p>
+			<?php echo $message; ?>
+			<a id="dismiss-nelioab-cache-notice" style="font-size:80%;" href="#"><?php _e( 'Dismiss' ); ?></a>
+		</p>
+		<script style="display:none;" type="text/javascript">
+		(function($) {
+			$('a#dismiss-nelioab-cache-notice').on('click', function() {
+				$.post( ajaxurl, {action:'nelioab_dismiss_cache_notice'} );
+				$(this).parent().parent().fadeOut();
+			});
+		})(jQuery);
+		</script>
+	</div>
+	<?php
+}
+add_action( 'wp_ajax_nelioab_dismiss_cache_notice', 'nelioab_dismiss_cache_notice' );
+function nelioab_dismiss_cache_notice() {
+	update_option( 'nelioab_cache_notice', NELIOAB_PLUGIN_VERSION );
+	die();
+}
+
+/**
  * This function returns the URL of the given resource, appending the current
  * version of the plugin. The resource has to be a file in NELIOAB_ASSETS_DIR
  */

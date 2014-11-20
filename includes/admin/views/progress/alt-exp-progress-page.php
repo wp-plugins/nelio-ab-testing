@@ -876,33 +876,33 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		}
 
 		protected function is_winner( $id ) {
-			$res = $this->results;
-			if ( $res == null )
+			$winner = $this->who_wins();
+			if ( self::NO_WINNER == $winner )
 				return false;
-
-			$gtests = $res->get_gtests();
-			if ( count( $gtests ) == 0 )
-				return false;
-
-			$bestg = $gtests[count( $gtests ) - 1];
-			if ( $bestg->get_max() == $id )
-				if ( $bestg->get_type() == NelioABGTest::WINNER )
-					return true;
-
-			return false;
+			else
+				return $id == $winner;
 		}
 
 		protected function who_wins() {
-			$exp = $this->exp;
-			if ( $this->is_winner( $this->get_original_value() ) )
-				return 0;
-			$i = 0;
-			foreach ( $exp->get_alternatives() as $alt ) {
-				$i++;
-				if ( $this->is_winner( $alt->get_value() ) )
-					return $i;
+			$res = $this->results;
+			if ( $res == null )
+				return self::NO_WINNER;
+
+			$gtests = $res->get_gtests();
+			if ( count( $gtests ) == 0 )
+				return self::NO_WINNER;
+
+			$aux = false;
+			foreach ( $gtests as $gtest ) {
+				if ( $gtest->get_type() == NelioABGTest::WINNER ||
+				     $gtest->get_type() == NelioABGTest::DROP_VERSION )
+					$aux = $gtest->get_max();
 			}
-			return self::NO_WINNER;
+
+			if ( $aux )
+				return $aux;
+			else
+				return self::NO_WINNER;
 		}
 
 		/**

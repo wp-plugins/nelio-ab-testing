@@ -18,7 +18,12 @@ function nelioab_init() {
 	nelioab_hide_body();
 
 	// Synchronize cookies
-	nelioab_sync_cookies_and_load_alternative_if_required(jQuery);
+	try {
+		nelioab_sync_cookies_and_load_alternative_if_required(jQuery);
+	}
+	catch(e) {
+		nelioab_show_body();
+	}
 }
 
 var nelioab_styleNode;

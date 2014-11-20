@@ -575,7 +575,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						"border: 1px solid <?php echo $colorscheme['focus']; ?>;" +
 					"}" +
 					"#favorite-actions, #message, .add-new-h2, .tablenav, #edit-slug-box { display:none; }" +
-					"#save_nelioab_alternative_box .handlediv { color:#afe0f7; }" +
+					"#save_nelioab_alternative_box .handlediv," +
 					"#save_nelioab_alternative_box .handlediv:hover { visibility:visible; color:white; }";
 					document.getElementsByTagName('head')[0].appendChild(nelioab_style_metabox);
 				</script>
@@ -593,11 +593,12 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 								<?php
 									$preview_link = admin_url( 'admin.php' );
 									$type = 'post';
-									if ( get_post_type( $_GET['post'] ) == 'page' ) {
+									$ori_id = get_post_meta( $_GET['post'], '_nelioab_original_id', true );
+									if ( !empty( $ori_id ) && get_post_type( $_GET['post'] ) == 'page' ) {
 										$preview_link = add_query_arg( array(
 												'page_id' => $_GET['post'],
 												'preview' => 'true',
-												'nelioab_original_id' => $_GET['nelioab_original_id'],
+												'nelioab_original_id' => $ori_id
 											), trailingslashit( home_url() ) );
 										?><a class="preview button" href="<?php echo $preview_link; ?>" target="nelioab-preview" id="page-preview" tabindex="4"><?php _e( 'Preview' ); ?></a><?php
 									}

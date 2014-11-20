@@ -115,8 +115,8 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			$url = sprintf(
 				str_replace(
 					'https://', 'http://',
-					admin_url( 'admin.php?nelioab-page=heatmaps&id=%1$s&exp_type=%2$s&post=%3$s' ) ),
-				$exp->get_id(), $exp->get_type(), $id );
+					admin_url( 'admin.php?nelioab-page=heatmaps&id=%1$s&exp_type=%2$s&post=%3$s&ori=%4$s' ) ),
+				$exp->get_id(), $exp->get_type(), $id, $exp->get_originals_id() );
 			return sprintf( ' <a href="%1$s">%2$s</a>', $url,
 				__( 'View Heatmap', 'nelioab' ) );
 		}
@@ -125,7 +125,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		private function make_link_for_edit( $id ) {
 			$exp = $this->exp;
 			return sprintf( ' <a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
-				admin_url( 'post.php?post=' . $id . '&action=edit&' . '&nelioab_original_id=' . $exp->get_originals_id() ),
+				admin_url( 'post.php?post=' . $id . '&action=edit' ),
 				__( 'Edit' ) );
 		}
 
@@ -188,6 +188,12 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
 				$link = get_permalink( $alt->get_value() );
+
+				if ( $this->is_ori_page )
+					$link = add_query_arg( array(
+							'preview' => 'true',
+							'nelioab_original_id' => $exp->get_originals_id()
+						), $link );
 
 				$action_links = $this->get_action_links( $exp, $alt->get_value() );
 

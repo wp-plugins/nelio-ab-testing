@@ -398,15 +398,16 @@ function nelioabStartHeatmapTracking() {
 		url: NelioABHMTracker.ajaxurl,
 		data: {
 				action: 'nelioab_track_heatmaps_for_post',
-				post:   NelioABHMTracker.post_id,
+				permalink: NelioABHMTracker.permalink,
+				nelioab_cookies: nelioab_get_local_cookies(),
 			},
 		success: function(result) {
-				if ( 'DONT_TRACK_HEATMAPS' == result )
+				if ( 'DONT_TRACK_HEATMAPS' == result.mode )
 					return;
-				nelioabDoStartHeatmapTracking( result );
+				NelioABHMTracker.post_id = result.post_id;
+				nelioabDoStartHeatmapTracking( result.mode );
 			}
 	});
-
 }
 
 

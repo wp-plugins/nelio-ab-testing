@@ -443,6 +443,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			foreach ( $this->get_alternatives() as $alt ) {
 				$value = $this->get_id() . ',' . $this->get_status();
 				update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
+				update_post_meta( $alt->get_value(), "_nelioab_original_id", $this->get_originals_id() );
 			}
 		}
 

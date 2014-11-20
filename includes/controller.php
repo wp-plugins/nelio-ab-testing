@@ -203,7 +203,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 			// If we're previewing a page alternative, it may be the case that it's an
 			// alternative of the landing page. Let's make sure the "page_on_front"
 			// option is properly updated:
-			if ( isset( $_GET['preview'] ) && isset( $_GET['nelioab_original_id'] ) && isset( $_GET['page_id'] ) ) {
+			if ( ( isset( $_GET['preview'] ) || isset( $_GET['nelioab_show_heatmap'] ) ) &&
+			     isset( $_GET['nelioab_original_id'] ) && isset( $_GET['page_id'] ) ) {
 				add_filter( 'option_page_on_front', array( &$this, 'fix_page_on_front' ) );
 			}
 
@@ -212,7 +213,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 		}
 
 		public function fix_page_on_front( $page_on_front ) {
-			if ( isset( $_GET['preview'] ) && isset( $_GET['nelioab_original_id'] ) && isset( $_GET['page_id'] ) ) {
+			if ( ( isset( $_GET['preview'] ) || isset( $_GET['nelioab_show_heatmap'] ) ) &&
+			     isset( $_GET['nelioab_original_id'] ) && isset( $_GET['page_id'] ) ) {
 				if ( $page_on_front == $_GET['nelioab_original_id'] )
 					return $_GET['page_id'];
 				else
@@ -235,9 +237,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 			else if ( $dest_post_id )
 				$this->send_navigation_if_required( $dest_post_id, $referer );
 
-			if ( NelioABAccountSettings::get_subscription_plan() >=
-			     NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN )
-				$this->compute_results_for_running_experiments();
+			$this->compute_results_for_running_experiments();
 
 			$alt_con = $this->controllers['alt-exp'];
 			$alt_con->update_current_winner_for_running_experiments();
@@ -245,6 +245,12 @@ if ( !class_exists( 'NelioABController' ) ) {
 		}
 
 		public function compute_results_for_running_experiments() {
+
+			// 0. Check if the customer can use this function
+			if ( NelioABAccountSettings::get_subscription_plan() >=
+			     NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN )
+				return;
+
 			// 1. Check if the last check was, at least, 5 minutes ago
 			$now = time();
 			$last_update = get_option( 'nelioab_last_update_of_results', 0 );

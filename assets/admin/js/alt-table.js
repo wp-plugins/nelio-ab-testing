@@ -161,7 +161,7 @@ var NelioABAltTable = {
 		if ( copyingContent ) {
 			var aux = table.find('#based_on');
 			var info = NelioABPostSearcher.getInfo( jQuery('#exp_original') );
-			NelioABPostSearcher.doSetDefault( aux, info.label, info.value );
+			NelioABPostSearcher.doSetDefault( aux, info );
 			table.find('.new-alt-form .copying-content').show();
 		}
 		else {

@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -231,6 +231,21 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.3.1 =
+* Performance MU-Plugin does no longer deactivate WPML. This way, WPML pages
+can be tested (i.e. alternatives are properly loaded).
+* We reduced the amount of calls required to sync headline-related tracking
+information.
+* Bug fix: latest update broke alternative loading for the landing page. This
+is now fixed.
+* Bug fix: when viewing the progress of an experiment, we now say there's a
+winner if (a) the original version is the best or (b) there's an alternative
+that's better than the original (even though it's "as good" as other
+alternatives).
+* We added a small warning when the plugin is updated reminding users to clean
+their caches.
+
 
 = 3.3.0 =
 * **New Feature - Widget Testing** Nelio A/B Testing is the first tool to
@@ -704,7 +719,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.3.0 =
-This release includes **Widget Testing**, **Headline Testing**, and tons of
+= 3.3.1 =
+3.3 series includes **Widget Testing**, **Headline Testing**, and tons of
 tiny improvements and bug fixes.
 

@@ -50,29 +50,32 @@ class NelioABHeatmapExperimentController {
 			'NelioABHMSync', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 		global $nelioab_controller;
-		$post_id = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $nelioab_controller->get_current_url() );
 		wp_enqueue_script( 'nelioab_track_heatmaps',
 			nelioab_asset_link( '/js/nelioab-heatmap-tracker.min.js' ) );
 		wp_localize_script( 'nelioab_track_heatmaps',
 			'NelioABHMTracker', array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'post_id' => $post_id,
+				'permalink' => $nelioab_controller->get_current_url(),
 			) );
 	}
 
 	public function track_heatmaps_for_post() {
 		$post = false;
-		if ( isset( $_POST['post'] ) )
-			$post = $_POST['post'];
+		global $nelioab_controller;
+		if ( isset( $_POST['permalink'] ) )
+			$post = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $_POST['permalink'] );
 
+		$res = array( 'post_id' => $post );
 		$mode = NelioABSettings::get_heatmap_tracking_mode();
 		if ( $this->has_post_a_heatmap_experiment( $post ) )
-			echo $mode;
+			$res['mode'] = $mode;
 		elseif ( $this->is_post_in_an_ab_experiment_with_heatmaps( $post ) )
-			echo $mode;
+			$res['mode'] = $mode;
 		else
-			echo 'DONT_TRACK_HEATMAPS';
+			$res['mode'] = 'DONT_TRACK_HEATMAPS';
 
+		header( 'Content-Type: application/json' );
+		echo json_encode( $res );
 		die();
 	}
 

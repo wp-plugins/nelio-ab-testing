@@ -60,7 +60,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 		}
 
 		protected function get_basic_info_elements() {
-			$ori_label = __( 'Original Page or Post', 'nelioab' );
+			$ori_label = __( 'Original Post', 'nelioab' );
 
 			return array(
 				array (
@@ -103,7 +103,8 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 		protected function print_alternatives() { ?>
 			<h2><?php
 				printf( '<a onClick="javascript:%1$s" class="add-new-h2" href="javascript:;">%2$s</a>',
-						'NelioABAltTable.showNewHeadlineForm(jQuery(\'table#alt-table\'));',
+					'NelioABAltTable.showNewHeadlineForm(jQuery(\'table#alt-table\'));' .
+					'jQuery(\'table#alt-table .save\').removeClass(\'disabled\');',
 					__( 'New Headline', 'nelioab' )
 				);
 			?></h2><?php
@@ -301,7 +302,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 				<h4><?php echo $title; ?></h4>
 				<div>
 					<div class="headline_image_holder">
-						<img class="headline_image" 
+						<img class="headline_image"
 							src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" 
 							style="background:url('<?php echo nelioab_admin_asset_link( '/images/feat-image-placeholder.png' ); ?>') no-repeat center center;
 								-webkit-background-size:cover;
@@ -313,8 +314,10 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 					</div>
 					<div style="width:60%;display:inline-block;vertical-align:top;">
 						<span class="input-text-wrap">
-							<div class="nelio-sect"><label><input type="text" class="headline_title ptitle" value="" style="width:100%;" placeholder="<?php echo esc_html( 'Headline', 'nelioab' ); ?>" /></label></div>
-							<textarea class="headline_excerpt" style="margin-top:10px;width:100%;" placeholder="<?php echo __( 'Original Excerpt', 'nelioab' ); ?>"></textarea>
+							<div class="nelio-sect"><label style="margin:0px;">
+								<input type="text" class="headline_title ptitle" value="" placeholder="<?php echo esc_html( __( 'Title', 'nelioab' ) ); ?>" />
+							</label></div>
+							<textarea class="headline_excerpt" placeholder="<?php echo __( 'Original Excerpt', 'nelioab' ); ?>"></textarea>
 						</span>
 					</div>
 				</div>

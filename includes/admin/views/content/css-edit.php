@@ -143,7 +143,7 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 								"border: 1px solid <?php echo $colorscheme['focus']; ?>;" +
 							"}" +
 							"#favorite-actions, #message, .add-new-h2, .tablenav, #edit-slug-box { display:none; }" +
-							"#save_nelioab_alternative_box .handlediv { color:#afe0f7; }" +
+							"#save_nelioab_alternative_box .handlediv," +
 							"#save_nelioab_alternative_box .handlediv:hover { visibility:visible; color:white; }";
 							document.getElementsByTagName('head')[0].appendChild(nelioab_style_metabox);
 						</script>

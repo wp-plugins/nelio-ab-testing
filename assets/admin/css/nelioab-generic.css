@@ -455,7 +455,7 @@ body #goal-list .nelio-card .actions .action input {
 
 #alt-table tr td div.headline_image_holder {
 	width:30%;
-	max-width:120px;
+	max-width:102px;
 	display:inline-block;
 	vertical-align:top;
 	position:relative;
@@ -487,6 +487,18 @@ body #goal-list .nelio-card .actions .action input {
 #alt-table tr td div.headline_image_hover:hover {
   filter: alpha(opacity=1);
 	opacity: 1;
+}
+
+#alt-table tr td .headline_title {
+	width:100%;
+	margin:0px;
+}
+
+#alt-table tr td .headline_excerpt {
+	width:100%;
+	margin:0px;
+	margin-top:5px;
+	height:68px;
 }
 
 

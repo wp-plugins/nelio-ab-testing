@@ -46,17 +46,17 @@ class NelioABAlternativeExperimentController {
 			// the INIT filter, and the theme functions must be hooked before.
 
 			// Page/Post alt exp related
-			add_filter( 'posts_results',        array( &$this, 'posts_results_intercept' ) );
-			add_filter( 'the_posts',            array( &$this, 'the_posts_intercept' ) );
-			add_action( 'pre_get_comments',     array( &$this, 'load_comments_from_original' ) );
-			add_filter( 'comments_array',       array( &$this, 'prepare_comments_form' ) );
-			add_filter( 'get_comments_number',  array( &$this, 'load_comments_number_from_original' ) );
-			add_filter( 'post_link',            array( &$this, 'use_originals_post_link' ) );
-			add_filter( 'page_link',            array( &$this, 'use_originals_post_link' ) );
-			add_action( 'wp_enqueue_scripts',   array( &$this, 'load_nelioab_scripts_for_alt' ) );
-			add_action( 'wp_enqueue_scripts',   array( &$this, 'include_css_alternative_fragments_if_any' ) );
-			add_filter( 'get_post_metadata',    array( &$this, 'load_proper_page_template' ), 10, 4 );
-			add_filter( 'option_page_on_front', array( &$nelioab_controller, 'fix_page_on_front' ) );
+			add_filter( 'posts_results',       array( &$this, 'posts_results_intercept' ) );
+			add_filter( 'the_posts',           array( &$this, 'the_posts_intercept' ) );
+			add_action( 'pre_get_comments',    array( &$this, 'load_comments_from_original' ) );
+			add_filter( 'comments_array',      array( &$this, 'prepare_comments_form' ) );
+			add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
+			add_filter( 'post_link',           array( &$this, 'use_originals_post_link' ) );
+			add_filter( 'page_link',           array( &$this, 'use_originals_post_link' ) );
+			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
+			add_action( 'wp_enqueue_scripts',  array( &$this, 'include_css_alternative_fragments_if_any' ) );
+			add_filter( 'get_post_metadata',   array( &$this, 'load_proper_page_template' ), 10, 4 );
+			add_filter( 'wp',                  array( &$this, 'do_late_hooks' ) );
 
 			/**
 			 * Headline Experiments modify TITLE, FEATURED IMAGE and EXCERPT.
@@ -130,6 +130,11 @@ class NelioABAlternativeExperimentController {
 		// Monitoring submissions:
 		add_action( 'gform_after_submission', array( &$this, 'track_gf_submission' ),  10, 2 );
 		add_action( 'wpcf7_submit',           array( &$this, 'track_cf7_submission' ), 10, 2 );
+	}
+
+	public function do_late_hooks( $wp = false ) {
+		global $nelioab_controller;
+		add_filter( 'option_page_on_front', array( &$nelioab_controller, 'fix_page_on_front' ) );
 	}
 
 	public function get_consistent_title( $title, $id = NULL ) {
@@ -276,7 +281,6 @@ class NelioABAlternativeExperimentController {
 		$post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
 		if ( $this->is_post_in_a_post_alt_exp( $post_id ) )
 			return 'LOAD_ALTERNATIVE';
-
 		if ( NelioABSettings::make_site_consistent() )
 			if ( $this->are_there_ab_experiments_running() )
 				return 'LOAD_CONSISTENT_VERSION';
@@ -699,17 +703,20 @@ class NelioABAlternativeExperimentController {
 		$current_post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
 		$actualDestination = false;
 
-		$headlines_info = json_decode( stripslashes( $_POST['headlines_info'] ) );
-
 		NelioABAccountSettings::set_has_quota_left( true );
-		foreach( $headlines_info as $headline_info ) {
+
+		$headlines = array();
+		$headlines_info = json_decode( stripslashes( $_POST['headlines_info'] ) );
+		foreach( $headlines_info as $headline_info )
+			array_push( $headlines, $headline_info->exp . ':' . $headline_info->alt );
+
+		if ( count( $headlines ) > 0 ) {
 			try {
-				$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/exp/%s/titleview',
-					NelioABAccountSettings::get_site_id(),
-					$headline_info->exp );
+				$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/headlines',
+					NelioABAccountSettings::get_site_id() );
 				$body = array(
-					'user'    => '' . NelioABUser::get_id(),
-					'postId'  => '' . $headline_info->alt,
+					'user'      => '' . NelioABUser::get_id(),
+					'headlines' => implode( ',', $headlines ),
 				);
 				$result = NelioABBackend::remote_post( $url, $body );
 			}
