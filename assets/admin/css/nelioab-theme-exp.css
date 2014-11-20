@@ -89,13 +89,6 @@
 	opacity: 1;
 }
 
-.nelioab-selected .nelioab-theme-tick {
-	background: url( '../images/theme-check.png?version=3.0.0' ) #2f2f2f;
-	background-image: url( '../images/theme-check.png?version=3.0.0' );
-	background-color: #2f2f2f;
-	background-position: -100px 0px;
-}
-
 
 /*    HOVERING   */
 /* ------------- */
@@ -112,6 +105,7 @@
 	-moz-opacity:1;
 	-khtml-opacity: 1;
 	opacity: 1;
+	cusor: default;
 }
 
 .nelioab-theme .theme-description a { color: #acdbec; }

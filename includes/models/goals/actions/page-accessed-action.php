@@ -85,15 +85,13 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			// Remove https
 			$url = preg_replace( '/^https?:\/\//', 'http://', $url );
 
-			// Escaping all chars
-			$url = str_replace( "\\", "\\\\", $url );
-			$url = str_replace( ".", "\\.", $url );
-			$url = str_replace( "/", "\\/", $url );
+			// Escaping all RegEx chars: \ ^ $ * + ? . ( ) | { } [ ]
+			$url = preg_replace( '/([\\\^\$\*\+\?\.\(\)\|\{\}\[\]\/])/', '\\\\$1', $url );
 
 			// Considering starts-with and end-with *** chars
-			$uses_starts_with = strpos( $url, '***', 1 ) !== false;
-			$uses_ends_with = strpos( $url, '***' ) === 0;
-			$url = str_replace( '***', '', $url );
+			$uses_starts_with = strpos( $url, '\\*\\*\\*', 1 ) !== false;
+			$uses_ends_with = strpos( $url, '\\*\\*\\*' ) === 0;
+			$url = str_replace( '\\*\\*\\*', '', $url );
 			if ( !$uses_starts_with && !$uses_ends_with )
 				$url = '^' . $url . '$';
 			if ( $uses_starts_with && !$uses_ends_with )

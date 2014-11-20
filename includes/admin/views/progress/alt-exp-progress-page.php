@@ -24,12 +24,15 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 	abstract class NelioABAltExpProgressPage extends NelioABAdminAjaxPage {
 
+		const NO_WINNER = -1;
+
 		protected $exp;
 		protected $results;
 		protected $winner_label;
 		protected $goals;
 		protected $goal;
 		protected $graphic_delay;
+		protected $colorscheme;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -38,6 +41,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$this->goal         = null;
 			$this->results      = null;
 			$this->graphic_delay = 500;
+
+			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+			$this->colorscheme = NelioABWpHelper::get_current_colorscheme();
 		}
 
 		private function print_graphic_delay() {
@@ -187,6 +193,16 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$indirect = $action->accepts_indirect_navigations();
 			$result  = false;
 
+			$from_tested_element = __( 'from anywhere', 'nelioab' );
+			if ( !$indirect ) {
+				if ( $this->exp->get_type() == NelioABExperiment::PAGE_ALT_EXP )
+					$from_tested_element = __( 'from the tested page', 'nelioab' );
+				elseif ( $this->exp->get_type() == NelioABExperiment::POST_ALT_EXP )
+					$from_tested_element = __( 'from the tested post', 'nelioab' );
+				else
+					$from_tested_element = __( 'from the tested element', 'nelioab' );
+			}
+
 			if ( $action->is_internal() ) {
 				$post = get_post( $action->get_reference() );
 				if ( $post ) {
@@ -200,26 +216,25 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 					if ( $post->post_type == 'page' && $indirect )
 						$result = sprintf(
-							__( 'Indirect access to page %s', 'nelioab' ),
-							$link );
+							__( 'Accessing page %1$s %2$s', 'nelioab' ),
+							$link, $from_tested_element );
 					elseif ( $post->post_type == 'page' && !$indirect )
 						$result = sprintf(
-							__( 'Direct access to page %s', 'nelioab' ),
-							$link );
+							__( 'Accessing page %1$s %2$s', 'nelioab' ),
+							$link, $from_tested_element );
 					elseif ( $post->post_type == 'post' && $indirect )
 						$result = sprintf(
-							__( 'Indirect access to post %s', 'nelioab' ),
-							$link );
+							__( 'Accessing post %1$s %2$s', 'nelioab' ),
+							$link, $from_tested_element );
 					elseif ( $post->post_type == 'post' && !$indirect )
 						$result = sprintf(
-							__( 'Direct access to post %s', 'nelioab' ),
-							$link );
+							__( 'Accessing post %1$s %2$s', 'nelioab' ),
+							$link, $from_tested_element );
 				}
 				else {
-					if ( $indirect )
-						$result = __( 'Indirect access to a page or post that does no longer exist', 'nelioab' );
-					else
-						$result = __( 'Direct access to a page or post that does no longer exist', 'nelioab' );
+					$result = sprintf(
+						__( 'Accessing a page (or post) that does no longer exist %s', 'nelioab' ),
+						$from_tested_element );
 				}
 			}
 			else {
@@ -247,16 +262,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 						$name = sprintf( $real_link, $name, $action->get_reference() );
 				}
 
-				if ( $indirect ) {
-					$result = sprintf(
-						__( 'Indirect access to external page %1$s', 'nelioab' ),
-						$name );
-				}
-				else {
-					$result = sprintf(
-						__( 'Direct access to external page %1$s', 'nelioab' ),
-						$name );
-				}
+				$result = sprintf(
+					__( 'Leaving WordPress to access the external page %1$s %2$s', 'nelioab' ),
+					$name, $from_tested_element );
 
 				if ( $special_case ) {
 					$result = sprintf( $result, $special_case );
@@ -288,14 +296,14 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 						$mode = __( 'from any page', 'nelioab' );
 					if ( $name ) {
 						$result = sprintf(
-							__( 'Submission of form %1$s %2$s', 'nelioab' ),
+							__( 'Submitting form %1$s %2$s', 'nelioab' ),
 							sprintf( '<a href="%2$s" target="_blank">%1$s</a>', $name, $link ),
 							$mode
 						);
 					}
 					else {
 						$result = sprintf(
-							__( 'Submission of an unknown Contact Form 7 %s' ),
+							__( 'Submitting an unknown Contact Form 7 %s' ),
 							$mode );
 					}
 					break;
@@ -313,14 +321,14 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					}
 					if ( $name ) {
 						$result = sprintf(
-							__( 'Submission of form %1$s %2$s', 'nelioab' ),
+							__( 'Submitting form %1$s %2$s', 'nelioab' ),
 							sprintf( '<a href="%2$s" target="_blank">%1$s</a>', $name, $link ),
 							$mode
 						);
 					}
 					else {
 						$result = sprintf(
-							__( 'Submission of an unknown Gravity Form %s', 'nelioab' ),
+							__( 'Submitting an unknown Gravity Form %s', 'nelioab' ),
 							$mode );
 					}
 					break;
@@ -365,8 +373,10 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			else
 				$best_alt_conversion_rate = number_format_i18n( $best_alt_conversion_rate, 2 );
 
-			$this->winner_label = sprintf( ' alt-type-winner" title="%s"',
-				sprintf( __( 'Wins with a %s%% confidence', 'nelioab'), $the_winner_confidence ) );
+			$this->winner_label = sprintf( '" %s title="%s"',
+				sprintf( 'style="color:%s;background:%s;"', $this->colorscheme['foreground'], $this->colorscheme['focus'] ),
+				sprintf( __( 'Wins with a %s%% confidence', 'nelioab'), $the_winner_confidence )
+			);
 
 			// PRINTING RESULTS
 			// ----------------------------------------------------------------
@@ -418,7 +428,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							<div id="summary-numbers">
 								<h3><?php
 									$conf_label = ' (' . __( 'Confidence', 'nelioab' ) . ')';
-									if ( $the_winner == -1 )
+									if ( $the_winner == self::NO_WINNER )
 										$conf_label = '';
 									if ( $exp->get_status() == NelioABExperimentStatus::RUNNING )
 										echo __( 'Current Winner', 'nelioab' ) . $conf_label;
@@ -426,7 +436,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 										echo __( 'Winner', 'nelioab' ) . $conf_label;
 								?></h3>
 								<?php
-								if ( $the_winner == -1 ) {
+								if ( $the_winner == self::NO_WINNER ) {
 									printf ( '<p class="result">%s</p>', __( 'None', 'nelioab' ) );
 								}
 								else {
@@ -527,7 +537,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									if ( 'dialog' == dialog ) {<?php
 										$title = __( 'Stop Experiment', 'nelioab' );
 										$title = str_replace( '"', '\\"', $title );
-										$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Do you want to continue?', 'nelioab' );
+										$msg = __( 'You are about to stop an experiment. Once the experiment is stopped, you cannot resume it. Are you sure you want to stop the experiment?', 'nelioab' );
 										$msg = str_replace( '"', '\\"', $msg ); ?>
 										var $dialog = jQuery('#dialog-modal');
 										jQuery('#dialog-content').html("<?php echo $msg; ?>");
@@ -685,7 +695,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 										jQuery(".apply-link").each(function() {
 											var aux = jQuery(this);
 											aux.addClass('disabled');
-											aux.attr('href','javascript:return false;');
+											aux.attr('href','javascript:;');
 										});
 										jQuery("#loading-" + id).delay(120).fadeIn();
 
@@ -788,7 +798,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			else {
 				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
 					printf( '<p style="color:#555;font-size:120%%;">%s</p>',
-						__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to two hours to get your first results.', 'nelioab' ) );
+						__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to half an hour to get your first results.', 'nelioab' ) );
 				}
 				else {
 					printf( '<p style="color:#555;font-size:120%%;">%s</p>',
@@ -816,7 +826,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		protected function get_best_alt_conversion_rate() {
 			$res = $this->results;
 			if ( $res == null )
-				return -1;
+				return self::NO_WINNER;
 			$best = 0;
 			$alts = $res->get_alternative_results();
 			for ( $i = 1; $i < count( $alts ); ++$i ) {
@@ -831,7 +841,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		protected function get_winning_confidence() {
 			$bestg = $this->get_winning_gtest();
 			if ( !$bestg )
-				return -1;
+				return self::NO_WINNER;
 			return number_format_i18n( $bestg->get_certainty(), 2 );
 		}
 
@@ -866,33 +876,33 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		}
 
 		protected function is_winner( $id ) {
-			$res = $this->results;
-			if ( $res == null )
+			$winner = $this->who_wins();
+			if ( self::NO_WINNER == $winner )
 				return false;
-
-			$gtests = $res->get_gtests();
-			if ( count( $gtests ) == 0 )
-				return false;
-
-			$bestg = $gtests[count( $gtests ) - 1];
-			if ( $bestg->get_max() == $id )
-				if ( $bestg->get_type() == NelioABGTest::WINNER )
-					return true;
-
-			return false;
+			else
+				return $id == $winner;
 		}
 
 		protected function who_wins() {
-			$exp = $this->exp;
-			if ( $this->is_winner( $this->get_original_value() ) )
-				return 0;
-			$i = 0;
-			foreach ( $exp->get_alternatives() as $alt ) {
-				$i++;
-				if ( $this->is_winner( $alt->get_value() ) )
-					return $i;
+			$res = $this->results;
+			if ( $res == null )
+				return self::NO_WINNER;
+
+			$gtests = $res->get_gtests();
+			if ( count( $gtests ) == 0 )
+				return self::NO_WINNER;
+
+			$aux = false;
+			foreach ( $gtests as $gtest ) {
+				if ( $gtest->get_type() == NelioABGTest::WINNER ||
+				     $gtest->get_type() == NelioABGTest::DROP_VERSION )
+					$aux = $gtest->get_max();
 			}
-			return -1;
+
+			if ( $aux )
+				return $aux;
+			else
+				return self::NO_WINNER;
 		}
 
 		/**
@@ -1014,6 +1024,15 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				}
 			}
 
+			// Computing max value
+			$max = 5;
+			foreach ( $alternatives as $values )
+				foreach ( $values as $val )
+					if ( $val > $max )
+						$max = $val;
+			if ( $max > 100 )
+				$max = 100;
+
 			$the_count = count( $average );
 			for( $i = 0; $i < ( 7 - $the_count ); ++$i ) {
 				array_unshift( $average, 0 );
@@ -1047,7 +1066,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			var startDate    = <?php echo $date; ?>;
 
 			var aux = setTimeout( function() {
-				timelineGraphic = makeTimelinePerAlternativeGraphic("nelioab-timeline", labels, alternatives, startDate);
+				timelineGraphic = makeTimelinePerAlternativeGraphic("nelioab-timeline", labels, alternatives, startDate, <?php echo $max; ?>);
 			}, <?php echo $this->print_graphic_delay(); ?> );
 		})(jQuery);
 		</script>
@@ -1101,9 +1120,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$data = array();
 			foreach( $alt_results as $aux ) {
 				$rate = number_format( $aux->get_conversion_rate(), 2 );
-				$color = 'color:"#7CB5EC"';
+				$color = 'color:"' . $this->colorscheme['primary'] . '"';
 				if ( $rate == $max_value )
-					$color = 'color:"#81D24A"';
+					$color = 'color:"#b0d66f"';
 				$str = "{ y:$rate, $color }";
 				array_push( $data, $str );
 			}
@@ -1175,11 +1194,11 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			$data = array();
 			foreach( $alt_results as $aux ) {
 				$factor = number_format( $aux->get_improvement_factor(), 2 );
-				$color = 'color:"#7CB5EC"';
+				$color = 'color:"' . $this->colorscheme['primary'] . '"';
 				if ( $factor == $max_value )
-					$color = 'color:"#81D24A"';
+					$color = 'color:"#b0d66f"';
 				if ( $factor < 0 )
-					$color = 'color:"#DD3D36"';
+					$color = 'color:"#cf4944"';
 				$str = "{ y:$factor, $color }";
 				array_push( $data, $str );
 			}
@@ -1241,8 +1260,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			var visitors    = <?php echo json_encode( $visitors ); ?>;
 			var conversions = <?php echo json_encode( $conversions ); ?>;
 			var labels      = <?php echo json_encode( $labels ); ?>;
+			var colors      = <?php echo json_encode( array( $this->colorscheme['secondary'], $this->colorscheme['primary'] ) ); ?>;
 			var aux = setTimeout( function() {
-				visitsGraphic   = makeVisitorsGraphic("nelioab-visitors", labels, categories, visitors, conversions);
+				visitsGraphic   = makeVisitorsGraphic("nelioab-visitors", labels, categories, visitors, conversions, colors);
 			}, <?php echo $this->print_graphic_delay(); ?> );
 		})(jQuery);
 		</script>

@@ -48,24 +48,39 @@ class NelioABHeatmapExperimentController {
 			nelioab_asset_link( '/js/nelioab-sync-heatmaps.min.js' ) );
 		wp_localize_script( 'nelioab_sync_heatmaps',
 			'NelioABHMSync', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
-		if ( $this->has_post_a_heatmap_experiment() ||
-		   ( $this->is_post_in_an_ab_experiment_with_heatmaps() && isset( $_POST['nelioab_load_alt'] ) ) ) {
-			global $nelioab_controller;
-			$post_id = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $nelioab_controller->get_current_url() );
-			wp_enqueue_script( 'nelioab_track_heatmaps',
-				nelioab_asset_link( '/js/nelioab-heatmap-tracker.min.js' ) );
-			wp_localize_script( 'nelioab_track_heatmaps',
-				'NelioABHMTracker', array(
-					'ajaxurl' => admin_url( 'admin-ajax.php' ),
-					'post_id' => $post_id,
-				) );
-		}
+
+		global $nelioab_controller;
+		wp_enqueue_script( 'nelioab_track_heatmaps',
+			nelioab_asset_link( '/js/nelioab-heatmap-tracker.min.js' ) );
+		wp_localize_script( 'nelioab_track_heatmaps',
+			'NelioABHMTracker', array(
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'permalink' => $nelioab_controller->get_current_url(),
+			) );
 	}
 
-	private function has_post_a_heatmap_experiment() {
-		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+	public function track_heatmaps_for_post() {
+		$post = false;
 		global $nelioab_controller;
-		$post_id = $nelioab_controller->url_or_front_page_to_postid( $nelioab_controller->get_current_url() );
+		if ( isset( $_POST['permalink'] ) )
+			$post = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps( $_POST['permalink'] );
+
+		$res = array( 'post_id' => $post );
+		$mode = NelioABSettings::get_heatmap_tracking_mode();
+		if ( $this->has_post_a_heatmap_experiment( $post ) )
+			$res['mode'] = $mode;
+		elseif ( $this->is_post_in_an_ab_experiment_with_heatmaps( $post ) )
+			$res['mode'] = $mode;
+		else
+			$res['mode'] = 'DONT_TRACK_HEATMAPS';
+
+		header( 'Content-Type: application/json' );
+		echo json_encode( $res );
+		die();
+	}
+
+	private function has_post_a_heatmap_experiment( $post_id ) {
+		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp )
 			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP &&
@@ -74,15 +89,13 @@ class NelioABHeatmapExperimentController {
 		return false;
 	}
 
-	private function is_post_in_an_ab_experiment_with_heatmaps() {
+	private function is_post_in_an_ab_experiment_with_heatmaps( $post_id ) {
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-		global $nelioab_controller;
-		$post_id = $nelioab_controller->url_or_front_page_to_postid( $nelioab_controller->get_current_url() );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
 			if ( $exp->get_type() == NelioABExperiment::POST_ALT_EXP ||
 			     $exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ||
-			     $exp->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
+			     $exp->get_type() == NelioABExperiment::HEADLINE_ALT_EXP ) {
 				if ( !$exp->are_heatmaps_tracked() )
 					continue;
 				if ( $exp->get_originals_id() == $post_id )
@@ -151,7 +164,7 @@ class NelioABHeatmapExperimentController {
 				$object = array(
 					'session'    => $val->session,
 					'value'      => json_encode( $val ),
-					'resolution' => $res, 
+					'resolution' => $res,
 					'post'       => $post_id,
 					'isClick'    => false,
 				);
@@ -174,7 +187,7 @@ class NelioABHeatmapExperimentController {
 				$object = array(
 					'session'    => $val->session,
 					'value'      => json_encode( $val ),
-					'resolution' => $res, 
+					'resolution' => $res,
 					'post'       => $post_id,
 					'isClick'    => true,
 				);

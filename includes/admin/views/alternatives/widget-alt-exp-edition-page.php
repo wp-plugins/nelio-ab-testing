@@ -14,36 +14,43 @@
  * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
+if ( !class_exists( 'NelioABWidgetAltExpEditionPage' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/alt-exp-page.php' );
-	class NelioABTitleAltExpEditionPage extends NelioABAltExpPage {
+	class NelioABWidgetAltExpEditionPage extends NelioABAltExpPage {
 
-		protected $original_id;
+		protected $alternatives;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
-			$this->set_form_name( 'nelioab_edit_ab_title_exp_form' );
-			$this->original_id     = -1;
+			$this->set_form_name( 'nelioab_edit_ab_widget_exp_form' );
+			$this->alternatives = array();
+
+			$this->is_global = true;
 
 			// Prepare tabs
 			$this->add_tab( 'info', __( 'General', 'nelioab' ), array( $this, 'print_basic_info' ) );
 			$this->add_tab( 'alts', __( 'Alternatives', 'nelioab' ), array( $this, 'print_alternatives' ) );
+			$this->add_tab( 'goals', __( 'Goals', 'nelioab' ), array( $this, 'print_goals' ) );
 		}
 
-		public function set_original_id( $id ) {
-			$this->original_id = $id;
+		public function do_render() {
+			parent::do_render();
+		}
+
+		public function set_alternatives( $alternatives ) {
+			$this->alternatives = $alternatives;
 		}
 
 		public function get_alt_exp_type() {
-			return NelioABExperiment::TITLE_ALT_EXP;
+			return NelioABExperiment::WIDGET_ALT_EXP;
 		}
 
 		protected function get_save_experiment_name() {
@@ -51,8 +58,6 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 		}
 
 		protected function get_basic_info_elements() {
-			$ori_label = __( 'Original Page or Post', 'nelioab' );
-
 			return array(
 				array (
 					'label'     => __( 'Name', 'nelioab' ),
@@ -64,11 +69,6 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 					'id'        => 'exp_descr',
 					'callback'  => array( &$this, 'print_descr_field' ) ),
 				array (
-					'label'     => $ori_label,
-					'id'        => 'exp_original',
-					'callback'  => array ( &$this, 'print_ori_field' ),
-					'mandatory' => true ),
-				array (
 					'label'     => __( 'Finalization Mode', 'nelioab' ),
 					'id'        => 'exp_finalization_mode',
 					'callback'  => array( &$this, 'print_finalization_mode_field' ),
@@ -77,39 +77,26 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			);
 		}
 
-		protected function print_ori_field() {
-			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
-			NelioABHtmlGenerator::print_page_or_post_searcher( 'exp_original', $this->original_id );
-			?>
-
-			<a class="button" style="text-align:center;"
-				href="javascript:NelioABEditExperiment.previewOriginal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
-			<span class="description" style="display:block;"><?php
-				_e( 'This is the page or post whose title will be tested.', 'nelioab' );
-			?> <small><a href="http://wp-abtesting.com/wordpress-split-multivariate-testing-titles/" target="_blank"><?php
-				_e( 'Help', 'nelioab' );
-			?></a></small></span><?php
-		}
-
 		protected function print_alternatives() { ?>
 			<h2><?php
+
 				printf( '<a onClick="javascript:%1$s" class="add-new-h2" href="javascript:;">%2$s</a>',
-					'NelioABAltTable.showNewPageOrPostAltForm(jQuery(\'table#alt-table\'), false);',
-					__( 'New Alternative Title', 'nelioab' )
+					'jQuery(\'.new-alt-form.inline-edit-row a.button.button-primary.save\').text(\'' . __( 'Create', 'nelioab' ) . '\');' .
+						'NelioABAltTable.showNewPageOrPostAltForm(jQuery(\'table#alt-table\'), false);',
+					__( 'New Alternative Widget Set', 'nelioab' )
 				);
+
 			?></h2><?php
 
-			$wp_list_table = new NelioABTitleAlternativesTable( $this->alternatives );
+			$wp_list_table = new NelioABWidgetAlternativesTable( $this->alternatives );
 			$wp_list_table->prepare_items();
 			$wp_list_table->display();
 		}
 
-	}//NelioABTitleAltExpEditionPage
+	}//NelioABWidgetAltExpEditionPage
 
 	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/alternatives-table.php' );
-	class NelioABTitleAlternativesTable extends NelioABAlternativesTable {
-
-		private $form_name;
+	class NelioABWidgetAlternativesTable extends NelioABAlternativesTable {
 
 		function __construct( $items ){
 			parent::__construct( $items );
@@ -120,6 +107,12 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 			//Build row actions
 			$actions = array(
 				'rename'	=> $this->make_quickedit_button( __( 'Rename', 'nelioab' ) ),
+
+				'edit-content'	=> sprintf(
+						'<a style="cursor:pointer;" onClick="javascript:' .
+							'NelioABAltTable.editContent(jQuery(this).closest(\'tr\'));' .
+							'">%s</a>',
+						__( 'Save Experiment & Edit Widgets' ) ),
 
 				'delete'	=> sprintf(
 						'<a style="cursor:pointer;" onClick="javascript:' .
@@ -138,39 +131,57 @@ if ( !class_exists( 'NelioABTitleAltExpEditionPage' ) ) {
 
 		public function extra_tablenav( $which ) {
 			if ( 'top' == $which ){
-				$text = __( 'Please, <b>add one or more</b> title alternatives.',
-					'nelioab' );
+				$text = __( 'Please, <b>add one or more</b> widget sets as alternatives.', 'nelioab' );
 				echo $text;
 			}
-		}
-
-		protected function get_inline_edit_title() {
-			return __( 'Change Title', 'nelioab' );
-		}
-
-		protected function get_inline_name_field_label() {
-			return __( 'Title', 'nelioab' );
-		}
-
-		protected function get_default_description_for_new_alternative() {
-			return __( 'Define a new title for this page or post.', 'nelioab' );
 		}
 
 		public function display_rows_or_placeholder() {
 			$this->print_new_alt_form();
 
-			$title = __( 'Original Title', 'nelioab' );
-			$expl = __( 'The original title can be considered an alternative that has to be tested.', 'nelioab' );
+			$title = __( 'Original: Default Widget Set', 'nelioab' );
+			$expl = __( 'This original version of this experiment uses your current set of widgets.', 'nelioab' );
 			?>
 			<tr><td>
-				<span id="original-title-row" class="row-title"><?php echo $title; ?></span>
+				<span class="row-title"><?php echo $title; ?></span>
 				<div class="row-actions"><?php echo $expl; ?></div>
 			</td></tr>
 			<?php
 			parent::display_rows();
 		}
 
-	}// NelioABExperimentsTable
+		protected function get_edit_code( $alt ){
+			return sprintf(
+				'<a style="cursor:pointer;" onClick="javascript:' .
+					'jQuery(\'#content_to_edit\').attr(\'value\', %s);' .
+					'submitAndRedirect(\'%s\',true)' .
+					'">%s</a>',
+				$alt->get_id(),
+				'edit_alt_content',
+				__( 'Save Experiment & Edit CSS', 'nelioab' ) );
+		}
+
+		protected function print_additional_info_for_new_alt_form() { ?>
+			<input type="hidden" id="based_on" value="nothing" />
+			<?php
+		}
+
+		protected function print_save_button_for_new_alt_form() { ?>
+			<a class="button-primary save alignleft" <?php
+				echo $this->make_form_javascript( $this->form_name, 'add_alt' );
+				?> style="margin-right:0.4em;"><?php _e( 'Create', 'nelioab' ); ?></a>
+			<?php
+		}
+
+		protected function get_inline_edit_title() {
+			return __( 'Rename CSS Alternative', 'nelioab' );
+		}
+
+		protected function get_inline_name_field_label() {
+			return __( 'Name', 'nelioab' );
+		}
+
+	}// NelioABWidgetAlternativesTable
 
 }
 
