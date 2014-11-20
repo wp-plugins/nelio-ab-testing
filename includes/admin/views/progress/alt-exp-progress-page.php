@@ -899,10 +899,16 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					$aux = $gtest->get_max();
 			}
 
-			if ( $aux )
-				return $aux;
-			else
-				return self::NO_WINNER;
+			if ( $aux ) {
+				$exp = $this->exp;
+				$i = 0;
+				foreach ( $exp->get_alternatives() as $alt ) {
+					$i++;
+					if ( $aux == $alt->get_value() )
+						return $i;
+				}
+			}
+			return self::NO_WINNER;
 		}
 
 		/**
