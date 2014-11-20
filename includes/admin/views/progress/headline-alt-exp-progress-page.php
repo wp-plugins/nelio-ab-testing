@@ -43,6 +43,21 @@ if ( !class_exists( 'NelioABHeadlineAltExpProgressPage' ) ) {
 			<?php
 		}
 
+		protected function who_wins() {
+			$exp = $this->exp;
+			$winner_id = $this->who_wins_real_id();
+			if ( $winner_id == $exp->get_originals_id() )
+				return 0;
+			$i = 1;
+			foreach ( $exp->get_alternatives() as $alt ) {
+				$value = $alt->get_value();
+				if ( $winner_id == $value['id'] )
+					return $i;
+				$i++;
+			}
+			return self::NO_WINNER;
+		}
+
 		public function do_render() {
 			parent::do_render(); ?>
 			<div id="preview-dialog-modal" title="<?php _e( 'Headline', 'nelioab' ); ?>" style="display:none;">

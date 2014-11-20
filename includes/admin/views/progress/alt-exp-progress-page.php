@@ -24,7 +24,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 	abstract class NelioABAltExpProgressPage extends NelioABAdminAjaxPage {
 
-		const NO_WINNER = -1;
+		const NO_WINNER = 'NoWinnerWasFound';
 
 		protected $exp;
 		protected $results;
@@ -876,7 +876,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		}
 
 		protected function is_winner( $id ) {
-			$winner = $this->who_wins();
+			$winner = $this->who_wins_real_id();
 			if ( self::NO_WINNER == $winner )
 				return false;
 			else
@@ -884,6 +884,20 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		}
 
 		protected function who_wins() {
+			$exp = $this->exp;
+			$winner_id = $this->who_wins_real_id();
+			if ( $winner_id == $exp->get_originals_id() )
+				return 0;
+			$i = 1;
+			foreach ( $exp->get_alternatives() as $alt ) {
+				if ( $winner_id == $alt->get_value() )
+					return $i;
+				$i++;
+			}
+			return self::NO_WINNER;
+		}
+
+		protected function who_wins_real_id() {
 			$res = $this->results;
 			if ( $res == null )
 				return self::NO_WINNER;
@@ -899,15 +913,9 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					$aux = $gtest->get_max();
 			}
 
-			if ( $aux ) {
-				$exp = $this->exp;
-				$i = 0;
-				foreach ( $exp->get_alternatives() as $alt ) {
-					$i++;
-					if ( $aux == $alt->get_value() )
-						return $i;
-				}
-			}
+			if ( $aux )
+				return $aux;
+			else
 			return self::NO_WINNER;
 		}
 
