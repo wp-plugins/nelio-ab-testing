@@ -18,10 +18,11 @@ var NelioABPostSearcher = {
 
 	formatSelectionResult: function(item, container) {
 		container.data( "post-id", item.id );
+		container.data( "excerpt", item.excerpt );
 		return item.title;
 	},
 
-	buildSearcher: function(elem, type, filter) {
+	buildSearcher: function(elem, type, drafts, filter) {
 		elem.select2({
 			ajax: {
 				url: ajaxurl,
@@ -32,6 +33,7 @@ var NelioABPostSearcher = {
 						term: term,
 						action: "nelioab_post_searcher",
 						type: type,
+						drafts: drafts,
 					};
 					if ( type == 'page-or-post-or-latest' ) {
 						res.type = 'page-or-post';
@@ -42,6 +44,7 @@ var NelioABPostSearcher = {
 				results: function (data) {
 					if ( filter !== undefined )
 						data = filter( elem, data );
+					elem.data('last-search', data);
 					return { results:data };
 				}
 			},
@@ -58,10 +61,11 @@ var NelioABPostSearcher = {
 		var chosen = elem.parent().find('.select2-chosen');
 		if ( chosen.hasClass('select2-default') )
 			return false;
-		return { value:elem.attr('value'), label:chosen.html() };
+		return { id:elem.attr('value'), value:elem.attr('value'), label:chosen.html(),
+			title:chosen.text(), excerpt:chosen.data('excerpt') };
 	},
 
-	setDefault: function(elem, type) {
+	setDefault: function(elem, type, drafts) {
 		jQuery.ajax( {
 				url: ajaxurl,
 				dataType: 'json',
@@ -69,19 +73,25 @@ var NelioABPostSearcher = {
 				data: {
 					action: "nelioab_post_searcher",
 					type: type,
+					drafts: drafts,
 					default_id: elem.attr('value'),
 				},
 			}).done(function(data) {
 				var item = data[0];
-				NelioABPostSearcher.doSetDefault( elem, item.title, item.id );
+				var search = [];
+				search.push( data[0] );
+				elem.data('last-search', search);
+				NelioABPostSearcher.doSetDefault( elem, item );
+				elem.trigger('default-value-loaded');
 			});
 	},
 
-	doSetDefault: function( elem, label, value ) {
+	doSetDefault: function( elem, item ) {
+		elem.attr('value', item.id);
 		var chosen = elem.parent().find('.select2-chosen');
-		chosen.html(label);
+		chosen.html(item.title);
 		chosen.parent().removeClass('select2-default');
-		elem.attr('value', value);
+		NelioABPostSearcher.formatSelectionResult( item, chosen );
 	},
 
 	setPlaceholder: function(elem) {

@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 
@@ -32,6 +34,11 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 		}
 
 		public static function build() {
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
 			$aux  = NelioABPostAltExpEditionPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render();
@@ -74,7 +81,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 				$alt_type    = $experiment->get_type();
 			}
 			else {
-				$experiment = new NelioABPostAlternativeExperiment( -1 );
+				$experiment = new NelioABPostAlternativeExperiment( -time() );
 				$experiment->clear();
 			}
 
@@ -89,6 +96,16 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 						array_push( $other_names, $aux->get_name() );
 				}
 			}
+
+			// Get id of Original page or post
+			// ----------------------------------------------
+			if ( isset( $_GET['post-id'] ) &&
+				$_GET['experiment-type'] == NelioABExperiment::POST_ALT_EXP )
+				$experiment->set_original( $_GET['post-id'] );
+
+			if ( isset( $_GET['page-id'] ) &&
+				$_GET['experiment-type'] == NelioABExperiment::PAGE_ALT_EXP )
+				$experiment->set_original( $_GET['page-id'] );
 
 
 			// Checking whether there are pages or posts available
@@ -192,6 +209,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			}
 
 			// 2. Redirect to the edit page
+			update_post_meta( $alt_to_edit->get_value(), '_nelioab_original_id', $experiment->get_originals_id() );
 			echo '[SUCCESS]' . admin_url( 'post.php?action=edit&post=' . $alt_to_edit->get_value() );
 			die();
 		}

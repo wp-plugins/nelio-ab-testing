@@ -704,4 +704,29 @@ function createHeatmapObject( w, h ) {
 		style.appendChild(document.createTextNode(css));
 
 	head.appendChild(style);
+
 })();
+
+
+function nelioabLoadScrollableElements() {
+	var INTERVAL = 200;
+	var SCROLL_DOWN = 640;
+	var MAX_SCROLLS = 20;
+	var i = 0;
+	var doScroll = function() {
+		var lst = jQuery(window).scrollTop();
+		++i;
+		jQuery(window).scrollTop(i*SCROLL_DOWN);
+		jQuery(window).trigger('scroll');
+		if ( lst < jQuery(window).scrollTop() && i <= MAX_SCROLLS )
+			setTimeout(doScroll, INTERVAL);
+		else
+			setTimeout( function() {
+				jQuery(window).scrollTop(0);
+				parent.jQuery(document).trigger('nelioab-scroll-done');
+				window.parent.jQuery(window.parent.document).trigger('nelioab-scroll-done');
+			}, INTERVAL );
+	};
+	doScroll();
+}
+
