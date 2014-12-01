@@ -61,7 +61,7 @@ var NelioABPostSearcher = {
 		var chosen = elem.parent().find('.select2-chosen');
 		if ( chosen.hasClass('select2-default') )
 			return false;
-		return { value:elem.attr('value'), label:chosen.html(),
+		return { id:elem.attr('value'), value:elem.attr('value'), label:chosen.html(),
 			title:chosen.text(), excerpt:chosen.data('excerpt') };
 	},
 

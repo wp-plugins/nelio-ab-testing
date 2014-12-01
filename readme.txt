@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 3.3.1
+Stable tag: 3.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,8 +43,10 @@ familiar user experience.
 
 [youtube https://www.youtube.com/watch?v=ZDgTkqI4SNk]
 
+**Take a look at the following reasons for choosing Nelio**
 
-= Native A/B Testing Solution for WordPress =
+
+= #1 - Native A/B Testing Solution for WordPress =
 
 There's no [need to learn an external
 tool](http://wp-abtesting.com/5-reasons-use-nelio-ab-testing/?fp=wordpress.org).
@@ -54,7 +56,7 @@ interface** that simplifies the process of creating alternatives and applying
 the winning ones.
 
 
-= Create Alternative Content for your Pages (and Posts) =
+= #2 - Create Alternative Content for your Pages (and Posts) =
 
 When creating A/B experiments, the first things you'll want to test are the
 pages of your website. Does this button work? Do my visitors go from the
@@ -63,7 +65,7 @@ A/B Testing makes [page (and post) experiments super
 easy](http://wp-abtesting.com/wordpress-splitmultivariate-testing-pages/?fp=wordpress.org)!
 
 
-= Go beyond simple title tests&mdash;Test Headlines! =
+= #3 - Go beyond simple title tests&mdash;Test Headlines! =
 
 Are you a Publisher? Are you an avid blogger? Then, you probably want to
 [deliver to every reader a more engaging and relevant reading
@@ -75,7 +77,7 @@ visitors to click the link and further read the post from anywhere in your
 site!
 
 
-= Test Widgets =
+= #4 - Test Widgets =
 
 **Nelio A/B Testing is the only solution that includes Widget Testing**. Easily
 duplicate your current widget set, change it by adding new widgets, removing
@@ -83,7 +85,7 @@ old widgets, and editing others, and discover which widget combination improves
 your conversion rate.
 
 
-= Beautiful Heatmaps and Clickmaps =
+= #5 - Beautiful Heatmaps and Clickmaps =
 
 **[Heatmaps (and Clickmaps) offer valuable
 information](http://wp-abtesting.com/heatmaps-teach-us/?fp=wordpress.org) about
@@ -92,7 +94,7 @@ are a perfect companion of A/B experiments, for they give insights on what to
 text next and help you understand the progress of your experiments.
 
 
-= Test Alternative Themes and CSS =
+= #6 - Test Alternative Themes and CSS =
 
 If you're planning to change your theme, or tweak its CSS rules, [make sure
 they'll benefit your
@@ -102,7 +104,7 @@ the themes you want to test (or define the alternative CSS rules you want to
 apply), and the plugin will take care of the rest.
 
 
-= Conversion Actions and Evolution of Your Experiments =
+= #7 - Conversion Actions and Evolution of Your Experiments =
 
 With Nelio A/B Testing, you can [track the important actions your visitors
 take](http://wp-abtesting.com/powerful-analytics/?fp=wordpress.org). Don't get
@@ -111,7 +113,7 @@ plugin will offer you fresh information about the evolution of the experiment,
 with nice graphics about visitors and conversions.
 
 
-= Cache Support and Server Load =
+= #8 - Cache Support and Server Load =
 
 One of our priorities is **efficiency**. The process of A/B testing a site is
 not necessarily at odds with performance. Nelio A/B Testing implements several
@@ -122,14 +124,20 @@ consistency** (if you're testing a page or post, not only that page or post has
 to change, but also any page that includes a widget referencing it).
 
 
-= Subscription Plans that Fit Your Needs =
+= #9 - Outstanding Support =
+
+We work very hard to offer an amazing support to all our customers. If you
+encounter compatibility issues or you have problems setting the plugin up and
+running, contact us and we'll do our best to help you!
+
+
+= #10 - Subscription Plans that Fit Your Needs =
 
 Nelio A/B Testing aims to offer a **complete A/B testing experience for
 everybody**. That's why [you can create an **unlimited number of experiments of
 any kind** subscribing to any of our
 packages](http://wp-abtesting.com/subscription-plans/?fp=wordpress.org). Just
-take a look at our subscription plans and select the one that better suits your
-needs.
+check our subscription plans and select the one that better suits your needs.
 
 
 
@@ -231,6 +239,12 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.3.2 =
+* Improved Performance. Several AJAX requests are no longer directed to your
+own WordPress server, but to our backend servers. This way, we reduce your
+server's load and boost the overall performance.
+
 
 = 3.3.1 =
 * Performance MU-Plugin does no longer deactivate WPML. This way, WPML pages
@@ -719,7 +733,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.3.1 =
-3.3 series includes **Widget Testing**, **Headline Testing**, and tons of
-tiny improvements and bug fixes.
-
+= 3.3.2 =
+3.3 series includes **Widget Testing** and **Headline Testing**. It also boosts
+the overall performance, reducing your server's load and making things faster
+and more reliable.

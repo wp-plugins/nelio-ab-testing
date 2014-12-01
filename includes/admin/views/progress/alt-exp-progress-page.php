@@ -24,7 +24,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 	abstract class NelioABAltExpProgressPage extends NelioABAdminAjaxPage {
 
-		const NO_WINNER = 'NoWinnerWasFound';
+		const NO_WINNER = -999999;
 
 		protected $exp;
 		protected $results;
@@ -428,15 +428,15 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 							<div id="summary-numbers">
 								<h3><?php
 									$conf_label = ' (' . __( 'Confidence', 'nelioab' ) . ')';
-									if ( $the_winner == self::NO_WINNER )
+									if ( self::NO_WINNER == $the_winner )
 										$conf_label = '';
-									if ( $exp->get_status() == NelioABExperimentStatus::RUNNING )
+									if ( NelioABExperimentStatus::RUNNING == $exp->get_status() )
 										echo __( 'Current Winner', 'nelioab' ) . $conf_label;
 									else
 										echo __( 'Winner', 'nelioab' ) . $conf_label;
 								?></h3>
 								<?php
-								if ( $the_winner == self::NO_WINNER ) {
+								if ( self::NO_WINNER == $the_winner ) {
 									printf ( '<p class="result">%s</p>', __( 'None', 'nelioab' ) );
 								}
 								else {
@@ -916,7 +916,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			if ( $aux )
 				return $aux;
 			else
-			return self::NO_WINNER;
+				return self::NO_WINNER;
 		}
 
 		/**

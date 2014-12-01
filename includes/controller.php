@@ -38,13 +38,18 @@ if ( !class_exists( 'NelioABController' ) ) {
 		private $controllers;
 		private $url;
 
+		public $sync_data;
+		public $tracking_script_params;
+
 		public function __construct() {
 			require_once( NELIOAB_UTILS_DIR . '/dtgtm4wp-support.php' );
 
 			$this->build_current_url();
 
 			$this->controllers = array();
-			$directory   = NELIOAB_DIR . '/experiment-controllers';
+			$directory = NELIOAB_DIR . '/experiment-controllers';
+			$this->sync_data = array();
+			$this->tracking_script_params = array();
 
 			require_once( $directory . '/alternative-experiment-controller.php' );
 			$this->controllers['alt-exp'] = new NelioABAlternativeExperimentController();
@@ -93,41 +98,39 @@ if ( !class_exists( 'NelioABController' ) ) {
 
 		private function prepare_ajax_callbacks() {
 
-			add_action( 'wp_ajax_nopriv_nelioab_send_navigation',
-				array( &$this, 'send_navigation' ) );
-			add_action( 'wp_ajax_nelioab_send_navigation',
-				array( &$this, 'send_navigation' ) );
+			add_action( 'wp_ajax_nopriv_nelioab_qc',
+				array( &$this, 'check_quota' ) );
+			add_action( 'wp_ajax_nelioab_qc',
+				array( &$this, 'check_quota' ) );
 
-			add_action( 'wp_ajax_nopriv_nelioab_send_headlines_info',
-				array( &$this->controllers['alt-exp'], 'send_headlines_info' ) );
-			add_action( 'wp_ajax_nelioab_send_headlines_info',
-				array( &$this->controllers['alt-exp'], 'send_headlines_info' ) );
-
-			add_action( 'wp_ajax_nopriv_nelioab_external_page_accessed_action_urls',
-				array( &$this->controllers['alt-exp'], 'get_external_page_accessed_action_urls' ) );
-			add_action( 'wp_ajax_nelioab_external_page_accessed_action_urls',
-				array( &$this->controllers['alt-exp'], 'get_external_page_accessed_action_urls' ) );
+			add_action( 'wp_ajax_nopriv_nelioab_ure',
+				array( &$this, 'update_running_experiments' ) );
+			add_action( 'wp_ajax_nelioab_ure',
+				array( &$this, 'update_running_experiments' ) );
 
 			add_action( 'wp_ajax_nopriv_nelioab_sync_cookies_and_check',
 				array( &$this, 'sync_cookies_and_check' ) );
 			add_action( 'wp_ajax_nelioab_sync_cookies_and_check',
 				array( &$this, 'sync_cookies_and_check' ) );
 
-			add_action( 'wp_ajax_nopriv_nelioab_send_heatmap_info',
-				array( &$this->controllers['hm'], 'save_heatmap_info_into_cache' ) );
-			add_action( 'wp_ajax_nelioab_send_heatmap_info',
-				array( &$this->controllers['hm'], 'save_heatmap_info_into_cache' ) );
+		}
 
-			add_action( 'wp_ajax_nopriv_nelioab_track_heatmaps_for_post',
-				array( &$this->controllers['hm'], 'track_heatmaps_for_post' ) );
-			add_action( 'wp_ajax_nelioab_track_heatmaps_for_post',
-				array( &$this->controllers['hm'], 'track_heatmaps_for_post' ) );
+		public function check_quota() {
+			try {
+				$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check',
+					NelioABAccountSettings::get_customer_id() );
+				$json = NelioABBackend::remote_get( $url, true );
+				$json = json_decode( $json['body'] );
+				$quota = $json->quota + $json->quotaExtra;
+				NelioABAccountSettings::set_has_quota_left( $quota > 0 );
+			} catch ( Exception $e ) {}
+			die();
+		}
 
-			add_action( 'wp_ajax_nopriv_nelioab_sync_heatmaps',
-				array( &$this->controllers['hm'], 'send_heatmap_info_if_required' ) );
-			add_action( 'wp_ajax_nelioab_sync_heatmaps',
-				array( &$this->controllers['hm'], 'send_heatmap_info_if_required' ) );
-
+		public function update_running_experiments() {
+			$this->compute_results_for_running_experiments();
+			$alt_con = $this->controllers['alt-exp'];
+			$alt_con->update_current_winner_for_running_experiments( 'force_update' );
 		}
 
 		public function sync_cookies_and_check() {
@@ -138,15 +141,46 @@ if ( !class_exists( 'NelioABController' ) ) {
 			$cookies = $this->update_cookies();
 
 			// Finally, we check if we need to load an alternative
-			$alt_con  = $this->controllers['alt-exp'];
-			$load_alt = $alt_con->check_requires_an_alternative( $_POST['current_url'] );
-			$mode     = NelioABSettings::get_alternative_loading_mode();
-			$result   = array(
-				'cookies'  => $cookies,
-				'load_alt' => $load_alt,
-				'mode'     => $mode );
+			$alt_con = $this->controllers['alt-exp'];
+			$loadAction = $alt_con->check_requires_an_alternative( $_POST['current_url'] );
+			// If there's no need to load an alternative, we build all relevant sync data
+			if ( 'DO_NOT_LOAD_ANYTHING' == $loadAction )
+				$this->build_relevant_sync_data();
+
+			$mode = NelioABSettings::get_alternative_loading_mode();
+			$result = array(
+					'cookies' => $cookies,
+					'action'  => $loadAction,
+					'mode'    => $mode,
+					'sync'    => $this->sync_data,
+				);
+
 			echo json_encode( $result );
 			die();
+		}
+
+		public function build_relevant_sync_data() {
+			// We load all relevant sync data
+			$alt_con = $this->controllers['alt-exp'];
+			$hm_con  = $this->controllers['hm'];
+
+			// (a) Navigation to the current page
+			$current_id  = $this->url_or_front_page_to_postid( $this->get_current_url() );
+			$referer_url = ( isset( $_POST['referer_url'] ) ) ?  rtrim( $_POST['referer_url'] ) : '';
+			$nav = $alt_con->prepare_navigation_object( $current_id, $referer_url );
+			$nav['isRelevant'] = $alt_con->is_relevant( $nav ) || $hm_con->is_relevant( $nav );
+			nelioab_add_sync_data( array( 'nav' => $nav ) );
+
+			// (b) Possible outwards navigations from the current page
+			$external_urls = $alt_con->get_external_page_accessed_action_urls();
+			nelioab_add_sync_data( array( 'outwardsNavigationUrls' => $external_urls ) );
+
+			// (c) Information about Heatmaps
+			$heatmaps = $hm_con->track_heatmaps_for_post( $nav['currentActualId'] );
+			nelioab_add_sync_data( array( 'heatmaps' => $heatmaps ) );
+
+			// BUT NOT for:
+			// - Form Submits, because they are necessarily processed by WP
 		}
 
 		private function update_cookies() {
@@ -226,24 +260,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 			}
 		}
 
-		public function send_navigation() {
-			$dest_post_id = $this->url_or_front_page_to_postid( $_POST['dest_url'] );
-			$referer = '';
-			if ( isset( $_POST['ori_url'] ) )
-				$referer = $_POST['ori_url'];
-
-			if ( isset( $_POST['is_external_page'] ) )
-				$this->send_navigation_if_required( $_POST['dest_url'], $referer, false );
-			else if ( $dest_post_id )
-				$this->send_navigation_if_required( $dest_post_id, $referer );
-
-			$this->compute_results_for_running_experiments();
-
-			$alt_con = $this->controllers['alt-exp'];
-			$alt_con->update_current_winner_for_running_experiments();
-			die();
-		}
-
 		public function compute_results_for_running_experiments() {
 
 			// 0. Check if the customer can use this function
@@ -271,84 +287,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 						NelioABAccountSettings::get_site_id()
 					);
 				$result = NelioABBackend::remote_get( $url );
-
-				// 4. Update the winning alternative info using the latest results available
-				$alt_con = $this->controllers['alt-exp'];
-				$alt_con->update_current_winner_for_running_experiments( 'force_update' );
 			}
 			catch ( Exception $e ) {}
-		}
-
-		private function send_navigation_if_required( $dest_id, $referer_url, $is_internal = true ) {
-			$alt_exp_con = $this->controllers['alt-exp'];
-			$nav = $alt_exp_con->prepare_navigation_object( $dest_id, $referer_url, $is_internal );
-
-			if ( $is_internal && !$this->is_relevant( $nav ) )
-				return;
-
-			$this->send_navigation_object( $nav );
-		}
-
-		public function send_navigation_object( $nav ) {
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
-
-			// If there's no quota available (and no check is required), quit
-			if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
-				return;
-
-			// If the navigation is to the same page it comes from, do not send it
-			if ( $nav['origin'] == $nav['destination'] )
-				return;
-
-			// Adding more information about navigations
-			if ( isset( $_SERVER['HTTP_USER_AGENT'] ) )
-				$nav['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
-			else
-				$nav['userAgent'] = 'unknown';
-
-			if ( function_exists( 'uniqid' ) )
-				$nav['session'] = uniqid();
-			else
-				$nav['session'] = time();
-
-			$url = sprintf(
-				NELIOAB_BACKEND_URL . '/site/%s/nav',
-				NelioABAccountSettings::get_site_id()
-			);
-
-			$data = NelioABBackend::build_json_object_with_credentials( $nav );
-			$data['timeout'] = 50;
-
-			for ( $attemp=0; $attemp < 5; ++$attemp ) {
-				try {
-					$result = NelioABBackend::remote_post_raw( $url, $data );
-					NelioABAccountSettings::set_has_quota_left( true );
-					break;
-				}
-				catch ( Exception $e ) {
-					// If the navigation could not be sent, it may be the case because
-					// there is no more quota available
-					if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
-						NelioABAccountSettings::set_has_quota_left( false );
-						break;
-					}
-					// If there was another error... we just keep trying (attemp) up to 5
-					// times.
-				}
-			}
-		}
-
-		public function is_relevant( $nav ) {
-
-			$aux = $this->controllers['alt-exp'];
-			if ( $aux->is_relevant( $nav ) )
-				return true;
-
-			$aux = $this->controllers['hm'];
-			if ( $aux->is_relevant( $nav ) )
-				return true;
-
-			return false;
 		}
 
 		public function get_current_url() {
@@ -463,7 +403,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 					NelioABCustomPermalinksSupport::prevent_template_redirect();
 			}
 
-			add_action( 'wp_enqueue_scripts', array( &$this, 'load_jquery' ) );
+			add_action( 'wp_enqueue_scripts', array( &$this, 'register_tracking_script' ) );
+			add_action( 'wp_enqueue_scripts', array( &$this, 'load_tracking_script' ), 99 );
 
 			// LOAD ALL CONTROLLERS
 
@@ -494,11 +435,84 @@ if ( !class_exists( 'NelioABController' ) ) {
 			return false;
 		}
 
-		public function load_jquery() {
-			wp_enqueue_script( 'nelioab_alternatives_script_generic',
-				nelioab_asset_link( '/js/nelioab-generic.min.js' ) );
-			wp_localize_script( 'nelioab_alternatives_script_generic',
-				'NelioABGeneric', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+		public function register_tracking_script() {
+			wp_register_script( 'nelioab_tracking_script',
+				nelioab_asset_link( '/js/tracking.min.js' ),
+				array( 'jquery' ) );
+
+			// Custom Permalinks Support: Obtaining the real permalink (which might be
+			// masquared by custom permalinks plugin)
+			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
+			$url = $this->get_current_url();
+			$current_post_id = $this->url_or_front_page_to_postid( $url );
+			if ( NelioABCustomPermalinksSupport::is_plugin_active() )
+				$permalink = NelioABCustomPermalinksSupport::get_original_permalink( $current_post_id );
+			else
+				$permalink = get_permalink( $current_post_id );
+
+			// If we were unable to find a permalink...
+			if ( empty( $permalink ) ) {
+				if ( nelioab_get_page_on_front() == $current_post_id )
+					$permalink = home_url();
+				else
+					$permalink = $url;
+			}
+
+			// When the page is returned, should the scripts trigger a "check request" or not?
+			if ( $this->is_alternative_content_loading_required() ) {
+				nelioab_localize_tracking_script( array( 'nelioab_perform_check_request' => 'no' ) );
+				$this->build_relevant_sync_data();
+			}
+			else {
+				nelioab_localize_tracking_script( array( 'nelioab_perform_check_request' => 'yes' ) );
+				// relevant_sync_data will be available as a result of the "check_request"
+			}
+
+			$misc = array();
+
+			// QUOTA CONTROL
+			$misc['hq'] = ( NelioABAccountSettings::has_quota_left() ) ? 'y' : 'n';
+			if ( NelioABAccountSettings::is_quota_check_required() ) {
+				// We'll wait for an AJAX request to check whether there's actually quota or not.
+				// In the meantime, we'll keep the quota as it is
+				NelioABAccountSettings::assume_quota_check_will_occur_shortly();
+				$misc['qc'] = 'y';
+			}
+			else {
+				// There's no need to check anything
+				$misc['qc'] = 'n';
+			}
+
+			// UPDATE INFORMATION ABOUT RUNNING EXPERIMENTS
+			$now = time();
+			$last_ure_call = get_option( 'nelioab_last_ure_call', 0 );
+			if ( $last_ure_call + 300 < $now ) {
+				update_option( 'nelioab_last_ure_call', $now );
+				$misc['ure'] = 'y';
+			}
+			else {
+				$misc['ure'] = 'n';
+			}
+
+			nelioab_localize_tracking_script( array(
+					'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+					'permalink'      => $permalink,
+					'customer'       => NelioABAccountSettings::get_customer_id(),
+					'site'           => NelioABAccountSettings::get_site_id(),
+					'backendVersion' => NELIOAB_BACKEND_VERSION,
+					'misc'           => $misc,
+				) );
+
+		}
+
+		public function load_tracking_script() {
+			if ( $this->is_alternative_content_loading_required() )
+				$this->tracking_script_params['sync'] = $this->sync_data;
+			else
+				$this->tracking_script_params['sync'] = array();
+			wp_localize_script( 'nelioab_tracking_script', 'NelioABParams',
+				$this->tracking_script_params );
+			wp_enqueue_script( 'nelioab_tracking_script' );
 		}
 
 		/**
@@ -709,5 +723,17 @@ if ( !class_exists( 'NelioABController' ) ) {
 	$nelioab_controller = new NelioABController();
 	if ( !is_admin() )
 		$nelioab_controller->init();
+
+	function nelioab_localize_tracking_script( $new_params ) {
+		global $nelioab_controller;
+		foreach ( $new_params as $key => $value )
+			$nelioab_controller->tracking_script_params[$key] = $value;
+	}
+
+	function nelioab_add_sync_data( $new_params ) {
+		global $nelioab_controller;
+		foreach ( $new_params as $key => $value )
+			$nelioab_controller->sync_data[$key] = $value;
+	}
 
 }
