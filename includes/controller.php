@@ -460,11 +460,14 @@ if ( !class_exists( 'NelioABController' ) ) {
 
 			// When the page is returned, should the scripts trigger a "check request" or not?
 			if ( $this->is_alternative_content_loading_required() ) {
-				nelioab_localize_tracking_script( array( 'nelioab_perform_check_request' => 'no' ) );
+				nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'sync-and-track' ) );
 				$this->build_relevant_sync_data();
 			}
+			else if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+				nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'skip' ) );
+			}
 			else {
-				nelioab_localize_tracking_script( array( 'nelioab_perform_check_request' => 'yes' ) );
+				nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'check' ) );
 				// relevant_sync_data will be available as a result of the "check_request"
 			}
 

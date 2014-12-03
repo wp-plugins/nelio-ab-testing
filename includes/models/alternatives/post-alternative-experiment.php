@@ -334,8 +334,11 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// 2.4 SET META "_is_nelioab_alternative" WITH THE ID OF THE EXPERIMENT
 			foreach ( $this->get_alternatives() as $alt ) {
-				$value = $this->get_id() . ',' . $this->get_status();
-				update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
+				$pid = $alt->get_value();
+				if ( is_int( $pid ) && $pid > 0 ) {
+					$value = $this->get_id() . ',' . $this->get_status();
+					update_post_meta( $pid, "_is_nelioab_alternative", $value );
+				}
 			}
 		}
 

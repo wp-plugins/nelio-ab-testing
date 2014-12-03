@@ -33,6 +33,8 @@ function nelioab_update_plugin_info_if_required() {
  * opposite of the nelioab_deactivate_plugin function. Its aim is to make sure
  * that alternatives (draft post/pages with a metatype) are not visible in the
  * admin area, but can be editted and used.
+ *
+ * We also make sure that it's called after an update.
  */
 function nelioab_activate_plugin() {
 	global $wpdb;
@@ -43,6 +45,15 @@ function nelioab_activate_plugin() {
 		array( 'meta_key' => '_is_nelioab_alternative' ),
 		array( 'meta_key' => 'is_nelioab_alternative' )
 	);
+
+	// We remove all information about "_is_nelioab_alternative" for posts whose
+	// IDs are less than 15. In previous versions of the plugin, Title experiments
+	// marked those posts as alternatives (negative IDs from -1 to -15 were used
+	// and WordPress interpreted them as positive IDs).
+	$query = '' .
+		'DELETE FROM ' . $wpdb->postmeta . ' WHERE ' .
+			'post_id < 15 AND meta_key = \'_is_nelioab_alternative\'';
+	$aux = $wpdb->query( $query );
 
 	// Showing previous page and post alternatives
 	$query = 'UPDATE ' . $wpdb->posts . ' SET post_type = %s WHERE post_type = %s';

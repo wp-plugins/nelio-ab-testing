@@ -131,8 +131,8 @@ NelioAB.checker.loadAlternative = function( mode, action ) {
 		url:   permalink,
 		data: data,
 		success: function(data) {
-			if ( data.indexOf( '\"nelioab_perform_check_request\":\"yes\"' ) != -1 ) {
-				console.error("Recursive load of alternative content detected");
+			if ( data.indexOf( '\"nelioabScriptAction\":\"sync-and-track\"' ) == -1 ) {
+				console.error("Something went wrong when loading the alternative content");
 				NelioAB.helpers.showBody();
 				return;
 			}
@@ -181,8 +181,15 @@ NelioAB.checker.loadAlternative = function( mode, action ) {
 	});
 }
 
-if ( NelioABParams.nelioab_perform_check_request == "yes" )
-	NelioAB.checker.init();
-else
-	NelioAB.helpers.trackAndSync();
+switch ( NelioABParams.nelioabScriptAction ) {
+	case 'check':
+		NelioAB.checker.init();
+		break;
+	case 'sync-and-track':
+		NelioAB.helpers.trackAndSync();
+		break;
+	case 'skip':
+		// Nothing to be done
+		break;
+}
 
