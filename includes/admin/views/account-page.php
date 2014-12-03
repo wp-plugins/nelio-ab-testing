@@ -89,13 +89,6 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 		protected function do_render() { ?>
 			<form id="nelioab_account_form" method="post">
 
-				<?php
-					if ( !$this->is_email_valid ) {
-						_e( '<p>Don\'t you have an account yet? <a href="http://wp-abtesting.com/subscription-plans/">Subscribe now!</a></p>', 'nelioab' );
-						echo '<br /><br />';
-					}
-				?>
-
 				<input type="hidden" name="nelioab_account_form" value="true" />
 
 				<?php

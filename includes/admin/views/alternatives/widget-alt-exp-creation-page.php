@@ -11,29 +11,26 @@
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-function nelioab_clean() {
-	global $wpdb;
+if ( !class_exists( 'NelioABWidgetAltExpCreationPage' ) ) {
 
-	// Rename the meta key that identifies post/page alternatives...
-	$wpdb->update(
-		$wpdb->postmeta,
-		array( 'meta_key' => '_is_nelioab_alternative' ),
-		array( 'meta_key' => 'is_nelioab_alternative' )
-	);
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/widget-alt-exp-edition-page.php' );
+	class NelioABWidgetAltExpCreationPage extends NelioABWidgetAltExpEditionPage {
 
-//	// Remove the options related to "user_id". Now we are using "reg_num"
-//	$res = $wpdb->query(
-//		$wpdb->prepare(
-//			'DELETE FROM ' . $wpdb->options .
-//			' WHERE option_name LIKE \'%\'',
-//			'%nelioab%client_id%'
-//		)
-//	);
+		public function __construct( $title ) {
+			parent::__construct( $title );
+			$this->set_icon( 'icon-nelioab' );
+			$this->set_form_name( 'nelioab_new_ab_widget_exp_form' );
+		}
+
+		protected function get_save_experiment_name() {
+			return _e( 'Create', 'nelioab' );
+		}
+
+	}//NelioABWidgetAltExpCreationPage
 
 }
 
-?>

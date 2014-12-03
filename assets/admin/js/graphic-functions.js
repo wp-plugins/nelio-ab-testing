@@ -256,7 +256,7 @@ function makeImprovementFactorGraphic(divName, labels, categories, data) {
  * conversions =>
  *
  */
-function makeVisitorsGraphic(divName, labels, categories, visitors, conversions) {
+function makeVisitorsGraphic(divName, labels, categories, visitors, conversions, colors) {
 	return new Highcharts.Chart({
 		chart: {
 			renderTo: divName,
@@ -344,11 +344,11 @@ function makeVisitorsGraphic(divName, labels, categories, visitors, conversions)
 		series: [{
 			name: labels['visitors'],
 			data: visitors,
-			color: '#009BD9',
+			color: colors[1],
 		}, {
 			name: labels['conversions'],
 			data: conversions,
-			color: '#003245',
+			color: colors[0],
 		}]
 	});
 }
@@ -460,7 +460,7 @@ function makeTimelineGraphic(divName, labels, visitors, conversions, startingDat
 	 });
 }
 
-function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, startingDate) {
+function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, startingDate, max) {
 		var series = [];
 
 		series.push( {
@@ -522,7 +522,7 @@ function makeTimelinePerAlternativeGraphic(divName, labels, alternatives, starti
 					 }
 				},
 				min: 0,
-				max: 100,
+				max: max,
 				startOnTick: true,
 				allowDecimals: false,
 				maxPadding: 0.1,

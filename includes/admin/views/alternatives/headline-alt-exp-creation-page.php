@@ -15,10 +15,10 @@
  */
 
 
-if ( !class_exists( 'NelioABTitleAltExpCreationPage' ) ) {
+if ( !class_exists( 'NelioABHeadlineAltExpCreationPage' ) ) {
 
-	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/title-alt-exp-edition-page.php' );
-	class NelioABTitleAltExpCreationPage extends NelioABTitleAltExpEditionPage {
+	require_once( NELIOAB_ADMIN_DIR . '/views/alternatives/headline-alt-exp-edition-page.php' );
+	class NelioABHeadlineAltExpCreationPage extends NelioABHeadlineAltExpEditionPage {
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -30,7 +30,7 @@ if ( !class_exists( 'NelioABTitleAltExpCreationPage' ) ) {
 			return _e( 'Create', 'nelioab' );
 		}
 
-	}//NelioABTitleAltExpCreationPage
+	}//NelioABHeadlineAltExpCreationPage
 
 }
 
