@@ -5,7 +5,7 @@ NelioAB = {};
  * functions and information.
  */
 NelioAB.backend = {};
-NelioAB.backend.url = '//nelioabtesting.appspot.com/v' + NelioABParams.backendVersion;
+NelioAB.backend.url = '//' + NelioABParams.backend.domain + '/v' + NelioABParams.backend.version;
 
 
 /**

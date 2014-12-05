@@ -107,9 +107,9 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 			function checkSubmit($) {
 				if ( validateGeneral($) )
-					$(".actions > .button-primary").removeClass("disabled");
+					$(".actions > .button-primary").removeClass("button-primary-disabled disabled");
 				else
-					$(".actions > .button-primary").addClass("disabled");
+					$(".actions > .button-primary").addClass("button-primary-disabled disabled");
 			}
 
 			function validateGeneral($) {

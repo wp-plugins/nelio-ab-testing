@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Nelio A/B Testing (speed-up AJAX calls)
  * Description: This plugin prevents other plugins from loading when performing certain AJAX calls, making things much faster.
- * Version: 3.3.2
+ * Version: 3.3.4
  * Author: Nelio Software
  * Author URI: http://neliosoftware.com
  * Plugin URI: http://wp-abtesting.com

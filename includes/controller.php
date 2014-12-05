@@ -71,10 +71,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 			// Preparing AJAX callbacks
 			$this->prepare_ajax_callbacks();
 
-			if ( isset( $_GET['nelioab_preview_css'] ) ) {
-				add_action( 'the_content', array( &$this->controllers['alt-exp'], 'preview_css' ) );
-				add_action( 'the_excerpt', array( &$this->controllers['alt-exp'], 'preview_css' ) );
-			}
+			if ( isset( $_GET['nelioab_preview_css'] ) )
+				add_action( 'wp_footer', array( &$this->controllers['alt-exp'], 'preview_css' ) );
 
 			global $pagenow;
 			if ( $this->is_alternative_content_loading_required() || ( isset( $pagenow ) && 'widgets.php' == $pagenow ) ) {
@@ -502,7 +500,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 					'permalink'      => $permalink,
 					'customer'       => NelioABAccountSettings::get_customer_id(),
 					'site'           => NelioABAccountSettings::get_site_id(),
-					'backendVersion' => NELIOAB_BACKEND_VERSION,
+					'backend'        => array( 'domain'  => NELIOAB_BACKEND_DOMAIN,
+					                           'version' => NELIOAB_BACKEND_VERSION ),
 					'misc'           => $misc,
 				) );
 

@@ -234,11 +234,11 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			if ( isset( $json->title ) )
 				$title = $json->title;
 
-			$page = new NelioABPageAccessedAction( $ref, $internal );
-			$page->set_title( $title );
-			$page->set_indirect_navigations_enabled( $indirect );
+			$action = new NelioABPageAccessedAction( $ref, $internal );
+			$action->set_title( $title );
+			$action->set_indirect_navigations_enabled( $indirect );
 
-			return $page;
+			return $action;
 		}
 
 		/**

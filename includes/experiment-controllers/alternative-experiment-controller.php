@@ -53,10 +53,10 @@ class NelioABAlternativeExperimentController {
 			add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
 			add_filter( 'post_link',           array( &$this, 'use_originals_post_link' ) );
 			add_filter( 'page_link',           array( &$this, 'use_originals_post_link' ) );
-			add_action( 'wp_enqueue_scripts',  array( &$this, 'include_css_alternative_fragments_if_any' ) );
 			add_filter( 'get_post_metadata',   array( &$this, 'load_proper_page_template' ), 10, 4 );
 			add_filter( 'wp',                  array( &$this, 'do_late_hooks' ) );
 			add_action( 'wp_footer',           array( &$this, 'add_list_of_applied_headlines' ) );
+			add_action( 'wp_footer', array( &$this, 'include_css_alternative_fragments_if_any' ) );
 
 			/**
 			 * Headline Experiments modify TITLE, FEATURED IMAGE and EXCERPT.
@@ -377,6 +377,7 @@ class NelioABAlternativeExperimentController {
 
 	public function show_the_appropriate_widgets( $all_widgets ) {
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
+		require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 		$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::WIDGET_ALT_EXP );
 		if ( $alt )
 			return $this->fix_widgets_for_widget_exp( $all_widgets, $alt );
@@ -744,14 +745,12 @@ class NelioABAlternativeExperimentController {
 		return NelioABUser::get_alternative_for_post_alt_exp( $post_id );
 	}
 
-	public function preview_css( $content ) {
+	public function preview_css() {
 		$css_id = '';
 		if ( isset( $_GET['nelioab_preview_css'] ) )
 			$css_id = $_GET['nelioab_preview_css'];
 		$css = get_option( 'nelioab_css_' . $css_id, false );
-		return $this->prepare_css_as_js( $css ) .
-			"<script>document.getElementsByTagName('head')[0].appendChild(nelioab_cssExpNode);</script>" .
-			$content;
+		echo $this->prepare_css_as_js( $css );
 	}
 
 	private function prepare_css_as_js( $code ) {
@@ -764,9 +763,12 @@ class NelioABAlternativeExperimentController {
 		$code = str_replace( array( "\r\n", "\r", "\n" ), '', $code );
 
 		$css  = "<script type='text/javascript'>\n";
-		$css .= "  nelioab_cssExpNode = document.createElement('style');\n";
-		$css .= "  nelioab_cssExpNode.setAttribute('type', 'text/css');\n";
-		$css .= "  nelioab_cssExpNode.innerHTML = \"$code\";\n";
+		$css .= "  if ( typeof NelioABParams == 'undefined' ) NelioABParams = {};\n";
+		$css .= "  if ( typeof NelioABParams.css == 'undefined' ) NelioABParams.css = {};\n";
+		$css .= "  NelioABParams.css.value = document.createElement('style');\n";
+		$css .= "  NelioABParams.css.value.setAttribute('type', 'text/css');\n";
+		$css .= "  NelioABParams.css.value.innerHTML = \"$code\";\n";
+		$css .= "  document.getElementsByTagName('head')[0].appendChild(NelioABParams.css.value);\n";
 		$css .= "</script>\n";
 
 		return $css;
