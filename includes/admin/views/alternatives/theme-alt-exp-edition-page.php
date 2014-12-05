@@ -139,6 +139,23 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 				var NelioABSelectedThemes;
 				(function($) {
 
+					<?php
+					require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+					$colorscheme = NelioABWpHelper::get_current_colorscheme();
+					?>
+					NelioABParams = {css:{}};
+					NelioABParams.css.value	= document.createElement('style');
+					NelioABParams.css.value.setAttribute('type', 'text/css');
+					NelioABParams.css.value.innerHTML = '' +
+						'.nelioab-selected .theme-image-selector { ' +
+						'  border-color:<?php echo $colorscheme['primary']; ?> !important;' +
+						'} ' +
+						'.nelioab-theme.nelioab-selected, .nelioab-theme.nelioab-selected:hover { ' +
+						'  background:<?php echo $colorscheme['primary']; ?> !important;' +
+						'}';
+					document.getElementsByTagName('head')[0].appendChild(NelioABParams.css.value);
+
+
 					NelioABSelectedThemes = JSON.parse( decodeURIComponent(
 							jQuery('#nelioab_selected_themes').attr('value')
 						)	);
@@ -191,7 +208,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPage' ) ) {
 					$(document).on('save-experiment', function() {
 						$( '#nelioab_selected_themes' ).attr('value',
 							encodeURIComponent( JSON.stringify( NelioABSelectedThemes ) )
-								.replace( "'", "%27") );
+								.replace( /'/g, "%27") );
 					});
 
 					$(document).on( 'tab-changed', function( e, tabId ) {

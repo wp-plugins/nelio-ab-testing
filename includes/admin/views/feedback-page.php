@@ -45,7 +45,7 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 			<div class="share" style="height:3em;">
 				<!-- TWITTER -->
 				<div style="float:left; min-width: 130px;">
-				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://wp-abtesting.com/" data-text="Just wanted to share the new #WordPress A/B and Multivariate Native Testing Service by @WPMigrations... It rocks! Check it out!">Tweet</a>
+				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://wp-abtesting.com/" data-text="I'm using Nelio A/B Testing for #WordPress by @NelioSoft and it rocks! Pages, headlines, widgets, heatmaps...">Tweet</a>
 				</div>
 
 				<!-- FACEBOOK -->
@@ -139,21 +139,21 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 			function enableButton() {
 				$ = jQuery;
 				button = $("#fb-controls > a");
-				button.removeClass("button-primary-disabled");
+				button.removeClass("disabled");
 				button.attr("href", "javascript:void(0);sendFeedback();");
 			}
 
 			function disableButton() {
 				$ = jQuery;
 				button = $("#fb-controls > a");
-				button.addClass("button-primary-disabled");
+				button.addClass("disabled");
 				button.attr("href", "javascript:void(0);");
 			}
 
 			function sendFeedback() {
 				$ = jQuery;
 				button = $("#fb-controls > a");
-				if ( button.hasClass("button-primary-disabled") )
+				if ( button.hasClass("disabled") )
 					return;
 				disableButton();
 				$("#fb-processing").fadeOut(300, function() {

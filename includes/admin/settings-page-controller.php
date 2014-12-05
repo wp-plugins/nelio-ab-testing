@@ -22,13 +22,12 @@ if ( !class_exists( 'NelioABSettingsPageController' ) ) {
 	class NelioABSettingsPageController {
 
 		public static function build() {
-			$title = __( 'Settings', 'nelioab' );
-
 			// Check settings
 			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
 			$error = NelioABErrorController::build_error_page_on_invalid_settings();
 			if ( $error ) return;
 
+			$title = __( 'Settings', 'nelioab' );
 			$view = new NelioABSettingsPage( $title );
 			$view->render();
 

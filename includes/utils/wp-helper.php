@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABWpHelper' ) ) {
 
@@ -55,7 +57,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			// First of all, we remove all post meta from the destination
 			$custom_fields = get_post_meta( $dest_id );
 			if ( $custom_fields ) {
-				foreach ( $custom_fields as $key => $val) {
+				foreach ( $custom_fields as $key => $val ) {
 
 					// If the metakey is ours (i.e. nelioab), we do not remove it
 					if ( strpos( $key, 'nelioab_' ) !== false )
@@ -71,7 +73,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			// And then we transfer the new ones
 			$custom_fields = get_post_meta( $src_id );
 			if ( $custom_fields ) {
-				foreach ( $custom_fields as $key => $val) {
+				foreach ( $custom_fields as $key => $val ) {
 
 					// If the metakey is ours (i.e. nelioab), we do not duplicate it
 					if ( strpos( $key, 'nelioab_' ) !== false )
@@ -175,6 +177,10 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			if ( 'page-or-post' == $type )
 				$type = array( 'page', 'post' );
 
+			$status = 'publish';
+			if ( isset( $_POST['drafts'] ) && 'show-drafts' == $_POST['drafts'] )
+				$status = array( 'publish', 'draft' );
+
 			$default_id = false;
 			if ( isset( $_POST['default_id'] ) )
 				$default_id = $_POST['default_id'];
@@ -194,7 +200,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				'posts_per_page' => 20,
 				'meta_key'       => '_is_nelioab_alternative',
 				'meta_compare'   => 'NOT EXISTS',
-				'post_status'    => 'publish',
+				'post_status'    => $status,
 			);
 
 			if ( 'page' === $type && !$term ) {
@@ -233,9 +239,14 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				if ( $id > 0 )
 					$post = get_post( $id );
 				if ( $post ) {
+					$thumbnail = get_the_post_thumbnail( $post->ID, 'thumbnail' );
+					if ( $thumbnail === '' )
+						$thumbnail = $default_thumbnail;
 					$item = array(
 						'id' => $post->ID,
 						'title' => self::fix_title( $post->post_title ),
+						'thumbnail' => $thumbnail,
+						'excerpt' => $post->post_excerpt,
 					);
 					header( 'Content-Type: application/json' );
 					echo json_encode( array( $item ) );
@@ -262,6 +273,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 						'title'     => self::fix_title( $post->post_title ),
 						'status'    => $post->post_status,
 						'date'      => $post->post_date,
+						'excerpt'   => $post->post_excerpt,
 						'author'    => get_the_author(),
 						'thumbnail' => $thumbnail,
 					);
@@ -398,6 +410,76 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		public static function sort_post_search_by_title( $i1, $i2 ) {
 			return strcasecmp( $i1['title'], $i2['title'] );
 		}
+
+		public static function get_current_colorscheme() {
+			$result = array();
+
+			if ( self::is_at_least_version( '3.8' ) ) {
+				global $_wp_admin_css_colors;
+				$cname = get_user_option( 'admin_color' );
+				$colorscheme = $_wp_admin_css_colors[$cname];
+				$result['foreground'] = '#fff';
+				$result['focus'] = $colorscheme->colors[2];
+				$result['primary'] = $colorscheme->colors[1];
+				$result['secondary'] = $colorscheme->colors[0];
+
+				// Tweaking some colors that don't look good enough
+				switch ( $cname ) {
+					// Default theme
+					case 'fresh':
+						$result['primary'] = '#298cba';
+						$result['secondary'] = '#194f68';
+						break;
+					// Greyish/dark theme
+					case 'midnight':
+						$result['primary'] = '#6b6b70';
+						break;
+					// Purple theme
+					case 'ectoplasm':
+						$result['primary'] = '#705f98';
+						$result['secondary'] = '#302145';
+						break;
+				}
+			}
+			else {
+				$result['foreground'] = '#fff';
+				$result['focus'] = '#009bd9';
+				$result['primary'] = '#298cba';
+				$result['secondary'] = '#194f68';
+			}
+
+			return $result;
+		}
+
+		/**
+		 * date_handler($date_start, $date_end)
+		 *
+		 * Date Validation
+		 * $date_start expects a date formatted as YYYYMMDD or the string 'all' or ''
+		 * $date_end expects a date formatted as YYYYMMDD or the string 'all' or ''
+		 * If either $date_start or $date_end are set to 'all' or '', set dates to 00010101 and 99990101
+		 */
+		public static function date_handler( $date_start, $date_end ) {
+
+			// check if either $date_start or $date_end have the value 'all'
+			if ( $date_start == 'all' || $date_start == '' || $date_end == 'all' || $date_end == '' ) {
+				return array( 'start' => '00010101', 'end' => '99990101' );
+			}
+			else {
+				// check $date_start format and validity
+				if ( is_numeric( $date_start ) && ( strlen( $date_start ) == '8' ) ) {
+
+					// check $date_end format and validity
+					if ( is_numeric( $date_end ) && ( strlen( $date_end ) == '8' ) && $date_end >= $date_start ) {
+						$date_end = date( "Ymd", strtotime( date( "Ymd", strtotime( $date_end ) ) . " +1 day" ) );
+						return array( 'start' => $date_start, 'end' => $date_end );
+					}
+					else { return 'End date is not valid.'; }
+				}
+				else { return 'Start date is not valid.'; }
+			}
+		}
+
 
 	}//NelioABWpHelper
 

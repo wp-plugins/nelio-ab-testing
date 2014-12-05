@@ -168,10 +168,34 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				?>
 				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ); ?>"></script>
 				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/admin-table.min.js' ); ?>"></script>
-				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/nelioab-alt-table.min.js' ); ?>"></script>
+				<?php $this->print_alt_table_script(); ?>
 				<script type="text/javascript">NelioABEditExperiment.useTab(jQuery('#exp-tabs .nav-tab-active').attr('id'));</script>
 			</form>
 
+			<?php
+		}
+
+		protected function print_alt_table_script() { ?>
+			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/alt-table.min.js' ); ?>"></script>
+			<script type="text/javascript">
+			(function($) {
+				// PRINTING THE LIST OF ALTERNATIVES
+				var alts = JSON.parse( decodeURIComponent(
+						jQuery('#nelioab_alternatives').attr('value')
+					) );
+				var altsTable = NelioABAltTable.getTable();
+				if ( altsTable ) {
+					NelioABAltTable.init(alts);
+					for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
+						var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
+						newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
+						newRow.show();
+						altsTable.append(newRow);
+					}
+					NelioABAdminTable.repaint( NelioABAltTable.getTable() );
+				}
+			})(jQuery);
+			</script>
 			<?php
 		}
 
@@ -225,13 +249,13 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				<?php require_once( NELIOAB_UTILS_DIR . '/html-generator.php' ); ?>
 				<div class="action page" style="display:none;">
 					<?php
-						$options = NelioABHtmlGenerator::get_page_searcher( 'new-action-page-searcher', false, array(), false );
+						$options = NelioABHtmlGenerator::get_page_searcher( 'new-action-page-searcher', false, 'no-drafts', array(), false );
 						$this->print_post_or_form_action( 'page', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action post" style="display:none;">
 					<?php
-						$options = NelioABHtmlGenerator::get_post_searcher( 'new-action-post-searcher', false, array(), false );
+						$options = NelioABHtmlGenerator::get_post_searcher( 'new-action-post-searcher', false, 'no-drafts', array(), false );
 						$this->print_post_or_form_action( 'post', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
@@ -258,9 +282,14 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 
 						if ( !$this->is_global ) {
 							$indirect  = '<select class="direct">';
-							$indirect .= ' <option value="1">' . __( 'from the tested page', 'nelioab' ) . '</option>';
-							$indirect .= ' <option value="0">' . __( 'from any page', 'nelioab' ) . '</option>';
-							$indirect .= '</select>';
+							if ( $this->tests_a_page ) {
+								$indirect .= ' <option value="1">' . __( 'from the tested page', 'nelioab' ) . '</option>';
+								$indirect .= ' <option value="0">' . __( 'from any page', 'nelioab' ) . '</option>';
+							}
+							else {
+								$indirect .= ' <option value="1">' . __( 'from the tested post', 'nelioab' ) . '</option>';
+								$indirect .= ' <option value="0">' . __( 'from any page', 'nelioab' ) . '</option>';
+							}
 							printf(
 								__( 'A visitor accesses %4$s the page %1$s, %2$s %3$s', 'nelioab' ),
 								$name, $options, $url, $indirect );
@@ -324,7 +353,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 			}
 			else {
 				$p_indirect_real .= ' <option value="1">' . __( 'from the tested post', 'nelioab' ) . '</option>';
-				$p_indirect_real .= ' <option value="0">' . __( 'from any post', 'nelioab' ) . '</option>';
+				$p_indirect_real .= ' <option value="0">' . __( 'from any page', 'nelioab' ) . '</option>';
 			}
 			$p_indirect_real .= '</select>';
 			$p_indirect_hidden = '<input type="hidden" class="direct" value="0" />';
@@ -332,12 +361,12 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 			// INDIRECT selectors (or ANY_PAGE) for forms
 			$f_any_real  = '<select class="any-page">';
 			if ( $this->tests_a_page ) {
-				$f_any_real .= ' <option value="0">' . __( 'from the tested post', 'nelioab' ) . '</option>';
-				$f_any_real .= ' <option value="1">' . __( 'from any post', 'nelioab' ) . '</option>';
+				$f_any_real .= ' <option value="0">' . __( 'from the tested page', 'nelioab' ) . '</option>';
+				$f_any_real .= ' <option value="1">' . __( 'from any page', 'nelioab' ) . '</option>';
 			}
 			else {
 				$f_any_real .= ' <option value="0">' . __( 'from the tested post', 'nelioab' ) . '</option>';
-				$f_any_real .= ' <option value="1">' . __( 'from any post', 'nelioab' ) . '</option>';
+				$f_any_real .= ' <option value="1">' . __( 'from any page', 'nelioab' ) . '</option>';
 			}
 			$f_any_real .= '</select>';
 			$f_any_hidden = '<input type="hidden" class="any-page" value="1" />';
