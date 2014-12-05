@@ -126,10 +126,17 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 						NelioABAccountSettings::set_has_quota_left( false );
 				}
 
-				// TODO: fix agency info
-				$user_info['agency']            = false;
-				$user_info['agencyname']        = 'Nelio Software';
-				$user_info['agencymail']        = 'cusomters@neliosoftware.com';
+				// Agency stuff
+				if ( isset( $json->hasAgency ) && $json->hasAgency ) {
+					$user_info['agency']     = true;
+					$user_info['agencyname'] = $json->agencyName;
+					$user_info['agencymail'] = $json->agencyEmail;
+				}
+				else {
+					$user_info['agency']     = false;
+					$user_info['agencyname'] = 'Agency Name';
+					$user_info['agencymail'] = 'support@agency.com';
+				}
 
 			}
 			catch ( Exception $e ) {
