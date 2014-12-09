@@ -414,7 +414,7 @@ var NelioABGoalCards = {
 				searcher.on( 'change', function() { NelioABGoalCards.validatePageOrPost( result ); } );
 				searcher.removeAttr('id');
 				searcher.removeAttr('name');
-				NelioABPostSearcher.buildSearcher( searcher, action.type, NelioABGoalCards.filterPosts );
+				NelioABPostSearcher.buildSearcher( searcher, action.type, 'show-drafts', NelioABGoalCards.filterPosts );
 				result.show();
 				break;
 
@@ -446,7 +446,6 @@ var NelioABGoalCards = {
 				var searcher = result.find( 'input.form-searcher' );
 				if ( action.isNew !== true ) {
 					searcher.attr('value', action.form_id);
-					david = result;
 					if ( action.any_page )
 						result.find('.any-page').attr( 'value', '1' );
 					else
@@ -736,7 +735,7 @@ var NelioABGoalCards = {
 		});
 		jQuery('#nelioab_goals').attr('value',
 			encodeURIComponent( JSON.stringify( NelioABGoalCards.goals ) )
-				.replace( "'", "%27") );
+				.replace( /'/g, "%27") );
 	},
 
 };

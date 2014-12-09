@@ -62,12 +62,57 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 
 					?></h3>
+					<input type="hidden" value="false"
+						id="reset_settings" name="nelioab_settings[reset_settings]" />
 					<?php
 						// This prints out all hidden setting fields
 						settings_fields( 'nelioab_settings_group' );
 						do_settings_sections( 'nelioab-settings' );
-						submit_button();
 					?>
+					<p>
+						<input type="button" id="reset-button" class="button"
+							value="<?php echo esc_html( __( 'Reset to Defaults', 'nelioab' ) ); ?>" />
+						&nbsp;
+						<input type="submit" id="submit-button" class="button button-primary"
+							value="<?php echo esc_html( __( 'Save Changes' ) ); ?>" />
+						<script type="text/javascript">
+						jQuery(document).ready( function() {
+							var $ = jQuery;
+							var $dialog = $('#dialog-modal').dialog({
+								title: '<?php echo esc_html( __( 'Reset Settings', 'nelioab' ) ); ?>',
+								dialogClass   : 'wp-dialog',
+								modal         : true,
+								autoOpen      : false,
+								closeOnEscape : true,
+								buttons: [
+									{
+										text: "<?php echo esc_html( __( 'Cancel', 'nelioab' ) ); ?>",
+										click: function() {
+											$(this).dialog('close');
+										}
+									},
+									{
+										text: "<?php echo esc_html( __( 'Reset to Defaults', 'nelioab' ) ); ?>",
+										'class': 'button-primary',
+										click: function() {
+											$(this).dialog('close');
+											$('#reset_settings').val('do_reset');
+											$('#nelioab-settings > form').submit();
+										}
+									}
+								]
+							});
+							jQuery('#dialog-content').html("<?php
+								echo str_replace( '"', '\\"', str_replace( '\\', '\\\\',
+									__( 'This operation will set all Settings to their default values. Do you want to continue?', 'nelioab' ) ) );
+							?>");
+
+							$('#reset-button').on('click', function() {
+								$dialog.dialog('open');
+							});
+						});
+						</script>
+					</p>
 				</form>
 			</div>
 			<script type="text/javascript">
@@ -104,9 +149,56 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			// ===============================================================
 
 			add_settings_section(
-				'nelioab_basic_section', '',
-				array( 'NelioABSettingsPage', 'print_basic_section' ),
+				'nelioab_basic_section_efficiency', '',
+			// ===============================================================
+				array( 'NelioABSettingsPage', 'print_basic_section_efficiency' ),
+			// ===============================================================
 				'nelioab-settings'
+			);
+
+			add_settings_field(
+				'make_site_consistent',
+				self::prepare_basic_label( __( 'Site-wide Consistency', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_site_consistency_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_efficiency'
+			);
+
+			add_settings_field(
+				'alt_load_mode',
+				self::prepare_basic_label( __( 'Cache Support', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_alternative_loading_mode_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_efficiency'
+			);
+
+
+			add_settings_section(
+				'nelioab_basic_section_ui', '',
+			// ===============================================================
+				array( 'NelioABSettingsPage', 'print_basic_section_ui' ),
+			// ===============================================================
+				'nelioab-settings'
+			);
+
+			add_settings_field(
+				'menu_in_admin_bar',
+				self::prepare_basic_label( __( 'Admin Bar', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_menu_in_admin_bar_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_ui'
+			);
+
+			add_settings_field(
+				'menu_location',
+				self::prepare_basic_label( __( 'Plugin Menu Location', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_menu_location_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_ui'
 			);
 
 			add_settings_field(
@@ -115,16 +207,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_show_finished_experiments_field' ),
 				'nelioab-settings',
-				'nelioab_basic_section'
-			);
-
-			add_settings_field(
-				'use_php_cookies',
-				self::prepare_basic_label( __( 'PHP cookies', 'nelioab' ) ),
-				// -------------------------------------------------------------
-				array( 'NelioABSettingsPage', 'print_cookies_field' ),
-				'nelioab-settings',
-				'nelioab_basic_section'
+				'nelioab_basic_section_ui'
 			);
 
 			add_settings_field(
@@ -133,7 +216,23 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_colorblindness_field' ),
 				'nelioab-settings',
-				'nelioab_basic_section'
+				'nelioab_basic_section_ui'
+			);
+
+			add_settings_section(
+				'nelioab_basic_section_misc', '',
+				array( 'NelioABSettingsPage', 'print_basic_section_misc' ),
+			// ===============================================================
+				'nelioab-settings'
+			);
+
+			add_settings_field(
+				'hm_tracking_mode',
+				self::prepare_basic_label( __( 'Heatmap Tracking', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_heatmap_tracking_mode_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_misc'
 			);
 
 			add_settings_field(
@@ -142,7 +241,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_notification_email_field' ),
 				'nelioab-settings',
-				'nelioab_basic_section'
+				'nelioab_basic_section_misc'
 			);
 
 //			add_settings_field(
@@ -151,7 +250,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 //				// -------------------------------------------------------------
 //				array( 'NelioABSettingsPage', 'print_def_conv_value_field' ),
 //				'nelioab-settings',
-//				'nelioab_basic_section'
+//				'nelioab_basic_section_ui'
 //			);
 //
 //			add_settings_field(
@@ -160,7 +259,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 //				// -------------------------------------------------------------
 //				array( 'NelioABSettingsPage', 'print_conv_unit_field' ),
 //				'nelioab-settings',
-//				'nelioab_basic_section'
+//				'nelioab_basic_section_ui'
 //			);
 
 
@@ -173,7 +272,9 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 			add_settings_section(
 				'nelioab_pro_section', '',
+			// ===============================================================
 				array( 'NelioABSettingsPage', 'print_pro_section' ),
+			// ===============================================================
 				'nelioab-settings'
 			);
 
@@ -240,9 +341,20 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 		}
 
-		public static function print_basic_section() {
+		public static function print_basic_section_efficiency() {
 			echo '<div id="nelioab-basic-section">';
+			echo '<h3>' . __( 'Efficiency', 'nelioab' ) . '</h3>';
 			self::print_mu_plugin_row();
+		}
+
+		public static function print_basic_section_ui() {
+			echo '<br><br>';
+			echo '<h3>' . __( 'User Interface', 'nelioab' ) . '</h3>';
+		}
+
+		public static function print_basic_section_misc() {
+			echo '<br><br>';
+			echo '<h3>' . __( 'Miscellaneous', 'nelioab' ) . '</h3>';
 		}
 
 		public static function print_pro_section() {
@@ -295,7 +407,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		public static function print_mu_plugin_row() { ?>
 			<table class="form-table">
 				<tbody><tr>
-					<th scope="row">AJAX Performance</th>
+					<th scope="row"><?php _e( 'AJAX Performance', 'nelioab' ); ?></th>
 					<td><?php
 						self::print_mu_plugin_settings();
 					?></td>
@@ -445,6 +557,73 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 		}
 
+		public static function print_site_consistency_field() {
+			$field_name = 'make_site_consistent';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='1'><?php _e( 'Force Consistency All Along the Site', 'nelioab' ); ?></option>
+				<option value='0'<?php
+					if ( !NelioABSettings::make_site_consistent() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Load Alternative Content for Tested Elements Only', 'nelioab' ); ?></option>
+			</select>
+			<br><span class="description">
+				<span class="<?php echo $field_name; ?> non-consistent"><?php
+				_e( 'When a page or post experiment is created, alternative titles, contents, featured images, and excerpts may be defined. If consistency is not forced, the alternative contents will be loaded when accessing the tested page or post only. As a result, it is possible, for instance, that a user sees one title and featured image for a certain post in a widget, but a different title and featured image when she accesses that very same post (which may be confusing).', 'nelioab' );
+			?></span>
+				<span class="<?php echo $field_name; ?> consistent"><?php
+				_e( 'When a page or post experiment is created, alternative titles, contents, featured images, and excerpts may be defined. Forcing consistency will ensure that your users see the same alternative version all along the site, because all pages will be loading the alternative information defined in your experiments. Note this setting does <strong>not</strong> consume more quota.', 'nelioab' );
+			?></span>
+			</span>
+			<script type="text/javascript">
+			(function($) {
+				var selector = $('#<?php echo $field_name; ?>');
+				var con = $('.<?php echo $field_name; ?>.consistent');
+				var noncon = $('.<?php echo $field_name; ?>.non-consistent');
+				selector.on('change', function() {
+					if ( selector.val() == '1' ) {
+						con.show();
+						noncon.hide();
+					}
+					else {
+						con.hide();
+						noncon.show();
+					}
+				});
+				selector.trigger('change');
+			})(jQuery);
+			</script>
+			<?php
+		}
+
+		public static function print_alternative_loading_mode_field() {
+			$field_name = 'alt_load_mode';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='<?php
+							echo NelioABSettings::POST_ALTERNATIVE_LOADING_MODE;
+					?>'><?php _e( 'Bypass Cache and Load Content Using POST Requests', 'nelioab' ); ?></option>
+				<option value='<?php
+							echo NelioABSettings::GET_ALTERNATIVE_LOADING_MODE;
+						?>'<?php
+					if ( NelioABSettings::get_alternative_loading_mode() == NelioABSettings::GET_ALTERNATIVE_LOADING_MODE )
+						echo ' selected="selected"';
+				?>><?php _e( 'Cache Alternative Content by Using GET Requests (Experimental)', 'nelioab' ); ?></option>
+			</select>
+			<br><span class="description">
+				<span class="<?php echo $field_name; ?>"><?php
+				_e( 'By default, Nelio A/B Testing loads alternative content using an AJAX POST request. Nelio uses POST requests because they are usually ignored by cache mechanisms, ensuring that your users will be able to see different alternatives (instead of all users seeing the cached version). Unfortunately, this results in a higher server load, for alternative content is always processed by WordPress.<br>Starting at version 3.3, Nelio introduces experimental support for loading alternatives using GET requests. This approach permits your cache system to cache alternative contents too, boosting the overall performance.', 'nelioab' );
+			?></span>
+			</span>
+			<?php
+		}
+
 		public static function print_colorblindness_field() {
 			$field_name = 'use_colorblind';
 			printf(
@@ -457,6 +636,56 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 					if ( NelioABSettings::use_colorblind_palette() )
 						echo ' selected="selected"';
 				?>><?php _e( 'Colorblind Palette', 'nelioab' ); ?></option>
+			</select>
+			<?php
+		}
+
+		public static function print_menu_location_field() {
+			$field_name = 'menu_location';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='<?php
+					echo NelioABSettings::MENU_LOCATION_DASHBOARD; ?>'><?php
+						_e( 'Top of the Dashboard', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::MENU_LOCATION_APPEARANCE; ?>' <?php
+					if ( NelioABSettings::get_menu_location() == NelioABSettings::MENU_LOCATION_APPEARANCE )
+						echo ' selected="selected"'; ?>><?php
+						_e( 'Above Appearance', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::MENU_LOCATION_TOOLS; ?>' <?php
+					if ( NelioABSettings::get_menu_location() == NelioABSettings::MENU_LOCATION_TOOLS )
+						echo ' selected="selected"'; ?>><?php
+						_e( 'Below Tools', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::MENU_LOCATION_LAST_BLOCK; ?>' <?php
+					if ( NelioABSettings::get_menu_location() == NelioABSettings::MENU_LOCATION_LAST_BLOCK )
+						echo ' selected="selected"'; ?>><?php
+						_e( 'First Option in Last Block', 'nelioab' ); ?></option>
+				<option value='<?php
+					echo NelioABSettings::MENU_LOCATION_END; ?>' <?php
+					if ( NelioABSettings::get_menu_location() == NelioABSettings::MENU_LOCATION_END )
+						echo ' selected="selected"'; ?>><?php
+						_e( 'Latest Option', 'nelioab' ); ?></option>
+			</select>
+			<?php
+		}
+
+		public static function print_menu_in_admin_bar_field() {
+			$field_name = 'menu_in_admin_bar';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='1'><?php _e( 'Show «Nelio A/B Testing» Menu in Admin Bar', 'nelioab' ); ?></option>
+				<option value='0'<?php
+					if ( !NelioABSettings::is_menu_enabled_for_admin_bar() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Hide «Nelio A/B Testing» Menu from Admin Bar', 'nelioab' ); ?></option>
 			</select>
 			<?php
 		}
@@ -666,23 +895,28 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 		}
 
-		public static function print_cookies_field() {
-			$field_name = 'use_php_cookies';
+		public static function print_heatmap_tracking_mode_field() {
+			$field_name = 'hm_tracking_mode';
 			printf(
 				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
 				$field_name, self::get_basic_details()
 			);
 			?>
-				<option value='0'><?php _e( 'Disabled (use JavaScript)', 'nelioab' ); ?></option>
-				<option value='1'<?php
-					if ( NelioABSettings::use_php_cookies() )
+				<option value='<?php
+							echo NelioABSettings::ELEMENT_BASED_HEATMAP_TRACKING;
+					?>'><?php _e( 'High Accuracy - Use All HTML Elements', 'nelioab' ); ?></option>
+				<option value='<?php
+							echo NelioABSettings::HTML_BASED_HEATMAP_TRACKING;
+						?>'<?php
+					if ( NelioABSettings::get_heatmap_tracking_mode() == NelioABSettings::HTML_BASED_HEATMAP_TRACKING )
 						echo ' selected="selected"';
-				?>><?php _e( 'Enabled', 'nelioab' ); ?></option>
+				?>><?php _e( 'Tolerance to Random IDs - Use Body Tag', 'nelioab' ); ?></option>
 			</select>
-			<br><span class="description"><?php
-				_e( 'Select how alternatives are loaded. With PHP cookies, page load times might be faster, because regular cookies reduce the amount of queries your visitors will perform to your server. However, they cannot be used everywhere (for instance, <a href="http://wpengine.com">WPEngine</a> does not permit them). If you are not sure, use JavaScript.',
-					'nelioab' );
+			<br><span class="description">
+				<span class="<?php echo $field_name; ?>"><?php
+				_e( 'By default, Nelio A/B Testing takes into account the elements that are below your users\' cursor to track and build heatmaps and clickmaps. This offers a higher accuracy when Heatmaps are displayed, because hot spots are based on elements and not pages. Unfortunately, this approach may not work if, for instance, your page loads elements dynamically or HTML element IDs are randomly generated. If this is your case, track Heatmaps using the body tag.', 'nelioab' );
 			?></span>
+			</span>
 			<?php
 		}
 
