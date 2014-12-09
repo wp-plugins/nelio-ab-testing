@@ -933,16 +933,12 @@ class NelioABAlternativeExperimentController {
 		$nav['rsec'] = strtolower( md5( $pre . $referer_id . $referer_actual_id . $post ) );
 		$nav['osec'] = strtolower( md5( $pre . $post ) );
 
-		$nav['raux'] = $pre . $referer_id . $referer_actual_id . $post;
-		$nav['oaux'] = $pre . $post;
-
-
 		return $nav;
 	}
 
 	public function is_relevant( $nav ) {
 		$is_relevant = false;
-		if ( $this->is_there_a_global_alt_exp_with_origin( $nav['refererId'] ) ||
+		if ( $this->is_there_a_global_alt_exp_with_origin( $nav['currentId'] ) ||
 		     $this->is_there_a_global_alt_exp_with_goal( $nav['currentId'] ) ||
 		     $this->is_goal_in_some_page_or_post_experiment( $nav['currentId'] ) ||
 		     $this->is_post_in_a_post_alt_exp( $nav['currentId'] ) ||

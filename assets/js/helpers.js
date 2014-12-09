@@ -224,11 +224,12 @@ NelioAB.helpers.trackAndSync = function() {
 
 	// Send all headline views
 	jQuery(document).ready(function() {
-		if ( NelioABParams.sync.headlines.list.length > 0 )
+		if ( NelioABParams.sync.headlines.list.length > 0 ) {
 			NelioAB.helpers.sendHeadlineViews();
-		if ( !NelioABParams.sync.nav.isRelevant ) {
-			NelioABParams.sync.nav.isRelevant = true;
-			NelioAB.helpers.navigate();
+			if ( !NelioABParams.sync.nav.isRelevant ) {
+				NelioABParams.sync.nav.isRelevant = true;
+				NelioAB.helpers.navigate();
+			}
 		}
 	});
 

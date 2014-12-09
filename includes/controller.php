@@ -166,7 +166,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 			$current_id  = $this->url_or_front_page_to_postid( $this->get_current_url() );
 			$referer_url = ( isset( $_POST['referer_url'] ) ) ?  rtrim( $_POST['referer_url'] ) : '';
 			$nav = $alt_con->prepare_navigation_object( $current_id, $referer_url );
-			$nav['isRelevant'] = $alt_con->is_relevant( $nav ) || $hm_con->is_relevant( $nav );
+			$nav['isRelevant'] = ( $alt_con->is_relevant( $nav ) || $hm_con->is_relevant( $nav ) );
 			nelioab_add_sync_data( array( 'nav' => $nav ) );
 
 			// (b) Possible outwards navigations from the current page
