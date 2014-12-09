@@ -144,7 +144,7 @@ if ( get_option( 'nelioab_cache_notice', false ) !== NELIOAB_PLUGIN_VERSION  )
 	add_action( 'admin_notices', 'nelioab_add_cache_notice' );
 function nelioab_add_cache_notice() {
 	global $pagenow;
-	if ( 'plugins.php' == $pagenow )
+	if ( 'plugins.php' == $pagenow || 'update.php' == $pagenow )
 		return;
 	$message = sprintf(
 			__( 'You\'ve recently upgraded to <strong>Nelio A/B Testing %s</strong>. <strong>If you\'re running a cache system</strong> (such as <em>W3 Total Cache</em> or <em>WP Super Cache</em>) <strong>or if your server is behind a CDN</strong>, please <strong>clean all your caches</strong>. Otherwise, you may serve old versions of our tracking scripts and, therefore, the plugin may not work properly.', 'nelioab' ),
