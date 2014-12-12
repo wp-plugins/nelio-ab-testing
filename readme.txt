@@ -43,7 +43,25 @@ familiar user experience.
 
 [youtube https://www.youtube.com/watch?v=ZDgTkqI4SNk]
 
-**Take a look at the following reasons for choosing Nelio**
+
+= As Featured On... =
+
+* [Nelio A/B Testing: Optimize Your WordPress Website to Increase Goal
+Conversion Rates](http://wplift.com/wordpress-ab-testing-plugin) (wplift.com)
+* [WordPress Native Split Tests with Nelio A/B Testing –
+Review](http://www.wpmayor.com/nelio-ab-testing-review/) (WPMayor.com)
+* [Nelio A/B Testing: Conversion Optimization for WordPress
+Sites](http://www.indexwp.com/conversion-optimization-wordpress-sites/)
+(indexwp.com)
+* [WP-ABTesting – Split Testing As A
+Service](http://wptavern.com/wp-abtesting-split-testing-as-a-service)
+(WPTavern.com)
+
+
+= Reasons for choosing Nelio =
+
+If you're not convinced yet, take a look at the following reasons for choosing
+Nelio A/B Testing!
 
 
 = #1 - Native A/B Testing Solution for WordPress =
