@@ -44,23 +44,9 @@ familiar user experience.
 [youtube https://www.youtube.com/watch?v=ZDgTkqI4SNk]
 
 
-= As Featured On... =
-
-* [Nelio A/B Testing: Optimize Your WordPress Website to Increase Goal
-Conversion Rates](http://wplift.com/wordpress-ab-testing-plugin) (wplift.com)
-* [WordPress Native Split Tests with Nelio A/B Testing –
-Review](http://www.wpmayor.com/nelio-ab-testing-review/) (WPMayor.com)
-* [Nelio A/B Testing: Conversion Optimization for WordPress
-Sites](http://www.indexwp.com/conversion-optimization-wordpress-sites/)
-(indexwp.com)
-* [WP-ABTesting – Split Testing As A
-Service](http://wptavern.com/wp-abtesting-split-testing-as-a-service)
-(WPTavern.com)
-
-
 = Reasons for choosing Nelio =
 
-If you're not convinced yet, take a look at the following reasons for choosing
+Take a look at the following reasons for choosing
 Nelio A/B Testing!
 
 
@@ -156,6 +142,23 @@ everybody**. That's why [you can create an **unlimited number of experiments of
 any kind** subscribing to any of our
 packages](http://wp-abtesting.com/subscription-plans/?fp=wordpress.org). Just
 check our subscription plans and select the one that better suits your needs.
+
+
+= As Featured On... =
+
+If you're not convinced yet, take a look at what others say about Nelio A/B
+Testing.
+
+* [Nelio A/B Testing: Optimize Your WordPress Website to Increase Goal
+Conversion Rates](http://wplift.com/wordpress-ab-testing-plugin) (wplift.com)
+* [WordPress Native Split Tests with Nelio A/B Testing –
+Review](http://www.wpmayor.com/nelio-ab-testing-review/) (WPMayor.com)
+* [Nelio A/B Testing: Conversion Optimization for WordPress
+Sites](http://www.indexwp.com/conversion-optimization-wordpress-sites/)
+(indexwp.com)
+* [WP-ABTesting – Split Testing As A
+Service](http://wptavern.com/wp-abtesting-split-testing-as-a-service)
+(WPTavern.com)
 
 
 
