@@ -34,7 +34,7 @@ NelioAB.checker.q = function() {
 		type:  'POST',
 		async: true,
 		url:   NelioABParams.ajaxurl,
-		data: { action:'nelioab_qc' },
+		data: { action:'nelioab_qc' }
 	});
 };
 
@@ -52,7 +52,7 @@ NelioAB.checker.syncCookiesAndCheck = function() {
 			action: 'nelioab_sync_cookies_and_check',
 			current_url: document.URL,
 			referer_url: document.referrer,
-			nelioab_cookies: NelioAB.cookies.list(),
+			nelioab_cookies: NelioAB.cookies.list()
 		},
 		success: function(data) {
 			try {
@@ -103,7 +103,7 @@ NelioAB.checker.syncCookiesAndCheck = function() {
 		},
 		error: function() {
 			NelioAB.helpers.showBody();
-		},
+		}
 	});
 
 	return result;
@@ -113,7 +113,7 @@ NelioAB.checker.loadAlternative = function( mode, action ) {
 	var data = {
 		'nelioab_cookies': NelioAB.cookies.listForAltLoading(),
 		'current_url': document.URL,
-		'referer_url': document.referrer,
+		'referer_url': document.referrer
 	};
 
 	if ( 'LOAD_ALTERNATIVE' == action )

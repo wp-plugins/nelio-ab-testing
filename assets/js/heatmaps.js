@@ -61,7 +61,7 @@ NelioAB.heatmaps.hd.click;
 			for ( var k in this.data )
 				exportData[k] = data[k].exportDataSet();
 			return { max:this.max, data:exportData, session:NelioAB.cookies.get('nelioab_session_id') };
-		},
+		}
 	};
 
 	NelioAB.heatmaps.HeatmapDataForElement.prototype = {
@@ -90,7 +90,7 @@ NelioAB.heatmaps.hd.click;
 				}
 			}
 			return { max:this.max, data:exportData };
-		},
+		}
 	};
 
 	NelioAB.heatmaps.phone.regular   = new NelioAB.heatmaps.HeatmapData();
@@ -365,7 +365,7 @@ NelioAB.heatmaps.doSync = function(data,async) {
 		type: 'POST',
 		async: async,
 		url: NelioAB.backend.url + '/hm',
-		data: data,
+		data: data
 	});
 };
 
@@ -405,7 +405,7 @@ NelioAB.heatmaps.sync = function( lastSending ) {
 			siteId: NelioABParams.site,
 			post: NelioABParams.sync.nav.currentActualId,
 			session: NelioAB.cookies.get('nelioab_session'),
-			s: NelioABParams.sync.heatmaps.sec,
+			s: NelioABParams.sync.heatmaps.sec
 		};
 
 	if ( phoneClick.max > 0 ) {
