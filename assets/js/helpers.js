@@ -29,7 +29,7 @@ NelioAB.helpers.ure = function() {
 		type:  'POST',
 		async: true,
 		url:   NelioABParams.ajaxurl,
-		data: { action:'nelioab_ure' },
+		data: { action:'nelioab_ure' }
 	});
 };
 
@@ -136,7 +136,7 @@ NelioAB.helpers.prepareNavObject = function() {
 			siteId: NelioABParams.site,
 			customerId: NelioABParams.customer,
 			user: NelioAB.cookies.get('nelioab_userid'),
-			session: NelioAB.cookies.get('nelioab_session'),
+			session: NelioAB.cookies.get('nelioab_session')
 		};
 
 	if ( NelioABParams.sync.nav.activeCss.length > 0 )
@@ -162,7 +162,7 @@ NelioAB.helpers.navigate = function() {
 		type:  'POST',
 		async: true,
 		url:   NelioAB.backend.url + '/rn',
-		data: data,
+		data: data
 	});
 
 };
@@ -180,7 +180,7 @@ NelioAB.helpers.navigateOutwards = function(dest) {
 		type:  'POST',
 		async: true,
 		url:   NelioAB.backend.url + '/on',
-		data: data,
+		data: data
 	});
 
 };
@@ -198,7 +198,7 @@ NelioAB.helpers.sendHeadlineViews = function() {
 		type:  'POST',
 		async: true,
 		url:   NelioAB.backend.url + '/hl',
-		data: data,
+		data: data
 	});
 
 }

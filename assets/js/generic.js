@@ -48,7 +48,7 @@ NelioAB.jquery.extend = function() {
 				elem = elem.parent();
 			}
 			return 'html' + path;
-		},
+		}
 
 	});
 };
