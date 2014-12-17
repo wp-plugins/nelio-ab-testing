@@ -95,19 +95,43 @@ NelioAB.helpers.mergeUrlParams = function( priority, inherit ) {
 };
 
 NelioAB.helpers.addHiddenFormFieldsOnSubmission = function() {
-	jQuery(document).on('submit', function() {
-		jQuery('input[name="input_nelioab_form_cookies"]').attr('name', 'nelioab_form_cookies');
-		jQuery('input[name="input_nelioab_form_current_url"]').attr('name', 'nelioab_form_current_url');
+	var setHiddenFieldsInForm = function( $form ) {
+		if ( $form.length == 0 ) return;
 
-		jQuery('input[name="nelioab_form_cookies"]').attr('value',
-			encodeURIComponent( JSON.stringify( NelioAB.cookies.list() )
-				.replace( /'/g, "%27") )
-			);
-		jQuery('input[name="nelioab_form_current_url"]').attr('value',
-			encodeURIComponent( JSON.stringify( document.URL )
-				.replace( /'/g, "%27") )
-			);
+		if ( typeof $form.data('has_nelioab_fields') == 'undefined' ) {
+			// First Hidden Field
+			$cookiesField = jQuery('<input type="hidden" name="nelioab_form_cookies" />');
+			$cookiesField.attr('value',
+				encodeURIComponent( JSON.stringify( NelioAB.cookies.list() )
+					.replace( /'/g, "%27") )
+				);
+			$form.append( $cookiesField );
+
+			// Second Hidden Field
+			$currentUrlField = jQuery('<input type="hidden" name="nelioab_form_current_url" />');
+			$currentUrlField.attr('value',
+				encodeURIComponent( JSON.stringify( document.URL )
+					.replace( /'/g, "%27") )
+				);
+			$form.append( $currentUrlField );
+
+			// Write down that fields have been added
+			$form.data('has_nelioab_fields', 'yes');
+		}
+
+	};
+
+	jQuery(document).on('click', function(e) {
+		if ( typeof e.target == 'undefined' ) return;
+		setHiddenFieldsInForm( jQuery(e.target).closest('form') );
 	});
+
+	jQuery(document).on('onkeyup', function(e) {
+		if ( typeof e.target == 'undefined' ) return;
+		if ( 13 != e.keyCode ) return;
+		setHiddenFieldsInForm( jQuery(e.target).closest('form') );
+	});
+
 };
 
 NelioAB.helpers.prepareOutwardsNavigationTracking = function() {

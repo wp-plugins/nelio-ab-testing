@@ -118,10 +118,6 @@ class NelioABAlternativeExperimentController {
 		/**
 		 *  Hooks for Gravity Forms and Contact Form 7
 		 */
-		// Adding hidden fields:
-		add_filter( 'gform_pre_render',    array( &$this, 'add_hidden_fields_to_gf' ),  10, 1 );
-		add_filter( 'wpcf7_form_elements', array( &$this, 'add_hidden_fields_to_cf7' ), 10, 1 );
-
 		// Monitoring submissions:
 		add_action( 'gform_after_submission', array( &$this, 'track_gf_submission' ),  10, 2 );
 		add_action( 'wpcf7_submit',           array( &$this, 'track_cf7_submission' ), 10, 2 );
@@ -348,8 +344,10 @@ class NelioABAlternativeExperimentController {
 	public function modify_stylesheet( $stylesheet ) {
 		// If I'm not loading an alternative, I hooked for no reason...
 		global $nelioab_controller;
-		if ( !$nelioab_controller->is_alternative_content_loading_required() )
+		if ( !$nelioab_controller->is_alternative_content_loading_required() ) {
 			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
+			return $stylesheet;
+		}
 
 		// WARNING: I check whether the function 'wp_get_current_user" exists,
 		// because the latter depends on this one and, sometimes, this one is
@@ -363,8 +361,10 @@ class NelioABAlternativeExperimentController {
 	public function modify_template( $template ) {
 		// If I'm not loading an alternative, I hooked for no reason...
 		global $nelioab_controller;
-		if ( !$nelioab_controller->is_alternative_content_loading_required() )
+		if ( !$nelioab_controller->is_alternative_content_loading_required() ) {
 			remove_filter( 'stylesheet', array( &$this, 'modify_template' ) );
+			return $template;
+		}
 
 		// WARNING: I check whether the function 'wp_get_current_user" exists,
 		// because the latter depends on this one and, sometimes, this one is
@@ -936,6 +936,7 @@ class NelioABAlternativeExperimentController {
 		return $nav;
 	}
 
+
 	public function is_relevant( $nav ) {
 		$is_relevant = false;
 		if ( $this->is_there_a_global_alt_exp_with_origin( $nav['currentId'] ) ||
@@ -945,53 +946,6 @@ class NelioABAlternativeExperimentController {
 		     $this->is_post_in_a_headline_alt_exp( $nav['currentId'] ) )
 			$is_relevant = true;
 		return $is_relevant;
-	}
-
-	private function get_form_hidden_field_names() {
-		return array( 'nelioab_form_cookies', 'nelioab_form_current_url' );
-	}
-
-	public function add_hidden_fields_to_gf( $form ) {
-		$field_names = $this->get_form_hidden_field_names();
-		foreach ( $field_names as $field_name )
-			$this->add_hidden_field_to_gf( $form, $field_name );
-		return $form;
-	}
-
-
-	private function add_hidden_field_to_gf( &$form, $name ) {
-		// Counting number of fields (for GF internal field counter)
-		$max = 0;
-		foreach( $form['fields'] as $field )
-			if( floatval($field['id'] ) > $max )
-				$max = floatval( $field['id'] );
-
-		// Adding field
-		$form['fields'][] = array(
-			'type'   => 'adminonly_hidden',
-			'id'     => $max + 1,
-			'allowsPrepopulate' => true,
-			'inputs' => array(
-				array(
-					'id'    => $name,
-					'label' => $name,
-				),
-			),
-		);
-	}
-
-
-	public function add_hidden_fields_to_cf7( $fields ) {
-		global $post;
-		$original_id = $this->get_original_related_to( $post->ID );
-		$hf_template = '<input type="hidden" name="%1$s" value="%2$s" />';
-
-		$field_names = $this->get_form_hidden_field_names();
-		$hidden_fields = '';
-		foreach ( $field_names as $field_name )
-			$hidden_fields .= sprintf( $hf_template, $field_name, '' );
-
-		return $hidden_fields . $fields;
 	}
 
 

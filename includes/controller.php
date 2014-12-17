@@ -462,7 +462,12 @@ if ( !class_exists( 'NelioABController' ) ) {
 				$this->build_relevant_sync_data();
 			}
 			else if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
-				nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'skip' ) );
+				if ( isset( $_POST['gform_submit'] ) )
+					nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'check' ) );
+				else if ( isset( $_POST['_wpcf7'] ) )
+					nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'check' ) );
+				else
+					nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'skip' ) );
 			}
 			else {
 				nelioab_localize_tracking_script( array( 'nelioabScriptAction' => 'check' ) );
