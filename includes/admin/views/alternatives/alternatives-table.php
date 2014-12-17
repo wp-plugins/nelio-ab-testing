@@ -40,7 +40,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 
 		public function get_columns(){
 			return array(
-				'name'        => __( 'Name', 'nelioab' ),
+				'name' => __( 'Name', 'nelioab' ),
 			);
 		}
 

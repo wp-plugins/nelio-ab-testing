@@ -294,6 +294,11 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			update_option( 'nelioab_last_quota_check', time() );
 		}
 
+		public static function assume_quota_check_will_occur_shortly() {
+			// Simulate the last check was 28 minutes (=1680s) ago
+			update_option( 'nelioab_last_quota_check', time() - 1680 );
+		}
+
 		public static function is_quota_check_required() {
 			$last_check = get_option( 'nelioab_last_quota_check', 0 );
 			$now        = time();
@@ -363,5 +368,3 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 	}//NelioABSite
 
 }
-
-?>

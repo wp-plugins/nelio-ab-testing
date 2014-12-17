@@ -299,52 +299,52 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		}
 
 		public static function get_page_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			ob_start();
-			self::print_page_searcher( $field_id, $value, $classes, $autoconvert );
+			self::print_page_searcher( $field_id, $value, $drafts, $classes, $autoconvert );
 			$value = ob_get_contents();
 			ob_end_clean();
 			return $value;
 		}
 
 		public static function get_post_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			ob_start();
-			self::print_post_searcher( $field_id, $value, $classes, $autoconvert );
+			self::print_post_searcher( $field_id, $value, $drafts, $classes, $autoconvert );
 			$value = ob_get_contents();
 			ob_end_clean();
 			return $value;
 		}
 
 		public static function print_full_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'page-or-post-or-latest' );
+				$field_id, $value, $drafts, $classes, $autoconvert, 'page-or-post-or-latest' );
 		}
 
 		public static function print_page_or_post_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'page-or-post' );
+				$field_id, $value, $drafts, $classes, $autoconvert, 'page-or-post' );
 		}
 
 		public static function print_page_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'page' );
+				$field_id, $value, $drafts, $classes, $autoconvert, 'page' );
 		}
 
 		public static function print_post_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'post' );
+				$field_id, $value, $drafts, $classes, $autoconvert, 'post' );
 		}
 
 		public static function get_form_searcher(
 				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
 			ob_start();
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'form' );
+				$field_id, $value, 'no-drafts', $classes, $autoconvert, 'form' );
 			$value = ob_get_contents();
 			ob_end_clean();
 			return $value;
@@ -353,11 +353,11 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		public static function print_form_searcher(
 				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'form' );
+				$field_id, $value, 'no-drafts', $classes, $autoconvert, 'form' );
 		}
 
 		private static function print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, $type ) {
+				$field_id, $value, $drafts, $classes, $autoconvert, $type ) {
 			$placeholder = __( 'Select an option...', 'nelioab' );
 			switch ( $type ) {
 				case 'page':
@@ -371,6 +371,7 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 					break;
 				case 'form':
 					$placeholder = __( 'Select a form...', 'nelioab' );
+					$drafts = '';
 					break;
 				case 'page-or-post-or-latest':
 					$placeholder = __( 'Select a page or post...', 'nelioab' );
@@ -379,6 +380,9 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			$searcher_type = 'post-searcher ' . $type;
 			if ( 'form' == $type )
 				$searcher_type = 'form-searcher';
+
+			if ( strlen( $drafts ) > 0 )
+				$drafts = ', "' . $drafts . '"';
 			?>
 			<input
 				id="<?php echo $field_id; ?>" name="<?php echo $field_id; ?>"
@@ -392,10 +396,10 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 				<script type="text/javascript">
 				(function($) {
 					var field = $("#<?php echo $field_id; ?>");
-					NelioABPostSearcher.buildSearcher(field, "<?php echo $type; ?>");
+					NelioABPostSearcher.buildSearcher(field, "<?php echo $type; ?>"<?php echo $drafts; ?> );
 					<?php
 						if ( $value !== false )
-							echo 'NelioABPostSearcher.setDefault(field, "' . $type . '");';
+							echo 'NelioABPostSearcher.setDefault(field, "' . $type . '"' . $drafts . ');';
 						echo "\n";
 					?>
 				})(jQuery);
