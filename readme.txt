@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 3.3.6
+Stable tag: 3.3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -258,6 +258,10 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.3.7 =
+* Bug fix with widget experiments (alternatives properly tracked).
+
 
 = 3.3.6 =
 * Bug fix with form submission tracking code.
@@ -778,7 +782,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.3.6 =
+= 3.3.7 =
 3.3 series includes **Widget Testing** and **Headline Testing**. It also boosts
 the overall performance, reducing your server's load and making things faster
 and more reliable.

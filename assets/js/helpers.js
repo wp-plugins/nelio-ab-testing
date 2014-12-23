@@ -168,7 +168,7 @@ NelioAB.helpers.prepareNavObject = function() {
 	if ( NelioABParams.sync.nav.activeTheme.length > 0 )
 		data.activeTheme = NelioABParams.sync.nav.activeTheme;
 	if ( NelioABParams.sync.nav.activeWidget.length > 0 )
-		data.activeWidget = NelioABParams.sync.nav.activeWidet;
+		data.activeWidget = NelioABParams.sync.nav.activeWidget;
 
 	return data;
 }
