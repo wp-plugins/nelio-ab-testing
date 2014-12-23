@@ -107,9 +107,9 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 			function checkSubmit($) {
 				if ( validateGeneral($) )
-					$(".actions > .button-primary").removeClass("button-primary-disabled");
+					$(".actions > .button-primary").removeClass("button-primary-disabled disabled");
 				else
-					$(".actions > .button-primary").addClass("button-primary-disabled");
+					$(".actions > .button-primary").addClass("button-primary-disabled disabled");
 			}
 
 			function validateGeneral($) {
@@ -143,7 +143,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 					var primaryEnabled = true;
 					jQuery(".nelioab-js-button").each(function() {
 						if ( jQuery(this).hasClass("button-primary") &&
-						     jQuery(this).hasClass("button-primary-disabled") )
+						     jQuery(this).hasClass("disabled") )
 						primaryEnabled = false;
 					});
 					if ( !primaryEnabled )
@@ -245,7 +245,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 
 		public function print_post_field() {
 			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
-			NelioABHtmlGenerator::print_full_searcher( 'exp_post_id', $this->post_id );
+			NelioABHtmlGenerator::print_full_searcher( 'exp_post_id', $this->post_id, 'show-drafts' );
 		}
 
 	}//NelioABHeatmapExpEditionPage

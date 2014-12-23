@@ -45,24 +45,31 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		const PAGE_ALT_EXP   =  2;
 		const CSS_ALT_EXP    =  3;
 		const THEME_ALT_EXP  =  4;
-		const WIDGET_ALT_EXP =  5;
-		const MENU_ALT_EXP   =  6;
 
 		// Used for returning from editing a post/page content
 		const PAGE_OR_POST_ALT_EXP = 5;
 
-		const TITLE_ALT_EXP = 6;
-		const HEATMAP_EXP   = 7;
+		const HEADLINE_ALT_EXP = 6;
+		const HEATMAP_EXP      = 7;
+		const WIDGET_ALT_EXP   = 8;
+		const MENU_ALT_EXP     = 9;
 
-		const UNKNOWN_TYPE_STR  = 'UnknownExperiment';
-		// NO_TYPE_SET_STR; Does not make sense
-		const POST_ALT_EXP_STR  = 'PostAlternativeExperiment';
-		const PAGE_ALT_EXP_STR  = 'PageAlternativeExperiment';
-		const CSS_ALT_EXP_STR   = 'CssGlobalAlternativeExperiment';
-		const THEME_ALT_EXP_STR = 'ThemeGlobalAlternativeExperiment';
-		// PAGE_OR_POST_ALT_EXP_STR; Does not make sense
+		const UNKNOWN_TYPE_STR     = 'UnknownExperiment';
+		const POST_ALT_EXP_STR     = 'PostAlternativeExperiment';
+		const PAGE_ALT_EXP_STR     = 'PageAlternativeExperiment';
+		const CSS_ALT_EXP_STR      = 'CssGlobalAlternativeExperiment';
+		const THEME_ALT_EXP_STR    = 'ThemeGlobalAlternativeExperiment';
+		const WIDGET_ALT_EXP_STR   = 'WidgetGlobalAlternativeExperiment';
+		const MENU_ALT_EXP_STR     = 'MenuGlobalAlternativeExperiment';
+		const HEADLINE_ALT_EXP_STR = 'HeadlineAlternativeExperiment';
+		const HEATMAP_EXP_STR      = 'HeatmapExperiment';
+
+
+		/**
+		 * @deprecated
+		 */
 		const TITLE_ALT_EXP_STR = 'TitleAlternativeExperiment';
-		const HEATMAP_EXP_STR   = 'HeatmapExperiment';
+
 
 		/**
 		 * EXPERIMENT FINALIZATION MODES
@@ -95,7 +102,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		}
 
 		public function clear() {
-			$this->id       = -1;
+			$this->id       = -time();
 			$this->name     = '';
 			$this->descr    = '';
 			$this->status   = NelioABExperimentStatus::DRAFT;
@@ -137,13 +144,20 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 					$this->set_type( NelioABExperiment::PAGE_ALT_EXP );
 					break;
 				case NelioABExperiment::TITLE_ALT_EXP_STR:
-					$this->set_type( NelioABExperiment::TITLE_ALT_EXP );
+				case NelioABExperiment::HEADLINE_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::HEADLINE_ALT_EXP );
 					break;
 				case NelioABExperiment::CSS_ALT_EXP_STR:
 					$this->set_type( NelioABExperiment::CSS_ALT_EXP );
 					break;
 				case NelioABExperiment::THEME_ALT_EXP_STR:
 					$this->set_type( NelioABExperiment::THEME_ALT_EXP );
+					break;
+				case NelioABExperiment::WIDGET_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::WIDGET_ALT_EXP );
+					break;
+				case NelioABExperiment::MENU_ALT_EXP_STR:
+					$this->set_type( NelioABExperiment::MENU_ALT_EXP );
 					break;
 				case NelioABExperiment::HEATMAP_EXP_STR:
 					$this->set_type( NelioABExperiment::HEATMAP_EXP );
@@ -161,12 +175,16 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 					return NelioABExperiment::POST_ALT_EXP_STR;
 				case NelioABExperiment::PAGE_ALT_EXP:
 					return NelioABExperiment::PAGE_ALT_EXP_STR;
-				case NelioABExperiment::TITLE_ALT_EXP:
-					return NelioABExperiment::TITLE_ALT_EXP_STR;
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					return NelioABExperiment::HEADLINE_ALT_EXP_STR;
 				case NelioABExperiment::CSS_ALT_EXP:
 					return NelioABExperiment::CSS_ALT_EXP_STR;
 				case NelioABExperiment::THEME_ALT_EXP:
 					return NelioABExperiment::THEME_ALT_EXP_STR;
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					return NelioABExperiment::WIDGET_ALT_EXP_STR;
+				case NelioABExperiment::MENU_ALT_EXP:
+					return NelioABExperiment::MENU_ALT_EXP_STR;
 				case NelioABExperiment::HEATMAP_EXP:
 					return NelioABExperiment::HEATMAP_EXP_STR;
 				default:
@@ -316,21 +334,19 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		}
 
 		public static function load_goals_from_json( $exp, $json_goals = array() ) {
-			$ae_goals = array();
-
-			foreach ( $json_goals as $goal ) {
-				$index = false;
-				if ( isset( $goal->order ) )
-					$index = intval( $goal->order );
-
-				if ( $index && !isset( $ae_goals[$index] ) )
-					$ae_goals[$index] = $goal;
-				else
-					array_push( $ae_goals, $goal );
-			}
-
-			foreach ( $ae_goals as $goal )
+			usort( $json_goals, array( 'NelioABExperiment', 'sort_goals' ) );
+			foreach ( $json_goals as $goal )
 				NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+		}
+
+		public static function sort_goals( $a, $b ) {
+			if ( isset( $a->order ) && isset( $b->order ) )
+				return $a->order - $b->order;
+			if ( isset( $a->order ) )
+				return -1;
+			if ( isset( $b->order ) )
+				return 1;
+			return 0;
 		}
 
 		public abstract function get_exp_kind_url_fragment();

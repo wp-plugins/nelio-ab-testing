@@ -28,6 +28,11 @@ if ( !class_exists( 'NelioABThemeAltExpCreationPageController' ) ) {
 		}
 
 		public static function build() {
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
 			$aux  = NelioABThemeAltExpCreationPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render();
@@ -51,6 +56,7 @@ if ( !class_exists( 'NelioABThemeAltExpCreationPageController' ) ) {
 if ( isset( $_POST['nelioab_new_ab_theme_exp_form'] ) ) {
 	$controller = NelioABThemeAltExpCreationPageController::get_instance();
 	$controller->manage_actions();
+	if ( !$controller->validate() )
+		$controller->print_ajax_errors();
 }
 
-?>

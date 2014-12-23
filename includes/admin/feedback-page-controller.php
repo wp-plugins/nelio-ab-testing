@@ -23,12 +23,12 @@ if ( !class_exists( 'NelioABFeedbackPageController' ) ) {
 	class NelioABFeedbackPageController {
 
 		public static function build() {
-			$title = __( 'Nelio A/B Testing', 'nelioab' );
-
 			// Check settings
 			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
 			$error = NelioABErrorController::build_error_page_on_invalid_settings();
 			if ( $error ) return;
+
+			$title = __( 'Nelio A/B Testing', 'nelioab' );
 
 			$view = new NelioABFeedbackPage( $title );
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );

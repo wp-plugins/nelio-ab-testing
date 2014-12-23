@@ -89,13 +89,6 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 		protected function do_render() { ?>
 			<form id="nelioab_account_form" method="post">
 
-				<?php
-					if ( !$this->is_email_valid ) {
-						_e( '<p>Don\'t you have an account yet? <a href="http://wp-abtesting.com/subscription-plans/">Subscribe now!</a></p>', 'nelioab' );
-						echo '<br /><br />';
-					}
-				?>
-
 				<input type="hidden" name="nelioab_account_form" value="true" />
 
 				<?php
@@ -185,8 +178,10 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			}
 			else { ?>
 
-				<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
-				<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
+				<?php if ( !$this->user_info['agency'] ) { ?>
+					<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
+					<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
+				<?php } ?>
 
 				<h3><?php _e( 'Subscription Details', 'nelioab' ); ?></h3>
 				<p style="margin-top:0em;margin-left:3em;"><?php
@@ -246,17 +241,17 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 							else {
 								switch ( $this->user_info['subscription_plan'] ) {
 									case NelioABAccountSettings::BASIC_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Basic Plan</b>, thanks to %s.', 'nelioab' ),
+										printf( __( 'You are subscribed to Nelio A/B Testing <b>Basic Plan</b> thanks to %s.', 'nelioab' ),
 											$this->user_info['agencyname'] );
 										echo '<br />';
 										break;
 									case NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Professional Plan</b>, thanks to %s.', 'nelioab' ),
+										printf( __( 'You are subscribed to Nelio A/B Testing <b>Professional Plan</b> thanks to %s.', 'nelioab' ),
 											$this->user_info['agencyname'] );
 										echo '<br />';
 										break;
 									case NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Enterprise Plan</b>, thanks to %s.', 'nelioab' ),
+										printf( __( 'You are subscribed to Nelio A/B Testing <b>Enterprise Plan</b> thanks to %s.', 'nelioab' ),
 											$this->user_info['agencyname'] );
 										echo '<br />';
 										break;

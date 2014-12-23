@@ -24,14 +24,12 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 	class NelioABExperimentsPageController {
 
 		public static function build() {
-			$title = __( 'Experiments', 'nelioab' );
-
-
 			// Check settings
 			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
 			$error = NelioABErrorController::build_error_page_on_invalid_settings();
 			if ( $error ) return;
 
+			$title = __( 'Experiments', 'nelioab' );
 			$view = new NelioABExperimentsPage( $title );
 
 			// Some GET options require APPSPOT connection. In order to make
@@ -121,7 +119,7 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			$view->render_content();
 
 			// Update cache
-			NelioABExperimentsManager::update_running_experiments_cache( true );
+			NelioABExperimentsManager::update_running_experiments_cache();
 
 			die();
 		}

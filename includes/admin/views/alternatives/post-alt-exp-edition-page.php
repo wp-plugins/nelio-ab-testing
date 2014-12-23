@@ -33,6 +33,10 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 			$this->set_icon( 'icon-nelioab' );
 			$this->set_form_name( 'nelioab_edit_ab_post_exp_form' );
 			$this->alt_type        = $alt_type;
+			if ( NelioABExperiment::PAGE_ALT_EXP == $this->alt_type )
+				$this->tests_a_page = true;
+			else
+				$this->tests_a_page = false;
 			$this->original_id     = -1;
 
 			// Prepare tabs
@@ -98,9 +102,9 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 		protected function print_ori_field() {
 			require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
 			if ( $this->alt_type == NelioABExperiment::PAGE_ALT_EXP )
-				NelioABHtmlGenerator::print_page_searcher( 'exp_original', $this->original_id );
+				NelioABHtmlGenerator::print_page_searcher( 'exp_original', $this->original_id, 'show-drafts' );
 			else
-				NelioABHtmlGenerator::print_post_searcher( 'exp_original', $this->original_id );
+				NelioABHtmlGenerator::print_post_searcher( 'exp_original', $this->original_id, 'show-drafts' );
 			?>
 			<a class="button" style="text-align:center;"
 				href="javascript:NelioABEditExperiment.previewOriginal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
@@ -224,9 +228,9 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					<?php
 					require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
 					if ( $this->alt_type == NelioABExperiment::PAGE_ALT_EXP )
-						NelioABHtmlGenerator::print_page_searcher( 'new_alt_postid' );
+						NelioABHtmlGenerator::print_page_searcher( 'based_on', false, 'show-drafts' );
 					else
-						NelioABHtmlGenerator::print_post_searcher( 'new_alt_postid' );
+						NelioABHtmlGenerator::print_post_searcher( 'based_on', false, 'show-drafts' );
 					?>
 					<span class="description" style="display:block;"><?php _e( 'The selected page\'s content will be duplicated and used by this alternative.', 'nelioab' ); ?></span>
 				</span>

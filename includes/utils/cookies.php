@@ -21,13 +21,12 @@ $NELIOAB_COOKIES = array();
 
 if ( isset( $_POST['nelioab_cookies'] ) )
 	$NELIOAB_COOKIES = $_POST['nelioab_cookies'];
+elseif ( NelioABSettings::GET_ALTERNATIVE_LOADING_MODE == NelioABSettings::get_alternative_loading_mode() && isset( $_GET['nelioab_cookies'] ) )
+	$NELIOAB_COOKIES = $_GET['nelioab_cookies'];
 elseif ( isset( $_POST['nelioab_form_cookies'] ) )
 	$NELIOAB_COOKIES = (array) json_decode( urldecode( $_POST['nelioab_form_cookies'] ) );
 
 function nelioab_setrawcookie( $name, $value, $expire=0 ) {
-	if ( NelioABSettings::use_php_cookies() )
-		setcookie( $name, $value, $expire );
-
 	global $NELIOAB_COOKIES;
 	if ( $expire ) {
 		// FORMAT: "Day, dd Mon year hh:mm:ss GMT"

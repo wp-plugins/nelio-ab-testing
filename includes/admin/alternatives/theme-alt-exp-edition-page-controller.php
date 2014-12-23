@@ -31,6 +31,11 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 		}
 
 		public static function build() {
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
 			$aux  = NelioABThemeAltExpEditionPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render();
@@ -60,7 +65,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 				$experiment = $nelioab_admin_controller->data;
 			}
 			else {
-				$experiment = new NelioABThemeAlternativeExperiment( -1 );
+				$experiment = new NelioABThemeAlternativeExperiment( -time() );
 				$experiment->clear();
 			}
 
