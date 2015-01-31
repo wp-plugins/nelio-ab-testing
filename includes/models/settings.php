@@ -35,6 +35,9 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 		const MENU_LOCATION_LAST_BLOCK = 99;
 		const MENU_LOCATION_END        = 9999;
 
+		const HEADLINES_QUOTA_MODE_ALWAYS        = 0;
+		const HEADLINES_QUOTA_MODE_ON_FRONT_PAGE = 1;
+
 		const GET_ALTERNATIVE_LOADING_MODE  = 'GET';
 		const POST_ALTERNATIVE_LOADING_MODE = 'POST';
 
@@ -83,6 +86,7 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 					case 'perc_of_tested_users':
 					case 'quota_limit_per_exp':
 					case 'notifications':
+					case 'headlines_quota_mode':
 						return false;
 				}
 			}
@@ -158,9 +162,9 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $input['menu_in_admin_bar'] ) )
 				$new_input['menu_in_admin_bar'] = intval( $input['menu_in_admin_bar'] ) == 1;
 
-			$new_input['algorithm'] = self::ALGORITHM_PURE_RANDOM;
-			if ( isset( $input['algorithm'] ) )
-				$new_input['algorithm'] = intval( $input['algorithm'] );
+			$new_input['headlines_quota_mode'] = self::HEADLINES_QUOTA_MODE_ALWAYS;
+			if ( isset( $input['headlines_quota_mode'] ) )
+				$new_input['headlines_quota_mode'] = intval( $input['headlines_quota_mode'] );
 
 			// SYNC SOME SETTINGS WITH GOOGLE APP ENGINE
 			try {
@@ -483,6 +487,15 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				return self::ALGORITHM_GREEDY;
 
 			return self::ALGORITHM_PURE_RANDOM;
+		}
+
+		public static function get_headlines_quota_mode() {
+			if ( !self::is_field_enabled_for_current_plan( 'headlines_quota_mode' ) )
+				return self::HEADLINES_QUOTA_MODE_ALWAYS;
+			$options = self::get_settings();
+			if ( isset( $options['headlines_quota_mode'] ) )
+				return $options['headlines_quota_mode'];
+			return self::HEADLINES_QUOTA_MODE_ALWAYS;
 		}
 
 		public static function cookie_prefix() {

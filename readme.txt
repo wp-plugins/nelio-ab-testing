@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 3.3.7
+Stable tag: 3.3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ designed for WordPress.
 
 == Description ==
 
-[Nelio A/B Testing](http://wp-abtesting.com/?fp=wordpress.org) is the most
+[Nelio A/B Testing](http://nelioabtesting.com/?fp=wordpress.org) is the most
 powerful and versatile conversion optimization service for WordPress. It helps
 you define, manage, and keep track of **A/B-testing experiments**, combined
 with powerful and beautiful **Heatmaps**. Get everything you need from within
@@ -21,7 +21,7 @@ your WordPress dashboard, where you'll benefit from a lovely, integrated, and
 familiar user experience.
 
 > **The Most [Powerful A/B
-> Testing](http://wp-abtesting.com/why-use-nelio-ab-testing/?fp=wordpress.org)
+> Testing](http://nelioabtesting.com/why-use-nelio-ab-testing/?fp=wordpress.org)
 > Solution for WordPress**<br>
 > Improve your landing pages, write better posts, create alternative pages, go
 > beyond simple title testing and start testing headlines, try new themes,
@@ -37,7 +37,7 @@ familiar user experience.
 > day by day!
 >
 > If you want to benefit from our service, [**subscribe** to one of our
-> plans](http://wp-abtesting.com/subscription-plans/?fp=wordpress.org) and
+> plans](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org) and
 > get your account! **All subscription plans include a 14-day free trial
 > period**.
 
@@ -53,7 +53,7 @@ Nelio A/B Testing!
 = #1 - Native A/B Testing Solution for WordPress =
 
 There's no [need to learn an external
-tool](http://wp-abtesting.com/5-reasons-use-nelio-ab-testing/?fp=wordpress.org).
+tool](http://nelioabtesting.com/5-reasons-use-nelio-ab-testing/?fp=wordpress.org).
 Define, manage, and track the progress of your experiments directly from within
 WordPress. Nelio A/B Testing provides a **lovely and well-known user
 interface** that simplifies the process of creating alternatives and applying
@@ -66,14 +66,14 @@ When creating A/B experiments, the first things you'll want to test are the
 pages of your website. Does this button work? Do my visitors go from the
 landing page to my pricing page? What if I change this background image? Nelio
 A/B Testing makes [page (and post) experiments super
-easy](http://wp-abtesting.com/wordpress-splitmultivariate-testing-pages/?fp=wordpress.org)!
+easy](http://nelioabtesting.com/wordpress-splitmultivariate-testing-pages/?fp=wordpress.org)!
 
 
 = #3 - Go beyond simple title tests&mdash;Test Headlines! =
 
 Are you a Publisher? Are you an avid blogger? Then, you probably want to
 [deliver to every reader a more engaging and relevant reading
-experience](http://wp-abtesting.com/nelio-ab-testing-publishers/?fp=wordpress.org).
+experience](http://nelioabtesting.com/nelio-ab-testing-publishers/?fp=wordpress.org).
 Nelio A/B Testing includes is **the first A/B testing tool for WordPress that
 offers Headline Experiments**. Given a post in your site, create alternative
 titles, excerpts, and featured images, and discover which combination gets more
@@ -92,17 +92,17 @@ your conversion rate.
 = #5 - Beautiful Heatmaps and Clickmaps =
 
 **[Heatmaps (and Clickmaps) offer valuable
-information](http://wp-abtesting.com/heatmaps-teach-us/?fp=wordpress.org) about
-what your visitors do and don't do** when they land to your website. Also, they
-are a perfect companion of A/B experiments, for they give insights on what to
-text next and help you understand the progress of your experiments.
+information](http://nelioabtesting.com/heatmaps-teach-us/?fp=wordpress.org)
+about what your visitors do and don't do** when they land to your website.
+Also, they are a perfect companion of A/B experiments, for they give insights
+on what to text next and help you understand the progress of your experiments.
 
 
 = #6 - Test Alternative Themes and CSS =
 
 If you're planning to change your theme, or tweak its CSS rules, [make sure
 they'll benefit your
-business](http://wp-abtesting/add-ab-testing-clause-next-design-contract/?fp=wordpress.org).
+business](http://nelioabtesting.com/add-ab-testing-clause-next-design-contract/?fp=wordpress.org).
 Nelio A/B Testing makes theme and CSS testing extremely easy! Simply select
 the themes you want to test (or define the alternative CSS rules you want to
 apply), and the plugin will take care of the rest.
@@ -111,8 +111,8 @@ apply), and the plugin will take care of the rest.
 = #7 - Conversion Actions and Evolution of Your Experiments =
 
 With Nelio A/B Testing, you can [track the important actions your visitors
-take](http://wp-abtesting.com/powerful-analytics/?fp=wordpress.org). Don't get
-lost with tons of irrelevant options and data. Focus on what matters. Our
+take](http://nelioabtesting.com/powerful-analytics/?fp=wordpress.org). Don't
+get lost with tons of irrelevant options and data. Focus on what matters. Our
 plugin will offer you fresh information about the evolution of the experiment,
 with nice graphics about visitors and conversions.
 
@@ -140,7 +140,7 @@ running, contact us and we'll do our best to help you!
 Nelio A/B Testing aims to offer a **complete A/B testing experience for
 everybody**. That's why [you can create an **unlimited number of experiments of
 any kind** subscribing to any of our
-packages](http://wp-abtesting.com/subscription-plans/?fp=wordpress.org). Just
+packages](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org). Just
 check our subscription plans and select the one that better suits your needs.
 
 
@@ -165,7 +165,7 @@ Service](http://wptavern.com/wp-abtesting-split-testing-as-a-service)
 **Before installing the plugin...**
 
 Sign up at our [Nelio A/B Testing
-service](http://wp-abtesting.com/subscription-plans/?fp=wordpress.org). Once
+service](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org). Once
 you are registered, you will be sent an e-mail with your account information,
 which is necessary for using the plugin.
 
@@ -196,7 +196,7 @@ Testing".
 
 If you have successfully installed our plugin using one of the aforementioned
 methods, now it is just time to use it! Take a look at our [Getting Started
-Guide](http://wp-abtesting.com/getting-started-guide/?fp=wordpress.org) to
+Guide](http://nelioabtesting.com/getting-started-guide/?fp=wordpress.org) to
 cover the basics.
 
 
@@ -225,8 +225,8 @@ more coming!
 = More questions? Take a look at our site! =
 
 We keep an [up-to-date Knowledge
-Base](http://nelio.freshdesk.com/support/home) with FAQs, Troubleshooting,
-compatibility discussions, and more!
+Base](http://support.nelioabtesting.com/support/home) with FAQs,
+Troubleshooting, compatibility discussions, and more!
 
 
 
@@ -258,6 +258,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.3.8 =
+* New Setting for **Professional and Enterprise Plans**. You can now monitor
+the efficiency of your Headlines from either the front page of your site, or
+from any page.
+* Removed JavaScript TypeError.
+
 
 = 3.3.7 =
 * Bug fix with widget experiments (alternatives properly tracked).
@@ -782,7 +789,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.3.7 =
+= 3.3.8 =
 3.3 series includes **Widget Testing** and **Headline Testing**. It also boosts
 the overall performance, reducing your server's load and making things faster
 and more reliable.

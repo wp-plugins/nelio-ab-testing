@@ -102,8 +102,6 @@ class NelioABAlternativeExperimentController {
 			add_action( 'wp_footer',         array( &$this, 'add_list_of_applied_headlines' ) );
 		}
 		else {
-			add_action( 'wp_footer', array( &$this, 'add_empty_headlines_list' ) );
-
 			/**
 			 * Support with other plugins.
 			 * Compatibility tweaks for preventing autotriggering of Google Tag Manager
@@ -626,6 +624,17 @@ class NelioABAlternativeExperimentController {
 	}
 
 	public function add_list_of_applied_headlines() {
+		if ( NelioABSettings::get_headlines_quota_mode() == NelioABSettings::HEADLINES_QUOTA_MODE_ON_FRONT_PAGE ) {
+			global $nelioab_controller;
+			$url = $nelioab_controller->get_current_url();
+			$current_post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
+			$front_page_id = nelioab_get_page_on_front();
+			if ( $front_page_id == 0 )
+				$front_page_id = NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS;
+			if ( $front_page_id != $current_post_id )
+				$this->applied_headlines = array();
+		}
+
 		$headlines = array();
 		foreach ( $this->applied_headlines as $hl )
 			array_push( $headlines, implode( ':', $hl ) );
@@ -642,15 +651,6 @@ class NelioABAlternativeExperimentController {
 				$sec = strtolower( md5( $aux ) );
 				?>,"sec":<?php echo json_encode( $sec );
 			} ?>};
-		/* ]]> */
-		</script><?php
-	}
-
-	public function add_empty_headlines_list() {
-		?><script type="text/javascript">
-		/* <![CDATA[ */
-		NelioABParams.sync.headlines = {};
-		NelioABParams.sync.headlines.list = [];
 		/* ]]> */
 		</script><?php
 	}
@@ -823,7 +823,7 @@ class NelioABAlternativeExperimentController {
 			$alt = $headline_data['alt'];
 			$value = $alt->get_value();
 			// This first IF is a safeguard...
-			if ( is_array( $value ) && isset( $value['excerpt'] ) ) {
+			if ( is_array( $value ) && isset( $value['excerpt'] ) && !empty( $value['excerpt'] ) ) {
 				return $value['excerpt'];
 			}
 		}

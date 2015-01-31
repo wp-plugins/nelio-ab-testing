@@ -288,6 +288,15 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			);
 
 			add_settings_field(
+				'headlines_quota_mode',
+				self::prepare_pro_label( __( 'Quota Usage for Headlines', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_headlines_quota_mode_field' ),
+				'nelioab-settings',
+				'nelioab_pro_section'
+			);
+
+			add_settings_field(
 				'min_confidence_for_significance',
 				self::prepare_pro_label( __( 'Min. Confidence', 'nelioab' ) ),
 				// -------------------------------------------------------------
@@ -553,6 +562,26 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				);
 			}
 			?>
+			</select>
+			<?php
+		}
+
+		public static function print_headlines_quota_mode_field() {
+			$field_name = 'headlines_quota_mode';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_pro_details()
+			);
+			?>
+				<option value='<?php
+						echo NelioABSettings::HEADLINES_QUOTA_MODE_ALWAYS
+					?>'><?php _e( 'All Pages Are Relevant for Headline Tracking', 'nelioab' ); ?></option>
+				<option value='<?php
+							echo NelioABSettings::HEADLINES_QUOTA_MODE_ON_FRONT_PAGE;
+						?>'<?php
+					if ( NelioABSettings::get_headlines_quota_mode() == NelioABSettings::HEADLINES_QUOTA_MODE_ON_FRONT_PAGE )
+						echo ' selected="selected"';
+				?>><?php _e( 'Only the Front Page Is Relevant for Headline Tracking', 'nelioab' ); ?></option>
 			</select>
 			<?php
 		}

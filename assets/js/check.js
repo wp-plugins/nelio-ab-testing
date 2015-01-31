@@ -22,7 +22,7 @@ NelioAB.checker.init = function() {
 	try {
 		var res = NelioAB.checker.syncCookiesAndCheck();
 		if ( 'DO_NOT_LOAD_ANYTHING' != res.action)
-			NelioAB.checker.loadAlternative( res.mode, res.action );
+			NelioAB.checker.loadAlternative( res.mode, res.action, false );
 	}
 	catch(e) {
 		NelioAB.helpers.showBody();
@@ -109,7 +109,7 @@ NelioAB.checker.syncCookiesAndCheck = function() {
 	return result;
 };
 
-NelioAB.checker.loadAlternative = function( mode, action ) {
+NelioAB.checker.loadAlternative = function( mode, action, isLastTry ) {
 	var data = {
 		'nelioab_cookies': NelioAB.cookies.listForAltLoading(),
 		'current_url': document.URL,
@@ -142,6 +142,12 @@ NelioAB.checker.loadAlternative = function( mode, action ) {
 					/<.cript src="https?:\/\/stats.(wordpress|wp).com\/e-([^\n]*)\n/g,
 					'<!-- <scr'+'ipt src="http://stats.$1.com/e-$2 -->\n' +
 					'\t<scr'+'ipt>function st_go(a){} function linktracker_init(a,b){}</scr'+'ipt>\n'
+				);
+			// Removing apple ad the second time
+			data = data
+				.replace(
+					/meta name=['"]apple-itunes-app['"]/,
+					'meta name="nelio-itunes-app"'
 				);
 			var docIsReady = function() {
 				var aux = window.setTimeout(function() {}, 0);
@@ -176,7 +182,16 @@ NelioAB.checker.loadAlternative = function( mode, action ) {
 			}
 		},
 		error: function(data) {
-			NelioAB.helpers.showBody();
+			if ( !isLastTry ) {
+				var p = NelioABParams.permalink;
+				p = p.replace(/^(https?:\/\/)/, '$1www.');
+				p = p.replace(/^(https?:\/\/)www\.www\./, '$1');
+				NelioABParams.permalink = p
+				NelioAB.checker.loadAlternative( mode, action, true );
+			}
+			else {
+				NelioAB.helpers.showBody();
+			}
 		}
 	});
 }

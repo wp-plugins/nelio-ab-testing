@@ -177,6 +177,9 @@ if ( !class_exists( 'NelioABController' ) ) {
 			$heatmaps = $hm_con->track_heatmaps_for_post( $nav['currentActualId'] );
 			nelioab_add_sync_data( array( 'heatmaps' => $heatmaps ) );
 
+			// (d) By default, we'll assume that no headlines were replaced
+			nelioab_add_sync_data( array( 'headlines' => array( 'list' => '' ) ) );
+
 			// BUT NOT for:
 			// - Form Submits, because they are necessarily processed by WP
 		}
