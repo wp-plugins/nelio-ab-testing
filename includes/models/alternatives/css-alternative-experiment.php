@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 
@@ -166,40 +168,6 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			$result = NelioABBackend::remote_post(
 				sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update', $alt_id ),
 				$body );
-		}
-
-		public function start() {
-			// Checking whether the experiment can be started or not...
-			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
-			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-			$this_exp_origins = $this->get_origins();
-			array_push( $this_exp_origins, -1 );
-			foreach ( $running_exps as $running_exp ) {
-				if ( $running_exp->get_id() == $this->get_id() )
-					continue;
-				switch ( $running_exp->get_type() ) {
-					case NelioABExperiment::THEME_ALT_EXP:
-						$err_str = sprintf(
-							__( 'The experiment cannot be started, because there is a theme experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
-							$running_exp->get_name() );
-						throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
-					case NelioABExperiment::CSS_ALT_EXP:
-						foreach( $this_exp_origins as $origin_id ) {
-							if ( in_array( $origin_id, $running_exp->get_origins() ) ) {
-								$err_str = sprintf(
-									__( 'The experiment cannot be started, because there is a CSS experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
-									$running_exp->get_name() );
-								throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
-							}
-						}
-					case NelioABExperiment::HEATMAP_EXP:
-						$err_str = __( 'The experiment cannot be started, because there is one (or more) heatmap experiments running. Please make sure to stop any running heatmap experiment before starting the new one.', 'nelioab' );
-						throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
-				}
-			}
-			// If everything is OK, we can start it!
-			parent::start();
 		}
 
 		public static function load( $id ) {

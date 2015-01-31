@@ -101,14 +101,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 					$action = (array)$action;
 					$action['_type'] = 'page-accessed-action';
 					$action = (object)$action;
-
-					$index = false;
-					if ( isset( $action->order ) )
-						$index = intval( $action->order );
-					if ( $index && !isset( $ae_actions[$index] ) )
-						$ae_actions[$index] = $action;
-					else
-						array_push( $ae_actions, $action );
+					array_push( $ae_actions, $action );
 				}
 			}
 
@@ -117,17 +110,11 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 					$action = (array)$action;
 					$action['_type'] = 'form-action';
 					$action = (object)$action;
-
-					$index = false;
-					if ( isset( $action->order ) )
-						$index = intval( $action->order );
-					if ( $index && !isset( $ae_actions[$index] ) )
-						$ae_actions[$index] = $action;
-					else
-						array_push( $ae_actions, $action );
+					array_push( $ae_actions, $action );
 				}
 			}
 
+			usort( $ae_actions, array( 'NelioABAltExpGoal', 'sort_goals' ) );
 			foreach ( $ae_actions as $action ) {
 				switch( $action->_type ) {
 					case 'page-accessed-action':
@@ -139,6 +126,16 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 				}
 			}
 			return $result;
+		}
+
+		public static function sort_goals( $a, $b ) {
+			if ( isset( $a->order ) && isset( $b->order ) )
+				return $a->order - $b->order;
+			if ( isset( $a->order ) )
+				return -1;
+			if ( isset( $b->order ) )
+				return 1;
+			return 0;
 		}
 
 		public function get_results() {
@@ -193,7 +190,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 
 					if ( $alternative == null ) {
 						foreach ( $experiment->get_alternatives() as $alt ) {
-							if ( $alt->get_value() == $json_alt['altId'] )
+							if ( $alt->applies_to_post_id( $json_alt['altId'] ) )
 								$alternative = $alt;
 						}
 					}
@@ -245,9 +242,9 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 					for( $i = 0; $i < count( $alts ); ++$i ) {
 						$alt = $alts[$i];
 						$short_name = sprintf( __( 'Alternative %s', 'nelioab' ), ( $i + 1 ) );
-						if ( $alt->get_value() == $min_ver || $alt->get_id() == $min_ver )
+						if ( $alt->get_identifiable_value() == $min_ver || $alt->get_id() == $min_ver )
 							$g->set_min_name( $short_name, $alt->get_name() );
-						if ( $alt->get_value() == $max_ver || $alt->get_id() == $max_ver )
+						if ( $alt->get_identifiable_value() == $max_ver || $alt->get_id() == $max_ver )
 							$g->set_max_name( $short_name, $alt->get_name() );
 					}
 					if ( $experiment->get_originals_id() == $min_ver )

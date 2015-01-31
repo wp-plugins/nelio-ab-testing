@@ -23,16 +23,20 @@ class NelioABAlternativeExperimentController {
 	private $actual_theme;
 	private $original_theme;
 
+	private $applied_headlines;
+
 	public function __construct() {
 		$this->actual_theme = false;
 		$this->original_theme = false;
+		$this->applied_headlines = array();
 	}
 
 	public function hook_to_wordpress() {
 		$this->alternative_post = null;
 		$this->are_comments_from_original_loaded = false;
 
-		if ( isset( $_POST['nelioab_load_alt'] ) ) {
+		global $nelioab_controller;
+		if ( 'nelioab_load_alt' == $nelioab_controller->is_alternative_content_loading_required() ) {
 			// If we are accessing a page with the "nelioab_load_alt" POST param set,
 			// then we have to load an alternative. This may be because of a THEME ALT EXP
 			// or a PAGE/POST ALT EXP. Whichever the case is, we make some hooks to load the
@@ -49,18 +53,36 @@ class NelioABAlternativeExperimentController {
 			add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
 			add_filter( 'post_link',           array( &$this, 'use_originals_post_link' ) );
 			add_filter( 'page_link',           array( &$this, 'use_originals_post_link' ) );
-			add_action( 'wp_enqueue_scripts',  array( &$this, 'load_nelioab_scripts_for_alt' ) );
-			add_action( 'wp_enqueue_scripts',  array( &$this, 'include_css_alternative_fragments_if_any' ) );
 			add_filter( 'get_post_metadata',   array( &$this, 'load_proper_page_template' ), 10, 4 );
+			add_filter( 'wp',                  array( &$this, 'do_late_hooks' ) );
+			add_action( 'wp_footer',           array( &$this, 'add_list_of_applied_headlines' ) );
+			add_action( 'wp_footer', array( &$this, 'include_css_alternative_fragments_if_any' ) );
+
+			/**
+			 * Headline Experiments modify TITLE, FEATURED IMAGE and EXCERPT.
+			 * Let's add the three filters!
+			 */
+			if ( NelioABSettings::make_site_consistent() ) {
+				add_filter( 'the_title',         array( &$this, 'get_consistent_title' ), 10, 2 );
+				add_filter( 'get_the_excerpt',   array( &$this, 'get_consistent_excerpt' ), 10 );
+				add_filter( 'the_content',       array( &$this, 'get_consistent_content' ), 10 );
+				add_filter( 'get_post_metadata', array( &$this, 'get_consistent_featured_image' ), 10, 4 );
+			}
+			else {
+				add_filter( 'the_title',         array( &$this, 'replace_headline_title' ), 10, 2 );
+				add_filter( 'get_the_excerpt',   array( &$this, 'replace_headline_excerpt' ), 10 );
+				add_filter( 'get_post_metadata', array( &$this, 'fix_headline_featured_image' ), 10, 4 );
+			}
 
 			/**
 			 * Support with other plugins.
 			 * Compatibility tweaks for testing OptimizePress pages.
 			 */
 			require_once( NELIOAB_UTILS_DIR . '/optimize-press-support.php' );
-			if ( NelioABOptimizePressSupport::is_optimize_press_active() )
-				add_filter( 'template_include',
-					array( 'NelioABOptimizePressSupport', 'op_template_include' ) );
+			if ( NelioABOptimizePressSupport::is_optimize_press_active() ) {
+				add_filter( 'template_redirect',
+					array( 'NelioABOptimizePressSupport', 'apply_abtesting_to_optimize_press_pages' ) );
+			}
 
 			/**
 			 * Support with other plugins.
@@ -71,31 +93,116 @@ class NelioABAlternativeExperimentController {
 				add_action( 'wp_loaded',
 					array( 'NelioABMemberAccessSupport', 'unhook_redirections' ) );
 		}
+		// If we need to load an alternative to have a consistent site
+		elseif ( 'nelioab_load_consistent_version' == $nelioab_controller->is_alternative_content_loading_required() ) {
+			add_filter( 'the_title',         array( &$this, 'get_consistent_title' ), 10, 2 );
+			add_filter( 'get_the_excerpt',   array( &$this, 'get_consistent_excerpt' ), 10 );
+			add_filter( 'the_content',       array( &$this, 'get_consistent_content' ), 10 );
+			add_filter( 'get_post_metadata', array( &$this, 'get_consistent_featured_image' ), 10, 4 );
+			add_action( 'wp_footer',         array( &$this, 'add_list_of_applied_headlines' ) );
+		}
 		else {
-			if ( !NelioABSettings::use_php_cookies() ) {
-				// If the "nelioab_load_alt" POST param is not set, we have to return the
-				// page with the JS file that is able to load an alternative and do all
-				// the required stuff
-				add_action( 'wp_enqueue_scripts', array( &$this, 'load_nelioab_check_scripts' ) );
-			}
+			/**
+			 * Support with other plugins.
+			 * Compatibility tweaks for preventing autotriggering of Google Tag Manager
+			 */
+			require_once( NELIOAB_UTILS_DIR . '/dtgtm4wp-support.php' );
+			NelioABDtGtm4WpSupport::nelioab_tweak_dtgtm4wp();
 		}
 
 		// Make sure that the title is replaced everywhere
-		add_filter( 'the_title', array( &$this, 'change_title_on_abtesting' ),  10, 2 );
 		add_filter( 'wp_title',  array( &$this, 'fix_title_for_landing_page' ), 10, 2 );
-		add_action( 'wp_head',   array( &$this, 'add_js_to_replace_titles' ) );
 
 		/**
 		 *  Hooks for Gravity Forms and Contact Form 7
 		 */
-		// Adding hidden fields:
-		add_filter( 'gform_pre_render',    array( &$this, 'add_hidden_fields_to_gf' ),  10, 1 );
-		add_filter( 'wpcf7_form_elements', array( &$this, 'add_hidden_fields_to_cf7' ), 10, 1 );
-
 		// Monitoring submissions:
 		add_action( 'gform_after_submission', array( &$this, 'track_gf_submission' ),  10, 2 );
 		add_action( 'wpcf7_submit',           array( &$this, 'track_cf7_submission' ), 10, 2 );
 	}
+
+	public function do_late_hooks( $wp = false ) {
+		global $nelioab_controller;
+		add_filter( 'option_page_on_front', array( &$nelioab_controller, 'fix_page_on_front' ) );
+	}
+
+	public function get_consistent_title( $title, $id = NULL ) {
+		if ( empty( $id ) )
+			return $title;
+		$alt_id = $this->get_post_alternative( $id );
+		if ( $alt_id !== $id ) {
+			$post = get_post( $alt_id );
+			if ( $post ) {
+				remove_filter( 'the_title', array( &$this, 'get_consistent_title' ) );
+				$title = apply_filters( 'the_title', $post->post_title, $alt_id );
+				add_filter( 'the_title', array( &$this, 'get_consistent_title' ), 10, 2 );
+				return $title;
+			}
+		}
+		return $this->replace_headline_title( $title, $id );
+	}
+
+	public function get_consistent_excerpt( $excerpt ) {
+		// This function can be tricky, because the global variable
+		// post might not be properly set by some plugins...
+		global $post;
+		if ( !$post )
+			return $excerpt;
+		global $nelioab_controller;
+		if ( $nelioab_controller->url_or_front_page_to_postid(
+		     $nelioab_controller->get_current_url() ) == $post->ID ) {
+			return $excerpt;
+		}
+		$alt_id = $this->get_post_alternative( $post->ID );
+		if ( $alt_id !== $post->ID ) {
+			$post = get_post( $alt_id );
+			if ( $post ) {
+				remove_filter( 'get_the_excerpt', array( &$this, 'get_consistent_excerpt' ) );
+				$excerpt = apply_filters( 'get_the_excerpt', $post->post_excerpt );
+				add_filter( 'get_the_excerpt', array( &$this, 'get_consistent_excerpt' ), 10 );
+				return $excerpt;
+			}
+		}
+		return $this->replace_headline_excerpt( $excerpt );
+	}
+
+	public function get_consistent_content( $content ) {
+		// This function can be tricky, because the global variable
+		// post might not be properly set by some plugins...
+		global $post;
+		if ( !$post )
+			return $excerpt;
+		global $nelioab_controller;
+		if ( $nelioab_controller->url_or_front_page_to_postid(
+		     $nelioab_controller->get_current_url() ) == $post->ID ) {
+			return $content;
+		}
+		$alt_id = $this->get_post_alternative( $post->ID );
+		if ( $alt_id !== $post->ID ) {
+			$post = get_post( $alt_id );
+			if ( $post ) {
+				remove_filter( 'the_content', array( &$this, 'get_consistent_content' ) );
+				$content = apply_filters( 'the_content', $post->post_content );
+				add_filter( 'the_content', array( &$this, 'get_consistent_content' ), 10 );
+				return $content;
+			}
+		}
+		return $content;
+	}
+
+	public function get_consistent_featured_image( $value, $object_id, $meta_key, $single ) {
+		if ( '_thumbnail_id' == $meta_key ) {
+			$alt_id = $this->get_post_alternative( $object_id );
+			if ( $alt_id !== $object_id ) {
+				remove_filter( 'get_post_metadata', array( &$this, 'get_consistent_featured_image' ) );
+				$value = get_post_meta( $alt_id, $meta_key, $single );
+				add_filter( 'get_post_metadata', array( &$this, 'get_consistent_featured_image' ), 10, 4 );
+				return $value;
+			}
+		}
+		return $this->fix_headline_featured_image( $value, $object_id, $meta_key, $single );
+	}
+
 
 	public function load_proper_page_template( $value, $post_id = 0, $meta_key = '', $single = false ) {
 		if ( $meta_key === '_wp_page_template' ) {
@@ -133,42 +240,59 @@ class NelioABAlternativeExperimentController {
 
 		// Check whether new cookies have to be created:
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
 			// Prepare COOKIES for PAGE/POST ALT EXPS
 			if ( $exp->get_type() == NelioABExperiment::POST_ALT_EXP ||
-			     $exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ||
-			     $exp->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
-				$aux = NelioABUser::get_alternative_for_post_alt_exp( $exp->get_originals_id() );
+			     $exp->get_type() == NelioABExperiment::PAGE_ALT_EXP ) {
+				$aux = $this->get_post_alternative( $exp->get_originals_id() );
+			}
+			elseif ( $exp->get_type() == NelioABExperiment::HEADLINE_ALT_EXP ) {
+				$aux = $this->get_headline_experiment_and_alternative( $exp->get_originals_id() );
 			}
 		}
 		// Prepare COOKIES for GLOBAL ALT EXP (THEMES and CSS)
+		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		$aux = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
 		$aux = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::CSS_ALT_EXP );
+		$aux = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::WIDGET_ALT_EXP );
 
 		// Return the new COOKIES
 		return $NELIOAB_COOKIES;
 	}
 
 	public function check_requires_an_alternative( $url ) {
-		if ( $this->is_there_a_running_global_alt_exp() )
-			return 'LOAD_ALT';
+		if ( $this->get_global_alt_exp_running() !== false )
+			return 'LOAD_ALTERNATIVE';
+		if ( $this->is_there_a_running_headline_experiment() )
+			return 'LOAD_ALTERNATIVE';
 		global $nelioab_controller;
 		$post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
 		if ( $this->is_post_in_a_post_alt_exp( $post_id ) )
-			return 'LOAD_ALT';
-		else
-			return 'DO_NOT_LOAD_ALT';
+			return 'LOAD_ALTERNATIVE';
+		if ( NelioABSettings::make_site_consistent() )
+			if ( $this->are_there_ab_experiments_running() )
+				return 'LOAD_CONSISTENT_VERSION';
+		return 'DO_NOT_LOAD_ANYTHING';
 	}
 
-	private function is_there_a_running_global_alt_exp() {
+	private function are_there_ab_experiments_running() {
+		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+		foreach ( $running_exps as $exp )
+			if ( $exp->get_type() != NelioABExperiment::HEATMAP_EXP )
+				return true;
+		return false;
+	}
+
+	private function get_global_alt_exp_running() {
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp )
 			if ( $exp->get_type() == NelioABExperiment::THEME_ALT_EXP ||
-			     $exp->get_type() == NelioABExperiment::CSS_ALT_EXP )
-					return true;
+			     $exp->get_type() == NelioABExperiment::CSS_ALT_EXP ||
+					 $exp->get_type() == NelioABExperiment::WIDGET_ALT_EXP )
+					return $exp;
 		return false;
 	}
 
@@ -177,7 +301,8 @@ class NelioABAlternativeExperimentController {
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp )
 			if ( $exp->get_type() == NelioABExperiment::THEME_ALT_EXP ||
-			     $exp->get_type() == NelioABExperiment::CSS_ALT_EXP )
+			     $exp->get_type() == NelioABExperiment::CSS_ALT_EXP ||
+					 $exp->get_type() == NelioABExperiment::WIDGET_ALT_EXP )
 					return true;
 		return false;
 	}
@@ -188,7 +313,8 @@ class NelioABAlternativeExperimentController {
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
 			if ( $exp->get_type() != NelioABExperiment::THEME_ALT_EXP ||
-			     $exp->get_type() != NelioABExperiment::CSS_ALT_EXP )
+			     $exp->get_type() != NelioABExperiment::CSS_ALT_EXP ||
+					 $exp->get_type() == NelioABExperiment::WIDGET_ALT_EXP )
 				continue;
 			foreach( $exp->get_goals() as $goal ) {
 				if ( $goal->get_kind() != NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL )
@@ -201,8 +327,8 @@ class NelioABAlternativeExperimentController {
 	}
 
 	private function get_actual_theme() {
+		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		if ( !$this->actual_theme ) {
-			require_once( NELIOAB_MODELS_DIR . '/user.php' );
 			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
 			remove_filter( 'template',   array( &$this, 'modify_template' ) );
 			$this->actual_theme = NelioABUser::get_assigned_theme();
@@ -215,12 +341,16 @@ class NelioABAlternativeExperimentController {
 
 	public function modify_stylesheet( $stylesheet ) {
 		// If I'm not loading an alternative, I hooked for no reason...
-		if ( !isset( $_POST['nelioab_load_alt'] ) )
+		global $nelioab_controller;
+		if ( !$nelioab_controller->is_alternative_content_loading_required() ) {
 			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
+			return $stylesheet;
+		}
 
-		// WARNING: I check whether the function exists, because there are some (random)
-		// times in which calling "current_user_can" results in a fatal error :-S
-		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
+		// WARNING: I check whether the function 'wp_get_current_user" exists,
+		// because the latter depends on this one and, sometimes, this one is
+		// not available, generating a fatal error :-S
+		if ( !function_exists( 'wp_get_current_user' ) || is_super_admin() )
 			return $stylesheet;
 		$theme = $this->get_actual_theme();
 		return $theme['Stylesheet'];
@@ -228,23 +358,96 @@ class NelioABAlternativeExperimentController {
 
 	public function modify_template( $template ) {
 		// If I'm not loading an alternative, I hooked for no reason...
-		if ( !isset( $_POST['nelioab_load_alt'] ) )
+		global $nelioab_controller;
+		if ( !$nelioab_controller->is_alternative_content_loading_required() ) {
 			remove_filter( 'stylesheet', array( &$this, 'modify_template' ) );
+			return $template;
+		}
 
-		// WARNING: I check whether the function exists, because there are some (random)
-		// times in which calling "current_user_can" results in a fatal error :-S
-		if ( !function_exists( 'wp_get_current_user' ) || current_user_can( 'delete_users' ) )
+		// WARNING: I check whether the function 'wp_get_current_user" exists,
+		// because the latter depends on this one and, sometimes, this one is
+		// not available, generating a fatal error :-S
+		if ( !function_exists( 'wp_get_current_user' ) || is_super_admin() )
 			return $template;
 		$theme = $this->get_actual_theme();
 		return $theme['Template'];
 	}
 
-	public function fix_widgets_for_theme( $all_widgets ) {
-		// If I'm not loading an alternative, I hooked for no reason...
-		if ( !isset( $_POST['nelioab_load_alt'] ) )
-			remove_filter( 'stylesheet', array( &$this, 'fix_widgets_for_theme' ) );
-
+	public function show_the_appropriate_widgets( $all_widgets ) {
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
+		require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
+		$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::WIDGET_ALT_EXP );
+		if ( $alt )
+			return $this->fix_widgets_for_widget_exp( $all_widgets, $alt );
+
+		$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
+		if ( $alt )
+			return $this->fix_widgets_for_theme_exp( $all_widgets );
+
+		return $this->filter_original_widgets( $all_widgets );
+	}
+
+	private function fix_widgets_for_widget_exp( $all_widgets, $alt ) {
+		$exp = $this->get_global_alt_exp_running();
+		if ( $exp->get_type() != NelioABExperiment::WIDGET_ALT_EXP )
+			return $all_widgets;
+
+		$alt_id = $alt->get_id();
+		$exp_id = $exp->get_id();
+
+		$use_ori_widgets = ( $exp->get_originals_id() == $alt_id );
+
+		$res = array();
+		if ( $use_ori_widgets ) {
+			$res = $this->filter_original_widgets( $all_widgets );
+		}
+		else {
+			require_once( NELIOAB_ADMIN_DIR . '/widget-exp-admin-controller.php' );
+			$widgets_in_experiments = NelioABWidgetExpAdminController::get_widgets_in_experiments();
+			foreach ( $all_widgets as $sidebar => $widgets ) {
+				$res[$sidebar] = array();
+				if ( !is_array( $widgets ) )
+					continue;
+				foreach ( $widgets as $widget ) {
+					if ( $this->is_widget_enabled( $widget, $widgets_in_experiments, $exp_id, $alt_id ) )
+						array_push( $res[$sidebar], $widget );
+				}
+			}
+		}
+		return $res;
+	}
+
+	public function filter_original_widgets( $all_widgets ) {
+		require_once( NELIOAB_ADMIN_DIR . '/widget-exp-admin-controller.php' );
+		$widgets_in_experiments = NelioABWidgetExpAdminController::get_widgets_in_experiments();
+		$res = array();
+		foreach ( $all_widgets as $sidebar => $widgets ) {
+			$res[$sidebar] = array();
+			if ( !is_array( $widgets ) )
+				continue;
+			foreach ( $widgets as $widget ) {
+				if ( $this->is_widget_original( $widget, $widgets_in_experiments ) )
+					array_push( $res[$sidebar], $widget );
+			}
+		}
+		return $res;
+	}
+
+	private function is_widget_original( $widget, $list ) {
+		foreach( $list as $w => $aux )
+			if ( $w == $widget )
+				return false;
+		return true;
+	}
+
+	private function is_widget_enabled( $widget, $list, $exp, $alt ) {
+		foreach( $list as $w => $aux )
+			if ( $widget == $w && $aux['exp'] == $exp && $aux['alt'] == $alt )
+				return true;
+		return false;
+	}
+
+	private function fix_widgets_for_theme_exp( $all_widgets ) {
 		$actual_theme = $this->get_actual_theme();
 		$actual_theme_id = $actual_theme['Stylesheet'];
 
@@ -286,36 +489,10 @@ class NelioABAlternativeExperimentController {
 		}
 	}
 
-	public function load_nelioab_check_scripts() {
-		// Custom Permalinks Support: Obtaining the real permalink (which might be
-		// masquared by custom permalinks plugin)
-		require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
-		global $nelioab_controller;
-		$url = $nelioab_controller->get_current_url();
-		$current_post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
-		if ( NelioABCustomPermalinksSupport::is_plugin_active() )
-			$permalink = NelioABCustomPermalinksSupport::get_original_permalink( $current_post_id );
-		else
-			$permalink = get_permalink( $current_post_id );
-
-		wp_enqueue_script( 'nelioab_alternatives_script_check',
-			nelioab_asset_link( '/js/nelioab-check.min.js' ) );
-		wp_localize_script( 'nelioab_alternatives_script_check',
-			'NelioABChecker', array(
-				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
-				'permalink' => $permalink,
-			) );
-	}
-
-	public function load_nelioab_scripts_for_alt() {
-		wp_enqueue_script( 'nelioab_alternatives_script_alt',
-			nelioab_asset_link( '/js/nelioab-alt.min.js' ) );
-	}
-
 	public function include_css_alternative_fragments_if_any() {
 		if ( !is_main_query() ) return;
-		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 
+		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		$alt = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::CSS_ALT_EXP );
 		if ( !$alt )
 			return;
@@ -327,7 +504,6 @@ class NelioABAlternativeExperimentController {
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
-		header( 'Content-Type: application/json' );
 		$result = array( 'ae_hrefs' => array(), 'regex_hrefs' => array() );
 
 		// LOOK FOR A PAGE/POST EXPERIMENT IN WHICH THIS POST IS BEING TESTED OR
@@ -358,8 +534,7 @@ class NelioABAlternativeExperimentController {
 			}
 		}
 
-		echo json_encode( $result );
-		die();
+		return $result;
 	}
 
 	public function load_comments_from_original( $comments_query ) {
@@ -443,131 +618,53 @@ class NelioABAlternativeExperimentController {
 		$id = $post->ID;
 		if ( !$this->is_post_alternative( $id ) )
 			return $comments_number;
-
 		$ori_id = $this->get_original_related_to( $post->ID );
 		$aux    = get_post( $ori_id, ARRAY_A );
 		return $aux['comment_count'];
 	}
 
-	public function add_js_to_replace_titles() { ?>
+	public function add_list_of_applied_headlines() {
+		if ( NelioABSettings::get_headlines_quota_mode() == NelioABSettings::HEADLINES_QUOTA_MODE_ON_FRONT_PAGE ) {
+			global $nelioab_controller;
+			$url = $nelioab_controller->get_current_url();
+			$current_post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
+			$front_page_id = nelioab_get_page_on_front();
+			if ( $front_page_id == 0 )
+				$front_page_id = NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS;
+			if ( $front_page_id != $current_post_id )
+				$this->applied_headlines = array();
+		}
+
+		$headlines = array();
+		foreach ( $this->applied_headlines as $hl )
+			array_push( $headlines, implode( ':', $hl ) );
+		$headlines = implode( ',', $headlines ); ?>
 		<script type="text/javascript">
-		(function($) {
-			$(document).ready(function(){
-				var theCookies = document.cookie.split(';');
-				var substitutions = [];
-				for (var i = 1; i <= theCookies.length; ++i) {
-					var cookie = theCookies[i];
-					if (cookie == undefined)
-						continue;
-					var cookieName = jQuery.trim( cookie.substr(0, cookie.indexOf('=')) );
-					var cookieVal  = jQuery.trim( cookie.substr(cookie.indexOf('=')+1, cookie.length) );
-
-					if (cookieName.indexOf("<?php echo NelioABSettings::cookie_prefix(); ?>title_") == 0) { try {
-						var aux  = cookieVal.split(":");
-						var exp  = aux[2];
-						var post = nelioab_get_cookie_by_name( "<?php echo NelioABSettings::cookie_prefix(); ?>altexp_" + exp );
-
-						var oriTitle = "\t \t \t" + decodeURIComponent(aux[0]) + "\t \t \t";
-						var altTitle = decodeURIComponent(aux[1]);
-						var regexp   = new RegExp( oriTitle );
-						if ( $("*").replaceText( regexp, altTitle ) )
-							substitutions.push( { 'exp':exp, 'actual_post':post } );
-					} catch (e) {} }
-				}
-				if ( substitutions.length > 0 ) {
-					jQuery.ajax({
-						type:  'POST',
-						async: true,
-						url:   '<?php echo admin_url( 'admin-ajax.php' ); ?>',
-						data: {
-							action: 'nelioab_send_alt_titles_info',
-							current_url: document.URL,
-							referer: document.referrer,
-							nelioab_cookies: nelioab_get_local_cookies(),
-							replaced_title_exps: JSON.stringify( substitutions ),
-						},
-					});
-				}
-			});
-		})(jQuery);
-		</script>
-
-		<?php
-	}
-
-	public function send_alt_titles_info() {
-		if ( !isset( $_POST['replaced_title_exps'] ) )
-			die();
-
-		if ( !NelioABAccountSettings::has_quota_left() && !NelioABAccountSettings::is_quota_check_required() )
-			return;
-
-		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-		require_once( NELIOAB_MODELS_DIR . '/user.php' );
-
-		global $nelioab_controller;
-		$url = $nelioab_controller->get_current_url();
-		$current_post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
-		$actualDestination = false;
-
-		$replaced_title_exps = json_decode( stripslashes( $_POST['replaced_title_exps'] ) );
-		$relevant_title_exps = array();
-
-		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-		foreach ( $running_exps as $exp ) {
-			if ( $exp->get_type() == NelioABExperiment::TITLE_ALT_EXP ) {
-				foreach ( $replaced_title_exps as $rte ) {
-					if ( $exp->get_id() == $rte->exp &&
-					     $exp->get_originals_id() != $current_post_id )
-						array_push( $relevant_title_exps, $rte );
-				}
-			}
-		}
-
-		NelioABAccountSettings::set_has_quota_left( true );
-		foreach( $relevant_title_exps as $rte ) {
-			try {
-				$url = sprintf( NELIOAB_BACKEND_URL . '/site/%s/exp/%s/titleview',
-					NelioABAccountSettings::get_site_id(),
-					$rte->exp );
-				$body = array(
-					'user'    => '' . NelioABUser::get_id(),
-					'postId'  => '' . $rte->actual_post,
-				);
-				$result = NelioABBackend::remote_post( $url, $body );
-			}
-			catch ( Exception $e ) {
-				if ( $e->getCode() == NelioABErrCodes::NO_MORE_QUOTA ) {
-					NelioABAccountSettings::set_has_quota_left( false );
-					break;
-				}
-				// else: bad luck, because navigation is lost
-			}
-		}
-
-		// Send a regular navigation (if it was not already sent, which is controlled
-		// by the "is_relevant" function) to control quota
-		$nav = $this->prepare_navigation_object( $current_post_id, '', true );
-		if ( $this->is_post_in_a_title_alt_exp( $current_post_id ) && !$nelioab_controller->is_relevant( $nav ) )
-			$nelioab_controller->send_navigation_object( $nav );
-
-		die();
-	}
-
-	public function change_title_on_abtesting( $title, $id = -1 ) {
-		return "\t \t \t$title\t \t \t";
+		/* <![CDATA[ */
+		NelioABParams.sync.headlines = {"list":<?php
+			echo json_encode( $headlines );
+			if ( count( $this->applied_headlines ) > 0 ) {
+				$aux = NelioABAccountSettings::get_customer_id() .
+					NelioABAccountSettings::get_site_id() .
+					$headlines .
+					NelioABAccountSettings::get_reg_num();
+				$sec = strtolower( md5( $aux ) );
+				?>,"sec":<?php echo json_encode( $sec );
+			} ?>};
+		/* ]]> */
+		</script><?php
 	}
 
 	public function fix_title_for_landing_page( $title, $sep = false ) {
 		global $post;
 		if ( $this->is_post_alternative( $post->ID ) ) {
-			$front_page_id = get_option( 'page_on_front' );
+			$front_page_id = nelioab_get_page_on_front();
 			$ori_id = $this->get_original_related_to( $post->ID );
 			if ( $ori_id == $front_page_id ) {
 				$title = get_bloginfo( 'name' ) . " $sep ";
 			}
 		}
-		return "$title";
+		return $title;
 	}
 
 	public function is_post_in_a_post_alt_exp( $post_id ) {
@@ -583,11 +680,11 @@ class NelioABAlternativeExperimentController {
 		return false;
 	}
 
-	public function is_post_in_a_title_alt_exp( $post_id ) {
+	public function is_post_in_a_headline_alt_exp( $post_id ) {
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 		foreach ( $running_exps as $exp ) {
-			if ( $exp->get_type() == NelioABExperiment::TITLE_ALT_EXP &&
+			if ( $exp->get_type() == NelioABExperiment::HEADLINE_ALT_EXP &&
 			     $exp->get_originals_id() == $post_id )
 				return true;
 		}
@@ -648,37 +745,12 @@ class NelioABAlternativeExperimentController {
 		return NelioABUser::get_alternative_for_post_alt_exp( $post_id );
 	}
 
-	public function is_relevant( $nav ) {
-		$src_id  = $nav['origin'];
-		$dest_id = $nav['destination'];
-
-		// Checking whether the visited page is relevant for a theme experiment
-		$is_there_a_relevant_global_exp = false;
-		if ( $this->is_there_a_global_alt_exp_with_origin( $src_id ) ||
-		     $this->is_there_a_global_alt_exp_with_goal( $dest_id ) ) {
-			$is_there_a_relevant_global_exp = true;
-		}
-
-		// IF DEST_ID does not belong to any experiment AND
-		//    there is not a GLOBAL experiment running
-		// THEN quit
-		if ( ! $this->is_goal_in_some_page_or_post_experiment( $dest_id ) &&
-		     ! $this->is_post_in_a_post_alt_exp( $dest_id ) &&
-		     ! $this->is_post_in_a_title_alt_exp( $dest_id ) &&
-		     ! $is_there_a_relevant_global_exp )
-			return false;
-
-		return true;
-	}
-
-	public function preview_css( $content ) {
+	public function preview_css() {
 		$css_id = '';
 		if ( isset( $_GET['nelioab_preview_css'] ) )
 			$css_id = $_GET['nelioab_preview_css'];
 		$css = get_option( 'nelioab_css_' . $css_id, false );
-		return $this->prepare_css_as_js( $css ) .
-			"<script>document.getElementsByTagName('head')[0].appendChild(nelioab_cssExpNode);</script>" .
-			$content;
+		echo $this->prepare_css_as_js( $css );
 	}
 
 	private function prepare_css_as_js( $code ) {
@@ -691,121 +763,189 @@ class NelioABAlternativeExperimentController {
 		$code = str_replace( array( "\r\n", "\r", "\n" ), '', $code );
 
 		$css  = "<script type='text/javascript'>\n";
-		$css .= "  nelioab_cssExpNode = document.createElement('style');\n";
-		$css .= "  nelioab_cssExpNode.setAttribute('type', 'text/css');\n";
-		$css .= "  nelioab_cssExpNode.innerHTML = \"$code\";\n";
+		$css .= "  if ( typeof NelioABParams == 'undefined' ) NelioABParams = {};\n";
+		$css .= "  if ( typeof NelioABParams.css == 'undefined' ) NelioABParams.css = {};\n";
+		$css .= "  NelioABParams.css.value = document.createElement('style');\n";
+		$css .= "  NelioABParams.css.value.setAttribute('type', 'text/css');\n";
+		$css .= "  NelioABParams.css.value.innerHTML = \"$code\";\n";
+		$css .= "  document.getElementsByTagName('head')[0].appendChild(NelioABParams.css.value);\n";
 		$css .= "</script>\n";
 
 		return $css;
 	}
 
-	public function prepare_navigation_object( $dest_id, $referer_url, $is_internal = true ) {
+	private function add_active_headline_experiment( $exp, $alt ) {
+		$exp_id = $exp->get_id();
+		$aux = $alt->get_value();
+		$alt_id = $aux['id'];
+		foreach ( $this->applied_headlines as $info )
+			if ( $info['exp'] == $exp_id )
+				return;
+		array_push( $this->applied_headlines,
+			array(
+				'exp' => $exp_id,
+				'alt' => $alt_id,
+			)
+		);
+	}
+
+	public function is_there_a_running_headline_experiment() {
+		$aux = NelioABExperimentsManager::get_running_headline_experiments_from_cache();
+		return count( $aux ) > 0;
+	}
+
+	public function replace_headline_title( $title, $id = NULL ) {
+		if ( empty( $id ) )
+			return $title;
+		$headline_data = $this->get_headline_experiment_and_alternative( $id );
+		if ( $headline_data ) {
+			$this->add_active_headline_experiment( $headline_data['exp'], $headline_data['alt'] );
+			$alt = $headline_data['alt'];
+			return $alt->get_name();
+		}
+		return $title;
+	}
+
+	public function replace_headline_excerpt( $excerpt ) {
+		// This function can be tricky, because the global variable
+		// post might not be properly set by some plugins...
+		global $post;
+		if ( !$post )
+			return $excerpt;
+		global $nelioab_controller;
+		if ( $nelioab_controller->url_or_front_page_to_postid(
+		     $nelioab_controller->get_current_url() ) == $post->ID ) {
+			return $excerpt;
+		}
+		$headline_data = $this->get_headline_experiment_and_alternative( $post->ID );
+		if ( $headline_data ) {
+			$this->add_active_headline_experiment( $headline_data['exp'], $headline_data['alt'] );
+			$alt = $headline_data['alt'];
+			$value = $alt->get_value();
+			// This first IF is a safeguard...
+			if ( is_array( $value ) && isset( $value['excerpt'] ) && !empty( $value['excerpt'] ) ) {
+				return $value['excerpt'];
+			}
+		}
+		return $excerpt;
+	}
+
+	public function fix_headline_featured_image( $value, $object_id, $meta_key, $single ) {
+		if ( '_thumbnail_id' == $meta_key ) {
+			$headline_data = $this->get_headline_experiment_and_alternative( $object_id );
+			if ( $headline_data ) {
+				$this->add_active_headline_experiment( $headline_data['exp'], $headline_data['alt'] );
+				$alt = $headline_data['alt'];
+				$value = $alt->get_value();
+				// This first IF is a safeguard...
+				if ( is_array( $value ) && isset( $value['image_id'] ) ) {
+					if ( $single )
+						return $value['image_id'];
+					else
+						return $value['image_id'];
+				}
+			}
+		}
+		return $value;
+	}
+
+	public function get_headline_experiment_and_alternative( $post_id ) {
+		require_once( NELIOAB_MODELS_DIR . '/user.php' );
+		return NelioABUser::get_alternative_for_headline_alt_exp( $post_id );
+	}
+
+	public function prepare_navigation_object( $current_id, $referer_url ) {
 		// PREPARING DATA
 		// ---------------------------------
-		$referer_url = rtrim( $referer_url, '/' );
 		global $nelioab_controller;
-		$src_id = $nelioab_controller->url_or_front_page_to_postid( $referer_url );
+		$referer_id = $nelioab_controller->url_or_front_page_to_postid( $referer_url );
 
 		// Checking if the source page was an alternative
-		$actual_src_id = $src_id;
-		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $actual_src_id &&
-		     strlen( $referer_url ) === 0 )
-			$actual_src_id = NelioABController::NAVIGATION_ORIGIN_IS_UNKNOWN;
-		elseif ( $this->is_post_in_a_post_alt_exp( $src_id ) )
-			$actual_src_id = $this->get_post_alternative( $src_id );
-
-		// PREPARING THE REST OF THE DATA IF THE NAVIGATION IS...
-		// (A) INTERNAL
-		if ( $is_internal ) {
-			// Making sure is "the original" (if any)
-			$dest_id = $this->get_original_related_to( $dest_id );
-
-			// Checking if the destination page was an alternative
-			$actual_dest_id = $dest_id;
-			if ( $this->is_post_in_a_post_alt_exp( $dest_id ) ||
-			     $this->is_post_in_a_title_alt_exp( $dest_id ) )
-				$actual_dest_id = $this->get_post_alternative( $actual_dest_id );
+		$referer_actual_id = $referer_id;
+		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $referer_actual_id &&
+		     strlen( $referer_url ) === 0 ) {
+			$referer_actual_id = NelioABController::NAVIGATION_ORIGIN_IS_UNKNOWN;
 		}
-		// (B) EXTERNAL
-		else {
-			$actual_dest_id = $dest_id;
+		elseif ( $this->is_post_in_a_post_alt_exp( $referer_id ) ) {
+			$referer_actual_id = $this->get_post_alternative( $referer_id );
+		}
+		elseif ( $this->is_post_in_a_headline_alt_exp( $referer_id ) ) {
+			$headline_data = $this->get_headline_experiment_and_alternative( $referer_id );
+			$val = $headline_data['alt']->get_value();
+			$referer_actual_id = $val['id'];
+		}
+
+		// PREPARING THE REST OF THE DATA
+		// Making sure is "the original" (if any)
+		$current_id = $this->get_original_related_to( $current_id );
+
+		// Checking if the destination page was an alternative
+		$current_actual_id = $current_id;
+		if ( $this->is_post_in_a_post_alt_exp( $current_id ) ) {
+			$current_actual_id = $this->get_post_alternative( $current_id );
+		}
+		elseif ( $this->is_post_in_a_headline_alt_exp( $current_id ) ) {
+			$headline_data = $this->get_headline_experiment_and_alternative( $current_id );
+			$val = $headline_data['alt']->get_value();
+			$current_actual_id = $val['id'];
 		}
 
 		require_once( NELIOAB_MODELS_DIR . '/user.php' );
-
 		$nav = array(
-			'user'              => '' . NelioABUser::get_id(),
 			'referer'           => '' . $referer_url,
-			'origin'            => '' . $src_id,
-			'actualOrigin'      => '' . $actual_src_id,
-			'destination'       => '' . $dest_id,
-			'actualDestination' => '' . $actual_dest_id );
+			'refererId'         => '' . $referer_id,
+			'refererActualId'   => '' . $referer_actual_id,
+			'currentId'         => '' . $current_id,
+			'currentActualId'   => '' . $current_actual_id );
 
 		$the_theme = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
 		if ( $the_theme )
 			$nav['activeTheme'] = '' . $the_theme->get_id();
+		else
+			$nav['activeTheme'] = '';
 
 		$the_css = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::CSS_ALT_EXP );
 		if ( $the_css )
-			$nav['activeCSS'] = '' . $the_css->get_id();
+			$nav['activeCss'] = '' . $the_css->get_id();
+		else
+			$nav['activeCss'] = '';
+
+		$the_widget = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::WIDGET_ALT_EXP );
+		if ( $the_widget )
+			$nav['activeWidget'] = '' . $the_widget->get_id();
+		else
+			$nav['activeWidget'] = '';
 
 		//$the_menu = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::MENU_ALT_EXP );
 		//if ( $the_menu )
 		//	$nav['activeMenu'] = '' . $the_menu->get_id();
 
-		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $nav['destination'] )
-			$nav['destination'] = NelioABController::WRONG_NAVIGATION_DESTINATION;
-		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $nav['actualDestination'] )
-			$nav['actualDestination'] = NelioABController::WRONG_NAVIGATION_DESTINATION;
+		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $nav['currentId'] )
+			$nav['currentId'] = NelioABController::WRONG_NAVIGATION_DESTINATION;
+		if ( NelioABController::NAVIGATION_ORIGIN_FROM_THE_OUTSIDE == $nav['currentActualId'] )
+			$nav['currentActualId'] = NelioABController::WRONG_NAVIGATION_DESTINATION;
+
+		// Preparing security codes
+		$pre = NelioABAccountSettings::get_customer_id() . NelioABAccountSettings::get_site_id();
+		$post =  $current_id . $current_actual_id .
+			$nav['activeCss'] . $nav['activeTheme'] . $nav['activeWidget'] .
+			NelioABAccountSettings::get_reg_num();
+		$nav['rsec'] = strtolower( md5( $pre . $referer_id . $referer_actual_id . $post ) );
+		$nav['osec'] = strtolower( md5( $pre . $post ) );
 
 		return $nav;
 	}
 
-	private function get_form_hidden_field_names() {
-		return array( 'nelioab_form_cookies', 'nelioab_form_current_url' );
-	}
 
-	public function add_hidden_fields_to_gf( $form ) {
-		$field_names = $this->get_form_hidden_field_names();
-		foreach ( $field_names as $field_name )
-			$this->add_hidden_field_to_gf( $form, $field_name );
-		return $form;
-	}
-
-
-	private function add_hidden_field_to_gf( &$form, $name ) {
-		// Counting number of fields (for GF internal field counter)
-		$max = 0;
-		foreach( $form['fields'] as $field )
-			if( floatval($field['id'] ) > $max )
-				$max = floatval( $field['id'] );
-
-		// Adding field
-		$form['fields'][] = array(
-			'type'   => 'adminonly_hidden',
-			'id'     => $max + 1,
-			'allowsPrepopulate' => true,
-			'inputs' => array(
-				array(
-					'id'    => $name,
-					'label' => $name,
-				),
-			),
-		);
-	}
-
-
-	public function add_hidden_fields_to_cf7( $fields ) {
-		global $post;
-		$original_id = $this->get_original_related_to( $post->ID );
-		$hf_template = '<input type="hidden" name="%1$s" value="%2$s" />';
-
-		$field_names = $this->get_form_hidden_field_names();
-		$hidden_fields = '';
-		foreach ( $field_names as $field_name )
-			$hidden_fields .= sprintf( $hf_template, $field_name, '' );
-
-		return $hidden_fields . $fields;
+	public function is_relevant( $nav ) {
+		$is_relevant = false;
+		if ( $this->is_there_a_global_alt_exp_with_origin( $nav['currentId'] ) ||
+		     $this->is_there_a_global_alt_exp_with_goal( $nav['currentId'] ) ||
+		     $this->is_goal_in_some_page_or_post_experiment( $nav['currentId'] ) ||
+		     $this->is_post_in_a_post_alt_exp( $nav['currentId'] ) ||
+		     $this->is_post_in_a_headline_alt_exp( $nav['currentId'] ) )
+			$is_relevant = true;
+		return $is_relevant;
 	}
 
 
@@ -860,6 +1000,10 @@ class NelioABAlternativeExperimentController {
 		$the_css = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::CSS_ALT_EXP );
 		if ( $the_css )
 			$ev['activeCSS'] = $the_css->get_id();
+
+		$the_widget = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::WIDGET_ALT_EXP );
+		if ( $the_widget )
+			$ev['activeWidget'] = '' . $the_widget->get_id();
 
 		//$the_menu = NelioABUser::get_alternative_for_global_alt_exp( NelioABExperiment::MENU_ALT_EXP );
 		//if ( $the_menu )

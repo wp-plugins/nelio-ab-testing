@@ -29,17 +29,36 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 
 		const NOTIFICATION_EXP_FINALIZATION = 'exp-finalization';
 
+		const MENU_LOCATION_DASHBOARD  = 2;
+		const MENU_LOCATION_APPEARANCE = 59;
+		const MENU_LOCATION_TOOLS      = 75;
+		const MENU_LOCATION_LAST_BLOCK = 99;
+		const MENU_LOCATION_END        = 9999;
+
+		const HEADLINES_QUOTA_MODE_ALWAYS        = 0;
+		const HEADLINES_QUOTA_MODE_ON_FRONT_PAGE = 1;
+
+		const GET_ALTERNATIVE_LOADING_MODE  = 'GET';
+		const POST_ALTERNATIVE_LOADING_MODE = 'POST';
+
+		const ELEMENT_BASED_HEATMAP_TRACKING = 'ELEM_HEATMAP_TRACKING';
+		const HTML_BASED_HEATMAP_TRACKING    = 'HTML_HEATMAP_TRACKING';
+
 		const DEFAULT_CONVERSION_VALUE            = 25;
 		const DEFAULT_CONVERSION_UNIT             = 'USD';
 		const DEFAULT_USE_COLORBLIND_PALETTE      = false;
 		const DEFAULT_SHOW_FINISHED_EXPERIMENTS   = 2;
-		const DEFAULT_USE_PHP_COOKIES             = false;
 		const DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE = 90;
 		const DEFAULT_PERCENTAGE_OF_TESTED_USERS  = 100;
 		const DEFAULT_EXPL_RATIO                  = 90;
 		const DEFAULT_ORIGINAL_PERCENTAGE         = 60;
 		const DEFAULT_QUOTA_LIMIT_PER_EXP         = -1;
+		const DEFAULT_MENU_LOCATION               = 2;
+		const DEFAULT_MENU_IN_ADMIN_BAR           = true;
 		const DEFAULT_NOTIFICATIONS               = ' exp-finalization ';
+		const DEFAULT_MAKE_SITE_CONSISTENT        = true;
+		const DEFAULT_ALTERNATIVE_LOADING_MODE    = self::POST_ALTERNATIVE_LOADING_MODE;
+		const DEFAULT_HEATMAP_TRACKING_MODE       = self::ELEMENT_BASED_HEATMAP_TRACKING;
 
 
 		/**
@@ -67,6 +86,7 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 					case 'perc_of_tested_users':
 					case 'quota_limit_per_exp':
 					case 'notifications':
+					case 'headlines_quota_mode':
 						return false;
 				}
 			}
@@ -76,6 +96,9 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 
 		public static function sanitize( $input ) {
 			$new_input = array();
+
+			if ( isset( $input['reset_settings'] ) && 'do_reset' == $input['reset_settings'] )
+				return $new_input;
 
 			$new_input['def_conv_value'] = self::DEFAULT_CONVERSION_VALUE;
 			if ( isset( $input['def_conv_value'] ) )
@@ -90,6 +113,20 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				$new_input['use_colorblind'] = sanitize_text_field( $input['use_colorblind'] );
 				$new_input['use_colorblind'] = $new_input['use_colorblind'] == '1';
 			}
+
+			$new_input['make_site_consistent'] = self::DEFAULT_USE_COLORBLIND_PALETTE;
+			if ( isset( $input['make_site_consistent'] ) ) {
+				$new_input['make_site_consistent'] = sanitize_text_field( $input['make_site_consistent'] );
+				$new_input['make_site_consistent'] = $new_input['make_site_consistent'] == '1';
+			}
+
+			$new_input['alt_load_mode'] = self::DEFAULT_ALTERNATIVE_LOADING_MODE;
+			if ( isset( $input['alt_load_mode'] ) )
+				$new_input['alt_load_mode'] = sanitize_text_field( $input['alt_load_mode'] );
+
+			$new_input['hm_tracking_mode'] = self::DEFAULT_HEATMAP_TRACKING_MODE;
+			if ( isset( $input['hm_tracking_mode'] ) )
+				$new_input['hm_tracking_mode'] = sanitize_text_field( $input['hm_tracking_mode'] );
 
 			$new_input['show_finished_experiments'] = self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
 			if ( isset( $input['show_finished_experiments'] ) )
@@ -107,12 +144,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $input['ori_perc'] ) )
 				$new_input['ori_perc'] = intval( $input['ori_perc'] );
 
-			$new_input['use_php_cookies'] = self::DEFAULT_USE_PHP_COOKIES;
-			if ( isset( $input['use_php_cookies'] ) ) {
-				$new_input['use_php_cookies'] = sanitize_text_field( $input['use_php_cookies'] );
-				$new_input['use_php_cookies'] = $new_input['use_php_cookies'] == '1';
-			}
-
 			$new_input['min_confidence_for_significance'] = self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
 			if ( isset( $input['min_confidence_for_significance'] ) )
 				$new_input['min_confidence_for_significance'] = intval( $input['min_confidence_for_significance'] );
@@ -122,6 +153,18 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			$new_input['perc_of_tested_users'] = self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
 			if ( isset( $input['perc_of_tested_users'] ) )
 				$new_input['perc_of_tested_users'] = intval( $input['perc_of_tested_users'] );
+
+			$new_input['menu_location'] = self::DEFAULT_MENU_LOCATION;
+			if ( isset( $input['menu_location'] ) )
+				$new_input['menu_location'] = intval( $input['menu_location'] );
+
+			$new_input['menu_in_admin_bar'] = self::DEFAULT_MENU_LOCATION;
+			if ( isset( $input['menu_in_admin_bar'] ) )
+				$new_input['menu_in_admin_bar'] = intval( $input['menu_in_admin_bar'] ) == 1;
+
+			$new_input['headlines_quota_mode'] = self::HEADLINES_QUOTA_MODE_ALWAYS;
+			if ( isset( $input['headlines_quota_mode'] ) )
+				$new_input['headlines_quota_mode'] = intval( $input['headlines_quota_mode'] );
 
 			// SYNC SOME SETTINGS WITH GOOGLE APP ENGINE
 			try {
@@ -166,6 +209,24 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			}
 
 			return $new_input;
+		}
+
+		public static function get_alternative_loading_mode() {
+			if ( !self::is_field_enabled_for_current_plan( 'alt_load_mode' ) )
+				return self::DEFAULT_ALTERNATIVE_LOADING_MODE;
+			$options = self::get_settings();
+			if ( isset( $options['alt_load_mode'] ) )
+				return $options['alt_load_mode'];
+			return self::DEFAULT_ALTERNATIVE_LOADING_MODE;
+		}
+
+		public static function get_heatmap_tracking_mode() {
+			if ( !self::is_field_enabled_for_current_plan( 'hm_tracking_mode' ) )
+				return self::DEFAULT_HEATMAP_TRACKING_MODE;
+			$options = self::get_settings();
+			if ( isset( $options['hm_tracking_mode'] ) )
+				return $options['hm_tracking_mode'];
+			return self::DEFAULT_HEATMAP_TRACKING_MODE;
 		}
 
 		public static function get_unsync_fields( $new_options = false ) {
@@ -316,6 +377,15 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			return self::DEFAULT_EXPL_RATIO;
 		}
 
+		public static function make_site_consistent() {
+			if ( !self::is_field_enabled_for_current_plan( 'make_site_consistent' ) )
+				return self::DEFAULT_MAKE_SITE_CONSISTENT;
+			$options = self::get_settings();
+			if ( isset( $options['make_site_consistent'] ) )
+				return $options['make_site_consistent'];
+			return self::DEFAULT_MAKE_SITE_CONSISTENT;
+		}
+
 		public static function use_colorblind_palette() {
 			if ( !self::is_field_enabled_for_current_plan( 'use_colorblind' ) )
 				return self::DEFAULT_USE_COLORBLIND_PALETTE;
@@ -333,16 +403,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				return $options['show_finished_experiments'];
 			return self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
 		}
-
-		public static function use_php_cookies() {
-			if ( !self::is_field_enabled_for_current_plan( 'use_php_cookies' ) )
-				return self::DEFAULT_USE_PHP_COOKIES;
-			$options = self::get_settings();
-			if ( isset( $options['use_php_cookies'] ) )
-				return $options['use_php_cookies'];
-			return self::DEFAULT_USE_PHP_COOKIES;
-		}
-
 
 		public static function get_min_confidence_for_significance() {
 			if ( !self::is_field_enabled_for_current_plan( 'min_confidence_for_significance' ) )
@@ -393,6 +453,24 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			return strpos( self::get_notifications(), ' ' . $notification . ' ' ) !== false;
 		}
 
+		public static function get_menu_location() {
+			if ( !self::is_field_enabled_for_current_plan( 'menu_location' ) )
+				return self::DEFAULT_MENU_LOCATION;
+			$options = self::get_settings();
+			if ( isset( $options['menu_location'] ) )
+				return $options['menu_location'];
+			return self::DEFAULT_MENU_LOCATION;
+		}
+
+		public static function is_menu_enabled_for_admin_bar() {
+			if ( !self::is_field_enabled_for_current_plan( 'menu_in_admin_bar' ) )
+				return self::DEFAULT_MENU_IN_ADMIN_BAR;
+			$options = self::get_settings();
+			if ( isset( $options['menu_in_admin_bar'] ) )
+				return $options['menu_in_admin_bar'];
+			return self::DEFAULT_MENU_IN_ADMIN_BAR;
+		}
+
 		public static function get_algorithm() {
 			if ( !self::is_field_enabled_for_current_plan( 'algorithm' ) )
 				return self::ALGORITHM_PURE_RANDOM;
@@ -409,6 +487,15 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				return self::ALGORITHM_GREEDY;
 
 			return self::ALGORITHM_PURE_RANDOM;
+		}
+
+		public static function get_headlines_quota_mode() {
+			if ( !self::is_field_enabled_for_current_plan( 'headlines_quota_mode' ) )
+				return self::HEADLINES_QUOTA_MODE_ALWAYS;
+			$options = self::get_settings();
+			if ( isset( $options['headlines_quota_mode'] ) )
+				return $options['headlines_quota_mode'];
+			return self::HEADLINES_QUOTA_MODE_ALWAYS;
 		}
 
 		public static function cookie_prefix() {

@@ -31,6 +31,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			}
 			if ( !isset( $params['timeout'] ) )
 				$params['timeout'] = 30;
+			$params['sslverify'] = false;
 			$result = wp_remote_post( $url, $params );
 			NelioABBackend::throw_exceptions_if_any( $result );
 			return $result;
@@ -54,7 +55,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			$json_params = array(
 					'headers' => array( 'Content-Type' => 'application/json' ),
 					'body'    => json_encode( $wrapped_params ),
-         );
+				);
 			return $json_params;
 		}
 

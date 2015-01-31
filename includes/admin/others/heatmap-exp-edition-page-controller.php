@@ -33,6 +33,11 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 		}
 
 		public static function build() {
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
 			$aux  = NelioABHeatmapExpEditionPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render();
@@ -63,9 +68,18 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 				$experiment = $nelioab_admin_controller->data;
 			}
 			else {
-				$experiment = new NelioABHeatmapExperiment( -1 );
+				$experiment = new NelioABHeatmapExperiment( -time() );
 				$experiment->clear();
 			}
+
+			// Get id of Original page or post
+			// ----------------------------------------------
+			if ( isset( $_GET['post-id'] ) &&
+				$_GET['experiment-type'] == NelioABExperiment::HEATMAP_EXP )
+				$experiment->set_post_id( $_GET['post-id'] );
+			if ( isset( $_GET['page-id'] ) &&
+				$_GET['experiment-type'] == NelioABExperiment::HEATMAP_EXP )
+				$experiment->set_post_id( $_GET['page-id'] );
 
 
 			// ...and we also recover other experiment names (if any)
@@ -118,7 +132,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 				return $view;
 			}
 
-			$is_there_a_static_front_page = get_option( 'page_on_front', 0 ) > 0;
+			$is_there_a_static_front_page = nelioab_get_page_on_front();
 			$view->show_latest_posts_option( !$is_there_a_static_front_page );
 
 			return $view;

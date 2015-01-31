@@ -1,32 +1,37 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
 	require_once( NELIOAB_MODELS_DIR . '/quick-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/post-alternative-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/headline-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/theme-alternative-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/alternatives/widget-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/heatmap-experiment.php' );
 
 	class NelioABExperimentsManager implements iNelioABDataManager {
 
 		private static $running_experiments = NULL;
+		private static $running_headline_alt_exps = NULL;
 
 		private $experiments;
 		private $are_experiments_loaded;
@@ -54,6 +59,8 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 					$exp->set_type_using_text( $json_exp->kind );
 					$exp->set_name( $json_exp->name );
 					$exp->set_status( $json_exp->status );
+					if ( isset( $json_exp->originalPost ) )
+						$exp->set_related_post_id( $json_exp->originalPost );
 					if ( isset( $json_exp->description ) )
 						$exp->set_description( $json_exp->description );
 					if ( isset( $json_exp->creation ) ) {
@@ -93,14 +100,19 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
 				case NelioABExperiment::PAGE_OR_POST_ALT_EXP:
-				case NelioABExperiment::TITLE_ALT_EXP:
 					return NelioABPostAlternativeExperiment::load( $id );
+
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					return NelioABHeadlineAlternativeExperiment::load( $id );
+
+				case NelioABExperiment::THEME_ALT_EXP:
+					return NelioABThemeAlternativeExperiment::load( $id );
 
 				case NelioABExperiment::CSS_ALT_EXP:
 					return NelioABCssAlternativeExperiment::load( $id );
 
-				case NelioABExperiment::THEME_ALT_EXP:
-					return NelioABThemeAlternativeExperiment::load( $id );
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					return NelioABWidgetAlternativeExperiment::load( $id );
 
 				case NelioABExperiment::HEATMAP_EXP:
 					return NelioABHeatmapExperiment::load( $id );
@@ -138,10 +150,7 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			// If we are forcing the update, or the last update is too old, we
 			// perform a new update.
 			try {
-				if ( $running_exps )
-					$result = $running_exps;
-				else
-					$result = NelioABExperimentsManager::get_running_experiments();
+				$result = NelioABExperimentsManager::get_running_experiments();
 				update_option( 'nelioab_running_experiments', $result );
 				update_option( 'nelioab_running_experiments_date', $now );
 
@@ -179,6 +188,18 @@ if( !class_exists( 'NelioABExperimentsManager' ) ) {
 			}
 
 			return $result;
+		}
+
+		public static function get_running_headline_experiments_from_cache() {
+			if ( NULL == self::$running_headline_alt_exps ) {
+				self::$running_headline_alt_exps = array();
+				require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+				$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+				foreach ( $running_exps as $exp )
+					if ( $exp->get_type() == NelioABExperiment::HEADLINE_ALT_EXP )
+						array_push( self::$running_headline_alt_exps, $exp );
+			}
+			return self::$running_headline_alt_exps;
 		}
 
 		public static function get_running_experiments_summary() {
