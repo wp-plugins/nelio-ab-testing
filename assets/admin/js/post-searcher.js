@@ -35,10 +35,6 @@ var NelioABPostSearcher = {
 						type: type,
 						drafts: drafts,
 					};
-					if ( type == 'page-or-post-or-latest' ) {
-						res.type = 'page-or-post';
-						res.include_latest_posts = 'yes';
-					}
 					return res;
 				},
 				results: function (data) {

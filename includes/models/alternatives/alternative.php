@@ -84,18 +84,18 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 			return $this->is_dirty;
 		}
 
-		public function is_based_on_a_post() {
+		public function is_based_on_another_element() {
 			if ( $this->based_on && $this->based_on > 0 )
 				return true;
 			else
 				return false;
 		}
 
-		public function set_base_post( $pid ) {
+		public function set_base_element( $pid ) {
 			$this->based_on = $pid;
 		}
 
-		public function get_base_post() {
+		public function get_base_element() {
 			return $this->based_on;
 		}
 

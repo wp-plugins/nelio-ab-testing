@@ -227,7 +227,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 				class="regular-text" value="<?php echo $this->basic_info['name']; ?>" />
 			<span class="description" style="display:block;"><?php
 				_e( 'Set a meaningful, descriptive name for the experiment.', 'nelioab' );
-			?> <small><a href="http://wp-abtesting.com/faqs/why-do-i-need-to-name-an-experiment" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129190-why-do-i-need-to-name-an-experiment-" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
@@ -237,7 +237,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 				name="exp_descr" cols="45" rows="3"><?php echo $this->basic_info['description']; ?></textarea>
 			<span class="description" style="display:block;"><?php
 					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
-			?> <small><a href="http://wp-abtesting.com/faqs/what-is-the-description-of-an-experiment-used-for" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129192-what-is-the-description-of-an-experiment-used-for-" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}

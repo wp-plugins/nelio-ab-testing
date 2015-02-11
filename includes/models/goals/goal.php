@@ -34,6 +34,8 @@ if( !class_exists( 'NelioABGoal' ) ) {
 		private $name;
 		private $is_main_goal;
 
+		private $benefit;
+
 		private $has_to_be_deleted;
 
 		public function __construct( $exp, $id = -1 ) {
@@ -63,6 +65,23 @@ if( !class_exists( 'NelioABGoal' ) ) {
 
 		public function set_kind( $kind ) {
 			$this->kind = $kind;
+		}
+
+		public function set_benefit( $benefit ) {
+			try {
+				$benefit = intval( $benefit );
+				if ( $benefit > 0 )
+					$this->benefit = $benefit;
+				else
+					$this->benefit = NelioABSettings::get_def_conv_value();
+			}
+			catch ( Exception $e ) {
+				$this->benefit = NelioABSettings::get_def_conv_value();
+			}
+		}
+
+		public function get_benefit() {
+			return $this->benefit;
 		}
 
 		public function set_kind_using_text( $kind ) {

@@ -59,11 +59,10 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPageController' ) ) {
 				if ( isset( $_REQUEST['exp_id'] ) )
 					$exp_id = $_REQUEST['exp_id'];
 
-				$mgr = new NelioABExperimentsManager();
 				$exp = null;
 
 				try {
-					$exp = $mgr->get_experiment_by_id( $exp_id, NelioABExperiment::THEME_ALT_EXP );
+					$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, NelioABExperiment::THEME_ALT_EXP );
 				}
 				catch ( Exception $e ) {
 					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );

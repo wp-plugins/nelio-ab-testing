@@ -334,7 +334,7 @@ NelioAB.heatmaps.doTrack = function(mode) {
 		}
 	});
 
-	jQuery(document).bind( 'byebye', function( e, href ) {
+	jQuery(document).bind( 'byebye', function( e, elem, href ) {
 		if ( href instanceof String && href.indexOf( "#" ) == 0 ) return;
 		add(e, true);
 		NelioAB.heatmaps.sync( true );
@@ -360,7 +360,8 @@ NelioAB.heatmaps.scheduleNextSync = function() {
 		NelioAB.heatmaps.syncInterval += 5000;
 };
 
-NelioAB.heatmaps.doSync = function(data,async) {
+NelioAB.heatmaps.doSync = function(data) {
+	var async = NelioABParams.misc.useOutwardsNavigationsBlank;
 	jQuery.ajax({
 		type: 'POST',
 		async: async,
@@ -399,7 +400,6 @@ NelioAB.heatmaps.sync = function( lastSending ) {
 	NelioAB.heatmaps.current.click = NelioAB.heatmaps.selectClickDatastore(jQuery(window).width());
 
 	// Send Heatmap Data to WordPress
-	var async = !lastSending;
 	var data = {
 			customerId: NelioABParams.customer,
 			siteId: NelioABParams.site,
@@ -412,56 +412,56 @@ NelioAB.heatmaps.sync = function( lastSending ) {
 		data['resolution'] = 'phone';
 		data['isClick'] = true;
 		data['value'] = JSON.stringify( phoneClick.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( tabletClick.max > 0 ) {
 		data['resolution'] = 'tablet';
 		data['isClick'] = true;
 		data['value'] = JSON.stringify( tabletClick.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( desktopClick.max > 0 ) {
 		data['resolution'] = 'desktop';
 		data['isClick'] = true;
 		data['value'] = JSON.stringify( desktopClick.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( hdClick.max > 0 ) {
 		data['resolution'] = 'hd';
 		data['isClick'] = true;
 		data['value'] = JSON.stringify( hdClick.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( phoneRegular.max > 0 ) {
 		data['resolution'] = 'phone';
 		data['isClick'] = false;
 		data['value'] = JSON.stringify( phoneRegular.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( tabletRegular.max > 0 ) {
 		data['resolution'] = 'tablet';
 		data['isClick'] = false;
 		data['value'] = JSON.stringify( tabletRegular.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( desktopRegular.max > 0 ) {
 		data['resolution'] = 'desktop';
 		data['isClick'] = false;
 		data['value'] = JSON.stringify( desktopRegular.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( hdRegular.max > 0 ) {
 		data['resolution'] = 'hd';
 		data['isClick'] = false;
 		data['value'] = JSON.stringify( hdRegular.exportDataSet() );
-		NelioAB.heatmaps.doSync(data,async);
+		NelioAB.heatmaps.doSync(data);
 	}
 
 	if ( !lastSending )

@@ -18,6 +18,7 @@ NelioAB.helpers.hideBody = function() {
 NelioAB.helpers.showBody = function() {
 	try {
 		document.getElementsByTagName('head')[0].removeChild(NelioAB.checker.styleNode);
+		NelioAB.ga.unhold();
 		jQuery.holdReady( false );
 		jQuery(document).trigger('nelioab-gtm-call');
 	}
@@ -147,12 +148,75 @@ NelioAB.helpers.prepareOutwardsNavigationTracking = function() {
 			href = href.replace(/^https?:\/\//, 'http://');
 			for ( i=0; i<ae_hrefs.length; ++i ) {
 				if ( regex_hrefs[i].test(href) ) {
-					elem.attr('target','_blank');
+					if ( NelioABParams.misc.useOutwardsNavigationsBlank )
+						elem.attr('target','_blank');
 					NelioAB.helpers.navigateOutwards(ae_hrefs[i]);
 				}
 			}
 		});
 	}
+};
+
+NelioAB.helpers.prepareClickOnElementTracking = function() {
+	jQuery(document).click(function(e) {
+		var target = jQuery(e.target);
+		var text = target.text().replace(/\n/g, ' ').replace(/\s+/g, ' ');
+
+		var successfulClick = false;
+
+		var DEPTH = 5;
+		for( var i = 0; i < NelioABParams.sync.clickableElements.length; ++i ) {
+			var ce = NelioABParams.sync.clickableElements[i];
+			switch ( ce.mode ) {
+
+				case 'id':
+					var aux = target;
+					for ( var j = 0; j < DEPTH; ++j ) {
+						if ( typeof aux == 'undefined' ) break;
+						if ( aux.attr('id') == ce.value ) {
+							successfulClick = true;
+							NelioAB.helpers.sendClickElementEvent(ce);
+							break;
+						}
+						aux = target.parent();
+					}
+					break;
+
+				case 'css-path':
+					var aux = jQuery(ce.value);
+					var found = false;
+					aux.each(function() {
+						if ( jQuery(this)[0] == target[0] )
+							found = true;
+					});
+					if ( found ) {
+						successfulClick = true;
+						NelioAB.helpers.sendClickElementEvent(ce);
+					}
+					break;
+
+				case 'text-is':
+					var value = ce.value.trim();
+					var aux = target;
+					for ( var j = 0; j < DEPTH; ++j ) {
+						if ( typeof aux == 'undefined' ) break;
+						var auxValue = aux.text()
+							.replace(/\n/g,' ')
+							.replace(/\s+/g,' ')
+							.trim()
+							.toLowerCase();
+						if ( auxValue == value ) {
+							successfulClick = true;
+							NelioAB.helpers.sendClickElementEvent(ce);
+							break;
+						}
+						aux = target.parent();
+					}
+					break;
+
+			}
+		}
+	});
 };
 
 NelioAB.helpers.prepareNavObject = function() {
@@ -169,6 +233,8 @@ NelioAB.helpers.prepareNavObject = function() {
 		data.activeTheme = NelioABParams.sync.nav.activeTheme;
 	if ( NelioABParams.sync.nav.activeWidget.length > 0 )
 		data.activeWidget = NelioABParams.sync.nav.activeWidget;
+	if ( NelioABParams.sync.nav.activeMenu.length > 0 )
+		data.activeMenu = NelioABParams.sync.nav.activeMenu;
 
 	return data;
 }
@@ -200,9 +266,10 @@ NelioAB.helpers.navigateOutwards = function(dest) {
 	data.actualDestination = dest;
 	data.s = NelioABParams.sync.nav.osec;
 
+	var async = NelioABParams.misc.useOutwardsNavigationsBlank;
 	jQuery.ajax({
 		type:  'POST',
-		async: true,
+		async: async,
 		url:   NelioAB.backend.url + '/on',
 		data: data
 	});
@@ -225,9 +292,38 @@ NelioAB.helpers.sendHeadlineViews = function() {
 		data: data
 	});
 
-}
+};
 
-NelioAB.helpers.trackAndSync = function() {
+NelioAB.helpers.sendClickElementEvent = function(ce) {
+	var data = {
+			siteId: NelioABParams.site,
+			customerId: NelioABParams.customer,
+			eventId: ce.id,
+			user: NelioAB.cookies.get('nelioab_userid'),
+			page: NelioABParams.sync.nav.currentId,
+			actualPage: NelioABParams.sync.nav.currentActualId,
+			s: ce.sec
+		};
+
+	if ( NelioABParams.sync.nav.activeCss.length > 0 )
+		data.activeCSS = NelioABParams.sync.nav.activeCss;
+	if ( NelioABParams.sync.nav.activeTheme.length > 0 )
+		data.activeTheme = NelioABParams.sync.nav.activeTheme;
+	if ( NelioABParams.sync.nav.activeWidget.length > 0 )
+		data.activeWidget = NelioABParams.sync.nav.activeWidget;
+	if ( NelioABParams.sync.nav.activeMenu.length > 0 )
+		data.activeMenu = NelioABParams.sync.nav.activeMenu;
+
+	jQuery.ajax({
+		type:  'POST',
+		async: true,
+		url:   NelioAB.backend.url + '/ce',
+		data: data
+	});
+
+};
+
+NelioAB.helpers.track = function() {
 
 	if ( 'y' == NelioABParams.misc.qc )
 		NelioAB.checker.q();
@@ -250,14 +346,13 @@ NelioAB.helpers.trackAndSync = function() {
 	jQuery(document).ready(function() {
 		if ( NelioABParams.sync.headlines.list.length > 0 ) {
 			NelioAB.helpers.sendHeadlineViews();
-			if ( !NelioABParams.sync.nav.isRelevant ) {
-				NelioABParams.sync.nav.isRelevant = true;
-				NelioAB.helpers.navigate();
-			}
 		}
 
 		// Prepare to track outwards navigations
 		NelioAB.helpers.prepareOutwardsNavigationTracking();
+
+		// Prepare to track clicks on elements in the page
+		NelioAB.helpers.prepareClickOnElementTracking();
 
 		// Prepare to track form submissions
 		NelioAB.helpers.addHiddenFormFieldsOnSubmission();

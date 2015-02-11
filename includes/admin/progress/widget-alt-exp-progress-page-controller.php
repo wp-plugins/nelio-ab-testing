@@ -65,11 +65,10 @@ if ( !class_exists( 'NelioABWidgetAltExpProgressPageController' ) ) {
 				if ( isset( $_POST['exp_type'] ) )
 					$exp_type = $_POST['exp_type'];
 
-				$mgr = new NelioABExperimentsManager();
 				$exp = null;
 
 				try {
-					$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+					$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				}
 				catch ( Exception $e ) {
 					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -81,7 +80,7 @@ if ( !class_exists( 'NelioABWidgetAltExpProgressPageController' ) ) {
 			$view  = new NelioABWidgetAltExpProgressPage( $title );
 			$view->set_experiment( $exp );
 
-			require_once( NELIOAB_ADMIN_DIR . '/widget-exp-admin-controller.php' );
+			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
 			$widgets_in_experiments = NelioABWidgetExpAdminController::get_widgets_in_experiments();
 			$are_there_alternatives_to_apply = false;
 			foreach ( $widgets_in_experiments as $info )
@@ -104,7 +103,7 @@ if ( !class_exists( 'NelioABWidgetAltExpProgressPageController' ) ) {
 
 		public function apply_alternative() {
 			if ( isset( $_POST['original'] ) && isset( $_POST['alternative'] ) ) {
-				require_once( NELIOAB_ADMIN_DIR . '/widget-exp-admin-controller.php' );
+				require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
 				$exp = $_GET['id'];
 				$ori = $_POST['original'];
 				$alt = $_POST['alternative'];

@@ -67,7 +67,7 @@ if ( !class_exists( 'NelioABAlternativesTable' ) ) {
 		protected function get_default_description_for_new_alternative() {
 			return sprintf( '%s <small><a href="%s" target="_blank">%s</a></small>',
 				__( 'Set a descriptive name for the alternative.', 'nelioab' ),
-				'http://wp-abtesting.com/faqs/what-is-the-name-of-an-alternative-used-for',
+				'http://support.nelioabtesting.com/support/solutions/articles/1000129198-what-is-the-name-of-an-alternative-used-for-',
 				__( 'Help', 'nelioab' ) );
 		}
 

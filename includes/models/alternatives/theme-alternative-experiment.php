@@ -154,6 +154,9 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			$this->appspot_ids = array();
 			for ( $i = 0; $i < $last_valid; ++$i )
 				array_push( $this->appspot_ids, $aux[$i] );
+
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			NelioABExperimentsManager::update_experiment( $this );
 		}
 
 		public static function load( $id ) {

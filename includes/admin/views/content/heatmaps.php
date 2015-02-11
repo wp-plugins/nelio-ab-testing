@@ -36,8 +36,7 @@
 
 			// Get the Heatmap
 			$exp_type = $_GET['exp_type'];
-			$mgr = new NelioABExperimentsManager();
-			$exp = $mgr->get_experiment_by_id( $_GET['id'], $exp_type );
+			$exp = NelioABExperimentsManager::get_experiment_by_id( $_GET['id'], $exp_type );
 
 			if ( $exp_type == NelioABExperiment::HEATMAP_EXP ) {
 				$url = sprintf( NELIOAB_BACKEND_URL . '/exp/hm/%s/result', $exp->get_id() );
@@ -103,8 +102,6 @@
 			else
 				$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
 		}
-		if ( 'page' == $aux && isset( $_GET['ori'] ) )
-			$url = add_query_arg( array( 'nelioab_original_id' => $_GET['ori'] ), $url );
 		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
 		?>
 		<script type="text/javascript">
@@ -226,8 +223,8 @@
 
 <head>
 	<title><?php _e( 'Nelio AB Testing &mdash; Heatmaps Viewer', 'nelioab' ); ?></title>
-	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/nelioab-generic.min.css' ); ?>">
 	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/resizer.min.css' ); ?>">
+	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/nelioab-heatmap.min.css' ); ?>">
 	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9, chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta charset="utf-8">
@@ -250,10 +247,6 @@
 		</ul>
 		<ul id="hm-additional-controls">
 			<li style="color:white;font-size:12px;font-weight:bold;" id="visitors-count"><?php printf( __( 'Heatmap built using data from %s page views', 'nelioab' ), 0 ); ?></li>
-			<li>|</li>
-			<li><a id="view-clicks" style="font-size:12px;"><?php echo __( 'View Clickmap', 'nelioab' ); ?></a></li>
-			<li>|</li>
-			<li><a style="font-size:12px;" href="<?php echo admin_url( 'admin.php?page=nelioab-experiments' ); ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
 			<?php
 			if ( $show_back_link ) {
 				$link = admin_url( 'admin.php?page=nelioab-experiments&action=progress&id=%1$s&exp_type=%2$s' );
@@ -262,6 +255,13 @@
 				<li><a style="font-size:12px;" href="<?php printf( $link, $_GET['id'], $_GET['exp_type'] ); ?>"><?php echo __( 'Back', 'nelioab' ); ?></a></li>
 			<?php
 			} ?>
+			<li>|</li>
+			<li><a style="font-size:12px;" id="show-dropdown-controls">Settings</a></li>
+		</ul>
+		<ul id="hm-dropdown-controls" style="display:none;">
+			<li style="font-size:12px;text-align:center;"><input id="hm-opacity" type="range" min="1" max="10" value="10" /></li>
+			<li><a id="view-clicks" style="font-size:12px;"><?php echo __( 'View Clickmap', 'nelioab' ); ?></a></li>
+			<li><a style="font-size:12px;" href="<?php echo admin_url( 'admin.php?page=nelioab-experiments' ); ?>"><?php echo __( 'List of experiments', 'nelioab' ); ?></a></li>
 		</ul>
 	</div>
 
@@ -273,6 +273,21 @@
 	</div>
 
 	<script>
+		(function(){
+			var dd = jQuery('#hm-dropdown-controls');
+			jQuery('#show-dropdown-controls').on('click', function() { dd.toggle(); });
+			jQuery('#hm-opacity').on('change input', function() {
+				try {
+					document.getElementById('content').contentWindow.nelioabModifyHeatmapOpacity(
+						jQuery(this).val()
+					);
+				}
+				catch(e){}
+			});
+			jQuery('#hm-dropdown-controls').mouseup(function() {
+				dd.hide();
+			});
+		})();
 		jQuery.ajax({
 			type:'POST',
 			async:true,

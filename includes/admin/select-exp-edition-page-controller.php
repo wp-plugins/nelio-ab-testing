@@ -55,7 +55,6 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 		public static function generate_html_content() {
 
 			// Obtain DATA from APPSPOT and check its type dynamically
-			$experiments_manager = new NelioABExperimentsManager();
 			$experiment = null;
 			try {
 				$exp_id = -time();
@@ -66,7 +65,7 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 				if ( isset( $_POST['exp_type'] ) )
 					$exp_type = $_POST['exp_type'];
 
-				$experiment = $experiments_manager->get_experiment_by_id( $exp_id, $exp_type );
+				$experiment = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				global $nelioab_admin_controller;
 				$nelioab_admin_controller->data = $experiment;
 			}
@@ -104,6 +103,10 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 				case NelioABExperiment::WIDGET_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/alternatives/widget-alt-exp-edition-page-controller.php' );
 					return 'NelioABWidgetAltExpEditionPageController';
+
+				case NelioABExperiment::MENU_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/menu-alt-exp-edition-page-controller.php' );
+					return 'NelioABMenuAltExpEditionPageController';
 
 				case NelioABExperiment::HEATMAP_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/others/heatmap-exp-edition-page-controller.php' );

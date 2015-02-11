@@ -117,6 +117,18 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 				)
 			);
 
+			// MENU
+			$this->print_beautiful_box(
+				'menu',
+				__( 'New Menu Test', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'menu', $url . NelioABExperiment::MENU_ALT_EXP,
+						__( 'Menus are one of the most important elements in your WordPress site, for they get a lot of attention from your visitors. <strong>Modify the labels of your menu items, rearrange them, or use a completely different menu</strong> and test which one helps you get more conversions!', 'nelioab' )
+					)
+				)
+			);
+
 		}
 
 

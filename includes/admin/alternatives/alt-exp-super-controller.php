@@ -95,8 +95,7 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 				}
 				else {
 					$duplicated_name_found = false;
-					$mgr = new NelioABExperimentsManager();
-					foreach( $mgr->get_experiments() as $aux ) {
+					foreach( NelioABExperimentsManager::get_experiments() as $aux ) {
 						if ( !$duplicated_name_found && $exp->get_name() == $aux->get_name() &&
 							$exp->get_id() != $aux->get_id()) {
 							array_push( $errors, array ( 'exp_name',

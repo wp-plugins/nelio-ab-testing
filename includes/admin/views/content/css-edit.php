@@ -41,7 +41,6 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 	public static function generate_html_content() {
 		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 		$view   = new NelioABCssEditPage();
-		$mgr    = new NelioABExperimentsManager();
 		$exp_id = 0;
 		$css_id = 0;
 
@@ -51,26 +50,28 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 		if ( isset( $_REQUEST['css_id'] ) )
 			$css_id = $_REQUEST['css_id'];
 
-		if ( isset( $_REQUEST['css_save_alt'] ) &&
-		     isset( $_REQUEST['css_alt_name'] ) &&
-		     isset( $_REQUEST['css_alt_value'] )
-			) {
-			require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
-			NelioABCssAlternativeExperiment::update_css_alternative(
-				$css_id, $_REQUEST['css_alt_name'], urldecode( $_REQUEST['css_alt_value'] ) );
-			NelioABExperimentsManager::update_running_experiments_cache( true );
-		}
-
 		try {
-			$view->experiment = $mgr->get_experiment_by_id( $exp_id, NelioABExperiment::CSS_ALT_EXP );
-			foreach( $view->experiment->get_alternatives() as $alt )
-				if ( $alt->get_id() == $css_id )
-					$view->css_alt = $alt;
+			$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, NelioABExperiment::CSS_ALT_EXP );
+			$view->experiment = $exp;
 		}
 		catch ( Exception $e  ){
 			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
 			NelioABErrorController::build( $e );
 		}
+
+		if ( isset( $_REQUEST['css_save_alt'] ) &&
+		     isset( $_REQUEST['css_alt_name'] ) &&
+		     isset( $_REQUEST['css_alt_value'] )
+			) {
+			require_once( NELIOAB_MODELS_DIR . '/alternatives/css-alternative-experiment.php' );
+			$exp->update_css_alternative(
+				$css_id, $_REQUEST['css_alt_name'], urldecode( $_REQUEST['css_alt_value'] ) );
+		}
+
+		foreach( $view->experiment->get_alternatives() as $alt )
+			if ( $alt->get_id() == $css_id )
+				$view->css_alt = $alt;
+
 		$view->do_render();
 		die();
 	}

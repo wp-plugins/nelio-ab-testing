@@ -45,23 +45,23 @@ if ( !class_exists( 'NelioABFeedbackPage' ) ) {
 			<div class="share" style="height:3em;">
 				<!-- TWITTER -->
 				<div style="float:left; min-width: 130px;">
-				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://wp-abtesting.com/" data-text="I'm using Nelio A/B Testing for #WordPress by @NelioSoft and it rocks! Pages, headlines, widgets, heatmaps...">Tweet</a>
+				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://nelioabtesting.com/" data-text="I'm using Nelio A/B Testing for #WordPress by @NelioSoft and it rocks! Pages, headlines, widgets, heatmaps...">Tweet</a>
 				</div>
 
 				<!-- FACEBOOK -->
 				<div style="float:left; min-width: 185px;">
-				<div class="fb-like" data-href="http://wp-abtesting.com" data-send="false" data-layout="button_count" data-width="450" data-show-faces="true" data-action="recommend"></div>
+				<div class="fb-like" data-href="http://nelioabtesting.com" data-send="false" data-layout="button_count" data-width="450" data-show-faces="true" data-action="recommend"></div>
 				<div id="fb-root"></div>
 				</div>
 
 				<!-- GOOGLE PLUS -->
 				<div style="float:left; min-width: 140px;">
-				<div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://wp-abtesting.com/"></div>
+				<div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://nelioabtesting.com/"></div>
 				</div>
 
 				<!-- LINKEDIN -->
 				<div style="float:left;">
-				<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share" data-url="http://wp-abtesting.com/" data-counter="right"></script>
+				<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share" data-url="http://nelioabtesting.com/" data-counter="right"></script>
 				</div>
 			</div>
 

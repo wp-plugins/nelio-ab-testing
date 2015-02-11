@@ -27,6 +27,10 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 			parent::__construct( $id );
 		}
 
+		public function is_global() {
+			return true;
+		}
+
 		public function clear() {
 			parent::clear();
 			$this->ori = array( -1 );
@@ -114,6 +118,16 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 							if ( in_array( $origin_id, $running_exp->get_origins() ) ) {
 								$err_str = sprintf(
 									__( 'The experiment cannot be started, because there is a Widget experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+									$running_exp->get_name() );
+								throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+							}
+						}
+
+					case NelioABExperiment::MENU_ALT_EXP:
+						foreach( $this_exp_origins as $origin_id ) {
+							if ( in_array( $origin_id, $running_exp->get_origins() ) ) {
+								$err_str = sprintf(
+									__( 'The experiment cannot be started, because there is a Menu experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
 									$running_exp->get_name() );
 								throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
 							}

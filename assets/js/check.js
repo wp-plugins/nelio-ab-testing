@@ -6,11 +6,13 @@ NelioAB.checker.init = function() {
 	// Check if the user accepts cookies...
 	if ( !NelioAB.cookies.areEnabled() ) {
 		jQuery(document).trigger('nelioab-gtm-call');
+		NelioAB.ga.unhold();
 		return;
 	}
 
 	if ( NelioAB.cookies.get( 'nelioab_is_in' ) == 'no' ) {
 		jQuery(document).trigger('nelioab-gtm-call');
+		NelioAB.ga.unhold();
 		return;
 	}
 
@@ -21,7 +23,7 @@ NelioAB.checker.init = function() {
 	// Synchronize cookies and load an alt if it's required
 	try {
 		var res = NelioAB.checker.syncCookiesAndCheck();
-		if ( 'DO_NOT_LOAD_ANYTHING' != res.action)
+		if ( 'DO_NOT_LOAD_ANYTHING' != res.action )
 			NelioAB.checker.loadAlternative( res.mode, res.action, false );
 	}
 	catch(e) {
@@ -50,8 +52,8 @@ NelioAB.checker.syncCookiesAndCheck = function() {
 		url:   NelioABParams.ajaxurl,
 		data: {
 			action: 'nelioab_sync_cookies_and_check',
-			current_url: document.URL,
-			referer_url: document.referrer,
+			nelioab_current_url: document.URL,
+			nelioab_referer_url: document.referrer,
 			nelioab_cookies: NelioAB.cookies.list()
 		},
 		success: function(data) {
@@ -94,7 +96,7 @@ NelioAB.checker.syncCookiesAndCheck = function() {
 				}
 				else {
 					NelioAB.helpers.showBody();
-					NelioAB.helpers.trackAndSync();
+					NelioAB.helpers.track();
 				}
 			}
 			catch(e) {
@@ -112,8 +114,8 @@ NelioAB.checker.syncCookiesAndCheck = function() {
 NelioAB.checker.loadAlternative = function( mode, action, isLastTry ) {
 	var data = {
 		'nelioab_cookies': NelioAB.cookies.listForAltLoading(),
-		'current_url': document.URL,
-		'referer_url': document.referrer
+		'nelioab_current_url': document.URL,
+		'nelioab_referer_url': document.referrer
 	};
 
 	if ( 'LOAD_ALTERNATIVE' == action )
@@ -131,7 +133,7 @@ NelioAB.checker.loadAlternative = function( mode, action, isLastTry ) {
 		url:   permalink,
 		data: data,
 		success: function(data) {
-			if ( data.indexOf( '\"nelioabScriptAction\":\"sync-and-track\"' ) == -1 ) {
+			if ( data.indexOf( '\"nelioabScriptAction\":\"track\"' ) == -1 ) {
 				console.error("Something went wrong when loading the alternative content");
 				NelioAB.helpers.showBody();
 				return;
@@ -197,14 +199,15 @@ NelioAB.checker.loadAlternative = function( mode, action, isLastTry ) {
 }
 
 switch ( NelioABParams.nelioabScriptAction ) {
-	case 'check':
+	case 'sync-and-check':
 		NelioAB.checker.init();
 		break;
-	case 'sync-and-track':
-		NelioAB.helpers.trackAndSync();
+	case 'track':
+		NelioAB.helpers.track();
+		NelioAB.ga.unhold();
 		break;
 	case 'skip':
-		// Nothing to be done
+		NelioAB.ga.unhold();
 		break;
 }
 

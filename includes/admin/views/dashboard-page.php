@@ -251,6 +251,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 						case NelioABExperiment::WIDGET_ALT_EXP:
 							$color = '#2A508D';
 							break;
+						case NelioABExperiment::MENU_ALT_EXP:
+							$color = '#8bb846';
+							break;
 						default:
 							$color = '#CCCCCC';
 					}

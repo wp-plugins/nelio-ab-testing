@@ -99,7 +99,8 @@ jQuery(document).ready(function() {
 	});
 
 	jQuery(document).on('submit', 'form', function(e) {
-		jQuery(document).trigger( 'byebye', [ jQuery(this), jQuery(this).attr('action') ] );
+		e.type = 'byebye';
+		jQuery(document).trigger( e, [ jQuery(this), jQuery(this).attr('action') ] );
 	});
 
 });

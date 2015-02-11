@@ -77,8 +77,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 				$other_names = json_decode( urldecode( $_POST['other_names'] ) );
 			}
 			else {
-				$mgr = new NelioABExperimentsManager();
-				foreach( $mgr->get_experiments() as $aux ) {
+				foreach( NelioABExperimentsManager::get_experiments() as $aux ) {
 					if ( $aux->get_id() != $experiment->get_id() )
 						array_push( $other_names, $aux->get_name() );
 				}

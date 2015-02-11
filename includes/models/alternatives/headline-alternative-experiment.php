@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if( !class_exists( 'NelioABHeadlineAlternativeExperiment' ) ) {
 
@@ -61,6 +63,10 @@ if( !class_exists( 'NelioABHeadlineAlternativeExperiment' ) ) {
 			$ori_alt = $this->get_original();
 			$val = $ori_alt->get_value();
 			return $val['id'];
+		}
+
+		public function get_related_post_id() {
+			$this->get_originals_id();
 		}
 
 		public function set_winning_alternative_using_id( $id ) {
@@ -218,7 +224,7 @@ if( !class_exists( 'NelioABHeadlineAlternativeExperiment' ) ) {
 				$body = array(
 					'name'  => $alt->get_name(),
 					'value' => json_encode( $this->fix_image_id_in_value( $alt->get_value() ) ),
-					'kind'  => NelioABExperiment::get_textual_type(),
+					'kind'  => $this->get_textual_type(),
 				);
 
 				try {
@@ -232,6 +238,8 @@ if( !class_exists( 'NelioABHeadlineAlternativeExperiment' ) ) {
 
 			}
 
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			NelioABExperimentsManager::update_experiment( $this );
 		}
 
 		public function get_exp_kind_url_fragment() {

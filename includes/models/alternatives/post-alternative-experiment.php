@@ -56,6 +56,10 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			return $ori_alt->get_value();
 		}
 
+		public function get_related_post_id() {
+			$this->get_originals_id();
+		}
+
 		public function set_original( $ori ) {
 			$ori_alt = $this->ori;
 			$ori_alt->set_value( $ori );
@@ -257,7 +261,10 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				if ( $alt->was_removed() || !$alt->is_dirty() )
 					continue;
 
-				$body = array( 'name' => $alt->get_name() );
+				$body = array(
+					'name'  => $alt->get_name(),
+					'value' => $alt->get_value(),
+				);
 				$result = NelioABBackend::remote_post(
 					sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update', $alt->get_id() ),
 					$body );
@@ -283,8 +290,8 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					continue;
 
 				if ( $this->get_type() != NelioABExperiment::HEADLINE_ALT_EXP ) {
-					if ( $alt->is_based_on_a_post() ) {
-						$new_id = $this->create_alternative_copying_content( $alt->get_name(), $alt->get_base_post() );
+					if ( $alt->is_based_on_another_element() ) {
+						$new_id = $this->create_alternative_copying_content( $alt->get_name(), $alt->get_base_element() );
 						if ( $new_id )
 							$alt->set_value( $new_id );
 						else
@@ -340,6 +347,9 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					update_post_meta( $pid, "_is_nelioab_alternative", $value );
 				}
 			}
+
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			NelioABExperimentsManager::update_experiment( $this );
 		}
 
 		public function get_exp_kind_url_fragment() {
@@ -448,6 +458,45 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
 				update_post_meta( $alt->get_value(), "_nelioab_original_id", $this->get_originals_id() );
 			}
+		}
+
+		/**
+		 * This function duplicates the current experiment in AE. It returns
+		 * the new experiment ID. The experiment is READY to be started.
+		 *
+		 * Moreover, it duplicates the local copies of the alternative pages
+		 * and posts.
+		 *
+		 * @param $new_name the new name of the duplicated experiment.
+		 * @return the ID of the new experiment (if successfully duplicated)
+		 *         or -1 otherwise.
+		 */
+		public function duplicate( $new_name ) {
+			$id = parent::duplicate( $new_name );
+			if ( -1 == $id )
+				return $id;
+
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$exp = NelioABExperimentsManager::get_experiment_by_id( $id, $this->get_type() );
+
+			$alts = 0;
+			foreach ( $exp->get_alternatives() as $alt ) {
+				$new_id = $exp->create_alternative_copying_content( $alt->get_name(), $alt->get_value() );
+				if ( $new_id ) {
+					$alt->set_value( $new_id );
+					$alt->mark_as_dirty();
+					++$alts;
+				}
+				else {
+					$alt->mark_as_removed();
+					$alt->mark_as_dirty();
+				}
+			}
+
+			if ( 0 == $alts )
+				$exp->set_status( NelioABExperimentStatus::DRAFT );
+
+			$exp->save();
 		}
 
 		public static function load( $id ) {

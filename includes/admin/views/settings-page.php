@@ -175,6 +175,26 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			);
 
 
+			if ( is_multisite() && is_super_admin() ) {
+				add_settings_section(
+					'nelioab_basic_section_ms', '',
+				// ===============================================================
+					array( 'NelioABSettingsPage', 'print_basic_section_ms' ),
+				// ===============================================================
+					'nelioab-settings'
+				);
+
+				add_settings_field(
+					'plugin_available_to',
+					self::prepare_basic_label( __( 'Plugin Available To', 'nelioab' ) ),
+					// -------------------------------------------------------------
+					array( 'NelioABSettingsPage', 'print_plugin_available_to_field' ),
+					'nelioab-settings',
+					'nelioab_basic_section_ms'
+				);
+			}
+
+
 			add_settings_section(
 				'nelioab_basic_section_ui', '',
 			// ===============================================================
@@ -227,10 +247,28 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			);
 
 			add_settings_field(
+				'on_blank',
+				self::prepare_basic_label( __( 'External Page Actions', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_on_blank_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_misc'
+			);
+
+			add_settings_field(
 				'hm_tracking_mode',
 				self::prepare_basic_label( __( 'Heatmap Tracking', 'nelioab' ) ),
 				// -------------------------------------------------------------
 				array( 'NelioABSettingsPage', 'print_heatmap_tracking_mode_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_misc'
+			);
+
+			add_settings_field(
+				'theme_landing_page',
+				self::prepare_basic_label( __( 'Front Page', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_theme_landing_page_field' ),
 				'nelioab-settings',
 				'nelioab_basic_section_misc'
 			);
@@ -244,23 +282,23 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				'nelioab_basic_section_misc'
 			);
 
-//			add_settings_field(
-//				'def_conv_value',
-//				self::prepare_basic_label( __( 'Default Conversion Value', 'nelioab' ) ),
-//				// -------------------------------------------------------------
-//				array( 'NelioABSettingsPage', 'print_def_conv_value_field' ),
-//				'nelioab-settings',
-//				'nelioab_basic_section_ui'
-//			);
-//
-//			add_settings_field(
-//				'conv_unit',
-//				self::prepare_basic_label( 'Conversion Unit' ),
-//				// -------------------------------------------------------------
-//				array( 'NelioABSettingsPage', 'print_conv_unit_field' ),
-//				'nelioab-settings',
-//				'nelioab_basic_section_ui'
-//			);
+			add_settings_field(
+				'def_conv_value',
+				self::prepare_basic_label( __( 'Default Conversion Value', 'nelioab' ) ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_def_conv_value_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_ui'
+			);
+
+			add_settings_field(
+				'conv_unit',
+				self::prepare_basic_label( 'Conversion Unit' ),
+				// -------------------------------------------------------------
+				array( 'NelioABSettingsPage', 'print_conv_unit_field' ),
+				'nelioab-settings',
+				'nelioab_basic_section_ui'
+			);
 
 
 
@@ -354,6 +392,11 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			echo '<div id="nelioab-basic-section">';
 			echo '<h3>' . __( 'Efficiency', 'nelioab' ) . '</h3>';
 			self::print_mu_plugin_row();
+		}
+
+		public static function print_basic_section_ms() {
+			echo '<br><br>';
+			echo '<h3>' . __( 'Multi-Site Settings', 'nelioab' ) . '</h3>';
 		}
 
 		public static function print_basic_section_ui() {
@@ -503,16 +546,8 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		public static function print_def_conv_value_field() {
 			$field_name = 'def_conv_value';
 			printf(
-				'<input type="text" id="%1$s" name="nelioab_settings[%1$s]" value="%2$s" placeholder="%3$s" disabled="disabled" $4%s />',
-				$field_name, NelioABSettings::get_def_conv_value(), NelioABSettings::DEFAULT_CONVERSION_VALUE, self::get_pro_details()
-			);
-		}
-
-		public static function print_conv_unit_field() {
-			$field_name = 'conv_unit';
-			printf(
-				'<input type="text" id="%1$s" name="nelioab_settings[%1$s]" value="%2$s" placeholder="%3$s" %4$s />',
-				$field_name, NelioABSettings::get_conv_unit(), NelioABSettings::DEFAULT_CONVERSION_UNIT, self::get_basic_details()
+				'<input type="text" id="%1$s" name="nelioab_settings[%1$s]" value="%2$s" placeholder="%3$s" $4%s />',
+				$field_name, NelioABSettings::get_def_conv_value(), NelioABSettings::DEFAULT_CONVERSION_VALUE, self::get_basic_details()
 			);
 		}
 
@@ -815,7 +850,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		public static function print_min_confidence_for_significance_field() {
 			$field_name = 'min_confidence_for_significance';
 			printf(
-				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="50" max="100" step="5" value="%2$s" %3$s /><br>',
+				'<input type="range" id="%1$s" name="nelioab_settings[%1$s]" min="90" max="100" step="1" value="%2$s" %3$s /><br>',
 				$field_name, NelioABSettings::get_min_confidence_for_significance(), self::get_pro_details()
 			);
 			?>
@@ -823,7 +858,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<script type="text/javascript">
 				jQuery("#<?php echo $field_name; ?>").on("input change", function() {
 					var str = "<?php
-						$str = __( 'Minimum confidence value is set to <strong>{value}%</strong>.<br>The confidence value tells you how "trustable" is the fact that one alternative is better than the original.', 'nelioab' );
+						$str = __( 'Minimum confidence value is set to <strong>{value}%</strong> (at least 95% is recommended).<br>The confidence value tells you how "trustable" is the fact that one alternative is better than the original.', 'nelioab' );
 						$str = str_replace( '"', '\\"', $str );
 						echo $str;
 					?>";
@@ -924,6 +959,39 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<?php
 		}
 
+		public static function print_conv_unit_field() {
+			$field_name = 'conv_unit';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<?php $val = NelioABSettings::CONVERSION_UNIT_DOLLAR; ?>
+				<option value='<?php echo $val ?>'><?php echo $val; ?></option>
+				<?php $val = NelioABSettings::CONVERSION_UNIT_EURO; ?>
+				<option value='<?php echo $val; ?>'<?php
+					if ( NelioABSettings::get_conv_unit() == $val )
+						echo ' selected="selected"';
+				?>><?php echo $val; ?></option>
+				<?php $val = NelioABSettings::CONVERSION_UNIT_POUND; ?>
+				<option value='<?php echo $val; ?>'<?php
+					if ( NelioABSettings::get_conv_unit() == $val )
+						echo ' selected="selected"';
+				?>><?php echo $val; ?></option>
+				<?php $val = NelioABSettings::CONVERSION_UNIT_YEN; ?>
+				<option value='<?php echo $val; ?>'<?php
+					if ( NelioABSettings::get_conv_unit() == $val )
+						echo ' selected="selected"';
+				?>><?php echo $val; ?></option>
+				<?php $val = NelioABSettings::CONVERSION_UNIT_BITCOIN; ?>
+				<option value='<?php echo $val; ?>'<?php
+					if ( NelioABSettings::get_conv_unit() == $val )
+						echo ' selected="selected"';
+				?>><?php echo $val; ?></option>
+			</select>
+			<?php
+		}
+
 		public static function print_heatmap_tracking_mode_field() {
 			$field_name = 'hm_tracking_mode';
 			printf(
@@ -944,6 +1012,78 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 			<br><span class="description">
 				<span class="<?php echo $field_name; ?>"><?php
 				_e( 'By default, Nelio A/B Testing takes into account the elements that are below your users\' cursor to track and build heatmaps and clickmaps. This offers a higher accuracy when Heatmaps are displayed, because hot spots are based on elements and not pages. Unfortunately, this approach may not work if, for instance, your page loads elements dynamically or HTML element IDs are randomly generated. If this is your case, track Heatmaps using the body tag.', 'nelioab' );
+			?></span>
+			</span>
+			<?php
+		}
+
+		public static function print_plugin_available_to_field() {
+			$field_name = 'plugin_available_to';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_pro_details()
+			);
+			?>
+				<?php $val = NelioABSettings::PLUGIN_AVAILABLE_TO_SITE_SETTING; ?>
+				<option value='<?php echo $val ?>'><?php
+					printf(
+						__( 'Inherit Multi-Site Setting (%s)', 'nelioab' ),
+						( NelioABSettings::get_site_option_regular_admins_can_manage_plugin() ) ?
+							__( 'All Admins', 'nelioab' ) : __( 'Super Admins Only', 'nelioab' )
+					);
+				?></option>
+				<?php $val = NelioABSettings::PLUGIN_AVAILABLE_TO_ANY_ADMIN; ?>
+				<option value='<?php echo $val; ?>'<?php
+					if ( NelioABSettings::get_plugin_available_to() == $val )
+						echo ' selected="selected"';
+				?>><?php
+					_e( 'Super Admins and Site Admins', 'nelioab' );
+				?></option>
+				<?php $val = NelioABSettings::PLUGIN_AVAILABLE_TO_SUPER_ADMIN; ?>
+				<option value='<?php echo $val; ?>'<?php
+					if ( NelioABSettings::get_plugin_available_to() == $val )
+						echo ' selected="selected"';
+				?>><?php
+					_e( 'Super Admins Only', 'nelioab' );
+				?></option>
+			</select>
+			<?php
+		}
+
+		public static function print_on_blank_field() {
+			$field_name = 'on_blank';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='1'><?php
+					_e( 'Force New Tab (add «target="_blank"» attribute)', 'nelioab' ); ?></option>
+				<option value='0'<?php
+					if ( !NelioABSettings::use_outwards_navigations_blank() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Do Not Force New Tab', 'nelioab' ); ?></option>
+			</select>
+			<?php
+		}
+
+		public static function print_theme_landing_page_field() {
+			$field_name = 'theme_landing_page';
+			printf(
+				'<select id="%1$s" name="nelioab_settings[%1$s]" %2$s>',
+				$field_name, self::get_basic_details()
+			);
+			?>
+				<option value='0'><?php
+					_e( 'Regular Front Page («Latest Posts» or «Static Page»)', 'nelioab' ); ?></option>
+				<option value='1'<?php
+					if ( NelioABSettings::does_theme_use_a_custom_landing_page() )
+						echo ' selected="selected"';
+				?>><?php _e( 'Theme-based Front Page', 'nelioab' ); ?></option>
+			</select>
+			<br><span class="description">
+				<span class="<?php echo $field_name; ?>"><?php
+				printf( __( 'As stated in the <a href="%s">WordPress Codex</a>, by default WordPress shows your most recent posts in reverse chronological order on the front page (also known as "landing page") of your site. If you want a static front page or splash page as the front page instead, you may select it using the "Front page display" setting Dashboard » Settings » Reading.<br>Some themes, however, define "dynamic front pages", which can not be A/B tested by Nelio. If you want to track Heatmaps for such a front page, simply select "Theme-based Front Page". ', 'nelioab' ), 'http://codex.wordpress.org/Creating_a_Static_Front_Page' );
 			?></span>
 			</span>
 			<?php

@@ -23,6 +23,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/form-submission-action.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goal-results/alternative-experiment-goal-result.php' );
 
 	require_once( NELIOAB_MODELS_DIR . '/goals/goal.php' );
@@ -92,6 +93,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			$result = new NelioABAltExpGoal( $exp );
 			$result->set_id( $json->key->id );
 			$result->set_name( $json->name );
+			$result->set_benefit( $json->benefit );
 			$result->set_as_main_goal( $json->isMainGoal );
 			require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 			$ae_actions = array();
@@ -114,6 +116,15 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 				}
 			}
 
+			if ( isset( $json->clickActions ) ) {
+				foreach ( $json->clickActions as $action ) {
+					$action = (array)$action;
+					$action['_type'] = 'click-element-action';
+					$action = (object)$action;
+					array_push( $ae_actions, $action );
+				}
+			}
+
 			usort( $ae_actions, array( 'NelioABAltExpGoal', 'sort_goals' ) );
 			foreach ( $ae_actions as $action ) {
 				switch( $action->_type ) {
@@ -123,9 +134,61 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 					case 'form-action':
 						$result->add_action( NelioABFormSubmissionAction::decode_from_appengine( $action ) );
 						break;
+					case 'click-element-action':
+						$result->add_action( NelioABClickElementAction::decode_from_appengine( $action ) );
+						break;
 				}
 			}
 			return $result;
+		}
+
+		public function encode_for_appengine() {
+			$res = array(
+				'name'       => $this->get_name(),
+				'benefit'    => $this->get_benefit(),
+				'kind'       => $this->get_textual_kind(),
+				'isMainGoal' => $this->is_main_goal()
+			);
+
+			$page_accessed_actions = array();
+			$form_actions = array();
+			$click_actions = array();
+			$order = 0;
+			foreach ( $this->get_actions() as $action ) {
+				$encoded_action = $action->encode_for_appengine();
+				switch( $action->get_type() ) {
+
+					case NelioABAction::PAGE_ACCESSED:
+					case NelioABAction::POST_ACCESSED:
+					case NelioABAction::EXTERNAL_PAGE_ACCESSED:
+						$order++;
+						$encoded_action['order'] = $order;
+						array_push( $page_accessed_actions, $encoded_action );
+						break;
+
+					case NelioABAction::SUBMIT_CF7_FORM:
+					case NelioABAction::SUBMIT_GRAVITY_FORM:
+						$order++;
+						$encoded_action['order'] = $order;
+						array_push( $form_actions, $encoded_action );
+						break;
+
+					case NelioABAction::CLICK_ELEMENT:
+						$order++;
+						$encoded_action['order'] = $order;
+						array_push( $click_actions, $encoded_action );
+						break;
+
+				}
+			}
+
+			$res['pageAccessedActions'] = $page_accessed_actions;
+			$res['formActions'] = $form_actions;
+			$res['clickActions'] = $click_actions;
+			$res['benefit'] = $this->get_benefit();
+			$res['benefitUnit'] = '$';
+
+			return $res;
 		}
 
 		public static function sort_goals( $a, $b ) {
@@ -260,9 +323,13 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 		}
 
 		public function json4js() {
+			$benefit = $this->get_benefit();
+			if ( NelioABSettings::get_def_conv_value() == $benefit )
+				$benefit = '';
 			$result = array(
-					'id' => $this->get_id(),
-					'name' => $this->get_name(),
+					'id'      => $this->get_id(),
+					'name'    => $this->get_name(),
+					'benefit' => $benefit,
 					'actions' => array()
 				);
 
@@ -288,6 +355,10 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 
 			$goal->set_id( $json_goal->id );
 			$goal->set_name( $json_goal->name );
+			if ( isset( $json_goal->benefit ) && !empty( $json_goal->benefit ) )
+				$goal->set_benefit( $json_goal->benefit );
+			else
+				$goal->set_benefit( NelioABSettings::get_def_conv_value() );
 
 			foreach ( $json_goal->actions as $json_action ) {
 				$action = NelioABAction::build_action_using_json4js( $json_action );

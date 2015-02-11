@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
@@ -36,6 +38,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			// them available in the ``generate_html_content'' method, we
 			// use our ``keep_request_param'' function.
 
+			if ( isset( $_GET['_nonce'] ) )
+				 // Used for sorting
+				$view->keep_request_param( '_nonce', $_GET['_nonce'] );
+
 			if ( isset( $_GET['status'] ) )
 				 // Used for sorting
 				$view->keep_request_param( 'status', $_GET['status'] );
@@ -56,6 +62,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 				// Scheduled Date is relevant for scheduling an experiment
 				$view->keep_request_param( 'schedule_date', $_GET['schedule_date'] );
 
+			if ( isset( $_GET['name'] ) )
+				// Scheduled Date is relevant for scheduling an experiment
+				$view->keep_request_param( 'name', $_GET['name'] );
+
 			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
 		}
 
@@ -74,6 +84,12 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 						break;
 					case 'start':
 						NelioABExperimentsPageController::start_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
+						break;
+					case 'duplicate':
+						$new_name = 'New Experiment';
+						if ( isset( $_REQUEST['name'] ) && !empty( $_REQUEST['name'] ) )
+							$new_name = $_REQUEST['name'];
+						NelioABExperimentsPageController::duplicate_experiment( $new_name, $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
 						break;
 					case 'stop':
 						NelioABExperimentsPageController::stop_experiment( $_REQUEST['exp_id'], $_REQUEST['exp_type'] );
@@ -100,10 +116,9 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			$nelioab_controller->compute_results_for_running_experiments();
 
 			// Obtain DATA from APPSPOT
-			$mgr = new NelioABExperimentsManager();
 			$experiments = array();
 			try {
-				$experiments = $mgr->get_experiments();
+				$experiments = NelioABExperimentsManager::get_experiments();
 			}
 			catch( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -125,9 +140,8 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 		}
 
 		public static function remove_experiment( $exp_id, $exp_type ) {
-			$mgr = new NelioABExperimentsManager();
 			try {
-				$mgr->remove_experiment_by_id( $exp_id, $exp_type );
+				NelioABExperimentsManager::remove_experiment_by_id( $exp_id, $exp_type );
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -136,11 +150,10 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 		}
 
 		public static function start_experiment( $exp_id, $exp_type ) {
-			$mgr = new NelioABExperimentsManager();
 			$exp = NULL;
 
 			try {
-				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -153,7 +166,7 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
 				}
 				$exp->start();
-				NelioABExperimentsManager::update_running_experiments_cache( true );
+				NelioABExperimentsManager::update_running_experiments_cache( 'now' );
 			}
 			catch ( Exception $e ) {
 				global $nelioab_admin_controller;
@@ -177,8 +190,7 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 		public static function schedule_experiment( $exp_id, $exp_type, $date ) {
 			try {
-				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				$exp->schedule( $date );
 			}
 			catch ( Exception $e ) {
@@ -197,8 +209,7 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 		public static function cancel_scheduling_of_experiment( $exp_id, $exp_type ) {
 			try {
-				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				$exp->cancel_scheduling();
 			}
 			catch ( Exception $e ) {
@@ -209,10 +220,9 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 		public static function stop_experiment( $exp_id, $exp_type ) {
 			try {
-				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				$exp->stop();
-				NelioABExperimentsManager::update_running_experiments_cache( true );
+				NelioABExperimentsManager::update_running_experiments_cache( 'now' );
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -222,8 +232,7 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 		public static function trash_experiment( $exp_id, $exp_type ) {
 			try {
-				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				$exp->update_status_and_save( NelioABExperimentStatus::TRASH );
 			}
 			catch ( Exception $e ) {
@@ -234,8 +243,7 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 		public static function untrash_experiment( $exp_id, $exp_type ) {
 			try {
-				$mgr = new NelioABExperimentsManager();
-				$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				$exp->untrash();
 			}
 			catch ( Exception $e ) {
@@ -244,8 +252,47 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 			}
 		}
 
-	}//NelioABExperimentsPageController
+		public static function duplicate_experiment( $new_name, $exp_id, $exp_type ) {
+			$exp = NULL;
+
+			try {
+				$action = 'duplicate-' . $exp_id;
+				if ( !isset( $_REQUEST['_nonce'] ) ||
+				     !nelioab_verify_onetime_nonce( $_REQUEST['_nonce'], $action ) ) {
+					require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+					$err = NelioABErrCodes::INVALID_NONCE;
+					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+				}
+				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
+			}
+			catch ( Exception $e ) {
+				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+				NelioABErrorController::build( $e );
+			}
+
+			try {
+				if ( $exp == NULL ) {
+					$err = NelioABErrCodes::INVALID_EXPERIMENT;
+					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
+				}
+				$exp->duplicate( $new_name );
+			}
+			catch ( Exception $e ) {
+				global $nelioab_admin_controller;
+				switch ( $e->getCode() ) {
+					case NelioABErrCodes::EXPERIMENT_CANNOT_BE_DUPLICATED:
+						$nelioab_admin_controller->error_message = $e->getMessage();
+						return;
+
+					default:
+						require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+						NelioABErrorController::build( $e );
+				}
+
+			}
+		}
+
+		}//NelioABExperimentsPageController
 
 }
 
-?>

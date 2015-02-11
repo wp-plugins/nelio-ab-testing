@@ -39,6 +39,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		public $data;
 
 		private $widget_exp_controller;
+		private $menu_exp_controller;
 
 		/**
 		 * The class constructor
@@ -63,8 +64,14 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				add_filter( 'init', array( $this, 'init' ) );
 			}
 
-			require_once( NELIOAB_ADMIN_DIR . '/widget-exp-admin-controller.php' );
+			NelioABAccountSettings::sync_plugin_version();
+
+			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
 			$this->widget_exp_controller = new NelioABWidgetExpAdminController();
+
+			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
+			$this->menu_exp_controller = new NelioABMenuExpAdminController();
+
 		}
 
 		protected function process_special_pages() {
@@ -106,11 +113,14 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			// No more quota
 			if ( isset( $_GET['page'] ) && 'nelioab-account' !== $_GET['page'] && !NelioABAccountSettings::has_quota_left() ) {
 				array_push( $this->global_warnings,
-					__( '<b>Warning!</b> There is no more quota available.', 'nelioab' ) );
+						sprintf(
+							__( '<b>Warning!</b> You have no more quota available. Please, <a href="%s">check your Nelio A/B Testing account</a> for obtaining additional quota.', 'nelioab' ),
+							admin_url( 'admin.php?page=nelioab-account' ) )
+					);
 			}
 
 			// If the current user is NOT admin, do not show the plugin
-			if ( !is_super_admin() )
+			if ( !nelioab_can_user_manage_plugin() )
 				return;
 
 			$this->process_special_pages();
@@ -120,8 +130,12 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Some hooks
 			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
-
 			add_filter( 'plugin_action_links',  array( $this, 'add_plugin_action_links') , 10, 2);
+
+			// (Super)Settings for multisite
+			add_action( 'network_admin_menu', array( $this, 'create_nelioab_site_settings_page' ) );
+
+			// Regular settings
 			add_action( 'admin_menu', array( $this, 'create_nelioab_admin_pages' ) );
 				require_once( NELIOAB_ADMIN_DIR . '/views/settings-page.php' );
 				add_action( 'admin_init', array( 'NelioABSettingsPage', 'register_settings' ) );
@@ -391,6 +405,19 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			return $links;
 		}
 
+
+		public function create_nelioab_site_settings_page() {
+			require_once( NELIOAB_ADMIN_DIR . '/multisite-settings-page-controller.php' );
+			add_submenu_page( 'settings.php',
+				__( 'Nelio A/B Testing', 'nelioab' ),
+				__( 'Nelio A/B Testing', 'nelioab' ),
+				'manage_options',
+				'nelioab-multisite-settings',
+				array( 'NelioABMultisiteSettingsPageController', 'build' )
+			);
+		}
+
+
 		/**
 		 * This function creates all the relevant pages for our plugin.
 		 * These pages appear in the Dashboard.
@@ -443,7 +470,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				case 'progress':
 					require_once( NELIOAB_ADMIN_DIR . '/select-exp-progress-page-controller.php' );
 					$page_to_build = array( 'NelioABSelectExpProgressPageController', 'build' );
-
 					break;
 
 				default:
@@ -588,33 +614,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 								tabindex="5"
 								value="<?php _e( 'Update' ); ?>" />
 						</div>
-						<div style="float:right;margin-top:1em;margin-right:1em;">
-							<div id="preview-action">
-								<?php
-									$preview_link = admin_url( 'admin.php' );
-									$type = 'post';
-									$ori_id = get_post_meta( $_GET['post'], '_nelioab_original_id', true );
-									if ( !empty( $ori_id ) && get_post_type( $_GET['post'] ) == 'page' ) {
-										$preview_link = add_query_arg( array(
-												'page_id' => $_GET['post'],
-												'preview' => 'true',
-												'nelioab_original_id' => $ori_id
-											), trailingslashit( home_url() ) );
-										?><a class="preview button" href="<?php echo $preview_link; ?>" target="nelioab-preview" id="page-preview" tabindex="4"><?php _e( 'Preview' ); ?></a><?php
-									}
-									else {
-										$preview_link = add_query_arg( array(
-											'preview' => 'true',
-											'post'    => $_GET['post'] ), $preview_link );
-										?><a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview" id="post-preview" tabindex="4"><?php _e( 'Preview' ); ?></a><?php
-									}
-								?>
-								<input type="hidden" name="wp-preview" id="wp-preview" value="" />
-							</div>
-						</div>
-					</div>
-					<div style="margin:0.8em 0.2em 0.8em 0.2em;">
-						<b><?php _e( 'Go back to...', 'nelioab' ); ?></b>
 						<?php
 						$the_post_id = 0;
 						if ( isset( $_GET['post'] ) )
@@ -624,6 +623,27 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						$exp_id     = $values[0];
 						$exp_status = $values[1];
 						?>
+						<div style="float:right;margin-top:1em;margin-right:1em;">
+							<div id="preview-action">
+								<?php
+									$type = 'post';
+									$ori_id = get_post_meta( $_GET['post'], '_nelioab_original_id', true );
+									if ( NelioABExperimentStatus::RUNNING == $exp_status || NelioABExperimentStatus::FINISHED == $exp_status ) {
+										$preview_button = __( 'Preview Changes' );
+									}
+									else {
+										$preview_button = __( 'Preview' );
+									}
+									$preview_link = esc_url( get_permalink( $_GET['post'] ) );
+									$preview_link = add_query_arg( 'preview', 'true', $preview_link )
+									?>
+								<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview-<?php echo $_GET['post']; ?>" id="post-preview"><?php echo $preview_button; ?></a>
+								<input type="hidden" name="wp-preview" id="wp-preview" value="" />
+							</div>
+						</div>
+					</div>
+					<div style="margin:0.8em 0.2em 0.8em 0.2em;">
+						<b><?php _e( 'Go back to...', 'nelioab' ); ?></b>
 						<ul style="margin-left:1.5em;">
 							<?php
 							switch( $exp_status ){

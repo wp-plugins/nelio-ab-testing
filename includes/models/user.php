@@ -205,7 +205,6 @@ if ( !class_exists( 'NelioABUser' ) ) {
 			global $NELIOAB_COOKIES;
 
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			$exp = NULL;
 			foreach ( $running_exps as $data ) {
@@ -246,6 +245,51 @@ if ( !class_exists( 'NelioABUser' ) ) {
 			foreach ( $exp->get_alternatives() as $candidate )
 				if ( $candidate->get_id() == $alt_id )
 					return $candidate;
+
+			return false;
+		}
+
+
+		public static function get_alternative_for_menu_alt_exp( $menu_id ) {
+			global $NELIOAB_COOKIES;
+
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+			$exp = NULL;
+			foreach ( $running_exps as $data ) {
+				if ( $data->get_type() == NelioABExperiment::MENU_ALT_EXP &&
+				     $data->get_original()->get_value() == $menu_id ) {
+					$exp = $data;
+					break;
+				}
+			}
+
+			if ( $exp == NULL )
+				return false;
+
+			$cookie_name = NelioABSettings::cookie_prefix() . 'global_altexp_' . $exp->get_id();
+			$cookie_life = time() + self::COOKIE_LIFETIME;
+
+			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
+				// Creating the cookie for the experiment information
+				$alternatives = $exp->get_alternatives();
+				array_unshift( $alternatives, $exp->get_original() );
+				$aux = self::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
+				$alt_id = $aux->get_id();
+
+				// If everything seems to exist, we set the cookie and keep going
+				nelioab_setcookie( $cookie_name, $alt_id, $cookie_life );
+			}
+
+			$alt_id = $NELIOAB_COOKIES[$cookie_name];
+
+			if ( $exp->get_original()->get_id() == $alt_id )
+				return $exp->get_original();
+
+			foreach ( $exp->get_alternatives() as $candidate )
+				if ( $candidate->get_id() == $alt_id )
+					return $candidate;
+
 
 			return false;
 		}

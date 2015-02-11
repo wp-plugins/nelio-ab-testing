@@ -26,6 +26,29 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		const PROFESSIONAL_SUBSCRIPTION_PLAN = 2;
 		const ENTERPRISE_SUBSCRIPTION_PLAN   = 3;
 
+		private static $settings = false;
+		private static function settings() {
+			if ( !self::$settings )
+				self::$settings = get_option( 'nelioab_account_settings', array() );
+			return self::$settings;
+		}
+
+		public static function get_nelioab_option( $name, $default = false ) {
+			self::$settings = self::settings();
+			if ( !isset( self::$settings[$name] ) ) {
+				self::$settings[$name] = get_option( "nelioab_$name", $default );
+				update_option( 'nelioab_account_settings', self::$settings );
+				delete_option( "nelioab_$name" );
+			}
+			return self::$settings[$name];
+		}
+
+		public static function update_nelioab_option( $name, $value ) {
+			self::$settings = self::settings();
+			self::$settings[$name] = $value;
+			update_option( 'nelioab_account_settings', self::$settings );
+		}
+
 		public static function get_subscription_plan() {
 			try {
 				NelioABAccountSettings::check_user_settings();
@@ -34,14 +57,13 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 				// Nothing to catch here
 			}
 
-			return get_option(
-				'nelioab_subscription_plan',
+			return self::get_nelioab_option( 'subscription_plan',
 				NelioABAccountSettings::BASIC_SUBSCRIPTION_PLAN );
 		}
 
 		public static function validate_email_and_reg_num( $email, $reg_num ) {
-			update_option( 'nelioab_email', $email );
-			update_option( 'nelioab_reg_num', $reg_num );
+			self::update_nelioab_option( 'email', $email );
+			self::update_nelioab_option( 'reg_num', $reg_num );
 
 			$json_data = null;
 			try {
@@ -79,7 +101,7 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 
 			NelioABAccountSettings::set_reg_num_validity( true );
 			NelioABAccountSettings::set_email_validity( true );
-			update_option( 'nelioab_customer_id', $json_data->key->id );
+			self::update_nelioab_option( 'customer_id', $json_data->key->id );
 
 			// Store the current subscription plan
 
@@ -97,55 +119,55 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		}
 
 		public static function get_customer_id() {
-			return get_option( 'nelioab_customer_id', '' );
+			return self::get_nelioab_option( 'customer_id', '' );
 		}
 
 		public static function get_email() {
-			return get_option( 'nelioab_email', '' );
+			return self::get_nelioab_option( 'email', '' );
 		}
 
 		private static function set_email_validity( $validity ) {
-			update_option( 'nelioab_is_email_valid', $validity );
+			self::update_nelioab_option( 'is_email_valid', $validity );
 		}
 
 		public static function is_email_valid() {
-			return get_option( 'nelioab_is_email_valid', false );
+			return self::get_nelioab_option( 'is_email_valid', false );
 		}
 
 		public static function get_reg_num() {
-			return get_option( 'nelioab_reg_num', '' );
+			return self::get_nelioab_option( 'reg_num', '' );
 		}
 
 		private static function set_reg_num_validity( $validity ) {
-			update_option( 'nelioab_is_reg_num_valid', $validity );
+			self::update_nelioab_option( 'is_reg_num_valid', $validity );
 		}
 
 		public static function is_reg_num_valid() {
-			return get_option( 'nelioab_is_reg_num_valid', false );
+			return self::get_nelioab_option( 'is_reg_num_valid', false );
 		}
 
 		public static function has_a_configured_site() {
-			return get_option( 'nelioab_has_a_configured_site', false );
+			return self::get_nelioab_option( 'has_a_configured_site', false );
 		}
 
 		public static function set_has_a_configured_site( $configured ) {
-			update_option( 'nelioab_has_a_configured_site', $configured );
+			self::update_nelioab_option( 'has_a_configured_site', $configured );
 		}
 
 		public static function get_site_id() {
-			return get_option( 'nelioab_site_id', '' );
+			return self::get_nelioab_option( 'site_id', '' );
 		}
 
 		public static function set_site_id( $site_id ) {
-			update_option( 'nelioab_site_id', $site_id );
+			self::update_nelioab_option( 'site_id', $site_id );
 		}
 
 		public static function check_terms_and_conditions( $accepted ) {
-			update_option( 'nelioab_are_tac_accepted', $accepted );
+			self::update_nelioab_option( 'are_tac_accepted', $accepted );
 		}
 
 		public static function are_terms_and_conditions_accepted() {
-			return get_option( 'nelioab_are_tac_accepted', false );
+			return self::get_nelioab_option( 'are_tac_accepted', false );
 		}
 
 		public static function check_user_settings() {
@@ -180,9 +202,24 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			return true;
 		}
 
+		public static function sync_plugin_version() {
+			$last_synced_version = self::get_nelioab_option( 'last_synced_version', '3.3.7' );
+			try {
+				if ( NELIOAB_PLUGIN_VERSION !== $last_synced_version && self::check_user_settings() ) {
+					try {
+						$url  = sprintf( NELIOAB_BACKEND_URL . '/site/%s/version',
+							NelioABAccountSettings::get_site_id() );
+						$body = array( 'version' => NELIOAB_PLUGIN_VERSION );
+						NelioABBackend::remote_post( $url, $body );
+						self::update_nelioab_option( 'last_synced_version', NELIOAB_PLUGIN_VERSION );
+					} catch ( Exception $e ) {}
+				}
+			} catch ( Exception $e ) {}
+		}
+
 		public static function check_account_status( $mode = 'none' ) {
 			$the_past   = mktime( 0, 0, 0, 1, 1, 2000 );
-			$last_check = get_option( 'nelioab_last_check_user_settings', $the_past );
+			$last_check = self::get_nelioab_option( 'last_check_user_settings', $the_past );
 			$now        = time();
 			$offset     = 1800; // sec (== 30min)
 			if ( ( $last_check + $offset ) < $now || 'force-check' === $mode ) {
@@ -191,24 +228,28 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 					$json = NelioABBackend::remote_get( $url, true );
 					$json = json_decode( $json['body'] );
 					NelioABAccountSettings::set_account_as_active();
-					update_option( 'nelioab_subscription_plan', $json->subscriptionPlan );
-					update_option( 'nelioab_last_check_user_settings', $now );
+					self::update_nelioab_option( 'subscription_plan', $json->subscriptionPlan );
+					self::update_nelioab_option( 'last_check_user_settings', $now );
 				}
 				catch ( Exception $e ) {
 					if ( $e->getCode() == NelioABErrCodes::DEACTIVATED_USER ) {
 						NelioABAccountSettings::set_account_as_active( false );
-						update_option( 'nelioab_last_check_user_settings', $now );
+						self::update_nelioab_option( 'last_check_user_settings', $now );
+					}
+					else {
+						NelioABAccountSettings::set_account_as_active( false );
+						self::update_nelioab_option( 'last_check_user_settings', $now - 1800 + 60);
 					}
 				}
 			}
 		}
 
 		public static function is_account_active() {
-			return get_option( 'nelioab_is_account_active', false );
+			return self::get_nelioab_option( 'is_account_active', false );
 		}
 
 		public static function set_account_as_active( $active = true ) {
-			update_option( 'nelioab_is_account_active', $active );
+			self::update_nelioab_option( 'is_account_active', $active );
 		}
 
 		public static function get_registered_sites_information() {
@@ -243,10 +284,14 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			return $res;
 		}
 
-		public static function register_this_site() {
+		public static function register_this_site( $type, $sector ) {
 
 			try {
-				$params = array( 'url' => get_option( 'siteurl' ) );
+				$params = array(
+					'url'    => get_option( 'siteurl' ),
+					'type'   => $type,
+					'sector' => $sector,
+				);
 				$json_data = NelioABBackend::remote_post( sprintf(
 					NELIOAB_BACKEND_URL . '/customer/%s/site/activate',
 					NelioABAccountSettings::get_customer_id()
@@ -286,21 +331,21 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		}
 
 		public static function has_quota_left() {
-			return get_option( 'nelioab_has_quota_left', true );
+			return self::get_nelioab_option( 'has_quota_left', true );
 		}
 
 		public static function set_has_quota_left( $has_quota_left ) {
-			update_option( 'nelioab_has_quota_left', $has_quota_left );
-			update_option( 'nelioab_last_quota_check', time() );
+			self::update_nelioab_option( 'has_quota_left', $has_quota_left );
+			self::update_nelioab_option( 'last_quota_check', time() );
 		}
 
 		public static function assume_quota_check_will_occur_shortly() {
 			// Simulate the last check was 28 minutes (=1680s) ago
-			update_option( 'nelioab_last_quota_check', time() - 1680 );
+			self::update_nelioab_option( 'last_quota_check', time() - 1680 );
 		}
 
 		public static function is_quota_check_required() {
-			$last_check = get_option( 'nelioab_last_quota_check', 0 );
+			$last_check = self::get_nelioab_option( 'last_quota_check', 0 );
 			$now        = time();
 			$offset     = 1800; // seg == 30min
 			return ( ( $last_check + $offset ) < $now );

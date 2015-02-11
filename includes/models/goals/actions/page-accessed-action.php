@@ -77,7 +77,7 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 		public function get_regex_reference4js() {
 			if ( !$this->is_external() )
 				return false;
-			$url = $this->reference;
+			$url = $this->get_reference();
 			$url = str_replace( '"', '', $url );
 
 			// Remove trailing slash
@@ -238,6 +238,9 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			$action->set_title( $title );
 			$action->set_indirect_navigations_enabled( $indirect );
 
+			if ( isset( $json->key->id ) )
+				$action->set_id( $json->key->id );
+
 			return $action;
 		}
 
@@ -280,9 +283,16 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 				$value = $json->url;
 				switch ( $json->url_mode ) {
 				case 'exact':
-					// Nothing to be done
+					$value = 'http://' . $value;
+					$value = str_replace( 'http://http://', 'http://', $value );
+					$value = str_replace( 'http://https://', 'https://', $value );
+					$value = str_replace( 'http:////', 'http://', $value );
 					break;
 				case 'starts-with':
+					$value = 'http://' . $value;
+					$value = str_replace( 'http://http://', 'http://', $value );
+					$value = str_replace( 'http://https://', 'https://', $value );
+					$value = str_replace( 'http:////', 'http://', $value );
 					$value = $value . '***';
 					break;
 				case 'ends-with':

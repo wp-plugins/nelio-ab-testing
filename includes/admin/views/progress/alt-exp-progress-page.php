@@ -174,13 +174,18 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					case NelioABAction::PAGE_ACCESSED:
 					case NelioABAction::POST_ACCESSED:
 					case NelioABAction::EXTERNAL_PAGE_ACCESSED:
-						$label = $this->print_page_accessed_action( $action );
+						$label = $this->get_page_accessed_action( $action );
 						if ( $label )
 							echo "<li>- $label</li>";
 						continue;
 					case NelioABAction::SUBMIT_CF7_FORM:
 					case NelioABAction::SUBMIT_GRAVITY_FORM:
-						$label = $this->print_form_submission_action( $action );
+						$label = $this->get_form_submission_action( $action );
+						if ( $label )
+							echo "<li>- $label</li>";
+						continue;
+					case NelioABAction::CLICK_ELEMENT:
+						$label = $this->get_click_element_action( $action );
 						if ( $label )
 							echo "<li>- $label</li>";
 						continue;
@@ -189,7 +194,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			?></ul><?php
 		}
 
-		protected function print_page_accessed_action( $action ) {
+		protected function get_page_accessed_action( $action ) {
 			$indirect = $action->accepts_indirect_navigations();
 			$result  = false;
 
@@ -273,7 +278,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			return $result;
 		}
 
-		protected function print_form_submission_action( $action ) {
+		protected function get_form_submission_action( $action ) {
 			$form_id = $action->get_form_id();
 			$name    = false;
 			$result  = false;
@@ -336,6 +341,27 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 			return $result;
 		}
+
+		protected function get_click_element_action( $action ) {
+			$result  = false;
+			switch ( $action->get_mode() ) {
+				case NelioABClickElementAction::ID_MODE:
+					$result = __( 'Clicking the element identified by <code>#%s</code>', 'nelioab' );
+					break;
+				case NelioABClickElementAction::CSS_MODE:
+					$result = __( 'Clicking any element in «<code>%s</code>»', 'nelioab');
+					break;
+				case NelioABClickElementAction::TEXT_MODE:
+					$result = __( 'Clicking an element with the following text: «%s»', 'nelioab' );
+					break;
+				default:
+					return false;
+			}
+			$result = sprintf( $result, $action->get_value() );
+			return $result;
+		}
+
+
 
 		protected function do_render() {
 			// SOME VARIABLES
@@ -460,6 +486,32 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 
 								<h3><?php _e( 'Conversions / Page Views', 'nelioab' ); ?></h3>
 								<p class="result"><?php echo $total_conversions . ' / ' . $total_visitors; ?></p>
+
+								<?php if ( $this->goal->get_benefit() > 0 ) { ?>
+									<h3><?php _e( 'Income Improvement', 'nelioab' ); ?></h3><?php
+										$gain = 'None';
+										if ( is_object( $this->results ) ) {
+											$alt_results = $this->results->get_alternative_results();
+											$ori_conversions = $alt_results[0]->get_num_of_conversions();
+											$best_conversions = 0;
+											foreach ( $alt_results as $alt_res ) {
+												$aux = $alt_res->get_num_of_conversions();
+												if ( $aux > $best_conversions )
+													$best_conversions = $aux;
+											}
+											$diff = $best_conversions - $ori_conversions;
+											if ( $diff > 0 ) {
+												$gain = sprintf( __( '%1$s%2$s', 'nelioab', 'money' ),
+													NelioABSettings::get_conv_unit(),
+													number_format_i18n( $this->goal->get_benefit() * $diff, 2 )
+												);
+											}
+										}
+									?>
+									<p class="result"><?php echo $gain; ?></p>
+								<?php } else { ?>
+									<h3>&nbsp;</h3><p class="result">&nbsp;</p>
+								<?php } ?>
 
 							</div>
 
@@ -920,8 +972,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 		}
 
 		/**
-		 *
-		 *
+		 * @deprecated
 		 */
 		protected function print_timeline_js() {
 
@@ -995,7 +1046,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				if ( $div < 1 )
 					$aux = 0;
 				elseif ( $num < $div )
-					$aux = round( ($num / $div) * 100 );
+					$aux = round( ($num / $div) * 100, 1 );
 				else
 					$aux = 100;
 				array_push( $result, $aux );

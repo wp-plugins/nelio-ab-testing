@@ -76,6 +76,10 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 					require_once( NELIOAB_ADMIN_DIR . '/alternatives/widget-alt-exp-creation-page-controller.php' );
 					return 'NelioABWidgetAltExpCreationPageController';
 
+				case NelioABExperiment::MENU_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/menu-alt-exp-creation-page-controller.php' );
+					return 'NelioABMenuAltExpCreationPageController';
+
 				case NelioABExperiment::HEATMAP_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/others/heatmap-exp-creation-page-controller.php' );
 					return 'NelioABHeatmapExpCreationPageController';

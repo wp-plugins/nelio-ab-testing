@@ -29,91 +29,91 @@
 }
 
 .nelioab-image-page {
-	background: url( '../images/new-exp-page.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-page.png?version=3.3.0' );
+	background: url( '../images/new-exp-page.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-page.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-page {
-	background-image: url( '../images/2x/new-exp-page.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-page.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 
 .nelioab-image-post {
-	background: url( '../images/new-exp-post.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-post.png?version=3.3.0' );
+	background: url( '../images/new-exp-post.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-post.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-post {
-	background-image: url( '../images/2x/new-exp-post.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-post.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 
 .nelioab-image-css {
-	background: url( '../images/new-exp-css.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-css.png?version=3.3.0' );
+	background: url( '../images/new-exp-css.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-css.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-css {
-	background-image: url( '../images/2x/new-exp-css.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-css.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 
 .nelioab-image-menu {
-	background: url( '../images/new-exp-menu.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-menu.png?version=3.3.0' );
+	background: url( '../images/new-exp-menu.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-menu.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-menu {
-	background-image: url( '../images/2x/new-exp-menu.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-menu.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 
 .nelioab-image-title {
-	background: url( '../images/new-exp-headline.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-headline.png?version=3.3.0' );
+	background: url( '../images/new-exp-headline.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-headline.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-title {
-	background-image: url( '../images/2x/new-exp-headline.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-headline.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 
 .nelioab-image-theme {
-	background: url( '../images/new-exp-theme.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-theme.png?version=3.3.0' );
+	background: url( '../images/new-exp-theme.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-theme.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-theme {
-	background-image: url( '../images/2x/new-exp-theme.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-theme.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 
 .nelioab-image-widget {
-	background: url( '../images/new-exp-widget.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-widget.png?version=3.3.0' );
+	background: url( '../images/new-exp-widget.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-widget.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-widget {
-	background-image: url( '../images/2x/new-exp-widget.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-widget.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 
 
 .nelioab-image-heatmap {
-	background: url( '../images/new-exp-heatmap.png?version=3.3.0' );
-	background-image: url( '../images/new-exp-heatmap.png?version=3.3.0' );
+	background: url( '../images/new-exp-heatmap.png?version=3.4.0' );
+	background-image: url( '../images/new-exp-heatmap.png?version=3.4.0' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-heatmap {
-	background-image: url( '../images/2x/new-exp-heatmap.png?version=3.3.0' );
+	background-image: url( '../images/2x/new-exp-heatmap.png?version=3.4.0' );
 	background-size: 240px 120px;
 } }
 

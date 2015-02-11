@@ -29,18 +29,6 @@ class NelioABHeatmapExperimentController {
 		// Nothing to be done
 	}
 
-	public function is_relevant( $nav ) {
-		$post_id = $nav['currentId'];
-		require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-		$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-		foreach ( $running_exps as $exp ) {
-			if ( $exp->get_type() == NelioABExperiment::HEATMAP_EXP &&
-			     $exp->get_post_id() == $post_id )
-				return true;
-		}
-		return false;
-	}
-
 	public function track_heatmaps_for_post( $post_id ) {
 		global $nelioab_controller;
 		$post = $nelioab_controller->url_or_front_page_to_actual_postid_considering_alt_exps(

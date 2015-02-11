@@ -140,7 +140,7 @@ if ( !class_exists( 'NelioABWidgetAltExpEditionPage' ) ) {
 			$this->print_new_alt_form();
 
 			$title = __( 'Original: Default Widget Set', 'nelioab' );
-			$expl = __( 'This original version of this experiment uses your current set of widgets.', 'nelioab' );
+			$expl = __( 'The original version of this experiment uses your current set of widgets.', 'nelioab' );
 			?>
 			<tr><td>
 				<span class="row-title"><?php echo $title; ?></span>

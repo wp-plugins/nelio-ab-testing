@@ -5,7 +5,7 @@
  * Version: 3.3.4
  * Author: Nelio Software
  * Author URI: http://neliosoftware.com
- * Plugin URI: http://wp-abtesting.com
+ * Plugin URI: http://nelioabtesting.com
  */
 
 function nelioab_is_ajax_call_relevant() {

@@ -158,8 +158,8 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		 * Accepted POST params are:
 		 *   term: {string}
 		 *         the (part of the) string used to look for items.
-		 *   type: {'post'|'page'|'post-or-page'}
-		 *         what type of element are we looking.
+		 *   type: {array}
+		 *         array containing the types of element are we looking.
 		 *   default_id: {int} (optional)
 		 *         if set, the item with that ID will be returned. If that item is
 		 *         not found, then we'll perform a regular search (as if the param
@@ -170,12 +170,11 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			if ( isset( $_POST['term'] ) & !empty( $_POST['term'] ) )
 				$term = $_POST['term'];
 
-			$type = false;
+			$types = array();
 			if ( isset( $_POST['type'] ) )
-				$type = $_POST['type'];
-
-			if ( 'page-or-post' == $type )
-				$type = array( 'page', 'post' );
+				$types = $_POST['type'];
+			if ( !is_array( $types ) )
+				$types = array( $types );
 
 			$status = 'publish';
 			if ( isset( $_POST['drafts'] ) && 'show-drafts' == $_POST['drafts'] )
@@ -196,27 +195,52 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 			$args = array(
 				's'              => $term,
-				'post_type'      => $type,
 				'posts_per_page' => 20,
 				'meta_key'       => '_is_nelioab_alternative',
 				'meta_compare'   => 'NOT EXISTS',
 				'post_status'    => $status,
 			);
 
-			if ( 'page' === $type && !$term ) {
+			if ( count( $types ) > 0 ) {
+				$aux = array();
+				foreach ( $types as $type )
+					if ( strpos( $type, 'nelioab-' ) === false )
+						array_push( $aux, $type );
+				if ( count( $aux ) > 0 )
+					$args['post_type'] = $aux;
+			}
+
+			if ( $type && count( $type ) == 1 && 'page' === $type[0] && !$term ) {
 				$args['order'] = 'asc';
 				$args['orderby'] = 'title';
 			}
 
-			$lp_title = __( 'Your latest posts', 'nelioab' );
 			$latest_post_item = false;
-			if ( isset( $_POST['include_latest_posts'] ) || $default_id !== false ) {
+			if ( in_array( 'nelioab-latest-posts', $types ) || false !== $default_id ) {
+				$lp_title = __( 'Your latest posts', 'nelioab' );
 				if ( !$term || strpos( strtolower( $lp_title ), strtolower( $term ) ) !== false ) {
 					$latest_post_item = array(
 						'id'        => NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS,
-						'type'      => '',
+						'type'      => '<i>latest-posts</i>',
 						'title'     => self::fix_title( $lp_title ),
-						'status'    => '',
+						'status'    => '<i>dynamic</i>',
+						'date'      => '',
+						'author'    => 'WordPress',
+						'thumbnail' => $default_thumbnail,
+					);
+				}
+			}
+
+			$theme_based_landing_page = false;
+			if ( ( in_array( 'nelioab-theme-landing-page', $types ) && NelioABSettings::does_theme_use_a_custom_landing_page() ) ||
+					NelioABController::FRONT_PAGE__THEME_BASED_LANDING == $default_id ) {
+				$lp_title = __( 'Landing Page (Theme-based)', 'nelioab' );
+				if ( !$term || strpos( strtolower( $lp_title ), strtolower( $term ) ) !== false ) {
+					$theme_based_landing_page = array(
+						'id'        => NelioABController::FRONT_PAGE__THEME_BASED_LANDING,
+						'type'      => '<i>landing-page</i>',
+						'title'     => self::fix_title( $lp_title ),
+						'status'    => '<i>dynamic</i>',
 						'date'      => '',
 						'author'    => 'WordPress',
 						'thumbnail' => $default_thumbnail,
@@ -233,6 +257,12 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				if ( $id == NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS ) {
 					header( 'Content-Type: application/json' );
 					echo json_encode( array( $latest_post_item ) );
+					die();
+				}
+
+				if ( $id == NelioABController::FRONT_PAGE__THEME_BASED_LANDING ) {
+					header( 'Content-Type: application/json' );
+					echo json_encode( array( $theme_based_landing_page ) );
 					die();
 				}
 
@@ -283,6 +313,9 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 			if ( $latest_post_item )
 				array_unshift( $result, $latest_post_item );
+
+			if ( $theme_based_landing_page )
+				array_unshift( $result, $theme_based_landing_page );
 
 			header( 'Content-Type: application/json' );
 			echo json_encode( $result );

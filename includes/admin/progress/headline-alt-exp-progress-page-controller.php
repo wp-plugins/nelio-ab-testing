@@ -68,11 +68,10 @@ if ( !class_exists( 'NelioABHeadlineAltExpProgressPageController' ) ) {
 				if ( isset( $_POST['exp_type'] ) )
 					$exp_type = $_POST['exp_type'];
 
-				$mgr = new NelioABExperimentsManager();
 				$exp = null;
 
 				try {
-					$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+					$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				}
 				catch ( Exception $e ) {
 					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );

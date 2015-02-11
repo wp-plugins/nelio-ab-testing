@@ -87,8 +87,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 				$other_names = json_decode( urldecode( $_POST['other_names'] ) );
 			}
 			else {
-				$mgr = new NelioABExperimentsManager();
-				foreach( $mgr->get_experiments() as $aux ) {
+				foreach( NelioABExperimentsManager::get_experiments() as $aux ) {
 					if ( $aux->get_id() != $experiment->get_id() )
 						array_push( $other_names, $aux->get_name() );
 				}
@@ -175,8 +174,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 
 			try {
 				$duplicated_name_found = false;
-				$mgr = new NelioABExperimentsManager();
-				foreach( $mgr->get_experiments() as $aux ) {
+				foreach( NelioABExperimentsManager::get_experiments() as $aux ) {
 					if ( !$duplicated_name_found && $exp->get_name() == $aux->get_name() &&
 						$exp->get_id() != $aux->get_id()) {
 						array_push( $errors, array ( 'exp_name',

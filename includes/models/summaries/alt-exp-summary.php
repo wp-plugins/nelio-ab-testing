@@ -93,8 +93,10 @@ if ( !class_exists( 'NelioABAltExpSummary' ) ) {
 		}
 
 		public function get_original_conversion_rate() {
-			$original_info = $this->alternative_info[0];
 			$result = 0;
+			if ( count( $this->alternative_info ) == 0 )
+				return $result;
+			$original_info = $this->alternative_info[0];
 			if ( $original_info['visitors'] != 0 )
 				$result = $original_info['conversions'] / $original_info['visitors'];
 			return $result * 100;

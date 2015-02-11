@@ -110,6 +110,7 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 				if ( strlen( $customer_id ) > 0 ) {
 					$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s', $customer_id );
 					$json = NelioABBackend::remote_get( $url, true );
+
 					$json = json_decode( $json['body'] );
 
 					$user_info['firstname']         = $json->firstname;
@@ -211,7 +212,13 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 				try {
 					switch ( $action ) {
 						case 'register':
-							NelioABAccountSettings::register_this_site();
+							$type = 'unknown';
+							if ( isset( $_POST['nelioab_registration_type'] ) )
+								$type = $_POST['nelioab_registration_type'];
+							$sector = 'unknown';
+							if ( isset( $_POST['nelioab_registration_sector'] ) )
+								$sector = $_POST['nelioab_registration_sector'];
+							NelioABAccountSettings::register_this_site( $type, $sector );
 							$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
 							break;
 						case 'deregister':

@@ -336,6 +336,37 @@ if ( !class_exists( 'NelioABWidgetExpAdminController' ) ) {
 			self::set_widgets_in_experiments( $widgets_in_experiments );
 		}
 
+		/**
+		 *
+		 */
+		public static function duplicate_widgets( $exp_src, $alt_src, $exp_dest, $alt_dest ) {
+			$widgets_in_experiments = self::get_widgets_in_experiments();
+
+			$sidebars_widgets_ori = get_option( 'sidebars_widgets', array() );
+			$sidebars_widgets = array();
+			foreach ( $sidebars_widgets_ori as $sidebar => $widgets ) {
+				if ( !is_array( $widgets ) ) {
+					$sidebars_widgets[$sidebar] = $widgets;
+					continue;
+				}
+				$sidebars_widgets[$sidebar] = array();
+				foreach ( $widgets as $widget_name ) {
+					array_push( $sidebars_widgets[$sidebar], $widget_name );
+					$aux = self::is_widget_in_experiment( $widget_name, $widgets_in_experiments );
+					if ( $aux && $aux['exp'] == $exp_src && $aux['alt'] == $alt_src ) {
+						$new_name = self::duplicate_widget_info( $widget_name );
+						if ( $new_name ) {
+							array_push( $sidebars_widgets[$sidebar], $new_name );
+							self::link_widget_to_experiment( $new_name, $exp_dest, $alt_dest, $widgets_in_experiments );
+						}
+					}
+				}
+			}
+
+			update_option( 'sidebars_widgets', $sidebars_widgets );
+			self::set_widgets_in_experiments( $widgets_in_experiments );
+		}
+
 		private static function get_widget_kind_and_id( $widget_name ) {
 			$data = explode( ':', preg_replace( '/^(.*)-([0-9]+)$/', '$1:$2', $widget_name ) );
 			if ( count( $data ) != 2 )
@@ -343,7 +374,7 @@ if ( !class_exists( 'NelioABWidgetExpAdminController' ) ) {
 			else
 				return array( 'kind' => $data[0], 'id' => $data[1] );
 		}
-	
+
 		private static function duplicate_widget_info( $widget_name ) {
 			$data = self::get_widget_kind_and_id( $widget_name );
 			if ( !$data )
@@ -382,7 +413,7 @@ if ( !class_exists( 'NelioABWidgetExpAdminController' ) ) {
 		/**
 		 *
 		 */
-		private static function link_widget_to_experiment( $widget, $exp, $alt, &$arr ) {
+		public static function link_widget_to_experiment( $widget, $exp, $alt, &$arr ) {
 			$widget = preg_replace( '/^widget-[0-9]+_/', '', $widget );
 			$arr[$widget] = array( 'exp' => $exp, 'alt' => $alt );
 		}

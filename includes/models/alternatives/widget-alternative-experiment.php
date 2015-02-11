@@ -101,9 +101,7 @@ if( !class_exists( 'NelioABWidgetAlternativeExperiment' ) ) {
 						sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 						$body );
 					$this->get_original()->set_id( $result );
-				}
-				catch ( Exception $e ) {
-				}
+				} catch ( Exception $e ) {}
 			}
 
 			// 2.1. UPDATE CHANGES ON ALREADY EXISTING APPSPOT ALTERNATIVES
@@ -127,7 +125,9 @@ if( !class_exists( 'NelioABWidgetAlternativeExperiment' ) ) {
 					$alt->get_id()
 				);
 
-				$result = NelioABBackend::remote_post( $url );
+				try {
+					$result = NelioABBackend::remote_post( $url );
+				} catch ( Exception $e ) {}
 			}
 
 			// 2.3. CREATE LOCAL ALTERNATIVES IN APPSPOT
@@ -151,6 +151,9 @@ if( !class_exists( 'NelioABWidgetAlternativeExperiment' ) ) {
 				catch ( Exception $e ) {
 				}
 			}
+
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			NelioABExperimentsManager::update_experiment( $this );
 		}
 
 		public function get_real_id_for_alt( $id ) {
@@ -167,6 +170,52 @@ if( !class_exists( 'NelioABWidgetAlternativeExperiment' ) ) {
 			$result = NelioABBackend::remote_post(
 				sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update', $alt_id ),
 				$body );
+		}
+
+		public function start() {
+			parent::start();
+			// This fake widget is inserted to make the system believe that there is
+			// at least one alternative with a widget that can be "applied" (and, thus,
+			// the Apply and Clean buttons in the progress of the experiment make
+			// sense).
+			$aux = NelioABWidgetExpAdminController::get_widgets_in_experiments();
+			NelioABWidgetExpAdminController::link_widget_to_experiment(
+				'nelioab-fake-' . $this->get_id(),
+				$this->get_id(), 'no-alternative',
+				$aux );
+			NelioABWidgetExpAdminController::set_widgets_in_experiments( $aux );
+		}
+
+		/**
+		 * This function duplicates the current experiment in AE. It returns
+		 * the new experiment ID. The experiment is READY to be started.
+		 *
+		 * Moreover, it duplicates the local copies of the alternative pages
+		 * and posts.
+		 *
+		 * @param $new_name the new name of the duplicated experiment.
+		 * @return the ID of the new experiment (if successfully duplicated)
+		 *         or -1 otherwise.
+		 */
+		public function duplicate( $new_name ) {
+			$id = parent::duplicate( $new_name );
+			if ( -1 == $id )
+				return $id;
+
+			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$exp = NelioABExperimentsManager::get_experiment_by_id( $id, $this->get_type() );
+
+			$alts_src  = $this->get_alternatives();
+			$alts_dest = $exp->get_alternatives();
+			for ( $i = 0; $i < count( $alts_src ); ++$i ) {
+				$alt_src  = $alts_src[$i];
+				$alt_dest = $alts_dest[$i];
+				NelioABWidgetExpAdminController::duplicate_widgets(
+					$this->get_id(), $alt_src->get_id(),
+					$exp->get_id(), $alt_dest->get_id() );
+			}
+
 		}
 
 		public static function load( $id ) {

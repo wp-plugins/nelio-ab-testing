@@ -41,14 +41,18 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 		const GET_ALTERNATIVE_LOADING_MODE  = 'GET';
 		const POST_ALTERNATIVE_LOADING_MODE = 'POST';
 
+		const PLUGIN_AVAILABLE_TO_ANY_ADMIN    = 'any-admin';
+		const PLUGIN_AVAILABLE_TO_SUPER_ADMIN  = 'super-admin';
+		const PLUGIN_AVAILABLE_TO_SITE_SETTING = 'inherit-multisite-setting';
+
 		const ELEMENT_BASED_HEATMAP_TRACKING = 'ELEM_HEATMAP_TRACKING';
 		const HTML_BASED_HEATMAP_TRACKING    = 'HTML_HEATMAP_TRACKING';
 
 		const DEFAULT_CONVERSION_VALUE            = 25;
-		const DEFAULT_CONVERSION_UNIT             = 'USD';
+		const DEFAULT_CONVERSION_UNIT             = '$';
 		const DEFAULT_USE_COLORBLIND_PALETTE      = false;
 		const DEFAULT_SHOW_FINISHED_EXPERIMENTS   = 2;
-		const DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE = 90;
+		const DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE = 95;
 		const DEFAULT_PERCENTAGE_OF_TESTED_USERS  = 100;
 		const DEFAULT_EXPL_RATIO                  = 90;
 		const DEFAULT_ORIGINAL_PERCENTAGE         = 60;
@@ -59,12 +63,21 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 		const DEFAULT_MAKE_SITE_CONSISTENT        = true;
 		const DEFAULT_ALTERNATIVE_LOADING_MODE    = self::POST_ALTERNATIVE_LOADING_MODE;
 		const DEFAULT_HEATMAP_TRACKING_MODE       = self::ELEMENT_BASED_HEATMAP_TRACKING;
+		const DEFAULT_THEME_LANDING_PAGE          = false;
+		const DEFAULT_OUTWARDS_NAVIGATION_BLANK   = true;
+		const DEFAULT_PLUGIN_AVAILABLE_TO         = self::PLUGIN_AVAILABLE_TO_SITE_SETTING;
+
+		const CONVERSION_UNIT_DOLLAR  = '$';
+		const CONVERSION_UNIT_EURO    = '€';
+		const CONVERSION_UNIT_POUND   = '£';
+		const CONVERSION_UNIT_YEN     = '¥';
+		const CONVERSION_UNIT_BITCOIN = 'B⃦';
 
 
 		/**
 		 * @deprecated
 		 */
-		const DEFAULT_IS_GREEDY_ENABLED           = false;
+		const DEFAULT_IS_GREEDY_ENABLED = false;
 
 		public static function get_settings() {
 			return get_option( 'nelioab_settings', array() );
@@ -87,6 +100,7 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 					case 'quota_limit_per_exp':
 					case 'notifications':
 					case 'headlines_quota_mode':
+					case 'plugin_available_to':
 						return false;
 				}
 			}
@@ -104,6 +118,10 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $input['def_conv_value'] ) )
 				$new_input['def_conv_value'] = sanitize_text_field( $input['def_conv_value'] );
 
+			$new_input['plugin_available_to'] = self::DEFAULT_PLUGIN_AVAILABLE_TO;
+			if ( isset( $input['plugin_available_to'] ) )
+				$new_input['plugin_available_to'] = sanitize_text_field( $input['plugin_available_to'] );
+
 			$new_input['conv_unit'] = self::DEFAULT_CONVERSION_UNIT;
 			if ( isset( $input['conv_unit'] ) )
 				$new_input['conv_unit'] = sanitize_text_field( $input['conv_unit'] );
@@ -114,7 +132,7 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				$new_input['use_colorblind'] = $new_input['use_colorblind'] == '1';
 			}
 
-			$new_input['make_site_consistent'] = self::DEFAULT_USE_COLORBLIND_PALETTE;
+			$new_input['make_site_consistent'] = self::DEFAULT_MAKE_SITE_CONSISTENT;
 			if ( isset( $input['make_site_consistent'] ) ) {
 				$new_input['make_site_consistent'] = sanitize_text_field( $input['make_site_consistent'] );
 				$new_input['make_site_consistent'] = $new_input['make_site_consistent'] == '1';
@@ -127,6 +145,18 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			$new_input['hm_tracking_mode'] = self::DEFAULT_HEATMAP_TRACKING_MODE;
 			if ( isset( $input['hm_tracking_mode'] ) )
 				$new_input['hm_tracking_mode'] = sanitize_text_field( $input['hm_tracking_mode'] );
+
+			$new_input['theme_landing_page'] = self::DEFAULT_THEME_LANDING_PAGE;
+			if ( isset( $input['theme_landing_page'] ) ) {
+				$new_input['theme_landing_page'] = sanitize_text_field( $input['theme_landing_page'] );
+				$new_input['theme_landing_page'] = $new_input['theme_landing_page'] == '1';
+			}
+
+			$new_input['on_blank'] = self::DEFAULT_OUTWARDS_NAVIGATION_BLANK;
+			if ( isset( $input['on_blank'] ) ) {
+				$new_input['on_blank'] = sanitize_text_field( $input['on_blank'] );
+				$new_input['on_blank'] = $new_input['on_blank'] == '1';
+			}
 
 			$new_input['show_finished_experiments'] = self::DEFAULT_SHOW_FINISHED_EXPERIMENTS;
 			if ( isset( $input['show_finished_experiments'] ) )
@@ -158,7 +188,7 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $input['menu_location'] ) )
 				$new_input['menu_location'] = intval( $input['menu_location'] );
 
-			$new_input['menu_in_admin_bar'] = self::DEFAULT_MENU_LOCATION;
+			$new_input['menu_in_admin_bar'] = self::DEFAULT_MENU_IN_ADMIN_BAR;
 			if ( isset( $input['menu_in_admin_bar'] ) )
 				$new_input['menu_in_admin_bar'] = intval( $input['menu_in_admin_bar'] ) == 1;
 
@@ -347,16 +377,45 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				return false;
 		}
 
+		public static function set_site_option_regular_admins_can_manage_plugin( $value ) {
+			update_site_option( 'nelioab_regular_admins_can_manage_plugin', $value );
+		}
+
+		public static function get_site_option_regular_admins_can_manage_plugin() {
+			return get_site_option( 'nelioab_regular_admins_can_manage_plugin', true );
+		}
+
+		public static function regular_admins_can_manage_plugin() {
+			if ( !is_multisite() )
+				return true;
+			$available_to = self::get_plugin_available_to();
+			switch ( $available_to ) {
+				case self::PLUGIN_AVAILABLE_TO_SUPER_ADMIN:
+					return false;
+				case self::PLUGIN_AVAILABLE_TO_ANY_ADMIN:
+					return true;
+				case self::PLUGIN_AVAILABLE_TO_SITE_SETTING:
+					return self::get_site_option_regular_admins_can_manage_plugin();
+			}
+			return false;
+		}
+
+		public static function get_plugin_available_to() {
+			if ( !self::is_field_enabled_for_current_plan( 'plugin_available_to' ) )
+				return self::DEFAULT_PLUGIN_AVAILABLE_TO;
+			$options = self::get_settings();
+			if ( isset( $options['plugin_available_to'] ) )
+				return $options['plugin_available_to'];
+			return self::DEFAULT_PLUGIN_AVAILABLE_TO;
+		}
+
 		public static function get_conv_unit() {
 			if ( !self::is_field_enabled_for_current_plan( 'conv_unit' ) )
 				return self::DEFAULT_CONVERSION_UNIT;
 			$options = self::get_settings();
-			$result = '';
 			if ( isset( $options['conv_unit'] ) )
-				$result = $options['conv_unit'];
-			if ( strlen( $result ) == 0 )
-				$result = self::DEFAULT_CONVERSION_UNIT;
-			return $result;
+				return $options['conv_unit'];
+			return self::DEFAULT_CONVERSION_UNIT;
 		}
 
 		public static function get_original_percentage() {
@@ -408,9 +467,12 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( !self::is_field_enabled_for_current_plan( 'min_confidence_for_significance' ) )
 				return self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
 			$options = self::get_settings();
+			$confidence = self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
 			if ( isset( $options['min_confidence_for_significance'] ) )
-				return $options['min_confidence_for_significance'];
-			return self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
+				$confidence = $options['min_confidence_for_significance'];
+			if ( $confidence < 90 )
+				$confidence = 90;
+			return $confidence;
 		}
 
 		public static function get_percentage_of_tested_users() {
@@ -469,6 +531,24 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $options['menu_in_admin_bar'] ) )
 				return $options['menu_in_admin_bar'];
 			return self::DEFAULT_MENU_IN_ADMIN_BAR;
+		}
+
+		public static function does_theme_use_a_custom_landing_page() {
+			if ( !self::is_field_enabled_for_current_plan( 'theme_landing_page' ) )
+				return self::DEFAULT_THEME_LANDING_PAGE;
+			$options = self::get_settings();
+			if ( isset( $options['theme_landing_page'] ) )
+				return $options['theme_landing_page'];
+			return self::DEFAULT_THEME_LANDING_PAGE;
+		}
+
+		public static function use_outwards_navigations_blank() {
+			if ( !self::is_field_enabled_for_current_plan( 'on_blank' ) )
+				return self::DEFAULT_OUTWARDS_NAVIGATION_BLANK;
+			$options = self::get_settings();
+			if ( isset( $options['on_blank'] ) )
+				return $options['on_blank'];
+			return self::DEFAULT_OUTWARDS_NAVIGATION_BLANK;
 		}
 
 		public static function get_algorithm() {

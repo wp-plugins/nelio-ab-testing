@@ -1,0 +1,117 @@
+<?php
+/**
+ * Copyright 2013 Nelio Software S.L.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
+ *
+ * This script is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
+ * This script is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+if( !class_exists( 'NelioABClickElementAction' ) ) {
+
+	class NelioABClickElementAction extends NelioABAction {
+
+		const ID_MODE   = 'id';
+		const CSS_MODE  = 'css-path';
+		const TEXT_MODE = 'text-is';
+
+		private $mode;
+		private $value;
+
+		/**
+		 * Constructor of this class.
+		 */
+		public function __construct( $mode, $value ) {
+			parent::__construct( 'click-element' );
+			$this->mode  = $mode;
+			$this->value = $value;
+		}
+
+		/**
+		 *
+		 */
+		public function get_mode() {
+			return $this->mode;
+		}
+
+		/**
+		 *
+		 */
+		public function get_value() {
+			return $this->value;
+		}
+
+		/**
+		 * Returns whether clicking the element is tracked in any page or
+		 * only in the tested page.
+		 */
+		public function is_click_tracked_in_any_page() {
+			return false;
+		}
+
+		/**
+		 * Returns an array of values, ready to be JSON-codified and
+		 * prepared for AppEngine
+		 *
+		 * @return the JSON array for AppEngine
+		 */
+		public function encode_for_appengine() {
+			$action = array(
+				'kind'    => $this->get_mode(),
+				'value'   => $this->get_value(),
+				'anyPage' => false,
+			);
+			return $action;
+		}
+
+		/**
+		 * Creates a Form Submission Action using the information obtained
+		 * from the JSON parameter.
+		 *
+		 * @param json the JSON array from AppEngine
+		 *
+		 * @return a Form Submission Action with the values obtained from
+		 *         the json
+		 */
+		public static function decode_from_appengine( $json ) {
+			$action = new NelioABClickElementAction( $json->kind, $json->value );
+			if ( isset( $json->key->id ) )
+				$action->set_id( $json->key->id );
+			return $action;
+		}
+
+		/**
+		 * @implements NelioABAction::json4js();
+		 */
+		public function json4js() {
+			$action = array(
+					'type'  => 'click-element',
+					'mode'  => $this->get_mode(),
+					'value' => $this->get_value(),
+				);
+			return $action;
+		}
+
+		/**
+		 *
+		 */
+		public static function build_action_using_json4js( $json ) {
+			$action = new NelioABClickElementAction( $json->mode, $json->value );
+			return $action;
+		}
+
+	}//NelioABClickElementAction
+
+}
+

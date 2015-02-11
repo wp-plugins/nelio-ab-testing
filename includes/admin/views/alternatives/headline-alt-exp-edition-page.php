@@ -95,9 +95,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 				href="javascript:NelioABEditExperiment.previewOriginal()"><?php _e( 'Preview', 'nelioab' ); ?></a>
 			<span class="description" style="display:block;"><?php
 				_e( 'You will create alternative headlines (title, featured image, and excerpt) for this post.', 'nelioab' );
-			?> <!-- TODO <small><a href="http://wp-abtesting.com/wordpress-split-multivariate-testing-titles/" target="_blank"><?php
-				_e( 'Help', 'nelioab' );
-			?></a></small> --></span><?php
+			?></span><?php
 		}
 
 		protected function print_alternatives() { ?>

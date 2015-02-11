@@ -94,7 +94,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 				$body = array(
 					'name'    => $this->get_original()->get_name(),
 					'content' => '',
-					'kind'    => NelioABExperiment::get_textual_type(),
+					'kind'    => $this->get_textual_type(),
 				);
 				try {
 					$result = NelioABBackend::remote_post(
@@ -138,7 +138,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 				$body = array(
 					'name'    => $alt->get_name(),
 					'content' => '',
-					'kind'    => NelioABExperiment::get_textual_type(),
+					'kind'    => $this->get_textual_type(),
 				);
 
 				try {
@@ -151,6 +151,9 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 				catch ( Exception $e ) {
 				}
 			}
+
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			NelioABExperimentsManager::update_experiment( $this );
 		}
 
 		public function get_real_id_for_alt( $id ) {
@@ -160,7 +163,7 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 				return $id;
 		}
 
-		public static function update_css_alternative( $alt_id, $name, $content ) {
+		public function update_css_alternative( $alt_id, $name, $content ) {
 			$body = array(
 				'name'    => $name,
 				'content' => $content,
@@ -168,6 +171,17 @@ if( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			$result = NelioABBackend::remote_post(
 				sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update', $alt_id ),
 				$body );
+
+			foreach ( $this->get_alternatives() as $alt ) {
+				if ( $alt->get_id() == $alt_id ) {
+					$alt->set_name( $name );
+					$alt->set_value( $content );
+					break;
+				}
+			}
+
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			NelioABExperimentsManager::update_experiment( $this );
 		}
 
 		public static function load( $id ) {
