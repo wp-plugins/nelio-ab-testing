@@ -156,6 +156,8 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 				$action = new NelioABFormSubmissionAction( $type, $json->form );
 				$action->accept_sumissions_from_any_page( isset( $json->anyPage ) && $json->anyPage );
 			}
+			if ( isset( $json->key->id ) )
+				$action->set_id( $json->key->id );
 			return $action;
 		}
 

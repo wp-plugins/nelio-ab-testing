@@ -43,7 +43,7 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'If, on the other hand, you have not subscribed to any of our plans yet, please <a href="http://wp-abtesting.com/subscription-plans/" target="_blank">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 14-day free trial period</b>.', 'nelioab' )
+					__( 'If, on the other hand, you have not subscribed to any of our plans yet, please <a href="http://nelioabtesting.com/subscription-plans/" target="_blank">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 14-day free trial period</b>.', 'nelioab' )
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",

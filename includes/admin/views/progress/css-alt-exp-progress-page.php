@@ -38,7 +38,7 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 		}
 
 		protected function get_original_value() {
-			return 0; // TODO
+			return $this->exp->get_originals_id();
 		}
 
 		protected function print_js_function_for_post_data_overwriting() {

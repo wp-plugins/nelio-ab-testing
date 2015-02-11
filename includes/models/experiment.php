@@ -25,7 +25,7 @@
  * @subpackage Experiment
  * @since 0.1
  */
-if( !class_exists( 'NelioABExperiment' ) ) {
+if ( !class_exists( 'NelioABExperiment' ) ) {
 
 	/**
 	 * the model for foo plugin
@@ -45,24 +45,31 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		const PAGE_ALT_EXP   =  2;
 		const CSS_ALT_EXP    =  3;
 		const THEME_ALT_EXP  =  4;
-		const WIDGET_ALT_EXP =  5;
-		const MENU_ALT_EXP   =  6;
 
 		// Used for returning from editing a post/page content
 		const PAGE_OR_POST_ALT_EXP = 5;
 
-		const TITLE_ALT_EXP = 6;
-		const HEATMAP_EXP   = 7;
+		const HEADLINE_ALT_EXP = 6;
+		const HEATMAP_EXP      = 7;
+		const WIDGET_ALT_EXP   = 8;
+		const MENU_ALT_EXP     = 9;
 
-		const UNKNOWN_TYPE_STR  = 'UnknownExperiment';
-		// NO_TYPE_SET_STR; Does not make sense
-		const POST_ALT_EXP_STR  = 'PostAlternativeExperiment';
-		const PAGE_ALT_EXP_STR  = 'PageAlternativeExperiment';
-		const CSS_ALT_EXP_STR   = 'CssGlobalAlternativeExperiment';
-		const THEME_ALT_EXP_STR = 'ThemeGlobalAlternativeExperiment';
-		// PAGE_OR_POST_ALT_EXP_STR; Does not make sense
+		const UNKNOWN_TYPE_STR     = 'UnknownExperiment';
+		const POST_ALT_EXP_STR     = 'PostAlternativeExperiment';
+		const PAGE_ALT_EXP_STR     = 'PageAlternativeExperiment';
+		const CSS_ALT_EXP_STR      = 'CssGlobalAlternativeExperiment';
+		const THEME_ALT_EXP_STR    = 'ThemeGlobalAlternativeExperiment';
+		const WIDGET_ALT_EXP_STR   = 'WidgetGlobalAlternativeExperiment';
+		const MENU_ALT_EXP_STR     = 'MenuGlobalAlternativeExperiment';
+		const HEADLINE_ALT_EXP_STR = 'HeadlineAlternativeExperiment';
+		const HEATMAP_EXP_STR      = 'HeatmapExperiment';
+
+
+		/**
+		 * @deprecated
+		 */
 		const TITLE_ALT_EXP_STR = 'TitleAlternativeExperiment';
-		const HEATMAP_EXP_STR   = 'HeatmapExperiment';
+
 
 		/**
 		 * EXPERIMENT FINALIZATION MODES
@@ -90,29 +97,51 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		private $finalization_mode;
 		private $finalization_value;
 
+		private $is_fully_loaded;
+
 		public function __construct() {
 			$this->clear();
 		}
 
+
 		public function clear() {
-			$this->id       = -1;
+			$this->id       = -time();
 			$this->name     = '';
 			$this->descr    = '';
 			$this->status   = NelioABExperimentStatus::DRAFT;
 			$this->type     = NelioABExperiment::NO_TYPE_SET;
 			$this->goals    = array();
+			$this->is_fully_loaded = false;
 			$this->finalization_mode  = self::FINALIZATION_MANUAL;
 			$this->finalization_value = '';
 			$this->days_since_finalization = 0;
 		}
 
+
+		public function is_global() {
+			return false;
+		}
+
+
 		public function get_type() {
 			return $this->type;
 		}
 
+
 		public function set_type( $type ) {
 			$this->type = $type;
 		}
+
+
+		public function is_fully_loaded() {
+			return $this->is_fully_loaded;
+		}
+
+
+		public function mark_as_fully_loaded( $is_fully_loaded = true ) {
+			$this->is_fully_loaded = $is_fully_loaded;
+		}
+
 
 		public function get_goals() {
 			if ( is_array( $this->goals ) )
@@ -128,51 +157,61 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 				array_push( $this->goals, $goal );
 		}
 
-		public function set_type_using_text( $kind ) {
+		public static function kind_to_type( $kind ) {
 			switch( $kind ) {
 				case NelioABExperiment::POST_ALT_EXP_STR:
-					$this->set_type( NelioABExperiment::POST_ALT_EXP );
-					break;
+					return NelioABExperiment::POST_ALT_EXP;
 				case NelioABExperiment::PAGE_ALT_EXP_STR:
-					$this->set_type( NelioABExperiment::PAGE_ALT_EXP );
-					break;
+					return NelioABExperiment::PAGE_ALT_EXP;
 				case NelioABExperiment::TITLE_ALT_EXP_STR:
-					$this->set_type( NelioABExperiment::TITLE_ALT_EXP );
-					break;
+				case NelioABExperiment::HEADLINE_ALT_EXP_STR:
+					return NelioABExperiment::HEADLINE_ALT_EXP;
 				case NelioABExperiment::CSS_ALT_EXP_STR:
-					$this->set_type( NelioABExperiment::CSS_ALT_EXP );
-					break;
+					return NelioABExperiment::CSS_ALT_EXP;
 				case NelioABExperiment::THEME_ALT_EXP_STR:
-					$this->set_type( NelioABExperiment::THEME_ALT_EXP );
-					break;
+					return NelioABExperiment::THEME_ALT_EXP;
+				case NelioABExperiment::WIDGET_ALT_EXP_STR:
+					return NelioABExperiment::WIDGET_ALT_EXP;
+				case NelioABExperiment::MENU_ALT_EXP_STR:
+					return NelioABExperiment::MENU_ALT_EXP;
 				case NelioABExperiment::HEATMAP_EXP_STR:
-					$this->set_type( NelioABExperiment::HEATMAP_EXP );
-					break;
+					return NelioABExperiment::HEATMAP_EXP;
 				default:
 					// This should never happen...
-					$this->set_type( NelioABExperiment::UNKNOWN_TYPE );
-					break;
+					return NelioABExperiment::UNKNOWN_TYPE;
 			}
 		}
 
-		protected function get_textual_type() {
-			switch( $this->type ) {
+		public static function type_to_kind( $type ) {
+			switch( $type ) {
 				case NelioABExperiment::POST_ALT_EXP:
 					return NelioABExperiment::POST_ALT_EXP_STR;
 				case NelioABExperiment::PAGE_ALT_EXP:
 					return NelioABExperiment::PAGE_ALT_EXP_STR;
-				case NelioABExperiment::TITLE_ALT_EXP:
-					return NelioABExperiment::TITLE_ALT_EXP_STR;
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					return NelioABExperiment::HEADLINE_ALT_EXP_STR;
 				case NelioABExperiment::CSS_ALT_EXP:
 					return NelioABExperiment::CSS_ALT_EXP_STR;
 				case NelioABExperiment::THEME_ALT_EXP:
 					return NelioABExperiment::THEME_ALT_EXP_STR;
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					return NelioABExperiment::WIDGET_ALT_EXP_STR;
+				case NelioABExperiment::MENU_ALT_EXP:
+					return NelioABExperiment::MENU_ALT_EXP_STR;
 				case NelioABExperiment::HEATMAP_EXP:
 					return NelioABExperiment::HEATMAP_EXP_STR;
 				default:
 					// This should not happen...
 					return NelioABExperiment::UNKNOWN_TYPE_STR;
 			}
+		}
+
+		public function set_type_using_text( $kind ) {
+			$this->set_type( self::kind_to_type( $kind ) );
+		}
+
+		protected function get_textual_type() {
+			return self::type_to_kind( $this->type );
 		}
 
 		public function get_id() {
@@ -290,7 +329,7 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 				else {
 					$order++;
 					array_push( $remaining_goals, $goal );
-					$encoded = NelioABGoalsManager::encode_goal_for_appengine( $goal );
+					$encoded = $goal->encode_for_appengine();
 					$encoded['order'] = $order;
 					$result = NelioABBackend::remote_post( $url, $encoded );
 				}
@@ -316,21 +355,51 @@ if( !class_exists( 'NelioABExperiment' ) ) {
 		}
 
 		public static function load_goals_from_json( $exp, $json_goals = array() ) {
-			$ae_goals = array();
-
-			foreach ( $json_goals as $goal ) {
-				$index = false;
-				if ( isset( $goal->order ) )
-					$index = intval( $goal->order );
-
-				if ( $index && !isset( $ae_goals[$index] ) )
-					$ae_goals[$index] = $goal;
-				else
-					array_push( $ae_goals, $goal );
-			}
-
-			foreach ( $ae_goals as $goal )
+			usort( $json_goals, array( 'NelioABExperiment', 'sort_goals' ) );
+			foreach ( $json_goals as $goal )
 				NelioABGoalsManager::load_goal_from_json( $exp, $goal );
+		}
+
+		public static function sort_goals( $a, $b ) {
+			if ( isset( $a->order ) && isset( $b->order ) )
+				return $a->order - $b->order;
+			if ( isset( $a->order ) )
+				return -1;
+			if ( isset( $b->order ) )
+				return 1;
+			return 0;
+		}
+
+		/**
+		 * This function duplicates the current experiment in AE. It returns
+		 * the new experiment ID. The experiment is READY to be started.
+		 *
+		 * @param $new_name the new name of the duplicated experiment.
+		 * @return the ID of the new experiment (if successfully duplicated)
+		 *         or -1 otherwise.
+		 */
+		public function duplicate( $new_name ) {
+			// If the experiment is not running, or finished, or ready...
+			// then it cannot be duplicated
+			if ( $this->get_status() != NelioABExperimentStatus::RUNNING &&
+			     $this->get_status() != NelioABExperimentStatus::FINISHED &&
+			     $this->get_status() != NelioABExperimentStatus::READY )
+				return -1;
+
+			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+			$url = sprintf(
+				NELIOAB_BACKEND_URL . '/exp/%s/%s/duplicate',
+				$this->get_exp_kind_url_fragment(), $this->get_id()
+			);
+			$body = array( 'name' => $new_name );
+			$result = NelioABBackend::remote_post( $url, $body );
+
+			$result = json_decode( $result['body'] );
+			return $result->id;
+		}
+
+		public function get_related_post_id() {
+			return false;
 		}
 
 		public abstract function get_exp_kind_url_fragment();

@@ -31,6 +31,11 @@ if ( !class_exists( 'NelioABHeatmapExpCreationPageController' ) ) {
 		}
 
 		public static function build() {
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
 			$aux  = NelioABHeatmapExpCreationPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render();

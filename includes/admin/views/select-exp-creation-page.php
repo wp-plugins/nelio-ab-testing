@@ -54,14 +54,14 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 				)
 			);
 
-			// TITLE ONLY
+			// HEADLINE ONLY
 			$this->print_beautiful_box(
 				'title',
-				__( 'New A/B Test for Page or Post Titles', 'nelioab' ),
+				__( 'New A/B Test for Headlines', 'nelioab' ),
 				array( &$this, 'print_new_exp_box',
 					array(
-						'title', $url . NelioABExperiment::TITLE_ALT_EXP,
-						__( 'With Title Experiments, you\'ll be able to <strong>test different titles and check which one is more appealing</strong> to your users. Every time the title is printed somewhere in your site, it is counted as a visit. When a visitor clicks the link and reads the post, then you have a conversion!', 'nelioab' )
+						'title', $url . NelioABExperiment::HEADLINE_ALT_EXP,
+						__( 'Headline Testing is perfect for Publishers. <strong>Try with different Titles, Featured Images, and Excerpts, and check which combination is more appealing</strong>. Every time the Headline is printed somewhere in your site, it is counted as a visit. If a visitor accesses the post, you have a conversion!', 'nelioab' )
 					)
 				)
 			);
@@ -101,6 +101,30 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 					array(
 						'css', $url . NelioABExperiment::CSS_ALT_EXP,
 						__( 'Do you want to <strong>change the appearence of your WordPress site, but tweaking only small elements here and there</strong>? Then CSS Tests is what you\'re looking for. Create one or more CSS fragments that will be applied to your website and discover which one offers the better results.', 'nelioab' )
+					)
+				)
+			);
+
+			// WIDGET
+			$this->print_beautiful_box(
+				'widget',
+				__( 'New Widget Test', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'widget', $url . NelioABExperiment::WIDGET_ALT_EXP,
+						__( 'Do you want to <strong>arrange widgets in a different order, use different widget setups, or even introduce completely new widgets?</strong> Then Widget Tests is what you need. Select and arrange the widgets you need as a new alternative and discover which one offers the better results.', 'nelioab' )
+					)
+				)
+			);
+
+			// MENU
+			$this->print_beautiful_box(
+				'menu',
+				__( 'New Menu Test', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'menu', $url . NelioABExperiment::MENU_ALT_EXP,
+						__( 'Menus are one of the most important elements in your WordPress site, for they get a lot of attention from your visitors. <strong>Modify the labels of your menu items, rearrange them, or use a completely different menu</strong> and test which one helps you get more conversions!', 'nelioab' )
 					)
 				)
 			);

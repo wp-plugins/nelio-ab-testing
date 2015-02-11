@@ -23,6 +23,7 @@ if( !class_exists( 'NelioABAlternativeExperiment' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-statistics.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/alternative-experiment-goal.php' );
 
 	abstract class NelioABAlternativeExperiment extends NelioABExperiment {
 

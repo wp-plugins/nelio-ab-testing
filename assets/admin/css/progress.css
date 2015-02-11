@@ -22,6 +22,36 @@ table#alternatives-in-progress tr td:last-child small a.apply-link.disabled:hove
 
 /* EXPERIMENT SUMMARY */
 
+/* PREVIEW HEADLINE */
+#preview-dialog-modal .newlioab-row {
+	display: table;
+}
+
+#preview-dialog-modal .nelioab-image {
+	display: table-cell;
+	width: 110px;
+	vertical-align: top;
+}
+
+#preview-dialog-modal .nelioab-image img {
+	width: 100px;
+	height: 100px;
+}
+
+#preview-dialog-modal .nelioab-text {
+	display: table-cell;
+	vertical-align: top;
+}
+
+#preview-dialog-modal .nelioab-text .nelioab-title {
+	padding-top: 0px;
+	margin-top: 0px;
+	font-size: 115%;
+	font-weight: bold;
+}
+
+
+
 /* STATUSES */
 
 #info-summary .status-icon {
@@ -37,43 +67,43 @@ table#alternatives-in-progress tr td:last-child small a.apply-link.disabled:hove
 }
 
 #info-summary .status-gray {
-	background-image: url( '../images/gray.png?version=3.0.0' );
+	background-image: url( '../images/gray.png?version=3.4.0' );
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 #info-summary .status-gray {
-	background-image: url( '../images/2x/gray.png?version=3.0.0' );
+	background-image: url( '../images/2x/gray.png?version=3.4.0' );
 } }
 
 #info-summary .status-tick {
-	background-image: url( '../images/tick.png?version=3.0.0' );
+	background-image: url( '../images/tick.png?version=3.4.0' );
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 #info-summary .status-tick {
-	background-image: url( '../images/2x/tick.png?version=3.0.0' );
+	background-image: url( '../images/2x/tick.png?version=3.4.0' );
 } }
 
 #info-summary .status-star {
-	background-image: url( '../images/star.png?version=3.0.0' );
+	background-image: url( '../images/star.png?version=3.4.0' );
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 #info-summary .status-star {
-	background-image: url( '../images/2x/star.png?version=3.0.0' );
+	background-image: url( '../images/2x/star.png?version=3.4.0' );
 } }
 
 #info-summary .status-clock {
-	background-image: url( '../images/clock.png?version=3.0.0' );
+	background-image: url( '../images/clock.png?version=3.4.0' );
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 #info-summary .status-clock {
-	background-image: url( '../images/2x/clock.png?version=3.0.0' );
+	background-image: url( '../images/2x/clock.png?version=3.4.0' );
 } }
 
 #info-summary .status-tick {
-	background-image: url( '../images/tick.png?version=3.0.0' );
+	background-image: url( '../images/tick.png?version=3.4.0' );
 }
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 #info-summary .status-tick {
-	background-image: url( '../images/2x/tick.png?version=3.0.0' );
+	background-image: url( '../images/2x/tick.png?version=3.4.0' );
 } }
 
 /* END OF STATUSES */
@@ -113,7 +143,7 @@ div#info-summary {
 
 
 #nelioab-timeline {
-	height:260px;
+	height:310px;
 	margin-top:10px;
 }
 
@@ -240,8 +270,3 @@ div#exp-info-alts .alt-type:hover {
 	color:#444;
 }
 
-div#exp-info-alts .alt-type-winner,
-div#exp-info-alts .alt-type-winner:hover {
-	background-color: #009BD9;
-	color: white;
-}

@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
@@ -112,7 +114,10 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 		private function make_link_for_heatmap( $exp, $id ) {
 			include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			$url = sprintf( NelioABWPHelper::get_unsecured_site_url() . '/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME . '/heatmaps.php?id=%1$s&exp_type=%2$s&post=%3$s',
+			$url = sprintf(
+				str_replace(
+					'https://', 'http://',
+					admin_url( 'admin.php?nelioab-page=heatmaps&id=%1$s&exp_type=%2$s&post=%3$s' ) ),
 				$exp->get_id(), $exp->get_type(), $id );
 			return sprintf( ' <a href="%1$s">%2$s</a>', $url,
 				__( 'View Heatmap', 'nelioab' ) );
@@ -120,6 +125,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 
 
 		private function make_link_for_edit( $id ) {
+			$exp = $this->exp;
 			return sprintf( ' <a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
 				admin_url( 'post.php?post=' . $id . '&action=edit' ),
 				__( 'Edit' ) );
@@ -185,6 +191,11 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 				$i++;
 				$link = get_permalink( $alt->get_value() );
 
+				if ( $this->is_ori_page )
+					$link = add_query_arg( array(
+							'preview' => 'true',
+						), $link );
+
 				$action_links = $this->get_action_links( $exp, $alt->get_value() );
 
 				if ( $this->is_winner( $alt->get_value() ) )
@@ -221,15 +232,17 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			?>
 			<p><?php
 				if ( $this->is_ori_page ) {
-					_e( 'You are about to overwrite the original page with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original page with the content of an alternative. Please, remember <strong>this operation cannot be undone</strong>. Are you sure you want to overwrite it?', 'nelioab' );
 				}
 				else {
-					_e( 'You are about to overwrite the original post with the content of an alternative. Please, remember this operation cannot be undone!', 'nelioab' );
+					_e( 'You are about to overwrite the original post with the content of an alternative. Please, remember <strong>this operation cannot be undone</strong>. Are you sure you want to overwrite it?', 'nelioab' );
 				}
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
 				echo admin_url(
-					'admin.php?page=nelioab-experiments&action=progress&id=' . $exp->get_id() ); ?>">
+					'admin.php?page=nelioab-experiments&action=progress&' .
+					'id=' . $exp->get_id() . '&' .
+					'type=' . $exp->get_type() ); ?>">
 				<input type="hidden" name="apply_alternative" value="true" />
 				<input type="hidden" name="nelioab_exp_type" value="<?php echo $exp->get_type(); ?>" />
 				<input type="hidden" id="original" name="original" value="<?php echo $exp->get_originals_id(); ?>" />

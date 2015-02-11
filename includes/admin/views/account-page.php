@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABAccountPage' ) ) {
 
@@ -89,13 +91,6 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 		protected function do_render() { ?>
 			<form id="nelioab_account_form" method="post">
 
-				<?php
-					if ( !$this->is_email_valid ) {
-						_e( '<p>Don\'t you have an account yet? <a href="http://wp-abtesting.com/subscription-plans/">Subscribe now!</a></p>', 'nelioab' );
-						echo '<br /><br />';
-					}
-				?>
-
 				<input type="hidden" name="nelioab_account_form" value="true" />
 
 				<?php
@@ -113,7 +108,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 							'callback'  => array( &$this, 'print_reg_num_field' ),
 							'mandatory' => true ),
 						array (
-							'label'     => __( 'I have read and accept the <a href="http://wp-abtesting.com/terms-conditions" target="_blank">Terms and Conditions</a> of this service.', 'nelioab' ),
+							'label'     => __( 'I have read and accept the <a href="http://nelioabtesting.com/terms-conditions" target="_blank">Terms and Conditions</a> of this service.', 'nelioab' ),
 							'id'        => 'settings_tac',
 							'mandatory' => true,
 							'checkbox'  => true,
@@ -140,7 +135,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 
 				if ( $print_plans ) {
 					$this->set_message(
-						__( 'Haven\'t you subscribed to any of our plans? <b><a href="http://wp-abtesting.com/subscription-plans/" target="_blank">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>14-day free trial period</b>.', 'nelioab' ) );
+						__( 'Haven\'t you subscribed to any of our plans? <b><a href="http://nelioabtesting.com/subscription-plans/" target="_blank">Check them out and choose the one that best fits you</a></b>! All our plans come with a <b>14-day free trial period</b>.', 'nelioab' ) );
 				}
 			?>
 			<h2 style="margin-bottom:0px;padding-bottom:0px;"><?php
@@ -185,8 +180,10 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			}
 			else { ?>
 
-				<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
-				<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
+				<?php if ( !$this->user_info['agency'] ) { ?>
+					<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
+					<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
+				<?php } ?>
 
 				<h3><?php _e( 'Subscription Details', 'nelioab' ); ?></h3>
 				<p style="margin-top:0em;margin-left:3em;"><?php
@@ -246,17 +243,17 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 							else {
 								switch ( $this->user_info['subscription_plan'] ) {
 									case NelioABAccountSettings::BASIC_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Basic Plan</b>, thanks to %s.', 'nelioab' ),
+										printf( __( 'You are subscribed to Nelio A/B Testing <b>Basic Plan</b> thanks to %s.', 'nelioab' ),
 											$this->user_info['agencyname'] );
 										echo '<br />';
 										break;
 									case NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Professional Plan</b>, thanks to %s.', 'nelioab' ),
+										printf( __( 'You are subscribed to Nelio A/B Testing <b>Professional Plan</b> thanks to %s.', 'nelioab' ),
 											$this->user_info['agencyname'] );
 										echo '<br />';
 										break;
 									case NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN:
-										printf( __( 'You are subscribed to our <b>Enterprise Plan</b>, thanks to %s.', 'nelioab' ),
+										printf( __( 'You are subscribed to Nelio A/B Testing <b>Enterprise Plan</b> thanks to %s.', 'nelioab' ),
 											$this->user_info['agencyname'] );
 										echo '<br />';
 										break;
@@ -296,7 +293,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 					<b><?php
 						printf( __( '<span style="font-size:120%%;color:%1$s;">%2$s</span> Page Views' ),
 							$quota_color, number_format_i18n( $the_quota ) ); ?></b>
-					<small>(<a href="http://wp-abtesting.com/faqs/what-is-a-tested-pageview"><?php
+					<small>(<a href="http://support.nelioabtesting.com/support/solutions/articles/1000129162-what-is-a-tested-page-view-"><?php
 						_e( 'Help', 'nelioab' );
 					?></a>)</small><?php echo $post_quota; ?></p><?php
 
@@ -357,15 +354,132 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 						<form id="nelioab_registration_form" method="post">
 							<input type="hidden" name="nelioab_registration_form" value="true" />
 							<input type="hidden" id="nelioab_registration_action" name="nelioab_registration_action" value="" />
+							<input type="hidden" id="nelioab_registration_type" name="nelioab_registration_type" value="" />
+							<input type="hidden" id="nelioab_registration_sector" name="nelioab_registration_sector" value="" />
 						</form>
 
 					<?php
 					}
 					?>
 
+					<script type="text/javascript">
+					(function($) {
+
+						$dialog = $('#dialog-modal');
+						$dialog.dialog({
+							dialogClass   : 'wp-dialog',
+							modal         : true,
+							autoOpen      : false,
+							closeOnEscape : true,
+							width         : 400,
+							title         : "<?php echo esc_html( __('About Your Site', 'nelioab') ); ?>",
+							buttons: [
+								{
+									text: "<?php echo esc_html( __( 'Skip and Register', 'nelioab' ) ); ?>",
+									click: function() {
+										$(this).dialog('close');
+										$('#nelioab_registration_type').attr('value', 'unknown' );
+										$('#nelioab_registration_sector').attr('value', 'unknown' );
+										$('#nelioab_registration_action').attr('value', 'register');
+										$('#nelioab_registration_form').submit();
+									}
+								},
+								{
+									text: "<?php echo esc_html( __( 'Register', 'nelioab' ) ); ?>",
+									'class': 'button-primary',
+									click: function() {
+										if ( $okButton.hasClass('disabled') ) return;
+										$('#nelioab_registration_action').attr('value', 'register');
+										$('#nelioab_registration_form').submit();
+									}
+								}
+							]
+						});
+
+						var $okButton = $dialog.closest('.ui-dialog').find('.button-primary');
+						$okButton.addClass('disabled');
+
+						// TODO
+						var $typeSelector = $('#business-type-selector');
+						$typeSelector.on('change', function() {
+							var ts = $typeSelector.attr('value');
+							var ss = $sectorSelector.attr('value');
+							if ( 'unknown' == ts || 'unknown' == ss ) $okButton.addClass('disabled');
+							else $okButton.removeClass('disabled');
+							$('#nelioab_registration_type').attr('value', ts );
+						});
+
+
+						var $sectorSelector = $('#business-sector-selector');
+						$sectorSelector.on('change', function() {
+							var ts = $typeSelector.attr('value');
+							var ss = $sectorSelector.attr('value');
+							if ( 'unknown' == ts || 'unknown' == ss ) $okButton.addClass('disabled');
+							else $okButton.removeClass('disabled');
+							$('#nelioab_registration_sector').attr('value', ss );
+						});
+
+						function openDialog() {
+							if ( $typeSelector.attr('value') == 'unknown' ) $okButton.addClass('disabled');
+							if ( $sectorSelector.attr('value') == 'unknown' ) $okButton.addClass('disabled');
+							$dialog.dialog('open');
+						}
+
+						$("#register-site-button").click(function() { openDialog(); });
+
+					})(jQuery);
+					</script>
+
 				<?php
 				}
 			}
+		}
+
+		public function print_dialog_content() { ?>
+			<p><?php
+				_e( 'In order to offer relevant and valuable suggestions, we need to know a little bit more about your site. Please, answer the following two questions:', 'nelioab' );
+			?></p>
+			<p><strong><?php
+				_e( 'How would you describe your site?', 'nelioab' );
+			?></strong></p>
+			<select style="width:100%;max-width:280px;" id="business-type-selector">
+				<option value="unknown" disabled="disabled" selected="selected"></option>
+				<?php
+				$types = array(
+					'publisher' => __( 'Publishing Platform', 'nelioab' ),
+					'personal'  => __( 'Personal Blog', 'nelioab' ),
+					'company'   => __( 'Business/Corporate Website', 'nelioab' ),
+					'ecommerce' => __( 'E-Commerce', 'nelioab' ),
+				);
+				asort( $types );
+				foreach ( $types as $value => $name )
+					printf( '<option value="%s">%s</option>', $value, $name );
+				?>
+			</select>
+			<p><strong><?php
+				_e( 'What is it focused on?', 'nelioab' );
+			?></strong></p>
+			<select style="width:100%;max-width:280px;" id="business-sector-selector">
+				<option value="unknown" disabled="disabled" selected="selected"></option>
+				<?php
+				$sectors = array(
+					'software-services'  => __( 'Computer Software & Services', 'nelioab' ),
+					'education'          => __( 'Education', 'nelioab' ),
+					'financial-services' => __( 'Financial Services', 'nelioab' ),
+					'food-and-beverage'  => __( 'Food & Beverage', 'nelioab' ),
+					'health'             => __( 'Health Services', 'nelioab' ),
+					'leisure'            => __( 'Leisure', 'nelioab' ),
+					'media'              => __( 'Media (Adv & Mkt Ag & Publishing)', 'nelioab' ),
+					'real-estate'        => __( 'Real Estate', 'nelioab' ),
+					'retail'             => __( 'Retail', 'nelioab' ),
+				);
+				asort( $sectors );
+				$sectors['others'] = __( 'Others', 'nelioab' );
+				foreach ( $sectors as $value => $name )
+					printf( '<option value="%s">%s</option>', $value, $name );
+				?>
+			</select>
+			<?php
 		}
 
 		public function print_email_field() { ?>
@@ -392,9 +506,8 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 
 		private function print_site_should_be_registered() {
 			$style = 'style="' . $this->p_style . 'margin-left:3em;font-size:120%%;line-height:1.3em;"';
-			echo sprintf( "<p $style>%s <strong><a href=\"%s\">%s</a></strong></p>\n",
+			echo sprintf( "<p $style>%s <strong><a href=\"#\" id=\"register-site-button\">%s</a></strong></p>\n",
 				__( 'This site is not yet registered to your account.', 'nelioab' ),
-				$this->do_registration_link(),
 				__( 'Register it now!', 'nelioab' ) );
 		}
 
@@ -403,15 +516,8 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			echo sprintf( "<p $style>%s</p><p $style>%s</p>\n",
 				__( 'It looks like this site is not connected to you account. In order to use our service in this site, first you have to register it. Unfortunately, you already reached the maximum number of sites allowed by your current subscription plan (see the table below).', 'nelioab' ),
 				sprintf( __( 'Please, <a href="%s"><b>upgrade your <i>Nelio A/B Testing</i> subscription</b></a> so that you can register and manage more sites, or <b>access one of the other sites to cancel its subscription</b> and try again. Keep in mind that canceling the registration of a site may cause permanent loss of all experiments associated to that site.', 'nelioab' ),
-					'http://wp-abtesting.com/inquiry-subscription-plans' )
+					'http://nelioabtesting.com/inquiry-subscription-plans' )
 			);
-		}
-
-		private function do_registration_link() {
-			$register_js = 'javascript:' .
-				'jQuery(\'#nelioab_registration_action\').attr(\'value\', \'register\');' .
-				'jQuery(\'#nelioab_registration_form\').submit();';
-			return $register_js;
 		}
 
 		private function print_table_of_registered_sites() {
@@ -590,6 +696,3 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 	}//NelioABRegisteredSitesTable
 }
 
-
-
-?>
