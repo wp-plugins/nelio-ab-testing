@@ -26,6 +26,11 @@ if ( !class_exists( 'NelioABCssAltExpProgressPageController' ) ) {
 	class NelioABCssAltExpProgressPageController extends NelioABAltExpProgressSuperController {
 
 		public static function build() {
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
 			$title = __( 'Results of the Experiment', 'nelioab' );
 			$view  = new NelioABCssAltExpProgressPage( $title );
 
@@ -50,7 +55,7 @@ if ( !class_exists( 'NelioABCssAltExpProgressPageController' ) ) {
 				$exp_id = $exp->get_id();
 			}
 			else {
-				$exp_id = -1;
+				$exp_id = -time();
 				if ( isset( $_REQUEST['exp_id'] ) )
 					$exp_id = $_REQUEST['exp_id'];
 
@@ -58,11 +63,10 @@ if ( !class_exists( 'NelioABCssAltExpProgressPageController' ) ) {
 				if ( isset( $_POST['exp_type'] ) )
 					$exp_type = $_POST['exp_type'];
 
-				$mgr = new NelioABExperimentsManager();
 				$exp = null;
 
 				try {
-					$exp = $mgr->get_experiment_by_id( $exp_id, $exp_type );
+					$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				}
 				catch ( Exception $e ) {
 					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );

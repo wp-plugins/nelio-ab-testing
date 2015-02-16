@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABBackend' ) ) {
 
@@ -31,6 +33,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			}
 			if ( !isset( $params['timeout'] ) )
 				$params['timeout'] = 30;
+			$params['sslverify'] = false;
 			$result = wp_remote_post( $url, $params );
 			NelioABBackend::throw_exceptions_if_any( $result );
 			return $result;
@@ -54,7 +57,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			$json_params = array(
 					'headers' => array( 'Content-Type' => 'application/json' ),
 					'body'    => json_encode( $wrapped_params ),
-         );
+				);
 			return $json_params;
 		}
 
@@ -92,8 +95,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 			$aux = json_decode( $result['body'] );
 
-			if ( isset( $aux->error ) ) {
-				$err = intval( $aux->error->message );
+			if ( isset( $aux->beErrCode ) && $aux->beErrCode ) {
+				$err = intval( $aux->beErrCode );
 				throw new Exception( NelioABErrCodes::to_string( $err ), $err );
 			}
 
@@ -103,6 +106,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 	abstract class NelioABErrCodes {
 		// These are Error codes returned by the backend
+		const NO_ERROR                           = 0;
 		const INVALID_PRODUCT_REG_NUM            = 1;
 		const INVALID_SITE                       = 2;
 		const SITE_IS_NOT_ACTIVE                 = 3;
@@ -124,6 +128,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const EXPERIMENT_NOT_RUNNING             = 19;
 		const FEATURE_NOT_AVAILABLE_FOR_CUSTOMER = 20;
 		const INVALID_SCHEDULE_DATE              = 21;
+		const EXPERIMENT_CANNOT_BE_DUPLICATED    = 22;
+		const INCOMPLETE_EXPERIMENT              = 23;
 
 		// Error codes corresponding to package details
 		const MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC = 100;
@@ -140,6 +146,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		const NO_HEATMAPS_AVAILABLE                        = -8;
 		const NO_HEATMAPS_AVAILABLE_FOR_NON_RUNNING_EXPERIMENT = -9;
 		const EXPERIMENT_CANNOT_BE_STARTED                 = -10;
+		const INVALID_NONCE                                = -11;
 
 		public static function to_string( $err ) {
 			switch( $err ) {
@@ -189,6 +196,10 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'The feature you are trying to use is not available.', 'nelioab' );
 				case NelioABErrCodes::INVALID_SCHEDULE_DATE:
 					return __( 'The experiment cannot be scheduled for the given date.', 'nelioab' );
+				case NelioABErrCodes::EXPERIMENT_CANNOT_BE_DUPLICATED:
+					return __( 'The experiment cannot be duplicated.', 'nelioab' );
+				case NelioABErrCodes::INCOMPLETE_EXPERIMENT:
+					return __( 'The experiment cannot be started: missing information (for instance, an alternative or a set of actions in a goal).', 'nelioab' );
 
 
 
@@ -196,12 +207,12 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				case NelioABErrCodes::MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC:
 					return sprintf(
 						__( 'Oops! The experiment cannot be started because it defines more than one goal page. Please, modify your experiment so that it includes one goal page only or <a href="%s">upgrade your Nelio A/B Testing subscription package</a>.', 'nelioab' ),
-						'http://wp-abtesting.com/inquiry-subscription-plans/' );
+						'http://nelioabtesting.com/inquiry-subscription-plans/' );
 
 				case NelioABErrCodes::HEATMAP_NOT_ALLOWED_IN_BASIC:
 					return sprintf(
 						__( 'Oops! Your current subscription plan does not permit you to use Heatmap Experiments. Please, consider <a href="%s">upgrading your Nelio A/B subscription package</a>.', 'nelioab' ),
-						'http://wp-abtesting.com/inquiry-subscription-plans/' );
+						'http://nelioabtesting.com/inquiry-subscription-plans/' );
 
 
 
@@ -224,6 +235,8 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 					return __( 'An unknown error has occurred.', 'nelioab' );
 				case NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED:
 					return __( 'Experiment cannot be started.', 'nelioab' );
+				case NelioABErrCodes::INVALID_NONCE:
+					return __( 'Invalid «_nonce». Are you sure you want to do this?', 'nelioab' );
 				case NelioABErrCodes::BACKEND_UNKNOWN_ERROR:
 				default:
 					return __( 'An unknown error occurred while accessing the backend.', 'nelioab' );

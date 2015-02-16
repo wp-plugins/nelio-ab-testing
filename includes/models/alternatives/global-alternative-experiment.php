@@ -27,6 +27,10 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 			parent::__construct( $id );
 		}
 
+		public function is_global() {
+			return true;
+		}
+
 		public function clear() {
 			parent::clear();
 			$this->ori = array( -1 );
@@ -76,13 +80,69 @@ if( !class_exists( 'NelioABGlobalAlternativeExperiment' ) ) {
 
 		public function discard_changes() {
 			// Nothing to be done, here
- 		}
+		}
 
 		public function start() {
 			// If the experiment is already running, quit
 			if ( $this->get_status() == NelioABExperimentStatus::RUNNING )
 				return;
 
+			// Checking whether the experiment can be started or not...
+			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+			$this_exp_origins = $this->get_origins();
+			array_push( $this_exp_origins, -1 );
+
+			foreach ( $running_exps as $running_exp ) {
+				switch ( $running_exp->get_type() ) {
+
+					case NelioABExperiment::THEME_ALT_EXP:
+						$err_str = sprintf(
+							__( 'The experiment cannot be started, because there is a theme experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+							$running_exp->get_name() );
+						throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+
+					case NelioABExperiment::CSS_ALT_EXP:
+						foreach( $this_exp_origins as $origin_id ) {
+							if ( in_array( $origin_id, $running_exp->get_origins() ) ) {
+								$err_str = sprintf(
+									__( 'The experiment cannot be started, because there is a CSS experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+									$running_exp->get_name() );
+								throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+							}
+						}
+
+					case NelioABExperiment::WIDGET_ALT_EXP:
+						foreach( $this_exp_origins as $origin_id ) {
+							if ( in_array( $origin_id, $running_exp->get_origins() ) ) {
+								$err_str = sprintf(
+									__( 'The experiment cannot be started, because there is a Widget experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+									$running_exp->get_name() );
+								throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+							}
+						}
+
+					case NelioABExperiment::MENU_ALT_EXP:
+						foreach( $this_exp_origins as $origin_id ) {
+							if ( in_array( $origin_id, $running_exp->get_origins() ) ) {
+								$err_str = sprintf(
+									__( 'The experiment cannot be started, because there is a Menu experiment running. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+									$running_exp->get_name() );
+								throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+							}
+						}
+
+					case NelioABExperiment::HEATMAP_EXP:
+						if ( $this->get_type() != NelioABExperiment::WIDGET_ALT_EXP ) {
+							$err_str = __( 'The experiment cannot be started, because there is one (or more) heatmap experiments running. Please make sure to stop any running heatmap experiment before starting the new one.', 'nelioab' );
+							throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+						}
+
+				}
+			}
+
+			// If everything is OK, we can start it!
 			$url = sprintf(
 				NELIOAB_BACKEND_URL . '/exp/global/%s/start',
 				$this->get_id()

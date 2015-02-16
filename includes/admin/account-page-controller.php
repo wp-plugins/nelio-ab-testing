@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABAccountPageController' ) ) {
 
@@ -108,6 +110,7 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 				if ( strlen( $customer_id ) > 0 ) {
 					$url  = sprintf( NELIOAB_BACKEND_URL . '/customer/%s', $customer_id );
 					$json = NelioABBackend::remote_get( $url, true );
+
 					$json = json_decode( $json['body'] );
 
 					$user_info['firstname']         = $json->firstname;
@@ -124,10 +127,17 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 						NelioABAccountSettings::set_has_quota_left( false );
 				}
 
-				// TODO: fix agency info
-				$user_info['agency']            = false;
-				$user_info['agencyname']        = 'Nelio Software';
-				$user_info['agencymail']        = 'cusomters@neliosoftware.com';
+				// Agency stuff
+				if ( isset( $json->hasAgency ) && $json->hasAgency ) {
+					$user_info['agency']     = true;
+					$user_info['agencyname'] = $json->agencyName;
+					$user_info['agencymail'] = $json->agencyEmail;
+				}
+				else {
+					$user_info['agency']     = false;
+					$user_info['agencyname'] = 'Agency Name';
+					$user_info['agencymail'] = 'support@agency.com';
+				}
 
 			}
 			catch ( Exception $e ) {
@@ -202,7 +212,13 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 				try {
 					switch ( $action ) {
 						case 'register':
-							NelioABAccountSettings::register_this_site();
+							$type = 'unknown';
+							if ( isset( $_POST['nelioab_registration_type'] ) )
+								$type = $_POST['nelioab_registration_type'];
+							$sector = 'unknown';
+							if ( isset( $_POST['nelioab_registration_sector'] ) )
+								$sector = $_POST['nelioab_registration_sector'];
+							NelioABAccountSettings::register_this_site( $type, $sector );
 							$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
 							break;
 						case 'deregister':
@@ -233,4 +249,3 @@ if ( isset( $_POST['nelioab_registration_form'] ) ) {
 	NelioABAccountPageController::manage_site_registration();
 }
 
-?>

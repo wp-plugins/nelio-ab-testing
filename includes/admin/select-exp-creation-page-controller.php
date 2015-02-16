@@ -28,8 +28,6 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 		}
 
 		public static function build() {
-			$title = __( 'Experiment Type Selection', 'nelioab' );
-
 			// Check settings
 			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
 			$error = NelioABErrorController::build_error_page_on_invalid_settings();
@@ -45,6 +43,7 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 					call_user_func( array( $controller, 'build' ) );
 				}
 				else {
+					$title = __( 'Experiment Type Selection', 'nelioab' );
 					$view = new NelioABSelectExpCreationPage( $title );
 					$view->render();
 				}
@@ -56,9 +55,9 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 
 			// Determine the proper controller and give it the control...
 			switch ( $type ) {
-				case NelioABExperiment::TITLE_ALT_EXP:
-					require_once( NELIOAB_ADMIN_DIR . '/alternatives/title-alt-exp-creation-page-controller.php' );
-					return 'NelioABTitleAltExpCreationPageController';
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/headline-alt-exp-creation-page-controller.php' );
+					return 'NelioABHeadlineAltExpCreationPageController';
 
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
@@ -72,6 +71,14 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 				case NelioABExperiment::CSS_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/alternatives/css-alt-exp-creation-page-controller.php' );
 					return 'NelioABCssAltExpCreationPageController';
+
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/widget-alt-exp-creation-page-controller.php' );
+					return 'NelioABWidgetAltExpCreationPageController';
+
+				case NelioABExperiment::MENU_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/menu-alt-exp-creation-page-controller.php' );
+					return 'NelioABMenuAltExpCreationPageController';
 
 				case NelioABExperiment::HEATMAP_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/others/heatmap-exp-creation-page-controller.php' );

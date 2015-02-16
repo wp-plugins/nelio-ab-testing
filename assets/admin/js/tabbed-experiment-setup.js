@@ -246,6 +246,7 @@ var NelioABGoalCards = {
 		}
 		mainGoalCard.find('h3 .isMain').show();
 		mainGoalCard.find( '.name .value' ).first().text( goals[0].name );
+		mainGoalCard.find( '.benefit' ).val( goals[0].benefit );
 		mainGoalCard.find( '.name .row-actions .delete' ).remove();
 		mainGoalCard.find( '.name .row-actions .sep' ).remove();
 		mainGoalCard.find( '.form' ).hide();
@@ -260,6 +261,7 @@ var NelioABGoalCards = {
 				NelioABGoalCards.addAction( action, newCard );
 			}
 			newCard.find( '.name .value' ).first().text( g.name );
+			newCard.find( '.benefit').val( g.benefit );
 			newCard.find( '.form' ).hide();
 			newCard.find( '.name' ).show();
 			newCard.show();
@@ -346,12 +348,12 @@ var NelioABGoalCards = {
 				return;
 			var newName = newCard.find('.new-name').first().attr('value');
 			NelioABGoalCards.rename(id, newName);
-			newCard.find('span.name > .value').text(newName);
+			newCard.find('span.name .value').text(newName);
 			newCard.find('span.form').hide();
 			newCard.find('span.name').show();
 		});
 		newCard.find('h3 .name .rename a').click(function() {
-			var oldName = newCard.find('span.name > .value').text();
+			var oldName = newCard.find('span.name .value').text();
 			newCard.find('.new-name').first().attr('value', oldName);
 			newCard.find('span.form').show();
 			newCard.find('span.name').hide();
@@ -369,6 +371,9 @@ var NelioABGoalCards = {
 		});
 		newCard.find('.new-actions .external-page').click(function() {
 			NelioABGoalCards.addAction( { isNew:true, type:'external-page' }, newCard );
+		});
+		newCard.find('.new-actions .click-element').click(function() {
+			NelioABGoalCards.addAction( { isNew:true, type:'click-element' }, newCard );
 		});
 		newCard.find('.new-actions .form-submit').click(function() {
 			if ( jQuery(this).hasClass( 'cf7' ) )
@@ -414,7 +419,7 @@ var NelioABGoalCards = {
 				searcher.on( 'change', function() { NelioABGoalCards.validatePageOrPost( result ); } );
 				searcher.removeAttr('id');
 				searcher.removeAttr('name');
-				NelioABPostSearcher.buildSearcher( searcher, action.type, NelioABGoalCards.filterPosts );
+				NelioABPostSearcher.buildSearcher( searcher, action.type, 'show-drafts', NelioABGoalCards.filterPosts );
 				result.show();
 				break;
 
@@ -441,12 +446,29 @@ var NelioABGoalCards = {
 				result.show();
 				break;
 
+			case 'click-element':
+				result = jQuery('#new-action-templates').find( '.action.click-element' ).clone();
+				if ( action.isNew !== true ) {
+					result.find('.mode').attr( 'value', action.mode );
+					result.find('.value').attr( 'value', action.value );
+				}
+				result.find('.mode').on( 'change focusout', function() {
+					NelioABGoalCards.validateClickElement(result);
+				});
+				result.find('.value').on( 'change keyup focusout', function() {
+					NelioABGoalCards.validateClickElement(result);
+				});
+				card.find( '.actions' ).append( result );
+				card.find( '.empty' ).hide();
+				card.find( '.actions' ).show();
+				result.show();
+				break;
+
 			case 'form-submit':
 				result = jQuery('#new-action-templates').find( '.action.form-submit.' + action.form_type ).clone();
 				var searcher = result.find( 'input.form-searcher' );
 				if ( action.isNew !== true ) {
 					searcher.attr('value', action.form_id);
-					david = result;
 					if ( action.any_page )
 						result.find('.any-page').attr( 'value', '1' );
 					else
@@ -577,6 +599,11 @@ var NelioABGoalCards = {
 				nextOk = NelioABGoalCards.validateExternalPage(action, 'url') && nextOk;
 		});
 
+		jQuery('#goal-list .actions > .action.click-element .value').each(function() {
+			var action = jQuery(this).closest('.action');
+			nextOk = NelioABGoalCards.validateClickElement(action) && nextOk;
+		});
+
 		return [prevOk,nextOk];
 	},
 
@@ -684,6 +711,49 @@ var NelioABGoalCards = {
 		return result;
 	},
 
+	validateClickElement: function(action, preventRecursive) {
+		if (preventRecursive == undefined) preventRecursive = false;
+		var card = action.closest('.nelio-card');
+		var mode = action.find('select.mode').attr('value');
+		var input = action.find('input.value');
+		var value = input.attr('value').trim();
+
+		var result = true;
+		if ( value.length == 0 )
+			result = false;
+
+		if ( result ) {
+			card.find('.actions .action.click-element').each(function() {
+				if ( action[0] != jQuery(this)[0] ) {
+					var offendedMode = jQuery(this).find('select.mode').attr('value');
+					var offendedInput = jQuery(this).find('input.value');
+					var offendedValue = offendedInput.attr('value').trim();
+					if ( offendedMode == mode && offendedValue == value ){
+						offendedInput.addClass('error');
+						result = false;
+					}
+				}
+			});
+
+			if ( !preventRecursive ) {
+				card.find('.actions .action.click-element input.error.value').each(function() {
+					NelioABGoalCards.validateClickElement(jQuery(this).closest('.action'), true);
+				});
+			}
+		}
+
+		if ( result ) {
+			input.removeClass('error');
+			NelioABEditExperiment.manageProgress(true,true);
+		}
+		else {
+			input.addClass('error');
+			NelioABEditExperiment.manageProgress(false,false);
+		}
+
+		return result;
+	},
+
 	save: function() {
 		var cards = NelioABGoalCards.getList().find('.nelio-card');
 		for ( var i = 0; i < NelioABGoalCards.goals.length; ++i ) {
@@ -694,6 +764,7 @@ var NelioABGoalCards = {
 			var card = jQuery(this);
 			var g = NelioABGoalCards.getGoalById( card.data( 'goal-id' ) );
 			g.name = card.find( '.name .value' ).text();
+			g.benefit = card.find( '.benefit' ).val();
 			var actions = card.find('.actions .action').each(function() {
 				var action = jQuery(this);
 				var a = {};
@@ -719,6 +790,14 @@ var NelioABGoalCards = {
 						g.actions.push(a);
 						break;
 
+					case 'click-element':
+						a.mode = action.find( '.mode' ).attr('value');
+						a.value = action.find( '.value' ).attr('value');
+						if ( a.mode == '' || a.value == '' )
+							break;
+						g.actions.push(a);
+						break;
+
 					case 'form-submit':
 						if ( action.hasClass( 'cf7' ) )
 							a.form_type = 'cf7';
@@ -736,7 +815,7 @@ var NelioABGoalCards = {
 		});
 		jQuery('#nelioab_goals').attr('value',
 			encodeURIComponent( JSON.stringify( NelioABGoalCards.goals ) )
-				.replace( "'", "%27") );
+				.replace( /'/g, "%27") );
 	},
 
 };
