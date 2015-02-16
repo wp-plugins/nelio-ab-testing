@@ -1011,7 +1011,6 @@ class NelioABAlternativeExperimentController {
 
 		$nav['rsec'] = strtolower( md5(
 			$pre . $referer_id . $referer_actual_id . $current_id . $current_actual_id . $post ) );
-		$nav['rsecSrc'] = $pre . $referer_id . $referer_actual_id . $current_id . $current_actual_id . $post;
 		$nav['osec'] = strtolower( md5(
 			$pre . $current_id . $current_actual_id . $post ) );
 

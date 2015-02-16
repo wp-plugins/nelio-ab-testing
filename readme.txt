@@ -3,7 +3,7 @@ Contributors: nelio
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -258,6 +258,10 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.4.1 =
+* Removed some DEBUG info from source code.
+
 
 = 3.4.0 =
 * **New Feature - Menu Testing** Nelio A/B Testing is the first tool to
@@ -802,7 +806,8 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.4.0 =
-3.4 series includes **Menu Testing**, new conversion actions, and several
-improvements that make the creation and management of experiments much easier.
+= 3.4.1 =
+DEBUG info was removed. 3.4 series includes **Menu Testing**, new conversion
+actions, and several improvements that make the creation and management of
+experiments much easier.
 
