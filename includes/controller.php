@@ -241,12 +241,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 				add_filter( 'sidebars_widgets', array( &$aux, 'show_the_appropriate_widgets' ) );
 			}
 
-			// If we're previewing a page alternative, it may be the case that it's an
-			// alternative of the landing page. Let's make sure the "page_on_front"
-			// option is properly updated:
-			if ( isset( $_GET['preview'] ) || isset( $_GET['nelioab_show_heatmap'] ) )
-				add_filter( 'option_page_on_front', array( &$this, 'fix_page_on_front' ) );
-
 			add_action( 'init', array( &$this, 'do_init' ) );
 			add_action( 'init', array( &$this, 'init_admin_stuff' ) );
 		}
@@ -436,6 +430,12 @@ if ( !class_exists( 'NelioABController' ) ) {
 				if ( NelioABCustomPermalinksSupport::is_plugin_active() )
 					NelioABCustomPermalinksSupport::prevent_template_redirect();
 			}
+
+			// If we're previewing a page alternative, it may be the case that it's an
+			// alternative of the landing page. Let's make sure the "page_on_front"
+			// option is properly updated:
+			if ( isset( $_GET['preview'] ) || isset( $_GET['nelioab_show_heatmap'] ) )
+				add_filter( 'option_page_on_front', array( &$this, 'fix_page_on_front' ) );
 
 			add_action( 'wp_enqueue_scripts', array( &$this, 'register_tracking_script' ) );
 			add_action( 'wp_enqueue_scripts', array( &$this, 'load_tracking_script' ), 99 );
