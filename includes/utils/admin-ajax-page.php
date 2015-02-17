@@ -166,6 +166,8 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 							jQuery("#errors-div").hide();
 							jQuery("#errors-div").fadeIn(200);
 						}
+
+						jQuery(document).trigger('nelioab-ajax-page-loaded');
 					});
 				}
 
@@ -196,7 +198,7 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 								printf( "<img src='%s' alt='%s' />",
 									nelioab_asset_link( '/admin/images/error-icon.png' ),
 									__( 'Funny image to graphically notify of an error.', 'nelioab' )
-         				); ?>" +
+							); ?>" +
 							"<h2 style='color:#555;margin:0px;padding:0px;'><?php
 								_e( 'Oops! There was an AJAX-related error.' );
 							?></h2>" +

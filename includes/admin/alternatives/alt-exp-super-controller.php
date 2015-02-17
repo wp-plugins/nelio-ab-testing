@@ -95,8 +95,7 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 				}
 				else {
 					$duplicated_name_found = false;
-					$mgr = new NelioABExperimentsManager();
-					foreach( $mgr->get_experiments() as $aux ) {
+					foreach( NelioABExperimentsManager::get_experiments() as $aux ) {
 						if ( !$duplicated_name_found && $exp->get_name() == $aux->get_name() &&
 							$exp->get_id() != $aux->get_id()) {
 							array_push( $errors, array ( 'exp_name',
@@ -147,11 +146,14 @@ if ( !class_exists( 'NelioABAltExpSuperController' ) ) {
 		protected function compose_basic_alt_exp_using_post_data( $exp ) {
 			$exp->set_name( stripslashes( $_POST['exp_name'] ) );
 			$exp->set_description( stripslashes( $_POST['exp_descr'] ) );
-			$exp->set_finalization_mode( $_POST['exp_finalization_mode'] );
-			$exp->set_finalization_value( $_POST['exp_finalization_value'] );
+			if ( isset( $_POST['exp_finalization_mode'] ) )
+				$exp->set_finalization_mode( $_POST['exp_finalization_mode'] );
+			if ( isset( $_POST['exp_finalization_value'] ) )
+				$exp->set_finalization_value( $_POST['exp_finalization_value'] );
 
 			if ( isset( $_POST['nelioab_alternatives'] ) ) {
-				$alts = json_decode( urldecode( $_POST['nelioab_alternatives'] ) );
+				$alts = stripslashes( $_POST['nelioab_alternatives'] );
+				$alts = json_decode( urldecode( $alts ) );
 				$exp->load_json4js_alternatives( $alts );
 			}
 

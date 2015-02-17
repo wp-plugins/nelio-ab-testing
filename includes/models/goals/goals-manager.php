@@ -39,48 +39,6 @@ if( !class_exists( 'NelioABGoalsManager' ) ) {
 
 		}
 
-		public static function encode_goal_for_appengine( $goal ) {
-			$res = array(
-				'name'       => $goal->get_name(),
-				'kind'       => $goal->get_textual_kind(),
-				'isMainGoal' => $goal->is_main_goal()
-			);
-			switch ( $goal->get_kind() ) {
-
-				case NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL:
-					$page_accessed_actions = array();
-					$form_actions = array();
-					$order = 0;
-					foreach ( $goal->get_actions() as $action ) {
-						$encoded_action = $action->encode_for_appengine();
-						switch( $action->get_type() ) {
-
-							case NelioABAction::PAGE_ACCESSED:
-							case NelioABAction::POST_ACCESSED:
-							case NelioABAction::EXTERNAL_PAGE_ACCESSED:
-								$order++;
-								$encoded_action['order'] = $order;
-								array_push( $page_accessed_actions, $encoded_action );
-								break;
-
-							case NelioABAction::SUBMIT_CF7_FORM:
-							case NelioABAction::SUBMIT_GRAVITY_FORM:
-								$order++;
-								$encoded_action['order'] = $order;
-								array_push( $form_actions, $encoded_action );
-								break;
-
-						}
-					}
-
-					$res['pageAccessedActions'] = $page_accessed_actions;
-					$res['formActions'] = $form_actions;
-					break;
-
-			}
-			return $res;
-		}
-
 	}//NelioABGoalsManager
 
 }

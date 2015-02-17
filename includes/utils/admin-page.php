@@ -32,7 +32,14 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			$this->classes      = array();
 
 			$this->message = false;
-			if ( NelioABSettings::is_upgrade_message_visible() ) {
+			$config = true;
+			try {
+				$config = NelioABAccountSettings::check_user_settings();
+			}
+			catch ( Exception $e ) {
+				$config = false;
+			}
+			if ( $config && NelioABSettings::is_upgrade_message_visible() ) {
 				$this->message = sprintf(
 					__( '<b><a href="%s">Upgrade to our Professional Plan</a></b> and get the most out of Nelio A/B Testing. Track <b>more visitors</b>, use the service on <b>more sites</b>, and benefit from our <b>consulting services</b>. <small><a class="dismiss-upgrade-notice" href="#" onClick="javascript:dismissUpgradeNotice();">Dismiss</a></small>', 'nelioab' ),
 					'mailto:support@neliosoftware.com?' .
@@ -40,7 +47,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 						'body=' . esc_html( 'I\'d like to upgrade my subscription plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
 				);
 			}
-			elseif ( !NelioABSettings::is_performance_muplugin_up_to_date() ) {
+			elseif ( $config && !NelioABSettings::is_performance_muplugin_up_to_date() ) {
 				global $nelioab_admin_controller;
 				if ( NULL == $nelioab_admin_controller->error_message ) {
 					$nelioab_admin_controller->error_message = sprintf(
@@ -111,7 +118,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 				class="updated below-h2">
 				<ul style="padding-left:1em;"><?php
 					foreach ( $warnings as $warning )
-						echo "<li>&ndash; $warning</li>";
+						echo "<li>$warning</li>";
 				?>
 				</ul>
 			</div><?php
