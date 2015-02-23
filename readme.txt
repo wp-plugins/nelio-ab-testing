@@ -24,10 +24,10 @@ familiar user experience.
 > Testing](http://nelioabtesting.com/why-use-nelio-ab-testing/?fp=wordpress.org)
 > Solution for WordPress**<br>
 > Improve your landing pages, write better posts, create alternative pages, go
-> beyond simple title testing and start testing headlines, try new themes,
-> modify your CSS rules, and test alternative widgets! Moreover, Nelio A/B is
-> also compatible with some of your most beloved plugins such as, for instance,
-> OptimizePress, Gravity Forms, or Contact Form 7.
+> beyond simple title testing and start testing headlines, try new themes, test
+> different menus, modify your CSS rules, and test alternative widgets!
+> Moreover, Nelio A/B is also compatible with some of your most beloved plugins
+> such as, for instance, OptimizePress, Gravity Forms, or Contact Form 7.
 >
 > **Designed as a Service**<br>
 > Our plugin lifts all the processing load from your own server and takes it
@@ -81,12 +81,13 @@ visitors to click the link and further read the post from anywhere in your
 site!
 
 
-= #4 - Test Widgets =
+= #4 - Test Menus and Widgets =
 
-**Nelio A/B Testing is the only solution that includes Widget Testing**. Easily
-duplicate your current widget set, change it by adding new widgets, removing
-old widgets, and editing others, and discover which widget combination improves
-your conversion rate.
+**Nelio A/B Testing is the only solution that includes Menu and Widget
+Testing**. Use the WordPress' default user interface for creating new menus and
+widget sets. You'll be able to duplicate your current menus and widgets, and
+modify them with just a few clicks. Discover which combination improves your
+conversion rate!
 
 
 = #5 - Beautiful Heatmaps and Clickmaps =
