@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 3.4.2
+Stable tag: 3.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,7 +81,7 @@ visitors to click the link and further read the post from anywhere in your
 site!
 
 
-= #4 - Test Menus and Widgets =
+= #4 - Test Widgets =
 
 **Nelio A/B Testing is the only solution that includes Menu and Widget
 Testing**. Use the WordPress' default user interface for creating new menus and
@@ -259,6 +259,10 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.4.3 =
+* Bug fix while tracking page/post conversion actions.
+
 
 = 3.4.2 =
 * A Fatal Error during Heatmap visualization has been fixed.
@@ -811,8 +815,8 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.4.2 =
-Fixed: Fatal Error. 3.4 series includes **Menu Testing**, new conversion
-actions, and several improvements that make the creation and management of
-experiments much easier.
+= 3.4.3 =
+Page/Post conversion action issue fixed. 3.4 series includes **Menu Testing**,
+new conversion actions, and several improvements that make the creation and
+management of experiments much easier.
 

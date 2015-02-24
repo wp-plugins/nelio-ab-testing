@@ -356,10 +356,12 @@ if ( !class_exists( 'NelioABController' ) ) {
 
 			// Check if it's the Latest Post Page (which could have been set dynamically)
 			$page_for_posts_id = get_option( 'page_for_posts' );
-			$page_for_posts_url = rtrim( get_permalink( $page_for_posts_id ), '/' );
-			$page_for_posts_url = str_replace( 'https://', 'http://', $page_for_posts_url );
-			if ( $proper_url == $page_for_posts_url )
-				$the_id = $page_for_posts_id;
+			if ( $page_for_posts_id ) {
+				$page_for_posts_url = rtrim( get_permalink( $page_for_posts_id ), '/' );
+				$page_for_posts_url = str_replace( 'https://', 'http://', $page_for_posts_url );
+				if ( $proper_url == $page_for_posts_url )
+					$the_id = $page_for_posts_id;
+			}
 
 			// Custom Permalinks Support: making sure that we get the real ID.
 			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
