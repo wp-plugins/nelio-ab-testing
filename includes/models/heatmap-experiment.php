@@ -1,21 +1,23 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
+if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -39,8 +41,16 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			return $this->post_id;
 		}
 
+		public function get_related_post_id() {
+			return $this->get_post_id();
+		}
+
 		public function set_post_id( $id ) {
-			if ( $id > 0 || $id == NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS )
+			if ( $id > 0 )
+				$this->post_id = $id;
+			else if ( NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS == $id )
+				$this->post_id = $id;
+			else if ( NelioABController::FRONT_PAGE__THEME_BASED_LANDING == $id )
 				$this->post_id = $id;
 			else
 				$this->post_id = false;
@@ -110,6 +120,8 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 				$this->id = $exp_id;
 			}
 
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			NelioABExperimentsManager::update_experiment( $this );
 		}
 
 		public function remove() {
@@ -196,4 +208,3 @@ if( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 
 }
 
-?>

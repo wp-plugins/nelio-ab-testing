@@ -55,10 +55,9 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 		public static function generate_html_content() {
 
 			// Obtain DATA from APPSPOT and check its type dynamically
-			$experiments_manager = new NelioABExperimentsManager();
 			$experiment = null;
 			try {
-				$exp_id = -1;
+				$exp_id = -time();
 				if ( isset( $_POST['id'] ) )
 					$exp_id = $_POST['id'];
 
@@ -66,7 +65,7 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 				if ( isset( $_POST['exp_type'] ) )
 					$exp_type = $_POST['exp_type'];
 
-				$experiment = $experiments_manager->get_experiment_by_id( $exp_id, $exp_type );
+				$experiment = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
 				global $nelioab_admin_controller;
 				$nelioab_admin_controller->data = $experiment;
 			}
@@ -84,9 +83,9 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 
 			// Determine the proper controller and give it the control...
 			switch ( $type ) {
-				case NelioABExperiment::TITLE_ALT_EXP:
-					require_once( NELIOAB_ADMIN_DIR . '/alternatives/title-alt-exp-edition-page-controller.php' );
-					return 'NelioABTitleAltExpEditionPageController';
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/headline-alt-exp-edition-page-controller.php' );
+					return 'NelioABHeadlineAltExpEditionPageController';
 
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
@@ -100,6 +99,14 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 				case NelioABExperiment::CSS_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/alternatives/css-alt-exp-edition-page-controller.php' );
 					return 'NelioABCssAltExpEditionPageController';
+
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/widget-alt-exp-edition-page-controller.php' );
+					return 'NelioABWidgetAltExpEditionPageController';
+
+				case NelioABExperiment::MENU_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/menu-alt-exp-edition-page-controller.php' );
+					return 'NelioABMenuAltExpEditionPageController';
 
 				case NelioABExperiment::HEATMAP_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/others/heatmap-exp-edition-page-controller.php' );

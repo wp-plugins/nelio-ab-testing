@@ -32,10 +32,22 @@ if( !class_exists( 'NelioABAction' ) ) {
 		const SUBMIT_CF7_FORM     = 'cf7-submit';
 		const SUBMIT_GRAVITY_FORM = 'gravity-form-submit';
 
+		// OTHER ACTIONS
+		const CLICK_ELEMENT = 'click-element';
+
+		protected $id;
 		protected $type;
 
 		public function __construct( $type ) {
 			$this->type = $type;
+		}
+
+		public function set_id( $id ) {
+			$this->id = $id;
+		}
+
+		public function get_id() {
+			return $this->id;
 		}
 
 		public function get_type() {
@@ -53,6 +65,7 @@ if( !class_exists( 'NelioABAction' ) ) {
 		public static function build_action_using_json4js( $json ) {
 			require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 			require_once( NELIOAB_MODELS_DIR . '/goals/actions/form-submission-action.php' );
+			require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
 			switch( $json->type ) {
 				case self::PAGE_ACCESSED:
 				case self::POST_ACCESSED:
@@ -60,6 +73,8 @@ if( !class_exists( 'NelioABAction' ) ) {
 					return NelioABPageAccessedAction::build_action_using_json4js( $json );
 				case self::FORM_SUBMIT:
 					return NelioABFormSubmissionAction::build_action_using_json4js( $json );
+				case self::CLICK_ELEMENT:
+					return NelioABClickElementAction::build_action_using_json4js( $json );
 				default:
 					return false;
 			}
