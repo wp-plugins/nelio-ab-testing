@@ -18,9 +18,8 @@ NelioAB.helpers.hideBody = function() {
 NelioAB.helpers.showBody = function() {
 	try {
 		document.getElementsByTagName('head')[0].removeChild(NelioAB.checker.styleNode);
-		NelioAB.ga.unhold();
+		NelioAB.delayed.release();
 		jQuery.holdReady( false );
-		jQuery(document).trigger('nelioab-gtm-call');
 	}
 	catch( e ) {}
 };

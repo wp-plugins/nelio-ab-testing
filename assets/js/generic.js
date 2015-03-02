@@ -56,34 +56,6 @@ NelioAB.jquery.extend();
 
 
 /**
- * Adding code for Google Tag Manager support
- */
-(function() {
-	var isGtmReady = false;
-	var shouldGtmBeCalled = false;
-	var isGtmCalled = false;
-
-	function callGtmActivationFunction() {
-		if ( isGtmReady && shouldGtmBeCalled && typeof nelioabActivateGoogleTagMgr == 'function' && !isGtmCalled ) {
-			isGtmCalled = true;
-			nelioabActivateGoogleTagMgr();
-		}
-	}
-
-	jQuery(document).on('nelioab-gtm-ready', function() {
-		isGtmReady = true;
-		callGtmActivationFunction();
-	});
-
-	jQuery(document).on('nelioab-gtm-call', function() {
-		shouldGtmBeCalled = true;
-		callGtmActivationFunction();
-	});
-
-})();
-
-
-/**
  * Adding new event "byebye" when we're about to leave the current page.
  */
 jQuery(document).ready(function() {

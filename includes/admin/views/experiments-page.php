@@ -545,7 +545,12 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 			switch( $exp->get_type() ) {
 				case NelioABExperiment::PAGE_ALT_EXP:
-					return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+					$page_on_front = get_option( 'page_on_front' );
+					$aux = $exp->get_original();
+					if ( $page_on_front == $aux->get_value() )
+						return sprintf( $img, 'landing-page', __( 'Landing Page', 'nelioab' ) );
+					else
+						return sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
 
 				case NelioABExperiment::POST_ALT_EXP:
 					return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );

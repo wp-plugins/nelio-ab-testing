@@ -28,12 +28,11 @@ if ( !class_exists( 'NelioABDtGtm4WpSupport' ) ) {
 		}
 
 		public static function do_nelioab_tweak_dtgtm4wp( $script ) {
-			$open = '<script>function nelioabActivateGoogleTagMgr() {' . "\n";
+			$open = '<script>NelioAB.delay(function(){' . "\n";
 			$open .= 'console.log( "Loading Google Tag Manager..." );' . "\n";
-			$script = str_replace( '<script>', $open, $script );
+			$close = '; ' . "\n" . 'console.log( "Done!" )}</script>' . "\n";
 
-			$close = '; ' . "\n" . 'console.log( "Done!" )}' . "\n";
-			$close .= 'jQuery(document).trigger("nelioab-gtm-ready")</script>';
+			$script = str_replace( '<script>', $open, $script );
 			$script = str_replace( '</script>', $close, $script );
 
 			return $script;

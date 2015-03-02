@@ -469,6 +469,32 @@ if ( !class_exists( 'NelioABWidgetExpAdminController' ) ) {
 		}
 
 
+		public static function clean_widgets_in_experiment( $exp_id ) {
+			$sidebars_widgets = get_option( 'sidebars_widgets', array() );
+			$widgets_in_experiments = self::get_widgets_in_experiments();
+			self::remove_widgets_in_experiment( $sidebars_widgets, $widgets_in_experiments, $exp_id );
+			update_option( 'sidebars_widgets', $sidebars_widgets );
+			self::set_widgets_in_experiments( $widgets_in_experiments );
+		}
+
+
+		public static function remove_alternatives_not_in( $existing_ids ) {
+			$sidebars_widgets = get_option( 'sidebars_widgets', array() );
+			$widgets_in_experiments = self::get_widgets_in_experiments();
+
+			$old_ids = array();
+			foreach ( $widgets_in_experiments as $aux )
+				if ( !in_array( $aux['exp'], $existing_ids) && !in_array( $aux['exp'], $old_ids ) )
+					array_push( $old_ids, $aux['exp'] );
+
+			foreach ( $old_ids as $id )
+				self::remove_widgets_in_experiment( $sidebars_widgets, $widgets_in_experiments, $id );
+
+			update_option( 'sidebars_widgets', $sidebars_widgets );
+			self::set_widgets_in_experiments( $widgets_in_experiments );
+		}
+
+
 		/**
 		 *
 		 */

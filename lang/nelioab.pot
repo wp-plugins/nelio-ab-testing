@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2015-02-11 10:30:05+00:00\n"
+"POT-Creation-Date: 2015-03-02 11:33:10+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -89,27 +89,27 @@ msgstr ""
 #: includes/admin/admin-controller.php:437
 #: includes/admin/admin-controller.php:438
 #: includes/admin/feedback-page-controller.php:31
-#: includes/admin/feedback-page-controller.php:39 includes/controller.php:634
+#: includes/admin/feedback-page-controller.php:39 includes/controller.php:648
 msgid "Nelio A/B Testing"
 msgstr ""
 
 #: includes/admin/admin-controller.php:451
 #: includes/admin/admin-controller.php:452
 #: includes/admin/dashboard-page-controller.php:34
-#: includes/admin/dashboard-page-controller.php:54 includes/controller.php:695
+#: includes/admin/dashboard-page-controller.php:54 includes/controller.php:709
 msgid "Dashboard"
 msgstr ""
 
 #: includes/admin/admin-controller.php:481
 #: includes/admin/admin-controller.php:482
 #: includes/admin/experiments-page-controller.php:34
-#: includes/admin/experiments-page-controller.php:129
-#: includes/controller.php:704
+#: includes/admin/experiments-page-controller.php:132
+#: includes/controller.php:718
 msgid "Experiments"
 msgstr ""
 
 #: includes/admin/admin-controller.php:495
-#: includes/admin/admin-controller.php:496 includes/controller.php:643
+#: includes/admin/admin-controller.php:496 includes/controller.php:657
 msgid "Add Experiment"
 msgstr ""
 
@@ -254,11 +254,11 @@ msgstr ""
 msgid "Edit Menu Experiment"
 msgstr ""
 
-#: includes/admin/alternatives/post-alt-exp-creation-page-controller.php:50
+#: includes/admin/alternatives/post-alt-exp-creation-page-controller.php:53
 msgid "Add Page Experiment"
 msgstr ""
 
-#: includes/admin/alternatives/post-alt-exp-creation-page-controller.php:52
+#: includes/admin/alternatives/post-alt-exp-creation-page-controller.php:55
 msgid "Add Post Experiment"
 msgstr ""
 
@@ -872,8 +872,8 @@ msgid "(Hover over each action for help)"
 msgstr ""
 
 #: includes/admin/views/alternatives/alt-exp-page.php:482
-#: includes/admin/views/dashboard-page.php:142
-#: includes/admin/views/experiments-page.php:551
+#: includes/admin/views/dashboard-page.php:196
+#: includes/admin/views/experiments-page.php:556
 msgid "Post"
 msgstr ""
 
@@ -882,8 +882,9 @@ msgid "A visitor accesses a post in your WordPress site"
 msgstr ""
 
 #: includes/admin/views/alternatives/alt-exp-page.php:488
-#: includes/admin/views/dashboard-page.php:139
-#: includes/admin/views/experiments-page.php:548
+#: includes/admin/views/dashboard-page.php:189
+#: includes/admin/views/dashboard-page.php:192
+#: includes/admin/views/experiments-page.php:553
 msgid "Page"
 msgstr ""
 
@@ -981,7 +982,7 @@ msgstr ""
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:49
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:109
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:40
-#: includes/admin/views/dashboard-page.php:192
+#: includes/admin/views/dashboard-page.php:246
 #: includes/admin/views/progress/alt-exp-progress-page.php:705
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:156
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:167
@@ -1391,58 +1392,71 @@ msgstr ""
 msgid "Please, wait a moment<br /> while we are retrieving the heatmaps..."
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:29
+#: includes/admin/views/dashboard-page.php:30
 msgid "New Experiment"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:43
+#: includes/admin/views/dashboard-page.php:51
 #: includes/admin/views/experiments-page.php:51
 msgid "Happy smile."
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:47
+#: includes/admin/views/dashboard-page.php:55
 msgid ""
 "Hi! You're now in Nelio's Dashboard, where you'll find all relevant "
 "information about your running experiments. Right now, however, there are "
 "none...<br><a href=\"%s\">Create one now!</a>"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:53
+#: includes/admin/views/dashboard-page.php:61
 msgid "Running Experiments"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:145
-#: includes/admin/views/experiments-page.php:554
+#: includes/admin/views/dashboard-page.php:66
+msgid "Account Usage"
+msgstr ""
+
+#: includes/admin/views/dashboard-page.php:74
+msgid "QUOTA USED"
+msgstr ""
+
+#: includes/admin/views/dashboard-page.php:187
+#: includes/admin/views/experiments-page.php:551
+msgid "Landing Page"
+msgstr ""
+
+#: includes/admin/views/dashboard-page.php:199
+#: includes/admin/views/experiments-page.php:559
 #: includes/admin/views/progress/headline-alt-exp-progress-page.php:63
 msgid "Headline"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:148
-#: includes/admin/views/experiments-page.php:557
+#: includes/admin/views/dashboard-page.php:202
+#: includes/admin/views/experiments-page.php:562
 msgid "Theme"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:151
-#: includes/admin/views/experiments-page.php:560
+#: includes/admin/views/dashboard-page.php:205
+#: includes/admin/views/experiments-page.php:565
 msgid "CSS"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:154
-#: includes/admin/views/experiments-page.php:563
+#: includes/admin/views/dashboard-page.php:208
+#: includes/admin/views/experiments-page.php:568
 msgid "Heatmap"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:157
-#: includes/admin/views/experiments-page.php:566
+#: includes/admin/views/dashboard-page.php:211
+#: includes/admin/views/experiments-page.php:571
 msgid "Widget"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:160
-#: includes/admin/views/experiments-page.php:569
+#: includes/admin/views/dashboard-page.php:214
+#: includes/admin/views/experiments-page.php:574
 msgid "Menu"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:188
+#: includes/admin/views/dashboard-page.php:242
 #: includes/admin/views/progress/alt-exp-progress-page.php:1019
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:180
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:253
@@ -1452,15 +1466,15 @@ msgstr ""
 msgid "Page Views"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:204
+#: includes/admin/views/dashboard-page.php:258
 msgid "Original Version's Conversion Rate"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:214
+#: includes/admin/views/dashboard-page.php:268
 msgid "Best Alternative's Conversion Rate"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:265
+#: includes/admin/views/dashboard-page.php:319
 #: includes/admin/views/progress/alt-exp-progress-page.php:1020
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:181
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:254
@@ -1470,19 +1484,19 @@ msgstr ""
 msgid "Conversions"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:280
+#: includes/admin/views/dashboard-page.php:334
 msgid "Views on Phone"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:284
+#: includes/admin/views/dashboard-page.php:338
 msgid "Views on Tablet"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:290
+#: includes/admin/views/dashboard-page.php:344
 msgid "Views on Desktop"
 msgstr ""
 
-#: includes/admin/views/dashboard-page.php:294
+#: includes/admin/views/dashboard-page.php:348
 msgid "Views on Large Screens"
 msgstr ""
 
@@ -2534,23 +2548,22 @@ msgid ""
 "want to replace your current set of widgets?"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:36
-msgid "New A/B Test for Posts"
+#: includes/admin/views/select-exp-creation-page.php:38
+msgid "A/B Test Your Landing Page"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:40
+#: includes/admin/views/select-exp-creation-page.php:42
 msgid ""
-"<strong>Pure A/B Testing!</strong> Create one or more alternatives of a post "
-"and <strong>change whatever you want</strong>: the colors, the text, the "
-"layout... and do it using your default WordPress editor! Then define the "
-"goals and you're ready!"
+"<strong>Pure A/B Testing from the very beginning!</strong> Create one or "
+"more alternatives of your landing page and see which one converts better! If "
+"your website starts at your Landing Page, why shouldn't you start it first?"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:48
+#: includes/admin/views/select-exp-creation-page.php:51
 msgid "New A/B Test for Pages"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:52
+#: includes/admin/views/select-exp-creation-page.php:55
 msgid ""
 "<strong>Pure A/B Testing!</strong> Create one or more alternatives of a page "
 "and <strong>change whatever you want</strong>: the colors, the text, the "
@@ -2558,11 +2571,23 @@ msgid ""
 "goals and you're ready!"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:60
+#: includes/admin/views/select-exp-creation-page.php:63
+msgid "New A/B Test for Posts"
+msgstr ""
+
+#: includes/admin/views/select-exp-creation-page.php:67
+msgid ""
+"<strong>Pure A/B Testing!</strong> Create one or more alternatives of a post "
+"and <strong>change whatever you want</strong>: the colors, the text, the "
+"layout... and do it using your default WordPress editor! Then define the "
+"goals and you're ready!"
+msgstr ""
+
+#: includes/admin/views/select-exp-creation-page.php:75
 msgid "New A/B Test for Headlines"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:64
+#: includes/admin/views/select-exp-creation-page.php:79
 msgid ""
 "Headline Testing is perfect for Publishers. <strong>Try with different "
 "Titles, Featured Images, and Excerpts, and check which combination is more "
@@ -2571,11 +2596,11 @@ msgid ""
 "conversion!"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:73
+#: includes/admin/views/select-exp-creation-page.php:88
 msgid "New A/B Theme Test "
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:77
+#: includes/admin/views/select-exp-creation-page.php:92
 msgid ""
 "Would you like to <strong>change your WordPress completely</strong>? Do you "
 "want to <strong>test small variations of two child themes</strong>? Then "
@@ -2583,11 +2608,11 @@ msgid ""
 "individually before using this kind of experiment."
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:87
+#: includes/admin/views/select-exp-creation-page.php:102
 msgid "New Heatmap Experiment for Page or Post"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:91
+#: includes/admin/views/select-exp-creation-page.php:106
 msgid ""
 "If you don't know how to get started with A/B Testing, run a Heatmap "
 "Experiment and <strong>discover how your users behave when navigating "
@@ -2595,11 +2620,11 @@ msgid ""
 "on what to do next."
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:99
+#: includes/admin/views/select-exp-creation-page.php:114
 msgid "New A/B CSS Test"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:103
+#: includes/admin/views/select-exp-creation-page.php:118
 msgid ""
 "Do you want to <strong>change the appearence of your WordPress site, but "
 "tweaking only small elements here and there</strong>? Then CSS Tests is what "
@@ -2607,11 +2632,11 @@ msgid ""
 "your website and discover which one offers the better results."
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:111
+#: includes/admin/views/select-exp-creation-page.php:126
 msgid "New Widget Test"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:115
+#: includes/admin/views/select-exp-creation-page.php:130
 msgid ""
 "Do you want to <strong>arrange widgets in a different order, use different "
 "widget setups, or even introduce completely new widgets?</strong> Then "
@@ -2619,11 +2644,11 @@ msgid ""
 "new alternative and discover which one offers the better results."
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:123
+#: includes/admin/views/select-exp-creation-page.php:138
 msgid "New Menu Test"
 msgstr ""
 
-#: includes/admin/views/select-exp-creation-page.php:127
+#: includes/admin/views/select-exp-creation-page.php:142
 msgid ""
 "Menus are one of the most important elements in your WordPress site, for "
 "they get a lot of attention from your visitors. <strong>Modify the labels of "
@@ -3037,27 +3062,27 @@ msgid ""
 "\"Theme-based Front Page\". "
 msgstr ""
 
-#: includes/controller.php:653
+#: includes/controller.php:667
 msgid "Create Headline Test for this Post"
 msgstr ""
 
-#: includes/controller.php:662
+#: includes/controller.php:676
 msgid "Create A/B Test for this Post"
 msgstr ""
 
-#: includes/controller.php:674
+#: includes/controller.php:688
 msgid "Create A/B Test for this Page"
 msgstr ""
 
-#: includes/controller.php:685
+#: includes/controller.php:699
 msgid "Create Heatmap Experiment"
 msgstr ""
 
-#: includes/controller.php:742
+#: includes/controller.php:756
 msgid "Create Headline Experiment"
 msgstr ""
 
-#: includes/controller.php:750
+#: includes/controller.php:764
 msgid "Create A/B Experiment"
 msgstr ""
 

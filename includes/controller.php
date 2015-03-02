@@ -416,14 +416,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 		}
 
 		public function do_init() {
-			// We do not perform AB Testing if the user accessing the page is...
-			// ...a ROBOT...
-			if ( $this->is_robot() )
+			// We do not perform AB Testing for certain visitors:
+			if ( !$this->could_visitor_be_in_experiment() ) {
+				add_action( 'wp_enqueue_scripts', array( &$this, 'add_js_delayer_script' ), 10 );
 				return;
-
-			// ... or an ADMIN
-			if ( nelioab_can_user_manage_plugin() )
-				return;
+			}
 
 			// Custom Permalinks Support: making sure that we are not redirected while
 			// loading an alternative...
@@ -452,6 +449,21 @@ if ( !class_exists( 'NelioABController' ) ) {
 			$aux = $this->controllers['hm'];
 			$aux->hook_to_wordpress();
 
+		}
+
+		public function could_visitor_be_in_experiment() {
+			if ( $this->is_robot() )
+				return false;
+
+			if ( nelioab_can_user_manage_plugin() )
+				return false;
+
+			return true;
+		}
+
+		public function add_js_delayer_script() {
+			?><script type="text/javascript">NelioAB={delay:function(f){f()}}</script><?php
+			echo "\n";
 		}
 
 		public function is_alternative_content_loading_required() {
@@ -543,7 +555,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 			$misc['useOutwardsNavigationsBlank'] = NelioABSettings::use_outwards_navigations_blank();
 
 			nelioab_localize_tracking_script( array(
-					'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+					'ajaxurl'        => admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ),
 					'permalink'      => $permalink,
 					'customer'       => NelioABAccountSettings::get_customer_id(),
 					'site'           => NelioABAccountSettings::get_site_id(),

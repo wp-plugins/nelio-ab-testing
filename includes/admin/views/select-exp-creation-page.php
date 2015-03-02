@@ -30,17 +30,20 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 		public function do_render() {
 			$url = admin_url( 'admin.php?page=nelioab-add-experiment&experiment-type=' );
 
-			// POST
-			$this->print_beautiful_box(
-				'post',
-				__( 'New A/B Test for Posts', 'nelioab' ),
-				array( &$this, 'print_new_exp_box',
-					array(
-						'post', $url . NelioABExperiment::POST_ALT_EXP,
-						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a post and <strong>change whatever you want</strong>: the colors, the text, the layout... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
+			// LANDING PAGE
+			$page_on_front = get_option( 'page_on_front' );
+			if ( $page_on_front != 0 ) {
+				$this->print_beautiful_box(
+					'landing-page',
+					__( 'A/B Test Your Landing Page', 'nelioab' ),
+					array( &$this, 'print_new_exp_box',
+						array(
+							'landing-page', $url . NelioABExperiment::PAGE_ALT_EXP . '&lp',
+							__( '<strong>Pure A/B Testing from the very beginning!</strong> Create one or more alternatives of your landing page and see which one converts better! If your website starts at your Landing Page, why shouldn\'t you start it first?', 'nelioab' )
+						)
 					)
-				)
-			);
+				);
+			}
 
 			// PAGE
 			$this->print_beautiful_box(
@@ -50,6 +53,18 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 					array(
 						'page', $url . NelioABExperiment::PAGE_ALT_EXP,
 						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a page and <strong>change whatever you want</strong>: the colors, the text, the layout... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
+					)
+				)
+			);
+
+			// POST
+			$this->print_beautiful_box(
+				'post',
+				__( 'New A/B Test for Posts', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'post', $url . NelioABExperiment::POST_ALT_EXP,
+						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a post and <strong>change whatever you want</strong>: the colors, the text, the layout... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
 					)
 				)
 			);

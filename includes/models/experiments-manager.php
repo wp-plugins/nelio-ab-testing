@@ -434,7 +434,7 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 			return self::$running_headline_alt_exps;
 		}
 
-		public static function get_running_experiments_summary() {
+		public static function get_dashboard_summary() {
 			// This function is used in the Dashboard
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$json_data = NelioABBackend::remote_get( sprintf(
@@ -447,7 +447,26 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/summaries/heatmap-exp-summary.php' );
 
 			$json_data = json_decode( $json_data['body'] );
-			$result = array();
+			$result = array(
+				'exps'  => array(),
+				'quota' => array(
+					'used'  => 0,
+					'total' => 7500,
+				),
+			);
+
+			try {
+				$result['quota']['total'] = $json_data->quotaPerMonth + $json_data->quotaExtra;
+			}
+			catch ( Exception $e ) {
+			}
+
+			try {
+				$result['quota']['used'] = max( 0, $result['quota']['total'] - $json_data->quota );
+			}
+			catch ( Exception $e ) {
+			}
+
 			if ( isset( $json_data->items ) ) {
 				foreach ( $json_data->items as $item ) {
 					$exp = false;
@@ -460,7 +479,7 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 					}
 					if ( $exp ) {
 						$exp->load_json4ae( $item );
-						array_push( $result, $exp );
+						array_push( $result['exps'], $exp );
 					}
 				}
 			}

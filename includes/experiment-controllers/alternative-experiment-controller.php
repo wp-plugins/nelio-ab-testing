@@ -115,6 +115,14 @@ class NelioABAlternativeExperimentController {
 			 */
 			require_once( NELIOAB_UTILS_DIR . '/dtgtm4wp-support.php' );
 			NelioABDtGtm4WpSupport::nelioab_tweak_dtgtm4wp();
+
+			/**
+			 * Support with other plugins.
+			 * Hold Google Analytics scripts while checking if we must load an alternative
+			 */
+			require_once( NELIOAB_UTILS_DIR . '/google-analytics-support.php' );
+			NelioABGoogleAnalyticsSupport::try_to_delay_script_executions();
+
 		}
 
 		// Make sure that the title is replaced everywhere

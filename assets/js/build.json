@@ -2,8 +2,8 @@ var build = {
 	"output": "tracking.min.js",
 	"dependencies": [
 		"generic",
-		"ga",
 		"helpers",
+		"delayed",
 		"cookies",
 		"heatmaps",
 		"check",

@@ -125,6 +125,9 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 				NelioABErrorController::build( $e );
 			}
 
+			// Clean inconsistent data
+			self::clean_inconsistent_data( $experiments );
+
 			// Render content
 			$title = __( 'Experiments', 'nelioab' );
 			$view  = new NelioABExperimentsPage( $title );
@@ -138,6 +141,28 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 
 			die();
 		}
+
+		/**
+		 *
+		 * @return
+		 */
+		private static function clean_inconsistent_data( $experiments ) {
+			if ( count( $experiments ) == 0 )
+				return;
+			$last_clean = get_option( 'nelioab_last_clean_of_inconsitent_data', false );
+			if ( NELIOAB_PLUGIN_VERSION == $last_clean )
+				return;
+			$ids = array();
+			foreach ( $experiments as $exp )
+				array_push( $ids, $exp->get_id() );
+
+			// Clean old widgets
+			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
+			NelioABWidgetExpAdminController::remove_alternatives_not_in( $ids );
+
+			update_option( 'nelioab_last_clean_of_inconsitent_data', NELIOAB_PLUGIN_VERSION );
+		}
+
 
 		public static function remove_experiment( $exp_id, $exp_type ) {
 			try {

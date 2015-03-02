@@ -5,14 +5,12 @@ NelioAB.checker.styleNode;
 NelioAB.checker.init = function() {
 	// Check if the user accepts cookies...
 	if ( !NelioAB.cookies.areEnabled() ) {
-		jQuery(document).trigger('nelioab-gtm-call');
-		NelioAB.ga.unhold();
+		NelioAB.delayed.release();
 		return;
 	}
 
 	if ( NelioAB.cookies.get( 'nelioab_is_in' ) == 'no' ) {
-		jQuery(document).trigger('nelioab-gtm-call');
-		NelioAB.ga.unhold();
+		NelioAB.delayed.release();
 		return;
 	}
 
@@ -127,6 +125,7 @@ NelioAB.checker.loadAlternative = function( mode, action, isLastTry ) {
 
 	var permalink = NelioAB.helpers.mergeUrlParams( NelioABParams.permalink, document.URL );
 
+	console.log("Loading content...");
 	jQuery.ajax({
 		type:  mode,
 		async: false,
@@ -157,6 +156,7 @@ NelioAB.checker.loadAlternative = function( mode, action, isLastTry ) {
 				var aux = window.setInterval(function() {}, 20000) + 1;
 				while (aux--) window.clearInterval(aux);
 				window.onbeforeunload = window.onunload = false;
+				console.log("Showing content...");
 				if ( typeof document.open() === 'undefined' ) {
 					var doc = document.implementation.createHTMLDocument('');
 					document.open = doc.open;
@@ -204,10 +204,10 @@ switch ( NelioABParams.nelioabScriptAction ) {
 		break;
 	case 'track':
 		NelioAB.helpers.track();
-		NelioAB.ga.unhold();
+		NelioAB.delayed.release();
 		break;
 	case 'skip':
-		NelioAB.ga.unhold();
+		NelioAB.delayed.release();
 		break;
 }
 

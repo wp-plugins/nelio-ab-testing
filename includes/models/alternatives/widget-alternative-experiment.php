@@ -251,6 +251,16 @@ if( !class_exists( 'NelioABWidgetAlternativeExperiment' ) ) {
 
 			return $exp;
 		}
+
+
+		public function remove() {
+			// 1. We remove the experiment itself
+			parent::remove();
+			// 2. And we now remove all the alternative widgets
+			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
+			NelioABWidgetExpAdminController::clean_widgets_in_experiment( $this->get_id() );
+		}
+
 	}//NelioABWidgetAlternativeExperiment
 
 }

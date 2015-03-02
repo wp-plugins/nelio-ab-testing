@@ -44,7 +44,7 @@ if ( !class_exists( 'NelioABDashboardPageController' ) ) {
 			$nelioab_controller->compute_results_for_running_experiments();
 
 			try {
-				$summary = NelioABExperimentsManager::get_running_experiments_summary();
+				$summary = NelioABExperimentsManager::get_dashboard_summary();
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );

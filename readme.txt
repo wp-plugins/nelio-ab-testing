@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 3.4.3
+Stable tag: 3.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -259,6 +259,19 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 3.4.4 =
+* Dashboard redesign. Quick access to your quota!
+* Test your Landing Page easily! You now have a specific experiment type for
+testing your Front Page.
+* Support for the plugin [WP Google Analytics
+Events](https://wordpress.org/plugins/wp-google-analytics-events/)
+* Added new JS funtion `NelioAB.delay`. With this function, one can delay the
+execution of some JavaScript code (surrounding that code with
+`NelioAB.delay(function(){` and `}`. This prevents JavaScript code from being
+executed twice (one for the original content and another one for the
+alternative's).
+
 
 = 3.4.3 =
 * Bug fix while tracking page/post conversion actions.
@@ -815,8 +828,8 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.4.3 =
-Page/Post conversion action issue fixed. 3.4 series includes **Menu Testing**,
-new conversion actions, and several improvements that make the creation and
-management of experiments much easier.
+= 3.4.4 =
+Improved support for Google Analytics and some helper functions. 3.4 series
+includes **Menu Testing**, new conversion actions, and several improvements
+that make the creation and management of experiments much easier.
 

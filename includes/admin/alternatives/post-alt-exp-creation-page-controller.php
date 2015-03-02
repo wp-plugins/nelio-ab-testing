@@ -35,6 +35,9 @@ if ( !class_exists( 'NelioABPostAltExpCreationPageController' ) ) {
 
 			$aux  = NelioABPostAltExpCreationPageController::get_instance();
 			$view = $aux->do_build();
+			$page_on_front = get_option( 'page_on_front' );
+			if ( isset( $_GET['lp'] ) && $page_on_front )
+				$view->set_original_id( $page_on_front );
 			$view->render();
 		}
 
