@@ -1,19 +1,21 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 
@@ -31,6 +33,11 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 		}
 
 		public static function build() {
+			// Check settings
+			require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
+			$error = NelioABErrorController::build_error_page_on_invalid_settings();
+			if ( $error ) return;
+
 			$aux  = NelioABCssAltExpEditionPageController::get_instance();
 			$view = $aux->do_build();
 			$view->render();
@@ -61,7 +68,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 				$experiment = $nelioab_admin_controller->data;
 			}
 			else {
-				$experiment = new NelioABCssAlternativeExperiment( -1 );
+				$experiment = new NelioABCssAlternativeExperiment( -time() );
 				$experiment->clear();
 			}
 
@@ -70,8 +77,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPageController' ) ) {
 				$other_names = json_decode( urldecode( $_POST['other_names'] ) );
 			}
 			else {
-				$mgr = new NelioABExperimentsManager();
-				foreach( $mgr->get_experiments() as $aux ) {
+				foreach( NelioABExperimentsManager::get_experiments() as $aux ) {
 					if ( $aux->get_id() != $experiment->get_id() )
 						array_push( $other_names, $aux->get_name() );
 				}

@@ -1,0 +1,11 @@
+var build = {
+	"output": "tracking.min.js",
+	"dependencies": [
+		"generic",
+		"helpers",
+		"delayed",
+		"cookies",
+		"heatmaps",
+		"check",
+	]
+}

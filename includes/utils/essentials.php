@@ -17,6 +17,24 @@
  */
 
 /**
+ * This function determines whether the current user is able to manage the plugin
+ * or not.
+ */
+function nelioab_can_user_manage_plugin() {
+	// If the user is super admin, he can use the plugin
+	if ( is_super_admin() )
+		return true;
+
+	// If we're in a multisite, admin users should be able to use the plugin.
+	// But, who's admin? The super admin or a site admin? That depends...
+	if ( NelioABSettings::regular_admins_can_manage_plugin() )
+		if ( current_user_can( 'manage_options' ) )
+			return true;
+
+	return false;
+}
+
+/**
  * This function is called every time the plugins are loaded, and checks
  * whether our plugin is up-to-date or not. If it isn't, the
  * nelioab_activate_plugin is called.
@@ -24,8 +42,7 @@
 function nelioab_update_plugin_info_if_required() {
 	$last_available_version = get_option( 'nelioab_last_version_installed', false );
 	if ( $last_available_version !== NELIOAB_PLUGIN_VERSION ) {
-		nelioab_activate_plugin();
-		update_option( 'nelioab_last_version_installed', NELIOAB_PLUGIN_VERSION );
+		add_filter( 'init', 'nelioab_activate_plugin' );
 	}
 }
 
@@ -34,35 +51,40 @@ function nelioab_update_plugin_info_if_required() {
  * opposite of the nelioab_deactivate_plugin function. Its aim is to make sure
  * that alternatives (draft post/pages with a metatype) are not visible in the
  * admin area, but can be editted and used.
+ *
+ * We also make sure that it's called after an update.
  */
 function nelioab_activate_plugin() {
-	// Clean old stuff when activating the plugin
-	require_once( NELIOAB_UTILS_DIR . '/cleaner.php' );
-	nelioab_clean();
+	global $wpdb;
 
-	// Showing previous page alternatives
-	$args = array(
-		'post_status'    => 'draft',
-		'post_type'      => 'nelioab_alt_page',
-		'posts_per_page' => -1,
+	// Old Stuff Compa: rename the meta key that identifies post/page alternatives...
+	$wpdb->update(
+		$wpdb->postmeta,
+		array( 'meta_key' => '_is_nelioab_alternative' ),
+		array( 'meta_key' => 'is_nelioab_alternative' )
 	);
-	$alternative_pages = get_posts( $args );
-	foreach ( $alternative_pages as $page ) {
-		$page->post_type = 'page';
-		wp_update_post( $page );
-	}
 
-	// Showing previous page alternatives
-	$args = array(
-		'post_status'    => 'draft',
-		'post_type'      => 'nelioab_alt_post',
-		'posts_per_page' => -1,
-	);
-	$alternative_posts = get_posts( $args );
-	foreach ( $alternative_posts as $post ) {
-		$post->post_type = 'post';
-		wp_update_post( $post );
-	}
+	// We remove all information about "_is_nelioab_alternative" for posts whose
+	// IDs are less than 15. In previous versions of the plugin, Title experiments
+	// marked those posts as alternatives (negative IDs from -1 to -15 were used
+	// and WordPress interpreted them as positive IDs).
+	$query = '' .
+		'DELETE FROM ' . $wpdb->postmeta . ' WHERE ' .
+			'post_id < 15 AND meta_key = \'_is_nelioab_alternative\'';
+	$aux = $wpdb->query( $query );
+
+	// Showing previous page and post alternatives
+	$query = 'UPDATE ' . $wpdb->posts . ' SET post_type = %s WHERE post_type = %s';
+	$aux = $wpdb->query( $wpdb->prepare( $query, 'post', 'nelioab_alt_post' ) );
+	$aux = $wpdb->query( $wpdb->prepare( $query, 'page', 'nelioab_alt_page' ) );
+
+	// Recover previous widget alternatives
+	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
+	NelioABWidgetExpAdminController::restore_alternative_widget_backup();
+
+	// Recover previous menu alternatives
+	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
+	NelioABMenuExpAdminController::restore_alternative_menu_backup();
 
 	// Update mu-plugin (if installed)
 	if ( !NelioABSettings::is_performance_muplugin_up_to_date() )
@@ -70,8 +92,10 @@ function nelioab_activate_plugin() {
 
 	// Make sure that the cache uses new classes
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-	NelioABExperimentsManager::reset_running_experiments_cache();
-	NelioABExperimentsManager::update_running_experiments_cache( true );
+	NelioABExperimentsManager::update_running_experiments_cache( 'now' );
+
+	// Save the latest version we use for "(re)activating" the plugin
+	update_option( 'nelioab_last_version_installed', NELIOAB_PLUGIN_VERSION );
 }
 
 /**
@@ -82,28 +106,104 @@ function nelioab_activate_plugin() {
  * we change their post_type to a fake type.
  */
 function nelioab_deactivate_plugin() {
-	// Hiding alternative pages
-	$args = array(
-		'meta_key'       => '_is_nelioab_alternative',
-		'post_status'    => 'draft',
-	);
-	$alternative_pages = get_pages( $args );
-	foreach ( $alternative_pages as $page ) {
-		$page->post_type = 'nelioab_alt_page';
-		wp_update_post( $page );
-	}
+	global $wpdb;
+	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
+	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
 
-	// Hiding alternative posts
-	$args = array(
-		'meta_key'       => '_is_nelioab_alternative',
-		'post_status'    => 'draft',
-		'posts_per_page' => -1,
-	);
-	$alternative_posts = get_posts( $args );
-	foreach ( $alternative_posts as $post ) {
-		$post->post_type = 'nelioab_alt_post';
-		wp_update_post( $post );
+	if ( isset( $_GET['action'] ) && 'clean-and-deactivate' == $_GET['action'] ) {
+		// Remove all alternative widgets
+		NelioABWidgetExpAdminController::clean_all_alternative_widgets();
+
+		// Remove all alternative menus
+		NelioABMenuExpAdminController::clean_all_alternative_menus();
+
+		// Remove all alternative pages and posts
+		$query = '' .
+			'DELETE FROM ' . $wpdb->posts . ' WHERE ' .
+				'id IN (' .
+					'SELECT post_id FROM ' . $wpdb->postmeta . ' WHERE ' .
+						'meta_key = \'_is_nelioab_alternative\' ' .
+				')';
+		$aux = $wpdb->query( $query );
+
+		// Clean all experiments in AE
+		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
+		for ( $i = 0; $i < 5; ++$i ) {
+			try {
+				NelioABBackend::remote_get( sprintf(
+					NELIOAB_BACKEND_URL . '/site/%s/clean',
+					NelioABAccountSettings::get_site_id()
+				) );
+				break;
+			}
+			catch ( Exception $e ) {}
+		}
+
+		// Remove all Nelio options
+		$query = 'DELETE FROM ' . $wpdb->postmeta . ' WHERE meta_key LIKE \'%nelioab%\'';
+		$aux = $wpdb->query( $query );
+		$query = 'DELETE FROM ' . $wpdb->options . ' WHERE option_name LIKE \'%nelioab%\'';
+		$aux = $wpdb->query( $query );
 	}
+	else {
+		// Hiding alternative pages
+		$query = '' .
+			'UPDATE ' . $wpdb->posts . ' SET post_type = %s WHERE ' .
+				'id IN (' .
+					'SELECT post_id FROM ' . $wpdb->postmeta . ' WHERE ' .
+						'meta_key = \'_is_nelioab_alternative\' ' .
+				') AND ' .
+				'post_type = %s';
+		$aux = $wpdb->query( $wpdb->prepare( $query, 'nelioab_alt_post', 'post' ) );
+		$aux = $wpdb->query( $wpdb->prepare( $query, 'nelioab_alt_page', 'page' ) );
+
+		// Hiding widget alternatives
+		NelioABWidgetExpAdminController::backup_alternative_widgets();
+		// Hiding widget alternatives
+		NelioABMenuExpAdminController::backup_alternative_menus();
+	}
+}
+
+/**
+ * Remind users that they have to clean their cache after an update
+ */
+if ( get_option( 'nelioab_cache_notice', false ) !== NELIOAB_PLUGIN_VERSION  )
+	add_action( 'admin_notices', 'nelioab_add_cache_notice' );
+function nelioab_add_cache_notice() {
+	global $pagenow;
+	if ( 'plugins.php' == $pagenow || 'update.php' == $pagenow )
+		return;
+	try {
+		$aux = NelioABAccountSettings::check_user_settings();
+	}
+	catch ( Exception $e ) {
+		return;
+	}
+	$message = sprintf(
+			__( 'You\'ve recently upgraded to <strong>Nelio A/B Testing %s</strong>. <strong>If you\'re running a cache system</strong> (such as <em>W3 Total Cache</em> or <em>WP Super Cache</em>) <strong>or if your server is behind a CDN</strong>, please <strong>clean all your caches</strong>. Otherwise, you may serve old versions of our tracking scripts and, therefore, the plugin may not work properly.', 'nelioab' ),
+			NELIOAB_PLUGIN_VERSION
+		);
+	?>
+	<div class="updated">
+		<p>
+			<?php echo $message; ?>
+			<a id="dismiss-nelioab-cache-notice" style="font-size:80%;" href="#"><?php _e( 'Dismiss' ); ?></a>
+		</p>
+		<script style="display:none;" type="text/javascript">
+		(function($) {
+			$('a#dismiss-nelioab-cache-notice').on('click', function() {
+				$.post( ajaxurl, {action:'nelioab_dismiss_cache_notice'} );
+				$(this).parent().parent().fadeOut();
+			});
+		})(jQuery);
+		</script>
+	</div>
+	<?php
+}
+add_action( 'wp_ajax_nelioab_dismiss_cache_notice', 'nelioab_dismiss_cache_notice' );
+function nelioab_dismiss_cache_notice() {
+	update_option( 'nelioab_cache_notice', NELIOAB_PLUGIN_VERSION );
+	die();
 }
 
 /**
@@ -122,5 +222,69 @@ function nelioab_asset_link( $resource ) {
  */
 function nelioab_admin_asset_link( $resource ) {
 	return nelioab_asset_link( '/admin' . $resource );
+}
+
+/**
+ * Real one time nonces
+ */
+function nelioab_onetime_nonce( $action = -1 ) {
+	$time = time();
+	$nonce = wp_create_nonce( $time . $action );
+	return $nonce . '-' . $time;
+}
+function nelioab_onetime_nonce_url( $url, $action, $name = '_nonce' ) {
+	return add_query_arg( $name, $action, $url );
+}
+function nelioab_verify_onetime_nonce( $_nonce, $action = -1) {
+	// Extract timestamp and nonce part of $_nonce
+	$parts = explode( '-', $_nonce );
+	$nonce = $parts[0]; // Original nonce generated by WordPress.
+	$gen_time = $parts[1]; // Time when generated
+	$nonce_life = 30 * 60; // We want these nonces to have a 30min lifespan
+	$expires = (int) $gen_time + $nonce_life;
+	$time = time(); // Current time
+
+	// Verify the nonce part and check that it has not expired
+	if( ! wp_verify_nonce( $nonce, $gen_time . $action ) || $time > $expires )
+		return false;
+
+	// Get used nonces
+	$used_nonces = get_option('nelioab_used_nonces');
+
+	// Nonce already used.
+	if ( isset( $used_nonces[$nonce] ) )
+		return false;
+
+	if ( is_array( $used_nonces ) ) {
+		foreach ( $used_nonces as $aux_nonce => $aux_expiration_date ) {
+			if ( $aux_expiration_date > $time )
+				break;
+			// This nonce has expired, so we don't need to keep it any longer
+			unset( $used_nonces[$aux_nonce] );
+		}
+	}
+	else {
+		$used_nonces = array();
+	}
+
+	// Add nonce to used nonces and sort
+	$used_nonces[$nonce] = $expires;
+	asort( $used_nonces );
+	update_option( 'nelioab_used_nonces', $used_nonces );
+	return true;
+}
+
+/**
+ * This function always returns the REAL page on front.
+ */
+function nelioab_get_page_on_front() {
+	global $nelioab_controller;
+	$hook = has_filter( 'option_page_on_front', array( $nelioab_controller, 'fix_page_on_front' ) );
+	if ( false !== $hook )
+		remove_filter( 'option_page_on_front', array( $nelioab_controller, 'fix_page_on_front' ) );
+	$res = get_option( 'page_on_front', 0 );
+	if ( false !== $hook )
+		add_filter( 'option_page_on_front', array( $nelioab_controller, 'fix_page_on_front' ) );
+	return $res;
 }
 

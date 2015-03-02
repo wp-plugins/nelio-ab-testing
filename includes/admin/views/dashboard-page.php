@@ -21,22 +21,30 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 	class NelioABDashboardPage extends NelioABAdminAjaxPage {
 
 		private $graphic_delay;
-		private $summary;
+		private $experiments;
+		private $quota;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
 			$this->add_title_action( __( 'New Experiment', 'nelioab' ), '?page=nelioab-add-experiment' );
-			$this->summary = '';
+			$this->experiments = array();
+			$this->quota = array(
+				'used'  => 0,
+				'total' => 7500,
+			);
 			$this->graphic_delay = 500;
 		}
 
 		public function set_summary( $summary ) {
-			$this->summary = $summary;
+			$this->experiments = $summary['exps'];
+			$this->quota = $summary['quota'];
 		}
 
 		public function do_render() {
-			if ( count( $this->summary ) == 0 ) {
+			echo '<div id="post-body" class="metabox-holder columns-2">';
+			echo '<div id="post-body-content">';
+			if ( count( $this->experiments ) == 0 ) {
 				echo '<center>';
 				echo sprintf( '<img src="%s" alt="%s" />',
 					nelioab_asset_link( '/admin/images/happy.png' ),
@@ -50,8 +58,45 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				echo '</center>';
 			}
 			else {
+				echo '<h2>' . __( 'Running Experiments', 'nelioab' ) . '</h2>';
 				$this->print_cards();
 			}
+			echo '</div>'; ?>
+			<div id="postbox-container-1" class="postbox-container" style="overflow:hidden;"><?php // TODO remove the style ?>
+				<h2><?php _e( 'Account Usage', 'nelioab' ); ?></h2>
+				<?php
+				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+				$cs = NelioABWpHelper::get_current_colorscheme();
+				?>
+
+				<div class="numbers" style="height:40px;">
+					<div class="left" style="float:left; width:60%;">
+						<span style="font-weight:bold;"><?php _e( 'QUOTA USED', 'nelioab' ); ?></span><br>
+						<span style="color:<?php echo $cs['primary']; ?>; font-size:10px;"><?php
+							echo number_format_i18n( $this->quota['used'], 0 );
+						?></span><span style="font-size:10px;"> / <?php
+							echo number_format_i18n( $this->quota['total'], 0 );
+						?></span>
+					</div>
+					<div class="right" style="font-size:32px; text-align:right; float:right; width:30%; padding-right:5%; margin-top:8px; opacity:0.7;">
+						<span><?php
+							$perc = ( $this->quota['used'] / $this->quota['total'] ) * 100;
+							$decs = 1;
+							if ( 100 == $perc )
+								$decs = 0;
+							echo number_format( $perc, $decs );
+						?>%</span>
+					</div>
+				</div>
+
+				<div class="progress-bar-container" style="background:none;border:2px solid rgba(0,0,0,0.1); width:95%; margin:0px; height:20px;">
+					<div class="progress-bar" style="height:20px;background-color:<?php
+						echo $cs['primary'];
+					?>;width:<?php echo $perc; ?>%;"></div>
+				</div>
+			</div>
+			<?php
+			echo '</div>'; // #post-body
 		}
 
 		public function print_cards() {
@@ -105,12 +150,11 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			</script><?php
 
 			include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
-			foreach ( $this->summary as $exp ) {
+			foreach ( $this->experiments as $exp ) {
 				switch( $exp->get_type() ) {
 					case NelioABExperiment::HEATMAP_EXP:
-							$progress_url = NelioABWPHelper::get_unsecured_site_url() .
-							'/wp-content/plugins/' . NELIOAB_PLUGIN_DIR_NAME .
-							'/heatmaps.php?id=%1$s&exp_type=%2$s';
+						$progress_url = str_replace( 'https://', 'http://',
+							admin_url( 'admin.php?nelioab-page=heatmaps&id=%1$s&exp_type=%2$s' ) );
 						$this->print_linked_beautiful_box(
 							$exp->get_id(),
 							$this->get_beautiful_title( $exp ),
@@ -135,17 +179,24 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 		public function get_beautiful_title( $exp ) {
 			$img = '<div class="tab-type tab-type-%1$s" alt="%2$s" title="%2$s"></div>';
 			switch ( $exp->get_type() ) {
-				case NelioABExperiment::TITLE_ALT_EXP:
-					$img = sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
-					break;
 				case NelioABExperiment::PAGE_ALT_EXP:
-					$img = sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+					try {
+						$page_on_front = get_option( 'page_on_front' );
+						$aux = $exp->get_alternative_info();
+						if ( $page_on_front == $aux[0]['id'] )
+							$img = sprintf( $img, 'landing-page', __( 'Landing Page', 'nelioab' ) );
+						else
+							$img = sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+					}
+					catch ( Exception $e ) {
+						$img = sprintf( $img, 'page', __( 'Page', 'nelioab' ) );
+					}
 					break;
 				case NelioABExperiment::POST_ALT_EXP:
 					$img = sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
 					break;
-				case NelioABExperiment::TITLE_ALT_EXP:
-					$img = sprintf( $img, 'title', __( 'Title', 'nelioab' ) );
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					$img = sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
 					break;
 				case NelioABExperiment::THEME_ALT_EXP:
 					$img = sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
@@ -171,7 +222,13 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			else
 				$light = '';
 
-			$name = '<span class="exp-title">' . $exp->get_name() . '</span>';
+			$title = '';
+			$name = $exp->get_name();
+			if ( strlen( $name ) > 50 ) {
+				$title = ' title="' . esc_html( $name ) . '"';
+				$name = substr( $name, 0, 50 ) . '...';
+			}
+			$name = '<span class="exp-title"'. $title .'>' . $name . '</span>';
 			$status = '<span id="info-summary">' . $light . '</span>';
 
 			return $img . $name . $status;
@@ -236,7 +293,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 						case NelioABExperiment::POST_ALT_EXP:
 							$color = '#F19C00';
 							break;
-						case NelioABExperiment::TITLE_ALT_EXP:
+						case NelioABExperiment::HEADLINE_ALT_EXP:
 							$color = '#79B75D';
 							break;
 						case NelioABExperiment::THEME_ALT_EXP:
@@ -244,6 +301,12 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 							break;
 						case NelioABExperiment::CSS_ALT_EXP:
 							$color = '#6EBEC5';
+							break;
+						case NelioABExperiment::WIDGET_ALT_EXP:
+							$color = '#2A508D';
+							break;
+						case NelioABExperiment::MENU_ALT_EXP:
+							$color = '#8bb846';
 							break;
 						default:
 							$color = '#CCCCCC';

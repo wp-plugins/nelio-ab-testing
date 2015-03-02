@@ -1,29 +1,31 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if( !class_exists( 'NelioABAlternative' ) ) {
 
 	class NelioABAlternative {
-		private $id;
-		private $name;
-		private $value;
-		private $based_on;
-		private $was_removed;
-		private $is_dirty;
+		protected $id;
+		protected $name;
+		protected $value;
+		protected $based_on;
+		protected $was_removed;
+		protected $is_dirty;
 
 		public function __construct( $id = -1 ) {
 			$this->id          = $id;
@@ -58,6 +60,14 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 			return $this->value;
 		}
 
+		public function get_identifiable_value() {
+			return $this->value;
+		}
+
+		public function applies_to_post_id( $post_id ) {
+			return $this->value == $post_id;
+		}
+
 		public function mark_as_removed() {
 			$this->was_removed = true;
 		}
@@ -74,18 +84,18 @@ if( !class_exists( 'NelioABAlternative' ) ) {
 			return $this->is_dirty;
 		}
 
-		public function is_based_on_a_post() {
+		public function is_based_on_another_element() {
 			if ( $this->based_on && $this->based_on > 0 )
 				return true;
 			else
 				return false;
 		}
 
-		public function set_base_post( $pid ) {
+		public function set_base_element( $pid ) {
 			$this->based_on = $pid;
 		}
 
-		public function get_base_post() {
+		public function get_base_element() {
 			return $this->based_on;
 		}
 

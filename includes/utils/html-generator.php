@@ -171,14 +171,12 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 				printf(
 					__( '%s the experiment will be automatically stopped.', 'nelioab' ),
 					'<select class="fin-mode-value">' .
-						'<option' . self::select_confidence( 99, 120 ) . 'value="99">' . __( '99% - If we are absolutely confident there\'s a clear winner,', 'nelioab' ) . '</option>' .
-						'<option' . self::select_confidence( 95,  99 ) . 'value="95">' . __( '95% - If we are extremely confident there\'s a clear winner,', 'nelioab' ) . '</option>' .
-						'<option' . self::select_confidence( 90,  95 ) . 'value="90">' . __( '90% - If we are quite confident there\'s a winner,', 'nelioab' ) . '</option>' .
-						'<option' . self::select_confidence( 80,  90 ) . 'value="80">' . __( '80% - If we are confident there\'s a winner,', 'nelioab' ) . '</option>' .
-						'<option' . self::select_confidence( 70,  80 ) . 'value="70">' . __( '70% - If we are slightly confident there\'s a winner,', 'nelioab' ) . '</option>' .
-						'<option' . self::select_confidence( 60,  70 ) . 'value="60">' . __( '60% - If it is possible that there\'s a winner,', 'nelioab' ) . '</option>' .
-						'<option' . self::select_confidence( 50,  60 ) . 'value="50">' . __( '50% - If it is slightly possible that there\'s a winner,', 'nelioab' ) . '</option>' .
-						'<option' . self::select_confidence(  0,  50 ) . 'value="40">' . __( '40% - If it is remotely possible that there\'s a winner,', 'nelioab' ) . '</option>' .
+						'<option' . self::select_confidence( 99 )    . 'value="99">' . __( '99% - If we are absolutely confident there\'s a clear winner', 'nelioab' ) . '</option>' .
+						'<option' . self::select_confidence( 98 )    . 'value="98">' . __( '98% - If we are extremely confident there\'s a clear winner', 'nelioab' ) . '</option>' .
+						'<option' . self::select_confidence( 97 )    . 'value="97">' . __( '97% - If we are quite confident there\'s a winner', 'nelioab' ) . '</option>' .
+						'<option' . self::select_confidence( 96 )    . 'value="96">' . __( '96% - If we are confident there\'s a winner', 'nelioab' ) . '</option>' .
+						'<option' . self::select_confidence( 95 )    . 'value="95">' . __( '95% - If we are slightly confident there\'s a winner', 'nelioab' ) . '</option>' .
+						'<option' . self::select_confidence( 90, 0 ) . 'value="90">' . __( '90% - If it is possible that there\'s a winner', 'nelioab' ) . '</option>' .
 					'</select>'
 				);
 			?></div>
@@ -226,7 +224,11 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			</script><?php
 		}
 
-		private static function select_confidence( $min, $max ) {
+		private static function select_confidence( $max, $min = false ) {
+			if ( $min === false ) {
+				$min = $max;
+				++$max;
+			}
 			$confidence = NelioABSettings::get_min_confidence_for_significance();
 			if ( $min <= $confidence && $confidence < $max )
 				return ' selected="selected" ';
@@ -299,52 +301,59 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		}
 
 		public static function get_page_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			ob_start();
-			self::print_page_searcher( $field_id, $value, $classes, $autoconvert );
+			self::print_page_searcher( $field_id, $value, $drafts, $classes, $autoconvert );
 			$value = ob_get_contents();
 			ob_end_clean();
 			return $value;
 		}
 
 		public static function get_post_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			ob_start();
-			self::print_post_searcher( $field_id, $value, $classes, $autoconvert );
+			self::print_post_searcher( $field_id, $value, $drafts, $classes, $autoconvert );
 			$value = ob_get_contents();
 			ob_end_clean();
 			return $value;
 		}
 
 		public static function print_full_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'page-or-post-or-latest' );
+				$field_id, $value, $drafts, $classes, $autoconvert,
+				array( 'nelioab-all-post-types', 'nelioab-latest-posts', 'nelioab-theme-landing-page' ) );
+		}
+
+		public static function print_any_post_type_searcher(
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
+			self::print_post_searcher_based_on_type(
+				$field_id, $value, $drafts, $classes, $autoconvert, array( 'nelioab-all-post-types' ) );
 		}
 
 		public static function print_page_or_post_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'page-or-post' );
+				$field_id, $value, $drafts, $classes, $autoconvert, array( 'page', 'post' ) );
 		}
 
 		public static function print_page_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'page' );
+				$field_id, $value, $drafts, $classes, $autoconvert, array( 'page' ) );
 		}
 
 		public static function print_post_searcher(
-				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
+				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'post' );
+				$field_id, $value, $drafts, $classes, $autoconvert, array( 'post' ) );
 		}
 
 		public static function get_form_searcher(
 				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
 			ob_start();
-			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'form' );
+			self::print_form_searcher(
+				$field_id, $value, $classes, $autoconvert );
 			$value = ob_get_contents();
 			ob_end_clean();
 			return $value;
@@ -353,36 +362,43 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		public static function print_form_searcher(
 				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, 'form' );
+				$field_id, $value, 'no-drafts', $classes, $autoconvert, array( 'form' ) );
 		}
 
-		private static function print_post_searcher_based_on_type(
-				$field_id, $value, $classes, $autoconvert, $type ) {
+		public static function print_post_searcher_based_on_type(
+				$field_id, $value, $drafts, $classes, $autoconvert, $types ) {
 			$placeholder = __( 'Select an option...', 'nelioab' );
-			switch ( $type ) {
-				case 'page':
-					$placeholder = __( 'Select a page...', 'nelioab' );
-					break;
-				case 'post':
-					$placeholder = __( 'Select a post...', 'nelioab' );
-					break;
-				case 'page-or-post':
-					$placeholder = __( 'Select a page or post...', 'nelioab' );
-					break;
-				case 'form':
-					$placeholder = __( 'Select a form...', 'nelioab' );
-					break;
-				case 'page-or-post-or-latest':
-					$placeholder = __( 'Select a page or post...', 'nelioab' );
-					break;
+			if ( count( $types ) == 1 ) {
+				switch ( $types[0] ) {
+					case 'page':
+						$placeholder = __( 'Select a page...', 'nelioab' );
+						break;
+					case 'post':
+						$placeholder = __( 'Select a post...', 'nelioab' );
+						break;
+					case 'form':
+						$placeholder = __( 'Select a form...', 'nelioab' );
+						$drafts = '';
+						break;
+					case 'nelioab-all-post-types':
+						$placeholder = __( 'Select a page, post, or custom element...', 'nelioab' );
+						break;
+				}
 			}
-			$searcher_type = 'post-searcher ' . $type;
-			if ( 'form' == $type )
+			else {
+				if ( in_array( 'page', $types ) && in_array( 'post', $types ) )
+					$placeholder = __( 'Select a page or post...', 'nelioab' );
+			}
+			$searcher_type = 'post-searcher ' . implode( ' ', $types );
+			if ( count( $types ) == 1 && 'form' == $types[0] )
 				$searcher_type = 'form-searcher';
+
+			if ( strlen( $drafts ) > 0 )
+				$drafts = ', "' . $drafts . '"';
 			?>
 			<input
 				id="<?php echo $field_id; ?>" name="<?php echo $field_id; ?>"
-				data-type="<?php echo $type; ?>"
+				data-type="<?php echo esc_html( json_encode( $types ) ); ?>"
 				data-placeholder="<?php echo $placeholder; ?>"
 				type="hidden" class="<?php
 					echo $searcher_type; ?> <?php
@@ -392,10 +408,16 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 				<script type="text/javascript">
 				(function($) {
 					var field = $("#<?php echo $field_id; ?>");
-					NelioABPostSearcher.buildSearcher(field, "<?php echo $type; ?>");
+					var NelioABSearcher = NelioAB<?php
+						if ( 'form-searcher' == $searcher_type )
+							echo 'Form';
+						else
+							echo 'Post';
+					?>Searcher;
+					NelioABSearcher.buildSearcher(field, <?php echo json_encode( $types ); echo $drafts; ?> );
 					<?php
 						if ( $value !== false )
-							echo 'NelioABPostSearcher.setDefault(field, "' . $type . '");';
+							echo 'NelioABSearcher.setDefault(field, ' . json_encode( $types ) . $drafts . ');';
 						echo "\n";
 					?>
 				})(jQuery);
