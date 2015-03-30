@@ -45,6 +45,10 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			return $this->get_post_id();
 		}
 
+		public function get_originals_id() {
+			return $this->get_post_id();
+		}
+
 		public function set_post_id( $id ) {
 			if ( $id > 0 )
 				$this->post_id = $id;

@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 3.4.4
+Stable tag: 4.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -260,17 +260,28 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
+= 4.0.0 =
+* **Efficiency Improvements**. We've redesigned several components of our
+plugin from scratch. Now it's faster and more reliable! We've solved most of
+the compatibility issues our plugin had with some JavaScript libraries and
+Frameworks (such as, for instance, Google Analytics, Google Tag Manager, or
+Angular.js).
+* **New Settings Screen**. This new version gets rid of some legacy settings
+and introduces some new ones. We've also included a small help icon for each
+setting, so that you can easily know what they do.
+
+
 = 3.4.4 =
 * Dashboard redesign. Quick access to your quota!
 * Test your Landing Page easily! You now have a specific experiment type for
 testing your Front Page.
 * Support for the plugin [WP Google Analytics
 Events](https://wordpress.org/plugins/wp-google-analytics-events/)
-* Added new JS funtion `NelioAB.delay`. With this function, one can delay the
-execution of some JavaScript code (surrounding that code with
-`NelioAB.delay(function(){` and `}`. This prevents JavaScript code from being
-executed twice (one for the original content and another one for the
-alternative's).
+* Added new JS funtion <code>NelioAB.delay</code>. With this function, one can
+delay the execution of some JavaScript code (surrounding that code with
+<code>NelioAB.delay( function(){</code> and <code>}</code>. This prevents
+JavaScript code from being executed twice (one for the original content and
+another one for the alternative's).
 
 
 = 3.4.3 =
@@ -828,8 +839,8 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.4.4 =
-Improved support for Google Analytics and some helper functions. 3.4 series
-includes **Menu Testing**, new conversion actions, and several improvements
-that make the creation and management of experiments much easier.
+= 4.0.0 =
+**Nelio A/B Testing 4 is more efficient than ever!** We've redesigned some
+components from scratch to make things faster and more reliable. We've
+improved the compatibility with JavaScript frameworks and libraries.
 

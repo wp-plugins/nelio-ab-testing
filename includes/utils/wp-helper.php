@@ -38,10 +38,10 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			NelioABOptimizePressSupport::make_post_compatible_with_optimizepress(
 				$ori_id, $overwriting_id );
 
-			$ori['post_title']    = $overwriting['post_title'];
-			$ori['post_content']  = $overwriting['post_content'];
-			$ori['post_excerpt']  = $overwriting['post_excerpt'];
-			$ori['post_parent']   = $overwriting['post_parent'];
+			$ori['post_title']   = $overwriting['post_title'];
+			$ori['post_content'] = $overwriting['post_content'];
+			$ori['post_excerpt'] = $overwriting['post_excerpt'];
+			$ori['post_parent']  = $overwriting['post_parent'];
 			wp_update_post( $ori );
 
 			if ( $meta )
@@ -150,6 +150,17 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			return $url;
 		}
 
+
+		public static function add_title_filter_to_wpquery( $where, &$wp_query ) {
+			global $wpdb;
+			if ( $search_term = $wp_query->get( 'post_title_like' ) ) {
+				$search_term = $wpdb->esc_like( $search_term );
+				$search_term = ' \'%' . $search_term . '%\'';
+				$where .= ' AND ' . $wpdb->posts . '.post_title LIKE ' . $search_term;
+			}
+			return $where;
+		}
+
 		/**
 		 * This function is an AJAX callback. It returns a list of up to 20 posts (or
 		 * pages). It is used by the select2 widget (an item selector that looks more
@@ -194,11 +205,11 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			);
 
 			$args = array(
-				's'              => $term,
-				'posts_per_page' => 20,
-				'meta_key'       => '_is_nelioab_alternative',
-				'meta_compare'   => 'NOT EXISTS',
-				'post_status'    => $status,
+				'post_title_like' => $term,
+				'posts_per_page'  => 20,
+				'meta_key'        => '_is_nelioab_alternative',
+				'meta_compare'    => 'NOT EXISTS',
+				'post_status'     => $status,
 			);
 
 			if ( count( $types ) > 0 ) {
@@ -206,11 +217,19 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				foreach ( $types as $type )
 					if ( strpos( $type, 'nelioab-' ) === false )
 						array_push( $aux, $type );
+				foreach ( $types as $type ) {
+					if ( 'nelioab-all-post-types' == $type ) {
+						array_push( $aux, 'page' );
+						array_push( $aux, 'post' );
+						foreach ( get_post_types( array( 'public' => true, '_builtin' => false ), 'names' ) as $cpt )
+							array_push( $aux, $cpt );
+					}
+				}
 				if ( count( $aux ) > 0 )
 					$args['post_type'] = $aux;
 			}
 
-			if ( $type && count( $type ) == 1 && 'page' === $type[0] && !$term ) {
+			if ( $types && count( $types ) == 1 && 'page' === $types[0] && !$term ) {
 				$args['order'] = 'asc';
 				$args['orderby'] = 'title';
 			}
@@ -286,7 +305,9 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 			$result = array();
 
+			add_filter( 'posts_where', array( 'NelioABWpHelper', 'add_title_filter_to_wpquery' ), 10, 2 );
 			$my_query = new WP_Query( $args );
+			remove_filter( 'posts_where', array( 'NelioABWpHelper', 'add_title_filter_to_wpquery' ), 10, 2 );
 
 			if ( $my_query->have_posts() ) {
 				global $post;
