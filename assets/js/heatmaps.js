@@ -1,21 +1,45 @@
+/**
+ * This object contains some variables and functions relevant for tracking
+ * Heatmaps.
+ */
 NelioAB.heatmaps = {};
 
+/**
+ * Auxiliar variables for tracking the cursor position. It'll point to the
+ * actual resolution.
+ */
 NelioAB.heatmaps.current = {};
 NelioAB.heatmaps.current.regular;
 NelioAB.heatmaps.current.click;
 
+
+/**
+ * Heatmap information for the Phone resolution.
+ */
 NelioAB.heatmaps.phone = {};
 NelioAB.heatmaps.phone.regular;
 NelioAB.heatmaps.phone.click;
 
+
+/**
+ * Heatmap information for the Tablet resolution.
+ */
 NelioAB.heatmaps.tablet = {};
 NelioAB.heatmaps.tablet.regular;
 NelioAB.heatmaps.tablet.click;
 
+
+/**
+ * Heatmap information for the Desktop resolution.
+ */
 NelioAB.heatmaps.desktop = {};
 NelioAB.heatmaps.desktop.regular;
 NelioAB.heatmaps.desktop.click;
 
+
+/**
+ * Heatmap information for the HD resolution.
+ */
 NelioAB.heatmaps.hd = {};
 NelioAB.heatmaps.hd.regular;
 NelioAB.heatmaps.hd.click;
@@ -60,7 +84,7 @@ NelioAB.heatmaps.hd.click;
 			var exportData = {};
 			for ( var k in this.data )
 				exportData[k] = data[k].exportDataSet();
-			return { max:this.max, data:exportData, session:NelioAB.cookies.get('nelioab_session_id') };
+			return { max:this.max, data:exportData, session:NelioAB.user.session() };
 		}
 	};
 
@@ -106,6 +130,15 @@ NelioAB.heatmaps.hd.click;
 
 })();
 
+/**
+ * Depending on the current width w of the screen, we'll use one tracking
+ * object or the other.
+ *
+ * @param w
+ *            current window width.
+ *
+ * @return the appropriate regular data store.
+ */
 NelioAB.heatmaps.selectRegularDatastore = function(w) {
 	if (w <= 360) return NelioAB.heatmaps.phone.regular;
 	else if (w <= 768) return NelioAB.heatmaps.tablet.regular;
@@ -113,6 +146,15 @@ NelioAB.heatmaps.selectRegularDatastore = function(w) {
 	else return NelioAB.heatmaps.hd.regular;
 };
 
+/**
+ * Depending on the current width w of the screen, we'll use one tracking
+ * object or the other.
+ *
+ * @param w
+ *            current window width.
+ *
+ * @return the appropriate click data store.
+ */
 NelioAB.heatmaps.selectClickDatastore = function(w) {
 	if (w <= 360) return NelioAB.heatmaps.phone.click;
 	else if (w <= 768) return NelioAB.heatmaps.tablet.click;
@@ -120,6 +162,13 @@ NelioAB.heatmaps.selectClickDatastore = function(w) {
 	else return NelioAB.heatmaps.hd.click;
 };
 
+/**
+ * Start tracking the information and collecting data to build heatmaps.
+ *
+ * @param mode
+ *            Either "elem" or "html", this variable specifies how Heatmaps
+ *            should be collected.
+ */
 NelioAB.heatmaps.doTrack = function(mode) {
 	NelioAB.heatmaps.current.regular = NelioAB.heatmaps.selectRegularDatastore(jQuery(window).width());
 	NelioAB.heatmaps.current.click = NelioAB.heatmaps.selectClickDatastore(jQuery(window).width());
@@ -165,7 +214,7 @@ NelioAB.heatmaps.doTrack = function(mode) {
 	}, 150);
 
 	var add;
-	if ( 'HTML_HEATMAP_TRACKING' == mode ) {
+	if ( 'html' == mode ) {
 		path = 'html>body';
 		add = function( e, isclick ) {
 			if ( typeof e.pageX == 'undefined' || typeof e.pageY == 'undefined' ) return;
@@ -198,10 +247,10 @@ NelioAB.heatmaps.doTrack = function(mode) {
 				return;
 			}
 
-			var pl = target.css('padding-left');   if ( typeof pl == 'undefined' ) pl = "0";
-			var pr = target.css('padding-right');  if ( typeof pr == 'undefined' ) pr = "0";
-			var pt = target.css('padding-top');    if ( typeof pt == 'undefined' ) pt = "0";
-			var pb = target.css('padding-bottom'); if ( typeof pb == 'undefined' ) pb = "0";
+			var pl = target.css('padding-left');   if ( typeof pl == 'undefined' ) pl = '0';
+			var pr = target.css('padding-right');  if ( typeof pr == 'undefined' ) pr = '0';
+			var pt = target.css('padding-top');    if ( typeof pt == 'undefined' ) pt = '0';
+			var pb = target.css('padding-bottom'); if ( typeof pb == 'undefined' ) pb = '0';
 
 			pl = Math.round( pl.replace(/[^0-9\.]/g,'') );
 			pr = Math.round( pr.replace(/[^0-9\.]/g,'') );
@@ -215,8 +264,8 @@ NelioAB.heatmaps.doTrack = function(mode) {
 
 			nx = normalizer( posX, width );
 			ny = normalizer( posY, height );
-			if ( nx == Infinity || nx == NaN ) nx = "0";
-			if ( ny == Infinity || ny == NaN ) ny = "0";
+			if ( nx == Infinity || nx == NaN ) nx = '0';
+			if ( ny == Infinity || ny == NaN ) ny = '0';
 
 			if (isclick) NelioAB.heatmaps.current.click.addDataPoint(path, nx, ny);
 			NelioAB.heatmaps.current.regular.addDataPoint(path, nx, ny);
@@ -225,17 +274,17 @@ NelioAB.heatmaps.doTrack = function(mode) {
 
 	var normalizer = function( position, length ) {
 		if ( length <= 50 )
-			return "0.5";
+			return '0.5';
 
 		if ( length <= 500 ) {
 			var result = (position/length).toFixed(1);
 			if ( length <= 150 ) {
-				if ( result == "0.0" || result == "0.1" || result == "0.2" || result == "0.3" )
-					return "0.2";
-				else if ( result == "0.4" || result == "0.5" || result == "0.6" )
-					return "0.5";
+				if ( result == '0.0' || result == '0.1' || result == '0.2' || result == '0.3' )
+					return '0.2';
+				else if ( result == '0.4' || result == '0.5' || result == '0.6' )
+					return '0.5';
 				else
-					return "0.8";
+					return '0.8';
 			}
 			return result;
 		}
@@ -243,16 +292,16 @@ NelioAB.heatmaps.doTrack = function(mode) {
 		var result = (position/length).toFixed(3);
 		var cent = parseInt(result.substring(3,4));
 		if ( length <= 800 ) {
-			if ( cent <= 5 ) cent = "5";
-			else cent = "";
+			if ( cent <= 5 ) cent = '5';
+			else cent = '';
 			return result.substring(0,3) + cent;
 		}
 		else if ( length <= 1500 ) {
-			if ( cent == 0 ) cent = "";
-			else if ( cent <= 2 ) cent = "2";
-			else if ( cent <= 5 ) cent = "5";
-			else if ( cent <= 7 ) cent = "7";
-			else cent = "9";
+			if ( cent == 0 ) cent = '';
+			else if ( cent <= 2 ) cent = '2';
+			else if ( cent <= 5 ) cent = '5';
+			else if ( cent <= 7 ) cent = '7';
+			else cent = '9';
 			return result.substring(0,3) + cent;
 		}
 		else if ( length <= 5000 ) {
@@ -335,12 +384,13 @@ NelioAB.heatmaps.doTrack = function(mode) {
 	});
 
 	jQuery(document).bind( 'byebye', function( e, elem, href ) {
-		if ( href instanceof String && href.indexOf( "#" ) == 0 ) return;
+		if ( href instanceof String && href.indexOf( '#' ) == 0 ) return;
 		add(e, true);
 		NelioAB.heatmaps.sync( true );
 	});
 
 	window.onunload = window.onbeforeunload = ( function() {
+		NelioAB.helpers.setRefererCookie();
 		NelioAB.heatmaps.sync( true );
 	} );
 
@@ -352,6 +402,12 @@ NelioAB.heatmaps.doTrack = function(mode) {
 
 
 NelioAB.heatmaps.syncInterval = 1000;
+
+
+/**
+ * Heatmap information is being sent to AE periodically. This function
+ * specifies when the next sync has to occur.
+ */
 NelioAB.heatmaps.scheduleNextSync = function() {
 	setTimeout( function() {
 		NelioAB.heatmaps.sync( false );
@@ -360,8 +416,15 @@ NelioAB.heatmaps.scheduleNextSync = function() {
 		NelioAB.heatmaps.syncInterval += 5000;
 };
 
+/**
+ * This function sends the data to AE, using the appropriate API function.
+ *
+ * @param data
+ *            the collected Heatmaps data.
+ */
 NelioAB.heatmaps.doSync = function(data) {
 	var async = NelioABParams.misc.useOutwardsNavigationsBlank;
+	data.envHash = NelioABBasic.settings.envHash;
 	jQuery.ajax({
 		type: 'POST',
 		async: async,
@@ -370,6 +433,15 @@ NelioAB.heatmaps.doSync = function(data) {
 	});
 };
 
+/**
+ * This function prepares the collected Heatmap data, transforms it to the
+ * format AE expects, and sends it to AE.
+ *
+ * @param lastSending
+ *            Specifies whether the execution of this function is the last time
+ *            it should be executed or not. If it isn't, it'll schedule a next
+ *            sync.
+ */
 NelioAB.heatmaps.isSyncing = false;
 NelioAB.heatmaps.sync = function( lastSending ) {
 	if ( NelioAB.heatmaps.isSyncing )
@@ -403,9 +475,8 @@ NelioAB.heatmaps.sync = function( lastSending ) {
 	var data = {
 			customerId: NelioABParams.customer,
 			siteId: NelioABParams.site,
-			post: NelioABParams.sync.nav.currentActualId,
-			session: NelioAB.cookies.get('nelioab_session'),
-			s: NelioABParams.sync.heatmaps.sec
+			post: NelioABParams.info.currentActualId,
+			session: NelioAB.user.session()
 		};
 
 	if ( phoneClick.max > 0 ) {
@@ -469,10 +540,22 @@ NelioAB.heatmaps.sync = function( lastSending ) {
 };
 
 
+/**
+ * This function enables Heatmap tracking for the current user and session.
+ */
 NelioAB.heatmaps.track = function() {
-	jQuery(document).ready(function() {
-		NelioAB.heatmaps.doTrack(NelioABParams.sync.heatmaps.action);
+	var trackHeatmaps = false;
+	// Check if there's a Heatmap Experiment running
+	for ( var i = 0; i < NelioABBasic.hm.length && !trackHeatmaps; ++i )
+		if ( NelioABBasic.hm[i] == NelioABParams.info.currentActualId )
+			trackHeatmaps = true;
+	// Check if there's an AB Experiment running and heatmaps must be tracked
+	for ( var i = 0; i < NelioABEnv.hm.length && !trackHeatmaps; ++i )
+		if ( NelioABEnv.hm[i] == NelioABParams.info.currentActualId )
+			trackHeatmaps = true;
+	if ( trackHeatmaps ) {
+		NelioAB.heatmaps.doTrack(NelioABBasic.settings.hmMode);
 		NelioAB.heatmaps.scheduleNextSync();
-	});
+	}
 };
 

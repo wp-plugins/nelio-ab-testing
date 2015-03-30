@@ -293,7 +293,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 					<b><?php
 						printf( __( '<span style="font-size:120%%;color:%1$s;">%2$s</span> Page Views' ),
 							$quota_color, number_format_i18n( $the_quota ) ); ?></b>
-					<small>(<a href="http://support.nelioabtesting.com/support/solutions/articles/1000129162-what-is-a-tested-page-view-"><?php
+					<small>(<a href="http://support.nelioabtesting.com/support/solutions/articles/1000129162"><?php
 						_e( 'Help', 'nelioab' );
 					?></a>)</small><?php echo $post_quota; ?></p><?php
 
