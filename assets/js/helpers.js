@@ -5,6 +5,42 @@ NelioAB.helpers = {};
 
 
 /**
+ * This function returns whether the current browser is IE8 or IE9.
+ *
+ * @return whether the current browser is IE8 or IE9.
+ */
+NelioAB.helpers.isOldIE = function() {
+	if ( jQuery.browser.msie && window.XDomainRequest )
+		return true;
+	else
+		return false;
+};
+
+
+/**
+ * This function is a wrapper to jQuery.ajax interface. It's used to perform a
+ * request to Nelio's Cloud Servers. If the browser in which the request is
+ * performed is IE8 or IE9 (see NelioAB.helpers.isOldIE), then the request is
+ * not performed to Nelio directly, but to a WordPress proxy.
+ *
+ * @param object obj
+ *               the ajax object as required by jQuery. It type attribute is
+ *               not required, for this function will set it to POST.
+ */
+NelioAB.helpers.remotePost = function( obj ) {
+	obj.type = 'POST';
+	if ( NelioAB.helpers.isOldIE() ) {
+		obj.data = {
+			data: jQuery.param( obj.data ),
+			originalRequestUrl: obj.url
+		};
+		obj.url = NelioABParams.ieUrl;
+	}
+	jQuery.ajax( obj );
+};
+
+
+/**
  * This function returns whether the current page should load alternative
  * content or not. A page might require alternative content if:
  *  - The page is under test
@@ -352,11 +388,10 @@ NelioAB.helpers.navigate = function() {
 	data.actualDestination = NelioABParams.info.currentActualId;
 	data.envHash = NelioABBasic.settings.envHash;
 
-	jQuery.ajax({
-		type:    'POST',
-		async:   true,
-		url:     NelioAB.backend.url + '/rn',
-		data:    data
+	NelioAB.helpers.remotePost({
+		async: true,
+		url:   NelioAB.backend.url + '/rn',
+		data:  data
 	});
 
 };
@@ -379,11 +414,10 @@ NelioAB.helpers.navigateOutwards = function(dest) {
 	data.envHash = NelioABBasic.settings.envHash;
 
 	var async = NelioABParams.misc.useOutwardsNavigationsBlank;
-	jQuery.ajax({
-		type:    'POST',
-		async:   async,
-		url:     NelioAB.backend.url + '/on',
-		data:    data
+	NelioAB.helpers.remotePost({
+		async: async,
+		url:   NelioAB.backend.url + '/on',
+		data:  data
 	});
 
 };
@@ -412,11 +446,10 @@ NelioAB.helpers.sendHeadlineViews = function() {
 			envHash: NelioABBasic.settings.envHash
 		};
 
-	jQuery.ajax({
-		type:    'POST',
-		async:   true,
-		url:     NelioAB.backend.url + '/hl',
-		data:    data
+	NelioAB.helpers.remotePost({
+		async: true,
+		url:   NelioAB.backend.url + '/hl',
+		data:  data
 	});
 
 };
@@ -444,11 +477,10 @@ NelioAB.helpers.sendClickElementEvent = function(ce) {
 	data.activeTheme  = NelioAB.user.getGlobalAltValue( 'theme' );
 	data.activeWidget = NelioAB.user.getGlobalAltValue( 'widget' );
 
-	jQuery.ajax({
-		type:    'POST',
-		async:   true,
-		url:     NelioAB.backend.url + '/ce',
-		data:    data
+	NelioAB.helpers.remotePost({
+		async: true,
+		url:   NelioAB.backend.url + '/ce',
+		data:  data
 	});
 
 };
@@ -578,7 +610,7 @@ NelioAB.helpers.updateRefererInformation = function( url ) {
 	var res = {'id' : -102, 'actualId' : -102 };
 	if ( !NelioAB.helpers.referer ) {
 		try {
-			if ( window.history.state != null && typeof window.history.state.referer != 'undefined' ) {
+			if ( typeof window.history.state != 'undefined' && typeof window.history.state.referer != 'undefined' ) {
 				res = window.history.state.referer;
 			}
 			else {
@@ -595,7 +627,10 @@ NelioAB.helpers.updateRefererInformation = function( url ) {
 	if ( typeof url == 'undefined' )
 		url = document.URL;
 	NelioAB.helpers.referer = res;
-	window.history.replaceState({referer:res}, '', url);
+	try {
+		window.history.replaceState({referer:res}, '', url);
+	}
+	catch (e) {}
 };
 
 

@@ -425,8 +425,7 @@ NelioAB.heatmaps.scheduleNextSync = function() {
 NelioAB.heatmaps.doSync = function(data) {
 	var async = NelioABParams.misc.useOutwardsNavigationsBlank;
 	data.envHash = NelioABBasic.settings.envHash;
-	jQuery.ajax({
-		type: 'POST',
+	NelioAB.helpers.remotePost({
 		async: async,
 		url: NelioAB.backend.url + '/hm',
 		data: data

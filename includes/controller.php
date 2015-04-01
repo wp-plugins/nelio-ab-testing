@@ -380,6 +380,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 					'misc'      => $misc,
 					'sync'      => array( 'headlines' => array() ),
 					'info'      => $current_page_ids,
+					'ieUrl'     => preg_replace( '/^https?:/', '', NELIOAB_URL . '/ajax/iesupport.php' )
 				) );
 
 		}

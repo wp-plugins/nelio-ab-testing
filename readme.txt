@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,8 +26,9 @@ familiar user experience.
 > Improve your landing pages, write better posts, create alternative pages, go
 > beyond simple title testing and start testing headlines, try new themes, test
 > different menus, modify your CSS rules, and test alternative widgets!
-> Moreover, Nelio A/B is also compatible with some of your most beloved plugins
-> such as, for instance, OptimizePress, Gravity Forms, or Contact Form 7.
+> Moreover, we designed Nelio A/B Testing to be compatible with your most
+> beloved WordPress plugins such as, for instance, OptimizePress, Gravity
+> Forms, or Contact Form 7.
 >
 > **Designed as a Service**<br>
 > Our plugin lifts all the processing load from your own server and takes it
@@ -260,7 +261,13 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
-= 4.0.0 =
+= 4.0.1 (Apr 1, 2015) =
+* Bug fix tracking visitors on older versions of Internet Explorer. In
+particular, accessing the object <code>window.history</code> is now nested
+in a <code>try-catch</code> block to prevent things from breaking.
+
+
+= 4.0.0 (Mar 30, 2015) =
 * **Efficiency Improvements**. We've redesigned several components of our
 plugin from scratch. Now it's faster and more reliable! We've solved most of
 the compatibility issues our plugin had with some JavaScript libraries and
@@ -839,8 +846,9 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.0.0 =
+= 4.0.1 =
 **Nelio A/B Testing 4 is more efficient than ever!** We've redesigned some
-components from scratch to make things faster and more reliable. We've
-improved the compatibility with JavaScript frameworks and libraries.
+components from scratch to make things faster and more reliable. We've improved
+the compatibility with JavaScript frameworks and libraries. Bug fix with IE8
+and IE9.
 
