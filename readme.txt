@@ -856,6 +856,6 @@ replaceText function
 == Upgrade Notice ==
 
 = 4.0.2 =
-This revision includes some **important** bug fixes. Make sure your old
+This revision includes some **important** bug fixes; it makes sure your old
 experiments run properly with this new version. **Nelio A/B Testing 4 is more
 efficient than ever!**
