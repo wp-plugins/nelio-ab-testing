@@ -59,7 +59,7 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 		}
 
 		/**
-		 * @returns this page reference
+		 * @return this page reference
 		 */
 		public function get_reference() {
 			return $this->reference;
@@ -70,7 +70,7 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 		 * RegEx string, ready to be uses as a parameter for the RegExp class
 		 * constructor. Otherwise, it returns false.
 		 *
-		 * @returns if the page is external, it returns its reference as a
+		 * @return if the page is external, it returns its reference as a
 		 *          JavaScript RegEx string, ready to be used in the client
 		 *          side. Otherwise, it returns false.
 		 */
@@ -107,7 +107,7 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 		 * does not include the "metachar sequence" ***. Otherwise, it returns
 		 * false.
 		 *
-		 * @returns if the page is external, it returns a clean version of
+		 * @return if the page is external, it returns a clean version of
 		 *          the URL, which does not include the "metachar sequence"
 		 *          ***. Otherwise, it returns false.
 		 */
@@ -121,7 +121,7 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 		 * If the page is external, it returns the regex matching mode that has
 		 * to be used for its URL. Otherwise, it returns false.
 		 *
-		 * @returns if the page is external, it returns the regex matching
+		 * @return if the page is external, it returns the regex matching
 		 *          mode that has to be used for its URL. Otherwise, it
 		 *          returns false.
 		 */

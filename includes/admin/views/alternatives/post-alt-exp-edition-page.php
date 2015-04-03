@@ -113,7 +113,7 @@ if ( !class_exists( 'NelioABPostAltExpEditionPage' ) ) {
 					_e( 'This is the post for which alternatives will be created.', 'nelioab' );
 				else
 					_e( 'This is the page for which alternatives will be created.', 'nelioab' );
-			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129193-what-is-the-original-page-or-post-of-an-experiment-" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129193" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}

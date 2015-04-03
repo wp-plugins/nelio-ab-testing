@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2015-03-02 11:33:10+00:00\n"
-"PO-Revision-Date: 2015-03-02 12:36+0100\n"
+"POT-Creation-Date: 2015-03-12 11:15:59+00:00\n"
+"PO-Revision-Date: 2015-03-12 12:52+0100\n"
 "Last-Translator: David Aguilera <david.aguilera@neliosoftware.com>\n"
 "Language-Team: Spanish <david.aguilera@neliosoftware.com>\n"
 "Language: es\n"
@@ -16,33 +16,33 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 
 #: includes/admin/account-page-controller.php:27
-#: includes/admin/account-page-controller.php:147
-#: includes/admin/admin-controller.php:504
-#: includes/admin/admin-controller.php:505
+#: includes/admin/account-page-controller.php:142
+#: includes/admin/admin-controller.php:494
+#: includes/admin/admin-controller.php:495
 msgid "My Account"
 msgstr "Mi Cuenta"
 
-#: includes/admin/account-page-controller.php:179
+#: includes/admin/account-page-controller.php:174
 msgid "Account information was successfully updated."
 msgstr "La información de la cuenta se ha actualizado."
 
-#: includes/admin/account-page-controller.php:187
+#: includes/admin/account-page-controller.php:182
 msgid "Invalid Registration Number"
 msgstr "Número de registro inválido"
 
-#: includes/admin/account-page-controller.php:192
+#: includes/admin/account-page-controller.php:187
 msgid "E-Mail is not registered in our service"
 msgstr "El e-mail no está registrado en nuestro servicio"
 
-#: includes/admin/account-page-controller.php:222
+#: includes/admin/account-page-controller.php:217
 msgid "This site has been successfully registered to your account."
 msgstr "Se ha registrado correctamente el site a su cuenta."
 
-#: includes/admin/account-page-controller.php:226
+#: includes/admin/account-page-controller.php:221
 msgid "This site is no longer registered to your account."
 msgstr "Este site ya no está registrado en vuestra cuenta."
 
-#: includes/admin/account-page-controller.php:229
+#: includes/admin/account-page-controller.php:224
 msgid ""
 "The site is no longer linked to any of your other registered sites, If you "
 "have free slots, you may now register it as a completely different and new "
@@ -52,15 +52,7 @@ msgstr ""
 "puede registrar otros sites, ahora tiene la posibilidad de registrar este "
 "como uno nuevo y diferente a los demás."
 
-#: includes/admin/admin-controller.php:117
-msgid ""
-"<b>Warning!</b> You have no more quota available. Please, <a href=\"%s"
-"\">check your Nelio A/B Testing account</a> for obtaining additional quota."
-msgstr ""
-"<b>¡Atención!</b> Ya no le queda más cuota. Por favor, <a href=\"%s\">acceda "
-"a su cuenta de Nelio A/B Testing</a> para obtener más cuota."
-
-#: includes/admin/admin-controller.php:376
+#: includes/admin/admin-controller.php:366
 #: includes/admin/views/alternatives/alternatives-table.php:100
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:258
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:290
@@ -69,24 +61,24 @@ msgstr ""
 #: includes/admin/views/experiments-page.php:301
 #: includes/admin/views/progress/alt-exp-progress-page.php:545
 #: includes/admin/views/progress/alt-exp-progress-page.php:723
-#: includes/admin/views/settings-page.php:89
+#: includes/admin/views/settings-page.php:105
 #: includes/utils/admin-table.php:248
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: includes/admin/admin-controller.php:382
+#: includes/admin/admin-controller.php:372
 msgid "Clean"
 msgstr "Borrar"
 
-#: includes/admin/admin-controller.php:396
+#: includes/admin/admin-controller.php:386
 msgid "Clean and Deactivate"
 msgstr "Borrar y Desactivar"
 
-#: includes/admin/admin-controller.php:397
+#: includes/admin/admin-controller.php:387
 msgid "Warning!"
 msgstr "Aviso"
 
-#: includes/admin/admin-controller.php:398
+#: includes/admin/admin-controller.php:388
 msgid ""
 "You are about to clean all your A/B testing data. This operation cannot be "
 "undone. Are you sure you want to continue?"
@@ -95,70 +87,69 @@ msgstr ""
 "generado. Recuerde que <strong>esta operación no se puede deshacer</strong>. "
 "¿Está seguro que quiere continuar?"
 
-#: includes/admin/admin-controller.php:412
-#: includes/admin/admin-controller.php:413
-#: includes/admin/admin-controller.php:437
-#: includes/admin/admin-controller.php:438
+#: includes/admin/admin-controller.php:402
+#: includes/admin/admin-controller.php:403
+#: includes/admin/admin-controller.php:427
+#: includes/admin/admin-controller.php:428
 #: includes/admin/feedback-page-controller.php:31
-#: includes/admin/feedback-page-controller.php:39 includes/controller.php:648
+#: includes/admin/feedback-page-controller.php:39 includes/controller.php:421
 msgid "Nelio A/B Testing"
 msgstr "Nelio A/B Testing"
 
-#: includes/admin/admin-controller.php:451
-#: includes/admin/admin-controller.php:452
+#: includes/admin/admin-controller.php:441
+#: includes/admin/admin-controller.php:442
 #: includes/admin/dashboard-page-controller.php:34
-#: includes/admin/dashboard-page-controller.php:54 includes/controller.php:709
+#: includes/admin/dashboard-page-controller.php:54 includes/controller.php:482
 msgid "Dashboard"
 msgstr "Escritorio"
 
-#: includes/admin/admin-controller.php:481
-#: includes/admin/admin-controller.php:482
+#: includes/admin/admin-controller.php:471
+#: includes/admin/admin-controller.php:472
 #: includes/admin/experiments-page-controller.php:34
 #: includes/admin/experiments-page-controller.php:132
-#: includes/controller.php:718
+#: includes/controller.php:491
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: includes/admin/admin-controller.php:495
-#: includes/admin/admin-controller.php:496 includes/controller.php:657
+#: includes/admin/admin-controller.php:485
+#: includes/admin/admin-controller.php:486 includes/controller.php:430
 msgid "Add Experiment"
 msgstr "Añadir Experimento"
 
-#: includes/admin/admin-controller.php:514
-#: includes/admin/admin-controller.php:515
+#: includes/admin/admin-controller.php:504
+#: includes/admin/admin-controller.php:505
 #: includes/admin/settings-page-controller.php:30
 msgid "Settings"
 msgstr "Configuración"
 
-#: includes/admin/admin-controller.php:525
-#: includes/admin/admin-controller.php:526
+#: includes/admin/admin-controller.php:515
+#: includes/admin/admin-controller.php:516
 msgid "Share & Comment"
 msgstr "Compartir"
 
-#: includes/admin/admin-controller.php:538
-#: includes/admin/admin-controller.php:539
+#: includes/admin/admin-controller.php:528
+#: includes/admin/admin-controller.php:529
 msgid "CSS Edit"
 msgstr "Edición de CSS"
 
-#: includes/admin/admin-controller.php:574
-#: includes/admin/admin-controller.php:582
+#: includes/admin/admin-controller.php:564
+#: includes/admin/admin-controller.php:572
 msgid "Edition of Alternative's Content"
 msgstr "Edición del contenido de una alternativa"
 
-#: includes/admin/admin-controller.php:615
+#: includes/admin/admin-controller.php:605
 #: includes/admin/views/alternatives/alternatives-table.php:109
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:280
 #: includes/admin/views/content/css-edit.php:152
 #: includes/admin/views/content/css-edit.php:170
-#: includes/admin/views/settings-page.php:486
 msgid "Update"
 msgstr "Actualizar"
 
-#: includes/admin/admin-controller.php:632
+#: includes/admin/admin-controller.php:622
 msgid "Preview Changes"
 msgstr "Previsualizar Cambios"
 
-#: includes/admin/admin-controller.php:635
+#: includes/admin/admin-controller.php:625
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:95
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:110
 #: includes/admin/views/content/css-edit.php:179
@@ -166,42 +157,42 @@ msgstr "Previsualizar Cambios"
 msgid "Preview"
 msgstr "Vista Previa"
 
-#: includes/admin/admin-controller.php:646
+#: includes/admin/admin-controller.php:636
 #: includes/admin/views/content/css-edit.php:206
 #: includes/experiment-controllers/menu-experiment-controller.php:169
 #: includes/experiment-controllers/widget-experiment-controller.php:189
 msgid "Go back to..."
 msgstr "Volver a..."
 
-#: includes/admin/admin-controller.php:654
+#: includes/admin/admin-controller.php:644
 #: includes/admin/views/content/css-edit.php:220
 #: includes/experiment-controllers/menu-experiment-controller.php:174
 #: includes/experiment-controllers/widget-experiment-controller.php:194
 msgid "Editing this experiment"
 msgstr "La edición de este experimento"
 
-#: includes/admin/admin-controller.php:660
+#: includes/admin/admin-controller.php:650
 #: includes/admin/views/content/css-edit.php:226
 #: includes/experiment-controllers/menu-experiment-controller.php:178
 #: includes/experiment-controllers/widget-experiment-controller.php:198
 msgid "The results of the related experiment"
 msgstr "Los resultados de este experimento"
 
-#: includes/admin/admin-controller.php:668
+#: includes/admin/admin-controller.php:658
 #: includes/admin/views/content/css-edit.php:234
 #: includes/experiment-controllers/menu-experiment-controller.php:181
 #: includes/experiment-controllers/widget-experiment-controller.php:201
 msgid "My list of experiments"
 msgstr "Mi lista de experimentos"
 
-#: includes/admin/admin-controller.php:670
+#: includes/admin/admin-controller.php:660
 #: includes/admin/views/content/css-edit.php:235
 msgid "The Dashboard"
 msgstr "El Escritorio"
 
 #: includes/admin/alternatives/alt-exp-super-controller.php:71
 #: includes/admin/others/heatmap-exp-edition-page-controller.php:156
-#: includes/utils/admin-page.php:209
+#: includes/utils/admin-page.php:200
 msgid "The following errors have been encountered:"
 msgstr "Se han encontrado los siguientes errores:"
 
@@ -827,8 +818,8 @@ msgid "whose ID is"
 msgstr "cuyo ID es"
 
 #: includes/admin/views/alternatives/alt-exp-page.php:326
-msgid "whose CSS path is"
-msgstr "cuyo path CSS es"
+msgid "that matches the CSS Selector rule"
+msgstr "que coincide con la regla de selección CSS"
 
 #: includes/admin/views/alternatives/alt-exp-page.php:328
 msgid "that contains the text"
@@ -923,7 +914,7 @@ msgid "(Hover over each action for help)"
 msgstr "(Ponga el cursor encima para obtener ayuda)"
 
 #: includes/admin/views/alternatives/alt-exp-page.php:482
-#: includes/admin/views/dashboard-page.php:196
+#: includes/admin/views/dashboard-page.php:199
 #: includes/admin/views/experiments-page.php:556
 msgid "Post"
 msgstr "Entrada"
@@ -933,8 +924,8 @@ msgid "A visitor accesses a post in your WordPress site"
 msgstr "Un visitante accede a una entrada de WordPress"
 
 #: includes/admin/views/alternatives/alt-exp-page.php:488
-#: includes/admin/views/dashboard-page.php:189
 #: includes/admin/views/dashboard-page.php:192
+#: includes/admin/views/dashboard-page.php:195
 #: includes/admin/views/experiments-page.php:553
 msgid "Page"
 msgstr "Página"
@@ -1037,7 +1028,7 @@ msgstr "General"
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:49
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:109
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:40
-#: includes/admin/views/dashboard-page.php:246
+#: includes/admin/views/dashboard-page.php:249
 #: includes/admin/views/progress/alt-exp-progress-page.php:705
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:156
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:167
@@ -1502,43 +1493,43 @@ msgstr "Información de Uso"
 msgid "QUOTA USED"
 msgstr "CUOTA USADA"
 
-#: includes/admin/views/dashboard-page.php:187
+#: includes/admin/views/dashboard-page.php:190
 #: includes/admin/views/experiments-page.php:551
 msgid "Landing Page"
 msgstr "Página Principal"
 
-#: includes/admin/views/dashboard-page.php:199
+#: includes/admin/views/dashboard-page.php:202
 #: includes/admin/views/experiments-page.php:559
 #: includes/admin/views/progress/headline-alt-exp-progress-page.php:63
 msgid "Headline"
 msgstr "Titular"
 
-#: includes/admin/views/dashboard-page.php:202
+#: includes/admin/views/dashboard-page.php:205
 #: includes/admin/views/experiments-page.php:562
 msgid "Theme"
 msgstr "Tema"
 
-#: includes/admin/views/dashboard-page.php:205
+#: includes/admin/views/dashboard-page.php:208
 #: includes/admin/views/experiments-page.php:565
 msgid "CSS"
 msgstr "CSS"
 
-#: includes/admin/views/dashboard-page.php:208
+#: includes/admin/views/dashboard-page.php:211
 #: includes/admin/views/experiments-page.php:568
 msgid "Heatmap"
 msgstr "Heatmap"
 
-#: includes/admin/views/dashboard-page.php:211
+#: includes/admin/views/dashboard-page.php:214
 #: includes/admin/views/experiments-page.php:571
 msgid "Widget"
 msgstr "Widget"
 
-#: includes/admin/views/dashboard-page.php:214
+#: includes/admin/views/dashboard-page.php:217
 #: includes/admin/views/experiments-page.php:574
 msgid "Menu"
 msgstr "Menú"
 
-#: includes/admin/views/dashboard-page.php:242
+#: includes/admin/views/dashboard-page.php:245
 #: includes/admin/views/progress/alt-exp-progress-page.php:1019
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:180
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:253
@@ -1548,15 +1539,15 @@ msgstr "Menú"
 msgid "Page Views"
 msgstr "Visitas a página"
 
-#: includes/admin/views/dashboard-page.php:258
+#: includes/admin/views/dashboard-page.php:261
 msgid "Original Version's Conversion Rate"
 msgstr "Conversiones de la original"
 
-#: includes/admin/views/dashboard-page.php:268
+#: includes/admin/views/dashboard-page.php:271
 msgid "Best Alternative's Conversion Rate"
 msgstr "Conversiones de la mejor alternativa"
 
-#: includes/admin/views/dashboard-page.php:319
+#: includes/admin/views/dashboard-page.php:322
 #: includes/admin/views/progress/alt-exp-progress-page.php:1020
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:181
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:254
@@ -1566,19 +1557,19 @@ msgstr "Conversiones de la mejor alternativa"
 msgid "Conversions"
 msgstr "Conversiones"
 
-#: includes/admin/views/dashboard-page.php:334
+#: includes/admin/views/dashboard-page.php:337
 msgid "Views on Phone"
 msgstr "Visualizaciones en Móvil"
 
-#: includes/admin/views/dashboard-page.php:338
+#: includes/admin/views/dashboard-page.php:341
 msgid "Views on Tablet"
 msgstr "Visualizaciones en Tablet"
 
-#: includes/admin/views/dashboard-page.php:344
+#: includes/admin/views/dashboard-page.php:347
 msgid "Views on Desktop"
 msgstr "Visualizaciones en Escritorio"
 
-#: includes/admin/views/dashboard-page.php:348
+#: includes/admin/views/dashboard-page.php:351
 msgid "Views on Large Screens"
 msgstr "Visualizaciones en Pantallas Grandes"
 
@@ -1748,7 +1739,7 @@ msgstr "Está a punto de duplicar un experimento.<br>Nuevo nombre:"
 #: includes/admin/views/experiments-page.php:427
 #: includes/admin/views/experiments-page.php:434
 #: includes/admin/views/experiments-page.php:440
-#: includes/admin/views/experiments-page.php:468
+#: includes/admin/views/experiments-page.php:464
 msgid "Duplicate"
 msgstr "Duplicar"
 
@@ -1830,7 +1821,7 @@ msgstr ""
 msgid "Feature only available in the Professional Plan"
 msgstr "Funcionalidad disponible únicamente en el Plan Profesional"
 
-#: includes/admin/views/experiments-page.php:466
+#: includes/admin/views/experiments-page.php:468
 msgid "Feature only available in the Enterprise Plan"
 msgstr "Funcionalidad disponible únicamente en el Plan Enterprise"
 
@@ -1920,23 +1911,23 @@ msgid "Comment successfully sent."
 msgstr "Comentario enviado correctamente."
 
 #: includes/admin/views/multisite-settings-page.php:41
-#: includes/admin/views/settings-page.php:189
+#: includes/admin/views/settings-page.php:232
 msgid "Plugin Available To"
 msgstr "Disponibilidad del plugin"
 
 #: includes/admin/views/multisite-settings-page.php:47
-#: includes/admin/views/settings-page.php:77
+#: includes/admin/views/settings-page.php:93
 msgid "Save Changes"
 msgstr "Guardar cambios"
 
 #: includes/admin/views/multisite-settings-page.php:68
-#: includes/admin/views/settings-page.php:1040
+#: includes/admin/views/settings-page.php:999
 msgid "Super Admins and Site Admins"
 msgstr "Super Admins y Admins del site"
 
 #: includes/admin/views/multisite-settings-page.php:75
-#: includes/admin/views/settings-page.php:1032
-#: includes/admin/views/settings-page.php:1047
+#: includes/admin/views/settings-page.php:991
+#: includes/admin/views/settings-page.php:1006
 msgid "Super Admins Only"
 msgstr "Sólo Super Admins"
 
@@ -2860,38 +2851,76 @@ msgstr ""
 "%s<p>Por favor, espere unos instantes e inténtelo de nuevo."
 
 #: includes/admin/views/settings-page.php:36
-#: includes/admin/views/settings-page.php:321
-msgid "Quota Limit per Experiment"
-msgstr "Límite de cuota para un experimento"
+#: includes/admin/views/settings-page.php:373
+msgid "Algorithm"
+msgstr "Algoritmo"
 
 #: includes/admin/views/settings-page.php:38
-#: includes/admin/views/settings-page.php:278
+#: includes/admin/views/settings-page.php:195
+msgid "Site-wide Consistency"
+msgstr "Consistencia Global"
+
+#: includes/admin/views/settings-page.php:40
+msgid "Exploitation or Exploration (using Greedy Algorithm)"
+msgstr "Explotación o Exploración (usando algoritmo Greedy)"
+
+#: includes/admin/views/settings-page.php:42
+#: includes/admin/views/settings-page.php:177
+msgid "A/B GET Params"
+msgstr "Parám. GET de A/B"
+
+#: includes/admin/views/settings-page.php:44
+#: includes/admin/views/settings-page.php:213
+msgid "Heatmap Tracking"
+msgstr "Heatmap Tracking"
+
+#: includes/admin/views/settings-page.php:46
+#: includes/admin/views/settings-page.php:186
+msgid "Test Mode"
+msgstr "Modo de Test"
+
+#: includes/admin/views/settings-page.php:48
+msgid "Original Percentage (using Prioritize Original Algorithm)"
+msgstr "Porcentaje Original (usando algoritmo de Priorizar la Original)"
+
+#: includes/admin/views/settings-page.php:50
+#: includes/admin/views/settings-page.php:364
+msgid "Num. of Tested Users"
+msgstr "Núm. de Usuarios en Test"
+
+#: includes/admin/views/settings-page.php:52
+#: includes/admin/views/settings-page.php:337
+msgid "Quota Limit"
+msgstr "Límite de Cuota"
+
+#: includes/admin/views/settings-page.php:54
+#: includes/admin/views/settings-page.php:312
 msgid "Notification E-Mail"
 msgstr "E-Mail a Notificar"
 
-#: includes/admin/views/settings-page.php:40
-#: includes/admin/views/settings-page.php:374
+#: includes/admin/views/settings-page.php:56
+#: includes/admin/views/settings-page.php:390
 msgid "Notifications"
 msgstr "Notificaciones"
 
-#: includes/admin/views/settings-page.php:58
+#: includes/admin/views/settings-page.php:74
 msgid "Basic"
 msgstr "Básico"
 
-#: includes/admin/views/settings-page.php:61
+#: includes/admin/views/settings-page.php:77
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: includes/admin/views/settings-page.php:74
-#: includes/admin/views/settings-page.php:95
+#: includes/admin/views/settings-page.php:90
+#: includes/admin/views/settings-page.php:111
 msgid "Reset to Defaults"
 msgstr "Reset"
 
-#: includes/admin/views/settings-page.php:82
+#: includes/admin/views/settings-page.php:98
 msgid "Reset Settings"
 msgstr "Valores por Defecto"
 
-#: includes/admin/views/settings-page.php:107
+#: includes/admin/views/settings-page.php:123
 msgid ""
 "This operation will set all Settings to their default values. Do you want to "
 "continue?"
@@ -2899,79 +2928,59 @@ msgstr ""
 "Esta operación va a restablecer los valores por defecto de todos los "
 "parámetros de configuración. ¿Desea continuar?"
 
-#: includes/admin/views/settings-page.php:161
-msgid "Site-wide Consistency"
-msgstr "Consistencia Global"
-
-#: includes/admin/views/settings-page.php:170
-msgid "Cache Support"
-msgstr "Soporte a Caches"
-
-#: includes/admin/views/settings-page.php:208
-msgid "Admin Bar"
-msgstr "Barra de Administración"
-
-#: includes/admin/views/settings-page.php:217
-msgid "Plugin Menu Location"
-msgstr "Ubicación del Menú"
-
-#: includes/admin/views/settings-page.php:226
-msgid "Experiment List"
-msgstr "Experimentos"
-
-#: includes/admin/views/settings-page.php:235
-msgid "Icons and Colors"
-msgstr "Iconos y Colores"
-
-#: includes/admin/views/settings-page.php:251
+#: includes/admin/views/settings-page.php:204
 msgid "External Page Actions"
 msgstr "Acciones de página externa"
 
+#: includes/admin/views/settings-page.php:251
+msgid "Admin Bar"
+msgstr "Barra de Administración"
+
 #: includes/admin/views/settings-page.php:260
-msgid "Heatmap Tracking"
-msgstr "Heatmap Tracking"
+msgid "Plugin Menu Location"
+msgstr "Ubicación del Menú"
 
 #: includes/admin/views/settings-page.php:269
+msgid "Experiment List"
+msgstr "Experimentos"
+
+#: includes/admin/views/settings-page.php:278
+msgid "Icons and Colors"
+msgstr "Iconos y Colores"
+
+#: includes/admin/views/settings-page.php:294
 msgid "Front Page"
 msgstr "Página Frontal"
 
-#: includes/admin/views/settings-page.php:287
+#: includes/admin/views/settings-page.php:303
 msgid "Default Conversion Value"
 msgstr "Valor de Conv. por defecto"
 
-#: includes/admin/views/settings-page.php:330
-msgid "Quota Usage for Headlines"
-msgstr "Consumo de Cuota (Titulares)"
+#: includes/admin/views/settings-page.php:346
+msgid "Headline Testing"
+msgstr "Test de Titulares"
 
-#: includes/admin/views/settings-page.php:339
+#: includes/admin/views/settings-page.php:355
 msgid "Min. Confidence"
 msgstr "Confianza Mínima"
 
-#: includes/admin/views/settings-page.php:348
-msgid "Num. of Tested Users"
-msgstr "Núm. de Usuarios en Test"
+#: includes/admin/views/settings-page.php:409
+msgid "Plugin Behavior"
+msgstr "Comportamiento"
 
-#: includes/admin/views/settings-page.php:357
-msgid "Algorithm"
-msgstr "Algoritmo"
-
-#: includes/admin/views/settings-page.php:393
-msgid "Efficiency"
-msgstr "Eficiencia"
-
-#: includes/admin/views/settings-page.php:399
+#: includes/admin/views/settings-page.php:414
 msgid "Multi-Site Settings"
 msgstr "Configuración de Multi-Site"
 
-#: includes/admin/views/settings-page.php:404
+#: includes/admin/views/settings-page.php:419
 msgid "User Interface"
 msgstr "Interfaz de Usuario"
 
-#: includes/admin/views/settings-page.php:409
+#: includes/admin/views/settings-page.php:424
 msgid "Miscellaneous"
 msgstr "Otros"
 
-#: includes/admin/views/settings-page.php:419
+#: includes/admin/views/settings-page.php:434
 msgid ""
 "The following settings can only be modified by users subscribed to our "
 "<b>Professional</b> or <b>Enterprise Plans</b>.<br>If you want to have a "
@@ -2983,209 +2992,229 @@ msgstr ""
 "mayor control sobre la configuración del plugin, <a target=\"_blank\" href="
 "\"%s\">por favor actualice su suscripción</a>."
 
-#: includes/admin/views/settings-page.php:462
-msgid "AJAX Performance"
-msgstr "Eficiencia AJAX"
+#: includes/admin/views/settings-page.php:557
+msgid "%1$s %2$s"
+msgstr "%2$s%1$s"
 
-#: includes/admin/views/settings-page.php:472
+#: includes/admin/views/settings-page.php:560
 msgid ""
-"In order to boost response times of all AJAX requests triggered by Nelio A/B "
-"Testing, we include a tiny <a %1$s>Must Use Plugin</a> that disables other "
-"plugins when they're not necessary.<br><br><strong>AJAX Performance MU-"
-"Plugin Status: <span class=\"status %2$s\">%3$s</span></strong>.<br><span "
-"class=\"explanation\">%4$s</span>"
+"Define a default value (in money units) for your conversions. This value "
+"could be, for instance, the average benefit you obtain every time a visitor "
+"converts (that is, she buys a product or subscribes to a service). The "
+"conversion value can be overwritten when adding goals into an experiment."
 msgstr ""
-"Para mejorar los tiempos de respuesta de todas las llamadas AJAX lanzadas "
-"por Nelio A/B Testing, nuestro plugin incluye un pequeño <a %1$s>Must Use "
-"Plugin</a> que deshabilita otros plugins cuando no son necesarios."
-"<br><br><strong>Estado del MU-Plugin: <span class=\"status %2$s\">%3$s</"
-"span></strong>.<br><span class=\"explanation\">%4$s</span>"
+"Defina el valor monetario por defecto de sus conversiones. Este valor puede "
+"ser, por ejemplo, el beneficio medio que obtiene cada vez que un visitante "
+"se convierte (es decir, cuando compra un producto o se suscribe a un "
+"servicio). Este valor por defecto se puede sobrescribir cuando añada "
+"objetivos a un experimento."
 
-#: includes/admin/views/settings-page.php:477
-#: includes/admin/views/settings-page.php:519
-#: includes/admin/views/settings-page.php:529
-msgid "Installed"
-msgstr "Instalado"
-
-#: includes/admin/views/settings-page.php:478
-msgid ""
-"In order to uninstall the plugin, please use the previous «Uninstall» button."
-msgstr "Para desinstalar el plugin, pulse el botón «Desinstalar»."
-
-#: includes/admin/views/settings-page.php:479
-msgid "Uninstall"
-msgstr "Desinstalar"
-
-#: includes/admin/views/settings-page.php:484
-msgid "Outdated"
-msgstr "Requiere Actualización"
-
-#: includes/admin/views/settings-page.php:485
-msgid "In order to update the plugin, please use the previous «Update» button."
-msgstr "Para actualizar el plugin, pulse el botón «Actualizar»."
-
-#: includes/admin/views/settings-page.php:491
-#: includes/admin/views/settings-page.php:524
-msgid "Not Installed"
-msgstr "No Instalado"
-
-#: includes/admin/views/settings-page.php:492
-msgid ""
-"In order to install the plugin, please use the previous «Install» button."
-msgstr "Para instalar el plugin, pulse el botón «Instalar»."
-
-#: includes/admin/views/settings-page.php:493
-msgid "Install"
-msgstr "Instalar"
-
-#: includes/admin/views/settings-page.php:513
-msgid "Done!"
-msgstr "¡Hecho!"
-
-#: includes/admin/views/settings-page.php:563
+#: includes/admin/views/settings-page.php:573
 msgid "Default - Pure Random"
 msgstr "Por defecto - Aleatorio"
 
-#: includes/admin/views/settings-page.php:568
+#: includes/admin/views/settings-page.php:578
 msgid "Prioritize Original Version"
 msgstr "Priorizar Versión Original"
 
-#: includes/admin/views/settings-page.php:573
+#: includes/admin/views/settings-page.php:583
 msgid "Prioritize Winner (Greedy)"
 msgstr "Priorizar la ganadora (Greedy)"
 
 #: includes/admin/views/settings-page.php:586
+msgid ""
+"Nelio A/B Testing implements different algorithms for deciding which "
+"alternative should see each of your visitors."
+msgstr ""
+"Nelio A/B Testing ofrece diferentes algoritmos para decidir qué alternativa "
+"debe ver cada uno de sus visitantes."
+
+#: includes/admin/views/settings-page.php:588
+msgid ""
+"<li><strong>Pure Random.</strong> All alternatives have the exact same "
+"chance to be seen by any of your visitors.</li>"
+msgstr ""
+"<li><strong>Aleatorio.</strong> Todas las alternativas tienen las mismas "
+"posibilidades de ser vistas por sus usuarios.</li>"
+
+#: includes/admin/views/settings-page.php:589
+msgid ""
+"<li><strong>Prioritize Original.</strong> The original version is more "
+"likely to be shown.</li>"
+msgstr ""
+"<li><strong>Priorizar Versión Original.</strong> La versión original tiene "
+"más posibilidades de aparecer que cualquiera de las demás.</li>"
+
+#: includes/admin/views/settings-page.php:590
+msgid ""
+"<li><strong>Greedy.</strong> Also known as <em>multi-armed bandit</em>, this "
+"algorithm makes the best alternative (that is, the one that's converting the "
+"best) more likely to appear.</li>"
+msgstr ""
+"<li><strong>Greedy.</strong> También conocido como <em>multi-armed bandit</"
+"em>, este algoritmo da prioridad a la mejor alternativa (es decir, la que en "
+"un momento dado tiene mejor ratio de conversiones).</li>"
+
+#: includes/admin/views/settings-page.php:604
 msgid "Unlimited"
 msgstr "Ilimitado"
 
-#: includes/admin/views/settings-page.php:594
+#: includes/admin/views/settings-page.php:612
 msgid "%s page views"
 msgstr "%s páginas bajo test"
 
-#: includes/admin/views/settings-page.php:613
+#: includes/admin/views/settings-page.php:620
+msgid ""
+"This setting will automatically stop the experiment as soon as the results "
+"of an experiment are updated and the number of page views is equal to (or a "
+"little bit greater than) the limit you set. Don't waste your quota anymore!"
+msgstr ""
+"Defina la cuota máxima que un experimento cualquiera puede consumir. Cada "
+"vez que se actualicen los resultados de un experimento, el plugin comprobará "
+"si el experimento dispone de cuota o ya se ha excedido. ¡No malgaste más "
+"cuota!"
+
+#: includes/admin/views/settings-page.php:634
 msgid "All Pages Are Relevant for Headline Tracking"
 msgstr "Todas las páginas son relevantes para el Tracking de Titulares"
 
-#: includes/admin/views/settings-page.php:619
+#: includes/admin/views/settings-page.php:640
 msgid "Only the Front Page Is Relevant for Headline Tracking"
 msgstr "Sólo la página principal es relevante para el Tracking de Titulares"
 
-#: includes/admin/views/settings-page.php:631
+#: includes/admin/views/settings-page.php:643
+msgid ""
+"During a Headline Test, Page Views are counted every time a tested Headline "
+"appears on a page in your website. This includes sidebars, latest posts, "
+"menus, and so on. If you want to limit the quota usage of your Headline "
+"experiments, you can now test them on the Front Page only.<br>Regardless of "
+"your setting, Headlines will replaced all over your site, so that users "
+"always see coherent headlines for your posts."
+msgstr ""
+"Durante un experimento de titulares, las Visitas a Página se contabilizan "
+"cada vez que el titular aparece en cualquier página de su site. Estas "
+"apariciones pueden darse en barras laterales, la página de últimas entradas, "
+"los menús, etc. Si desea limitar el uso de cuota de este tipo de "
+"experimentos, puede hacer que únicamente cuenten los titulares que aparezcan "
+"en la página frontal.<br>Independientemente de este parámetro, los titulares "
+"se reemplazarán en todo el site siempre, asegurando una experiencia "
+"coherente y unificada a sus usuarios."
+
+#: includes/admin/views/settings-page.php:655
 msgid "Force Consistency All Along the Site"
 msgstr "Forzar consistencia en todo el site"
 
-#: includes/admin/views/settings-page.php:635
+#: includes/admin/views/settings-page.php:659
 msgid "Load Alternative Content for Tested Elements Only"
 msgstr "Cargar contenido alternativo sólo para los elementos bajo test"
 
-#: includes/admin/views/settings-page.php:639
+#: includes/admin/views/settings-page.php:662
 msgid ""
 "When a page or post experiment is created, alternative titles, contents, "
-"featured images, and excerpts may be defined. If consistency is not forced, "
-"the alternative contents will be loaded when accessing the tested page or "
-"post only. As a result, it is possible, for instance, that a user sees one "
-"title and featured image for a certain post in a widget, but a different "
-"title and featured image when she accesses that very same post (which may be "
-"confusing)."
+"featured images, and excerpts may be defined. Where and when is this "
+"alternative content loaded?"
 msgstr ""
-"Cuando se crea un experimento de página o entrada, es posible definir "
-"títulos, contenidos, imágenes destacadas y entradillas alternativas. Si no "
-"se fuerza la consistencia, los contenidos alternativos sólo se muestran "
-"cuando se está visualizando la página o entrada bajo test, pudiendo producir "
-"resultados confusos. Por ejemplo, es posible que un usuario vea el título y "
-"la imagen destacada originales para una cierta entrada incluida en un "
-"widget, pero que al acceder a esa misma entrada vea el título e imagen "
-"alternativos."
+"Cuando se crea un experimento de página o entrada, es posible modificar, "
+"entre otras opciones, su título, su contenido, su imagen destacada o su "
+"entradilla. ¿Dónde y cuándo se visualiza este contenido alternativo?"
 
-#: includes/admin/views/settings-page.php:642
+#: includes/admin/views/settings-page.php:664
 msgid ""
-"When a page or post experiment is created, alternative titles, contents, "
-"featured images, and excerpts may be defined. Forcing consistency will "
-"ensure that your users see the same alternative version all along the site, "
-"because all pages will be loading the alternative information defined in "
-"your experiments. Note this setting does <strong>not</strong> consume more "
-"quota."
+"<li><strong>Force Consistency</strong>. It ensures that your users see the "
+"same alternative version all along the site. If enabled, all pages will be "
+"loading the alternative information defined in your experiments. Note this "
+"setting does <strong>not</strong> consume more quota.</li>"
 msgstr ""
-"Cuando se crea un experimento de página o entrada, es posible definir "
-"títulos, contenidos, imágenes destacadas y entradillas alternativas. Si se "
-"fuerza la consistencia, sus usuarios verán las alternativas correctas a lo "
-"largo de todo el site, ya que cualquier página a la que acceda cargará las "
-"alternativas que toquen para las entradas y páginas que se incluyan. Esta "
-"funcionalidad <strong>no</strong> consume más cuota."
+"<li><strong>Forzar Consistencia</strong>. Permite que un visitante vea "
+"siempre la misma alternativa a lo largo de todo el sitio web. Si está "
+"habilitado, cualquier página del site cargará el contenido alternativo que "
+"esté definido en sus experimentos. Tenga en cuenta que esta configuración "
+"<strong>no</strong> consume cuota adicional.</li>"
 
-#: includes/admin/views/settings-page.php:675
-msgid "Bypass Cache and Load Content Using POST Requests"
-msgstr "Evitar cache al cargar las alternativas (usando llamadas POST)"
-
-#: includes/admin/views/settings-page.php:681
-msgid "Cache Alternative Content by Using GET Requests (Experimental)"
-msgstr ""
-"Usar la cache para la carga de alternativas (usando llamadas GET, "
-"Experimental)"
-
-#: includes/admin/views/settings-page.php:685
+#: includes/admin/views/settings-page.php:665
 msgid ""
-"By default, Nelio A/B Testing loads alternative content using an AJAX POST "
-"request. Nelio uses POST requests because they are usually ignored by cache "
-"mechanisms, ensuring that your users will be able to see different "
-"alternatives (instead of all users seeing the cached version). "
-"Unfortunately, this results in a higher server load, for alternative content "
-"is always processed by WordPress.<br>Starting at version 3.3, Nelio "
-"introduces experimental support for loading alternatives using GET requests. "
-"This approach permits your cache system to cache alternative contents too, "
-"boosting the overall performance."
+"<li><strong>Tested Elements Only</strong>. If consistency is not forced, the "
+"alternative contents will be loaded when accessing the tested page or post "
+"only. Thus, for instance, it is possible that a user sees the original title "
+"and featured image of a tested post in a widget, but a different, "
+"alternative title and featured image when she accesses that very same post "
+"(which may be confusing).</li>"
 msgstr ""
-"Por defecto, Nelio A/B Testing carga el contenido alternativo usando "
-"llamadas POST vía AJAX. Las llamadas POST suelen ser ignoradas por las "
-"caches, asegurando que todos los usuarios que accedan a su web verán la "
-"alternativa que les toque (en lugar de una versión en cache). Por desgracia, "
-"saltarse la cache supone una mayor carga del servidor, puesto que todas las "
-"peticiones deben ser procesadas por WordPress.<br>A partir de la versión "
-"3.3, Nelio permite, de forma experimental, cargar las alternativas "
-"utilizando llamadas GET. Esto permite que los contenidos alternativos sean "
-"también guardados en cache y, por consiguiente, mejora el rendimiento."
+"<li><strong>Sólo Elementos Bajo Test</strong>. Si no se fuerza la "
+"consistencia, el contenido alternativo sólo se cargará cuando un visitante "
+"acceda la página que está siendo testeada. Así, por ejemplo, puede darse el "
+"caso que un visitante vea una entrada en un widget con el título e imagen "
+"destacada originales y que cuando acceda a esa entrada acabe viendo el "
+"título e imagen destacada alternativos que debería haber visto (pudiendo "
+"resultar confuso).</li>"
 
-#: includes/admin/views/settings-page.php:698
+#: includes/admin/views/settings-page.php:677
 msgid "Regular Palette"
 msgstr "Paleta Normal"
 
-#: includes/admin/views/settings-page.php:702
+#: includes/admin/views/settings-page.php:681
 msgid "Colorblind Palette"
 msgstr "Paleta para daltónicos"
 
-#: includes/admin/views/settings-page.php:716
+#: includes/admin/views/settings-page.php:684
+msgid ""
+"If you enable the Colorblind Palette, Nelio A/B Testing icons will not be "
+"simple, plain colors, but they will include visual clues."
+msgstr ""
+"Si habilita la paleta para daltónicos, los iconos que usa Nelio A/B Testing "
+"incluirán ayudas visuales adicionales a los colores planos para "
+"diferenciarlos."
+
+#: includes/admin/views/settings-page.php:697
 msgid "Top of the Dashboard"
 msgstr "Parte Superior del Escritorio"
 
-#: includes/admin/views/settings-page.php:721
+#: includes/admin/views/settings-page.php:702
 msgid "Above Appearance"
 msgstr "Encima de Apariencia"
 
-#: includes/admin/views/settings-page.php:726
+#: includes/admin/views/settings-page.php:707
 msgid "Below Tools"
 msgstr "Debajo de Herramientas"
 
-#: includes/admin/views/settings-page.php:731
+#: includes/admin/views/settings-page.php:712
 msgid "First Option in Last Block"
 msgstr "Primera Opción en el Último Bloque"
 
-#: includes/admin/views/settings-page.php:736
+#: includes/admin/views/settings-page.php:717
 msgid "Latest Option"
 msgstr "Última opción"
 
-#: includes/admin/views/settings-page.php:748
+#: includes/admin/views/settings-page.php:720
+msgid ""
+"Set the location of «Nelio A/B Testing» in the left pane of the Dashboard."
+msgstr ""
+"Defina la ubicación de «Nelio A/B Testing» en el panel izquierdo del "
+"Escritorio."
+
+#: includes/admin/views/settings-page.php:731
 msgid "Show «Nelio A/B Testing» Menu in Admin Bar"
 msgstr "Mostrar el menú «Nelio A/B Testing» en la barra de administración"
 
-#: includes/admin/views/settings-page.php:752
+#: includes/admin/views/settings-page.php:735
 msgid "Hide «Nelio A/B Testing» Menu from Admin Bar"
 msgstr "Ocultar el menú «Nelio A/B Testing» de la barra de administración"
 
-#: includes/admin/views/settings-page.php:763
+#: includes/admin/views/settings-page.php:739
+msgid ""
+"When browsing your site as an admin, the plugin adds a «Nelio A/B Testing» "
+"entry in the top bar, which includes some shortcuts to common A/B Testing "
+"functions."
+msgstr ""
+"Si está navegando por su site, el plugin puede añadir una entrada de «Nelio "
+"A/B Testing» en la barra superior, facilitando, así, el acceso a las "
+"funciones más comunes de A/B Testing desde cualquier página."
+
+#: includes/admin/views/settings-page.php:749
 msgid "Default: %s"
 msgstr "Por defecto: %s"
 
-#: includes/admin/views/settings-page.php:768
+#: includes/admin/views/settings-page.php:754
 msgid ""
 "If you type an e-mail address, all Nelio A/B Testing notifications will be "
 "sent to both the new address and «%s»."
@@ -3193,34 +3222,57 @@ msgstr ""
 "Si introduce una dirección de correo electrónico, todas las notificaciones "
 "de Nelio A/B Testing se enviarán a esa dirección y a «%s»."
 
-#: includes/admin/views/settings-page.php:813
+#: includes/admin/views/settings-page.php:799
 msgid "Notify me when an experiment is automatically stopped."
 msgstr ""
 "Recibir notificación cuando un experimento sea detenido automáticamente."
 
-#: includes/admin/views/settings-page.php:835
+#: includes/admin/views/settings-page.php:821
 msgid "Hide Finished Experiments"
 msgstr "Esconder experimentos finalizados"
 
-#: includes/admin/views/settings-page.php:840
+#: includes/admin/views/settings-page.php:826
 msgid "Show Recently Finished Experiments"
 msgstr "Mostrar experimentos recientemente finalizados"
 
-#: includes/admin/views/settings-page.php:845
+#: includes/admin/views/settings-page.php:831
 msgid "Show All Finished Experiments"
 msgstr "Mostrar todos los experimentos finalizados"
 
-#: includes/admin/views/settings-page.php:861
+#: includes/admin/views/settings-page.php:834
+msgid ""
+"By default, the list of experiments in our plugin shows all the experiments "
+"you defined. You may filter the experiments by status. When viewing all "
+"experiments, you can decide whether <em>finished</em> experiments should be "
+"visible or not."
+msgstr ""
+"Por defecto, la lista de experimentos de nuestro plugin muestra todos los "
+"experimentos que ha definido. Estos experimentos se pueden filtrar por su "
+"estado. Cuando visualiza la lista de todos los experimentos, puede decidir "
+"si aquellos que hayan <em>finalizado</em> deben ser visibles o no."
+
+#: includes/admin/views/settings-page.php:849
 msgid ""
 "Minimum confidence value is set to <strong>{value}%</strong> (at least 95% "
-"is recommended).<br>The confidence value tells you how \"trustable\" is the "
-"fact that one alternative is better than the original."
+"is recommended)."
 msgstr ""
 "La confianza mínima es de <strong>{value}%</strong> (se recomienda un 95% "
-"como mínimo).<br>Este valor indica hasta qué punto podemos estar seguros que "
-"una alternativa es mejor que la original."
+"como mínimo)."
 
-#: includes/admin/views/settings-page.php:887
+#: includes/admin/views/settings-page.php:862
+msgid ""
+"The confidence value tells you how \"trustable\" is the fact that one "
+"alternative is better than the original. Changing this value will modify the "
+"visual clues in Nelio's Dashboard and Progress of the Experiment (lower "
+"confidence values means that the \"green light\" appears sooner)."
+msgstr ""
+"Este valor indica hasta qué punto podemos estar seguros que una alternativa "
+"es mejor que la original. Si cambia este valor, las ayudas visuales que "
+"ofrece Nelio en el Escritorio o en la página de Progreso de un experimento "
+"cambiarán (valores de confianza más bajos harán que el \"semáforo verde\" "
+"aparezca antes)."
+
+#: includes/admin/views/settings-page.php:878
 msgid ""
 "<strong>{value}%</strong> of the users that access your site will "
 "participate in the running experiments."
@@ -3228,11 +3280,21 @@ msgstr ""
 "El <strong>{value}%</strong> de los usuarios que accedan a su sitio formarán "
 "parte de los experimentos en ejecución."
 
-#: includes/admin/views/settings-page.php:902
+#: includes/admin/views/settings-page.php:889
+msgid ""
+"When a user accesses your website she may participate in your running "
+"experiments. This setting defines how likely it is for a visitor to be part "
+"of your tests."
+msgstr ""
+"Cuando un usuario accede a su página web puede (o no) formar parte de los "
+"experimentos que tiene en marcha. Este parámetro le permite determinar cuán "
+"probable es que participe."
+
+#: includes/admin/views/settings-page.php:896
 msgid "Original Percentage"
 msgstr "Porcentaje de la Original"
 
-#: includes/admin/views/settings-page.php:918
+#: includes/admin/views/settings-page.php:912
 msgid ""
 "<strong>{value}%</strong> of your visitors will see the original version of "
 "the experiment.<br>The rest of the users will see the other alternatives."
@@ -3241,11 +3303,11 @@ msgstr ""
 "experimento.<br>Los demás verán alguna de las otras alternativas posibles de "
 "forma aleatoria."
 
-#: includes/admin/views/settings-page.php:933
+#: includes/admin/views/settings-page.php:927
 msgid "Exploitation or Exploration"
 msgstr "Explotación o Exploración"
 
-#: includes/admin/views/settings-page.php:949
+#: includes/admin/views/settings-page.php:943
 msgid ""
 "<strong>{value}%</strong> of your visitors will see the winning alternative."
 "<br>The rest of the users will see the other alternatives."
@@ -3254,15 +3316,15 @@ msgstr ""
 "ese momento, sea mejor.<br>Los demás verán alguna de las otras alternativas "
 "posibles de forma aleatoria."
 
-#: includes/admin/views/settings-page.php:1004
+#: includes/admin/views/settings-page.php:966
 msgid "High Accuracy - Use All HTML Elements"
 msgstr "Alta Precisión - Usar todos los elementos HTML"
 
-#: includes/admin/views/settings-page.php:1010
+#: includes/admin/views/settings-page.php:972
 msgid "Tolerance to Random IDs - Use Body Tag"
 msgstr "Tolerancia a IDs aleatorios - Usar la etiqueta body"
 
-#: includes/admin/views/settings-page.php:1014
+#: includes/admin/views/settings-page.php:975
 msgid ""
 "By default, Nelio A/B Testing takes into account the elements that are below "
 "your users' cursor to track and build heatmaps and clickmaps. This offers a "
@@ -3281,31 +3343,137 @@ msgstr ""
 "aleatoriamente. Si ese es su caso, utilice la etiqueta body para el tracking "
 "de heatmaps."
 
-#: includes/admin/views/settings-page.php:1030
+#: includes/admin/views/settings-page.php:989
 msgid "Inherit Multi-Site Setting (%s)"
 msgstr "Usar Configuración del Multi-Site (%s)"
 
-#: includes/admin/views/settings-page.php:1032
+#: includes/admin/views/settings-page.php:991
 msgid "All Admins"
 msgstr "Todos los Admins"
 
-#: includes/admin/views/settings-page.php:1061
+#: includes/admin/views/settings-page.php:1020
 msgid "Force New Tab (add «target=\"_blank\"» attribute)"
 msgstr "Forzar Nueva Pestaña (usar el atributo «target=\"_blank\"»)"
 
-#: includes/admin/views/settings-page.php:1065
+#: includes/admin/views/settings-page.php:1024
 msgid "Do Not Force New Tab"
 msgstr "No Forzar Nueva Pestaña"
 
-#: includes/admin/views/settings-page.php:1078
+#: includes/admin/views/settings-page.php:1027
+msgid ""
+"When using external page conversion actions, a conversion should be counted "
+"when users access the external page. However, Nelio A/B Testing has no "
+"access to pages outside WordPress, which means it has to count a conversion "
+"when a user clicks on the link that will take the user to that page. "
+"Whenever such a click occurs, Nelio A/B Testing will detect it and send the "
+"tracking information to Nelio's servers (which takes a few miliseconds). If "
+"you want the website to be as responsive as possible, select «Force New "
+"Tab». This way, links will be opened in a new tab and the synchronization "
+"process will occur in the original tab. If, on the other hand, you don't "
+"want pages to be opened in new tabs, select «Do Not Force New Tab»."
+msgstr ""
+"Si utiliza acciones de conversión a páginas externas, una conversión debería "
+"ocurrir cuando el usuario accede a una de esas páginas. Sin embargo, Nelio A/"
+"B Testing no tiene acceso al contenido que está fuera de WordPress, con lo "
+"cual se ve obligado a contabilizar una conversión cuando el usuario está a "
+"punto de irse de WordPress para acceder a esa página (es decir, cuando pulsa "
+"en un enlace que le llevará allí). Cuando el visitante pulsa sobre el "
+"enlace, Nelio detecta el evento y tiene que sincronizarlo con nuestros "
+"servidores (lo cual puede llevar alguna décima de segundo). Si quiere que su "
+"site sea lo más ágil posible, seleccione «Forzar Nueva Pestaña». De esta "
+"forma, los enlaces se abrirán en una nueva pestaña y el proceso de "
+"sincronización se podrá realizar en segundo plano en la pestaña original. Si "
+"no desea este comportamiento, seleccione «No Forzar Nueva Pestaña»."
+
+#: includes/admin/views/settings-page.php:1040
+msgid "Group Experiments and Divide Visitors"
+msgstr "Agrupar Experimentos y Dividir Visitantes"
+
+#: includes/admin/views/settings-page.php:1047
+msgid "Test All Experiments with All Visitors"
+msgstr "Todos los Visitantes Participan en Todos los Experimentos"
+
+#: includes/admin/views/settings-page.php:1051
+msgid ""
+"When running more than one experiment with multiple alternatives each one, "
+"the total number of combinations grows exponentially, which may degrade your "
+"server's performance. To overcome this issue, enable the option «Group "
+"Experiments and Divide Visitors». If enabled, the plugin creates one or more "
+"experiment groups, each of which will test a few experiments only. When a "
+"visitor accesses your website, she only participates in the experiments of "
+"one of the available groups. <a%s>Read More</a>"
+msgstr ""
+"Cuando esté ejecutando más de un experimento con múltiples alternativas cada "
+"uno, el número de combinaciones posibles crece de forma exponencial, lo cual "
+"puede degradar el funcionamiento de su servidor. Para solucionar este "
+"problema, active la opción «Agrupar Experimentos y Dividir Visitantes», de "
+"forma que sus experimentos se agrupen en uno o más grupos. Cuando un "
+"visitante acceda su site, participará únicamente en los experimentos que "
+"incluya alguno de los grupos disponibles. <a%s>Leer Más (en inglés)</a>"
+
+#: includes/admin/views/settings-page.php:1065
+msgid "Show All A/B Testing Parameters (including context)"
+msgstr "Mostrar todos los parámetros A/B (incluyendo el contexto)"
+
+#: includes/admin/views/settings-page.php:1072
+msgid "Show This Page A/B Testing Parameter (hide context)"
+msgstr "Mostrar todos los parámetros A/B (ocultando el contexto)"
+
+#: includes/admin/views/settings-page.php:1079
+msgid "Hide All A/B Testing Parameters"
+msgstr "Ocultar todos los parámetros A/B"
+
+#: includes/admin/views/settings-page.php:1083
+msgid ""
+"Nelio A/B Testing loads alternative content by adding a few parameters in "
+"your URL. In principle, this parameters are visible to your visitors, but "
+"you can decide whether they should be hidden or not and, if they should, "
+"which ones."
+msgstr ""
+"Nelio A/B Testing carga el contenido alternativo añadiendo algunos "
+"parámetros en la URL. En principio, estos parámetros serán visibles por sus "
+"visitantes. Si lo desea, puede ocultarlos:"
+
+#: includes/admin/views/settings-page.php:1085
+msgid ""
+"<li><strong>Show All Params.</strong> All A/B Testing parameters will be "
+"shown.</li>"
+msgstr ""
+"<li><strong>Mostrarlos Todos.</strong> Todos los parámetros A/B de Nelio "
+"serán visibles en la URL.</li>"
+
+#: includes/admin/views/settings-page.php:1086
+msgid ""
+"<li><strong>Hide Context Params.</strong> If you're on a tested page (and/or "
+"if you're running a global experiment, such as a Widget or a Menu "
+"experiment), the URL will contain a parameter <code>nab</code> that "
+"specifies the alternative to be loaded (and/or another parameter <code>nabx</"
+"code> for the global experiment).</li>"
+msgstr ""
+"<li><strong>Ocultar Contexto.</strong> Si está en una página bajo test (y/o "
+"tiene en marcha un experimento \"global\" de Widgets, Menús, CSS o Tema), la "
+"URL incluirá un parámetro <code>nab</code> que especifica la alternativa que "
+"hay que cargar (y/o otro parámetro <code>nabx</code> para el experimento "
+"global).</li>"
+
+#: includes/admin/views/settings-page.php:1087
+msgid ""
+"<li><strong>Hide All Params.</strong> Once the alternative content has been "
+"loaded, all A/B Testing params are removed from the URL.</li>"
+msgstr ""
+"<li><strong>Ocultarlos Todos.</strong> Una vez se haya cargado la "
+"alternativa, el plugin eliminará de la URL todos los parámetros de testing.</"
+"li>"
+
+#: includes/admin/views/settings-page.php:1100
 msgid "Regular Front Page («Latest Posts» or «Static Page»)"
 msgstr "Página Frontal Normal («Últimas entradas» o «Página estática»)"
 
-#: includes/admin/views/settings-page.php:1082
+#: includes/admin/views/settings-page.php:1104
 msgid "Theme-based Front Page"
 msgstr "Página frontal (del tema)"
 
-#: includes/admin/views/settings-page.php:1086
+#: includes/admin/views/settings-page.php:1107
 msgid ""
 "As stated in the <a href=\"%s\">WordPress Codex</a>, by default WordPress "
 "shows your most recent posts in reverse chronological order on the front "
@@ -3326,27 +3494,27 @@ msgstr ""
 "\"Página Frontal (generada por el tema)\" y tendrá la posibilidad de "
 "seleccionarla durante la creación de un experimento de Heatmaps."
 
-#: includes/controller.php:667
+#: includes/controller.php:440
 msgid "Create Headline Test for this Post"
 msgstr "Crear un experimento de Titulares para esta entrada"
 
-#: includes/controller.php:676
+#: includes/controller.php:449
 msgid "Create A/B Test for this Post"
 msgstr "Crear Test A/B para esta entrada"
 
-#: includes/controller.php:688
+#: includes/controller.php:461
 msgid "Create A/B Test for this Page"
 msgstr "Crear Test A/B para esta página"
 
-#: includes/controller.php:699
+#: includes/controller.php:472
 msgid "Create Heatmap Experiment"
 msgstr "Crear experimento de heatmaps"
 
-#: includes/controller.php:756
+#: includes/controller.php:529
 msgid "Create Headline Experiment"
 msgstr "Crear experimento de titulares"
 
-#: includes/controller.php:764
+#: includes/controller.php:537
 msgid "Create A/B Experiment"
 msgstr "Crear nuevo Test A/B"
 
@@ -3554,29 +3722,6 @@ msgstr ""
 "heatmap quiere obtener. Por favor, detenga el experimento «%s» antes de "
 "empezar el nuevo."
 
-#: includes/models/settings.php:332
-msgid ""
-"<strong>Error!</strong> The following directory could not be created: <code>"
-"%s</code>."
-msgstr ""
-"<strong>¡Error!</strong> No se ha podido crear el siguiente directorio: "
-"<code>%s</code>."
-
-#: includes/models/settings.php:338
-msgid ""
-"<strong>Error!</strong> Could not copy Nelio's performance MU-Plugin from "
-"<code>%1$s</code> to <code>%2$s</code>."
-msgstr ""
-"<strong>¡Error!</strong> No se ha podido copiar el plugin de <code>%1$s</"
-"code> a <code>%2$s</code>."
-
-#: includes/models/settings.php:349
-msgid ""
-"<strong>Error!</strong> Could not remove the Nelio's performance MU-Plugin "
-"from <code>%s</code>."
-msgstr ""
-"<strong>¡Error!</strong> No se ha podido borrar el plugin de <code>%s</code>."
-
 #: includes/utils/admin-ajax-page.php:102
 msgid "Loading..."
 msgstr "Cargando..."
@@ -3611,27 +3756,14 @@ msgstr ""
 "nuestros <b>servicios de consultoría</b>. <small><a id=\"dismiss-upgrade-"
 "notice\" href=\"#\">Descartar</a></small>"
 
-#: includes/utils/admin-page.php:54
-msgid ""
-"<b>Performance MU-Plugin</b>. You're currently using an outdated version of "
-"Nelio A/B Testing's Performance MU-Plugin. We tried to automatically update "
-"it, but something went wrong. Please, go to the <a href=\"%s\">Settings</a> "
-"page and reinstall the Performance MU-Plugin."
-msgstr ""
-"<b>MU-Plugin para mejorar la eficiencia</b>. Actualmente está usando una "
-"versión antigua del MU-Plugin que Nelio A/B Testing incluye para mejorar los "
-"tiempos de carga de su web.Hemos intentado actualizarlo automáticamente, "
-"pero algo ha fallado. Por favor, acceda a la página de <a href=\"%s"
-"\">Configuración</a> e instálelo manualmente."
-
-#: includes/utils/admin-page.php:273
+#: includes/utils/admin-page.php:264
 msgid ""
 "This option is only available for users registered to our Professional Plan."
 msgstr ""
 "Esta opción solo está disponible para los usuarios registrados a nuestro "
 "Plan Profesional."
 
-#: includes/utils/admin-page.php:276
+#: includes/utils/admin-page.php:267
 msgid ""
 "This option is only available for users registered to our Enterprise Plan."
 msgstr ""
@@ -3817,7 +3949,7 @@ msgstr "«_nonce» inválido. ¿Seguro que desea hacer esto?"
 msgid "An unknown error occurred while accessing the backend."
 msgstr "Se ha producido un error desconocido mientras se accedía al backend."
 
-#: includes/utils/essentials.php:183
+#: includes/utils/essentials.php:179
 msgid ""
 "You've recently upgraded to <strong>Nelio A/B Testing %s</strong>. "
 "<strong>If you're running a cache system</strong> (such as <em>W3 Total "
@@ -3834,7 +3966,7 @@ msgstr ""
 "nuestros scripts de tracking y, por tanto, el plugin podría no funcionar "
 "correctamente."
 
-#: includes/utils/essentials.php:190
+#: includes/utils/essentials.php:186
 msgid "Dismiss"
 msgstr "Entendido"
 
@@ -3969,6 +4101,139 @@ msgstr "Tus últimas entradas"
 #: includes/utils/wp-helper.php:237
 msgid "Landing Page (Theme-based)"
 msgstr "Página Frontal (generada por el tema)"
+
+#~ msgid "Quota Limit per Experiment"
+#~ msgstr "Límite de cuota para un experimento"
+
+#~ msgid "Cache Support"
+#~ msgstr "Soporte a Caches"
+
+#~ msgid "Quota Usage for Headlines"
+#~ msgstr "Consumo de Cuota (Titulares)"
+
+#~ msgid "Efficiency"
+#~ msgstr "Eficiencia"
+
+#~ msgid "AJAX Performance"
+#~ msgstr "Eficiencia AJAX"
+
+#~ msgid ""
+#~ "In order to boost response times of all AJAX requests triggered by Nelio "
+#~ "A/B Testing, we include a tiny <a %1$s>Must Use Plugin</a> that disables "
+#~ "other plugins when they're not necessary.<br><br><strong>AJAX Performance "
+#~ "MU-Plugin Status: <span class=\"status %2$s\">%3$s</span></strong>."
+#~ "<br><span class=\"explanation\">%4$s</span>"
+#~ msgstr ""
+#~ "Para mejorar los tiempos de respuesta de todas las llamadas AJAX lanzadas "
+#~ "por Nelio A/B Testing, nuestro plugin incluye un pequeño <a %1$s>Must Use "
+#~ "Plugin</a> que deshabilita otros plugins cuando no son necesarios."
+#~ "<br><br><strong>Estado del MU-Plugin: <span class=\"status %2$s\">%3$s</"
+#~ "span></strong>.<br><span class=\"explanation\">%4$s</span>"
+
+#~ msgid "Installed"
+#~ msgstr "Instalado"
+
+#~ msgid ""
+#~ "In order to uninstall the plugin, please use the previous «Uninstall» "
+#~ "button."
+#~ msgstr "Para desinstalar el plugin, pulse el botón «Desinstalar»."
+
+#~ msgid "Uninstall"
+#~ msgstr "Desinstalar"
+
+#~ msgid "Outdated"
+#~ msgstr "Requiere Actualización"
+
+#~ msgid ""
+#~ "In order to update the plugin, please use the previous «Update» button."
+#~ msgstr "Para actualizar el plugin, pulse el botón «Actualizar»."
+
+#~ msgid "Not Installed"
+#~ msgstr "No Instalado"
+
+#~ msgid ""
+#~ "In order to install the plugin, please use the previous «Install» button."
+#~ msgstr "Para instalar el plugin, pulse el botón «Instalar»."
+
+#~ msgid "Install"
+#~ msgstr "Instalar"
+
+#~ msgid "Done!"
+#~ msgstr "¡Hecho!"
+
+#~ msgid "Bypass Cache and Load Content Using POST Requests"
+#~ msgstr "Evitar cache al cargar las alternativas (usando llamadas POST)"
+
+#~ msgid "Cache Alternative Content by Using GET Requests (Experimental)"
+#~ msgstr ""
+#~ "Usar la cache para la carga de alternativas (usando llamadas GET, "
+#~ "Experimental)"
+
+#~ msgid ""
+#~ "By default, Nelio A/B Testing loads alternative content using an AJAX "
+#~ "POST request. Nelio uses POST requests because they are usually ignored "
+#~ "by cache mechanisms, ensuring that your users will be able to see "
+#~ "different alternatives (instead of all users seeing the cached version). "
+#~ "Unfortunately, this results in a higher server load, for alternative "
+#~ "content is always processed by WordPress.<br>Starting at version 3.3, "
+#~ "Nelio introduces experimental support for loading alternatives using GET "
+#~ "requests. This approach permits your cache system to cache alternative "
+#~ "contents too, boosting the overall performance."
+#~ msgstr ""
+#~ "Por defecto, Nelio A/B Testing carga el contenido alternativo usando "
+#~ "llamadas POST vía AJAX. Las llamadas POST suelen ser ignoradas por las "
+#~ "caches, asegurando que todos los usuarios que accedan a su web verán la "
+#~ "alternativa que les toque (en lugar de una versión en cache). Por "
+#~ "desgracia, saltarse la cache supone una mayor carga del servidor, puesto "
+#~ "que todas las peticiones deben ser procesadas por WordPress.<br>A partir "
+#~ "de la versión 3.3, Nelio permite, de forma experimental, cargar las "
+#~ "alternativas utilizando llamadas GET. Esto permite que los contenidos "
+#~ "alternativos sean también guardados en cache y, por consiguiente, mejora "
+#~ "el rendimiento."
+
+#~ msgid ""
+#~ "<strong>Error!</strong> The following directory could not be created: "
+#~ "<code>%s</code>."
+#~ msgstr ""
+#~ "<strong>¡Error!</strong> No se ha podido crear el siguiente directorio: "
+#~ "<code>%s</code>."
+
+#~ msgid ""
+#~ "<strong>Error!</strong> Could not copy Nelio's performance MU-Plugin from "
+#~ "<code>%1$s</code> to <code>%2$s</code>."
+#~ msgstr ""
+#~ "<strong>¡Error!</strong> No se ha podido copiar el plugin de <code>%1$s</"
+#~ "code> a <code>%2$s</code>."
+
+#~ msgid ""
+#~ "<strong>Error!</strong> Could not remove the Nelio's performance MU-"
+#~ "Plugin from <code>%s</code>."
+#~ msgstr ""
+#~ "<strong>¡Error!</strong> No se ha podido borrar el plugin de <code>%s</"
+#~ "code>."
+
+#~ msgid ""
+#~ "<b>Performance MU-Plugin</b>. You're currently using an outdated version "
+#~ "of Nelio A/B Testing's Performance MU-Plugin. We tried to automatically "
+#~ "update it, but something went wrong. Please, go to the <a href=\"%s"
+#~ "\">Settings</a> page and reinstall the Performance MU-Plugin."
+#~ msgstr ""
+#~ "<b>MU-Plugin para mejorar la eficiencia</b>. Actualmente está usando una "
+#~ "versión antigua del MU-Plugin que Nelio A/B Testing incluye para mejorar "
+#~ "los tiempos de carga de su web.Hemos intentado actualizarlo "
+#~ "automáticamente, pero algo ha fallado. Por favor, acceda a la página de "
+#~ "<a href=\"%s\">Configuración</a> e instálelo manualmente."
+
+#~ msgid ""
+#~ "<b>Warning!</b> You have no more quota available. Please, <a href=\"%s"
+#~ "\">check your Nelio A/B Testing account</a> for obtaining additional "
+#~ "quota."
+#~ msgstr ""
+#~ "<b>¡Atención!</b> Ya no le queda más cuota. Por favor, <a href=\"%s"
+#~ "\">acceda a su cuenta de Nelio A/B Testing</a> para obtener más cuota."
+
+#~ msgid "whose CSS path is"
+#~ msgstr "cuyo path CSS es"
 
 #~ msgid "Site Registration"
 #~ msgstr "Registro del WordPress"
@@ -4291,9 +4556,6 @@ msgstr "Página Frontal (generada por el tema)"
 
 #~ msgid "Professional"
 #~ msgstr "Profesional"
-
-#~ msgid "Behavior"
-#~ msgstr "Comportamiento"
 
 #~ msgid "external page"
 #~ msgstr "página externa"

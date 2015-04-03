@@ -120,11 +120,6 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 					$user_info['status']            = $json->status;
 					$user_info['total_quota']       = intval( $json->quotaPerMonth );
 					$user_info['quota']             = intval( $json->quota + $json->quotaExtra );
-
-					if ( $user_info['quota'] > 0 )
-						NelioABAccountSettings::set_has_quota_left( true );
-					else
-						NelioABAccountSettings::set_has_quota_left( false );
 				}
 
 				// Agency stuff

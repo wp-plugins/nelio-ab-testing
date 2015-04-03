@@ -103,6 +103,7 @@
 				$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
 		}
 		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
+		$url = preg_replace( '/^https?:/', '', $url );
 		?>
 		<script type="text/javascript">
 			window.onerror = function(msg, url, line, col, error) {
