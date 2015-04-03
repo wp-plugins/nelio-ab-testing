@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 4.0.1
+Stable tag: 4.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -260,6 +260,15 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.0.2 (Apr 3, 2015) =
+* Improvement: tracking external pages when the user leaves the current page
+clicking on a `map` » `area` element. Before this update, it only tracked
+conversions triggered by the user clicking on an `a` tag or submitting a
+form.
+* Bug fix with old Nelio tracking cookies.
+* Bug fix with direct page/post conversion actions.
+
 
 = 4.0.1 (Apr 1, 2015) =
 * Bug fix tracking visitors on older versions of Internet Explorer. In
@@ -846,9 +855,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.0.1 =
-**Nelio A/B Testing 4 is more efficient than ever!** We've redesigned some
-components from scratch to make things faster and more reliable. We've improved
-the compatibility with JavaScript frameworks and libraries. Bug fix with IE8
-and IE9.
-
+= 4.0.2 =
+This revision includes some **important** bug fixes. Make sure your old
+experiments run properly with this new version. **Nelio A/B Testing 4 is more
+efficient than ever!**

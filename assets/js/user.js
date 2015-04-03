@@ -199,7 +199,7 @@ NelioAB.user.getAlt = function( id ) {
 		if ( value < exp.alts.length )
 			return value;
 	}
-	return undefined;
+	return 0;
 };
 
 
@@ -219,7 +219,11 @@ NelioAB.user.getAlt = function( id ) {
  */
 NelioAB.user.getGlobalAlt = function( type ) {
 	var name = NelioAB.helpers.getGlobalCookiePrefix( type );
-	return NelioAB.cookies.getFuzzy(name);
+	var aux = NelioAB.cookies.getFuzzy(name);
+	if ( aux < 0 || aux > 100 )
+		return '0';
+	else
+		return aux;
 };
 
 

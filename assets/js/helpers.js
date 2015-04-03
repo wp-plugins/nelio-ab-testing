@@ -610,7 +610,7 @@ NelioAB.helpers.updateRefererInformation = function( url ) {
 	var res = {'id' : -102, 'actualId' : -102 };
 	if ( !NelioAB.helpers.referer ) {
 		try {
-			if ( typeof window.history.state != 'undefined' && typeof window.history.state.referer != 'undefined' ) {
+			if ( window.history.state != null && typeof window.history.state.referer != 'undefined' ) {
 				res = window.history.state.referer;
 			}
 			else {
@@ -702,13 +702,27 @@ NelioAB.helpers.addDocumentHooks = function() {
 		// in case the listener function is overwritten:
 		NelioAB.helpers.setRefererCookie();
 
-		var target = jQuery(e.target).closest('a');
-		var dest = undefined;
+		var target;
+		var dest;
+
+		target = jQuery(e.target).closest('a');
+		dest = undefined;
 		try { dest = target.attr('href'); } catch (e) {}
 		if ( dest != undefined ) {
 			e.type = 'byebye';
 			jQuery(document).trigger( e, [ target, dest ] );
+			return;
 		}
+
+		target = jQuery(e.target).closest('area');
+		dest = undefined;
+		try { dest = target.attr('href'); } catch (e) {}
+		if ( dest != undefined ) {
+			e.type = 'byebye';
+			jQuery(document).trigger( e, [ target, dest ] );
+			return;
+		}
+
 	});
 
 
