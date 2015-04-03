@@ -10,7 +10,7 @@ NelioAB.helpers = {};
  * @return whether the current browser is IE8 or IE9.
  */
 NelioAB.helpers.isOldIE = function() {
-	if ( jQuery.browser.msie && window.XDomainRequest )
+	if ( navigator.appName == 'Microsoft Internet Explorer' && window.XDomainRequest )
 		return true;
 	else
 		return false;
