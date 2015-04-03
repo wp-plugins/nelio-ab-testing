@@ -43,7 +43,7 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 		}
 
 		/**
-		 * @returns this form's ID
+		 * @return this form's ID
 		 */
 		public function get_form_id() {
 			return $this->form_id;

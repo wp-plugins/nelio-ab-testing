@@ -178,7 +178,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 			}
 
 			$html = sprintf(
-				'<img class="feat-image" ' . 
+				'<img class="feat-image" ' .
 					'src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" ' .
 					'style="background:url(\'%s\') no-repeat center center;' .
 					'-webkit-background-size:cover;' .
@@ -301,7 +301,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 				<div>
 					<div class="headline_image_holder">
 						<img class="headline_image"
-							src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" 
+							src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 							style="background:url('<?php echo nelioab_admin_asset_link( '/images/feat-image-placeholder.png' ); ?>') no-repeat center center;
 								-webkit-background-size:cover;
 								-moz-background-size:cover;
