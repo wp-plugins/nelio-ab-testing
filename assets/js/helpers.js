@@ -216,25 +216,27 @@ NelioAB.helpers.addHiddenFormFieldsOnSubmission = function() {
 		if ( typeof $form.data('has_nelioab_fields') == 'undefined' ) {
 			// First Hidden Field
 			var aux = NelioAB.checker.generateAjaxParams();
-			$cookiesField = jQuery('<input type="hidden" name="nelioab_env" />');
-			$cookiesField.attr('value',
+			$field = jQuery('<input type="hidden" name="nelioab_form_env" />');
+			$field.attr('value',
 				encodeURIComponent( JSON.stringify( aux.nelioab_env )
 					.replace( /'/g, '%27') )
 				);
-			$form.append( $cookiesField );
+			$form.append( $field );
 
 			// Second Hidden Field
-			$currentUrlField = jQuery('<input type="hidden" name="nelioab_form_current_url" />');
-			$currentUrlField.attr('value',
-				encodeURIComponent( JSON.stringify( document.URL )
-					.replace( /'/g, '%27') )
-				);
-			$form.append( $currentUrlField );
+			$field = jQuery('<input type="hidden" name="nelioab_current_id" />');
+			$field.attr('value', NelioABParams.info.currentId);
+			$form.append( $field );
 
 			// Third Hidden Field
-			$currentUrlField = jQuery('<input type="hidden" name="nelioab_userid" />');
-			$currentUrlField.attr('value', NelioAB.user.id() );
-			$form.append( $currentUrlField );
+			$field = jQuery('<input type="hidden" name="nelioab_current_actual_id" />');
+			$field.attr('value', NelioABParams.info.currentActualId);
+			$form.append( $field );
+
+			// Fourth Hidden Field
+			$field = jQuery('<input type="hidden" name="nelioab_userid" />');
+			$field.attr('value', NelioAB.user.id() );
+			$form.append( $field );
 
 			// Write down that fields have been added
 			$form.data('has_nelioab_fields', 'yes');

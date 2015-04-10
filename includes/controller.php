@@ -39,14 +39,19 @@ if ( !class_exists( 'NelioABController' ) ) {
 
 		private $controllers;
 
-		private $id;
-		private $url;
+		/**
+		 * @var WP_Query The main query that triggered the current page request.
+		 */
+		private $main_query;
+
+		/**
+		 * @var int The ID of the queried object.
+		 */
+		private $queried_post_id;
 
 		public $tracking_script_params;
 
 		public function __construct() {
-			$this->build_current_url();
-
 			$this->controllers = array();
 			$this->tracking_script_params = array();
 
@@ -118,7 +123,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 			if ( isset( $_GET['page_id'] ) )
 				$current_id = $_GET['page_id'];
 			else
-				$current_id  = $this->url_or_front_page_to_postid( $this->get_current_url() );
+				$current_id = $this->get_queried_post_id();
 			$original_id = get_post_meta( $current_id, '_nelioab_original_id', true );
 			if ( isset( $_GET['preview'] ) || isset( $_GET['nelioab_show_heatmap'] ) ) {
 				if ( $page_on_front == $original_id )
@@ -163,113 +168,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 			catch ( Exception $e ) {}
 		}
 
-		public function get_current_url() {
-			return $this->url;
-		}
-
-		private function build_current_url() {
-			if ( isset( $_REQUEST['nelioab_current_url'] ) ) {
-				$this->url = $_REQUEST['nelioab_current_url'];
-			}
-			else {
-				$url = 'http';
-				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == "on" )
-					$url .= 's';
-				$url .= '://';
-				//if ( isset( $_SERVER['SERVER_PORT'] ) && $_SERVER['SERVER_PORT'] != '80')
-				//	$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
-				//else
-				//	$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-				$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-				$this->url = $url;
-			}
-
-			$this->id = false;
-		}
-
-		public function url_or_front_page_to_postid( $url ) {
-
-			if ( strlen( $url ) === 0 )
-				return NelioABController::UNKNOWN_PAGE_ID_FOR_NAVIGATION;
-
-			if ( $url === $this->url && $this->id !== false )
-				return $this->id;
-
-			$restore_the_filter = false;
-			if ( has_filter( 'option_page_on_front', array( &$this, 'fix_page_on_front' ) ) ) {
-				remove_filter( 'option_page_on_front', array( &$this, 'fix_page_on_front' ) );
-				$restore_the_filter = true;
-			}
-
-			$the_id = url_to_postid( $url );
-			if ( 0 === $the_id )
-				$the_id = url_to_postid( str_replace( 'https://', 'http://', $url ) );
-
-			// Checking if the source page was the Landing Page
-			// This is a special case, because it might be the case that the
-			// front page is dynamically built using the last posts info.
-			$front_page_url = rtrim( get_bloginfo('url'), '/' );
-			$front_page_url = str_replace( 'https://', 'http://', $front_page_url );
-			$proper_url     = rtrim( $url, '/' );
-			$proper_url     = str_replace( 'https://', 'http://', $proper_url );
-			if ( $proper_url == $front_page_url ) {
-				$aux = nelioab_get_page_on_front();
-				if ( $aux )
-					$the_id = $aux;
-				if ( !$the_id )
-					$the_id = NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS;
-			}
-
-			// Check if it's the Latest Post Page (which could have been set dynamically)
-			$page_for_posts_id = get_option( 'page_for_posts' );
-			if ( $page_for_posts_id ) {
-				$page_for_posts_url = rtrim( get_permalink( $page_for_posts_id ), '/' );
-				$page_for_posts_url = str_replace( 'https://', 'http://', $page_for_posts_url );
-				if ( $proper_url == $page_for_posts_url )
-					$the_id = $page_for_posts_id;
-			}
-
-			// Custom Permalinks Support: making sure that we get the real ID.
-			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
-			if ( NelioABCustomPermalinksSupport::is_plugin_active() ) {
-				$custom_permalink_id = NelioABCustomPermalinksSupport::url_to_postid( $url );
-				if ( $custom_permalink_id )
-					$the_id = $custom_permalink_id;
-			}
-
-			if ( 0 === $the_id && function_exists( 'woocommerce_get_page_id' ) ) {
-				// I wasn't able to find a post/page whose URL is the provided one.
-				// If the user is using WooCommerce, for instance, this happens with the
-				// Shop Page (see https://core.trac.wordpress.org/ticket/25136). The
-				// reported solution there does not work, so I'll try something new:
-				$shop_page_id = woocommerce_get_page_id( 'shop' );
-				if ( get_permalink( $shop_page_id ) == $url )
-					$the_id = $shop_page_id;
-			}
-
-			if ( 0 === $the_id && strpos( $url, '?' ) !== false && strlen( get_option( 'permalink_structure', '' ) ) > 0 ) {
-				$url_without_get_params = preg_replace( '/\?.*$/', '', $url );
-				$the_id = $this->url_or_front_page_to_postid( $url_without_get_params );
-			}
-
-			if ( 0 === $the_id )
-				$the_id = NelioABController::UNKNOWN_PAGE_ID_FOR_NAVIGATION;
-
-			if ( 0 !== $the_id && $url === $this->url )
-				$this->id = $the_id;
-
-			if ( $restore_the_filter )
-				add_filter( 'option_page_on_front', array( &$this, 'fix_page_on_front' ) );
-
-			return $the_id;
-		}
-
-		public function url_or_front_page_to_actual_postid_considering_alt_exps( $url ) {
-			$post_id = $this->url_or_front_page_to_postid( $url );
-			$aux = $this->controllers['alt-exp'];
-			if ( $aux->is_post_in_a_post_alt_exp( $post_id ) )
-				$post_id = $aux->get_post_alternative( $post_id );
-			return $post_id;
+		public function get_queried_post_id() {
+			return $this->queried_post_id;
 		}
 
 		public function init_admin_stuff() {
@@ -294,6 +194,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 			if ( NelioABCustomPermalinksSupport::is_plugin_active() )
 				NelioABCustomPermalinksSupport::prevent_template_redirect();
 
+			// Add support for Google Analytics. Make sure GA tracking scripts are loaded
+			// after Nelio's.
+			require_once( NELIOAB_UTILS_DIR . '/google-analytics-support.php' );
+			NelioABGoogleAnalyticsSupport::move_google_analytics_after_nelio();
+
 			// If we're previewing a page alternative, it may be the case that it's an
 			// alternative of the landing page. Let's make sure the "page_on_front"
 			// option is properly updated:
@@ -303,11 +208,51 @@ if ( !class_exists( 'NelioABController' ) ) {
 			add_action( 'wp_enqueue_scripts', array( &$this, 'register_tracking_script' ) );
 			add_action( 'wp_enqueue_scripts', array( &$this, 'load_tracking_script' ), 99 );
 
+			add_action( 'pre_get_posts', array( &$this, 'save_main_query' ) );
 			// LOAD ALL CONTROLLERS
 			// Controller for changing a page using its alternatives:
 			$aux = $this->controllers['alt-exp'];
 			$aux->hook_to_wordpress();
+		}
 
+		public function save_main_query( $query ) {
+			/** @var WP_Query $query */
+			if ( $query->is_main_query() ) {
+				remove_action( 'pre_get_posts', array( &$this, 'save_main_query' ) );
+				$this->main_query = $query;
+				add_filter( 'posts_results', array( &$this, 'obtain_queried_post_id' ) );
+			}
+		}
+
+		public function obtain_queried_post_id( $posts ) {
+			remove_filter( 'posts_results', array( &$this, 'obtain_queried_post_id' ) );
+
+			// If we're on a search...
+			if ( isset( $this->main_query->query['s'] ) ) {
+				$this->queried_post_id = self::SEARCH_RESULTS_PAGE_ID;
+			}
+
+			// If we're on a category or term page...
+			else if ( $this->main_query->is_category || $this->main_query->is_tag || $this->main_query->is_tax ) {
+				$this->queried_post_id = self::CATEGORY_OR_TERM_PAGE_ID;
+			}
+
+			// If we're on the landing page, which shows the latest posts...
+			else if ( 'posts' == get_option( 'show_on_front' ) && is_front_page() ) {
+				$this->queried_post_id = self::FRONT_PAGE__YOUR_LATEST_POSTS;
+			}
+
+			// If we only found one post...
+			else if ( count( $posts ) == 1 ) {
+				$this->queried_post_id = $posts[0]->ID;
+			}
+
+			// If none of the previous rules works...
+			else {
+				$this->queried_post_id = self::UNKNOWN_PAGE_ID_FOR_NAVIGATION;
+			}
+
+			return $posts;
 		}
 
 		public function could_visitor_be_in_experiment() {
@@ -329,29 +274,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 				nelioab_asset_link( '/js/tracking.min.js' ),
 				array( 'jquery', 'nelioab_appengine_script' ) );
 
-			// Custom Permalinks Support: Obtaining the real permalink (which might be
-			// masquared by custom permalinks plugin)
-			require_once( NELIOAB_UTILS_DIR . '/custom-permalinks-support.php' );
-			$url = $this->get_current_url();
-			$current_post_id = $this->url_or_front_page_to_postid( $url );
-			if ( NelioABCustomPermalinksSupport::is_plugin_active() )
-				$permalink = NelioABCustomPermalinksSupport::get_original_permalink( $current_post_id );
-			else
-				$permalink = get_permalink( $current_post_id );
-
-			// If we were unable to find a permalink...
-			if ( empty( $permalink ) ) {
-				if ( nelioab_get_page_on_front() == $current_post_id )
-					$permalink = home_url();
-				else
-					$permalink = $url;
-			}
-
 			// Prepare some information for our tracking script (such as the page we're in)
 			$aux = $this->controllers['alt-exp'];
-			$current_id = $this->url_or_front_page_to_postid( $this->get_current_url() );
+			$current_id = $this->get_queried_post_id();
 			if ( $aux->is_post_in_a_post_alt_exp( $current_id ) ) {
-				$current_actual_id = $aux->get_post_alternative( $current_id );
+				$current_actual_id = intval( $aux->get_post_alternative( $current_id ) );
 			}
 			elseif ( $aux->is_post_in_a_headline_alt_exp( $current_id ) ) {
 				$headline_data = $aux->get_headline_experiment_and_alternative( $current_id );
@@ -372,7 +299,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 			nelioab_localize_tracking_script( array(
 					'ajaxurl'   => admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ),
 					'version'   => NELIOAB_PLUGIN_VERSION,
-					'permalink' => $permalink,
 					'customer'  => NelioABAccountSettings::get_customer_id(),
 					'site'      => NelioABAccountSettings::get_site_id(),
 					'backend'   => array( 'domain'  => NELIOAB_BACKEND_DOMAIN,

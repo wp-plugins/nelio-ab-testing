@@ -34,7 +34,7 @@ if ( !class_exists( 'NelioABUser' ) ) {
 
 		public static function load() {
 			add_action( 'setup_theme', array( 'NelioABUser', 'do_first_load' ) );
-			add_action( 'wp_loaded',   array( 'NelioABUser', 'do_late_load' ) );
+			add_action( 'the_posts',   array( 'NelioABUser', 'do_late_load' ) );
 		}
 
 
@@ -45,6 +45,9 @@ if ( !class_exists( 'NelioABUser' ) ) {
 
 			if ( isset( $_POST['nelioab_env'] ) ) {
 				$exp_and_alt_list = $_POST['nelioab_env'];
+			}
+			elseif ( isset( $_POST['nelioab_form_env'] ) ) {
+				$exp_and_alt_list = json_decode( urldecode( $_POST['nelioab_form_env'] ) );
 			}
 			else if ( !is_admin() ) {
 				foreach ( $_GET as $key => $val ) {
@@ -89,11 +92,11 @@ if ( !class_exists( 'NelioABUser' ) ) {
 		}
 
 
-		public static function do_late_load() {
+		public static function do_late_load( $posts ) {
 			if ( !is_admin() && isset( $_GET['nab'] ) ) {
+				/** @var NelioABController $nelioab_controller */
 				global $nelioab_controller;
-				$url = $nelioab_controller->get_current_url();
-				$current_id = $nelioab_controller->url_or_front_page_to_postid( $url );
+				$current_id = $nelioab_controller->get_queried_post_id();
 
 				$val = $_GET['nab'];
 				$exp = false;
@@ -109,6 +112,8 @@ if ( !class_exists( 'NelioABUser' ) ) {
 					NelioABUser::completeEnvironment( $exp, $val );
 			}
 			self::$is_fully_loaded = true;
+
+			return $posts;
 		}
 
 

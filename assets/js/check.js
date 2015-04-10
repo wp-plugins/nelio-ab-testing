@@ -329,6 +329,28 @@ NelioAB.checker.loadAlternative = function() {
 		getParams = NelioAB.helpers.extractGetParams( url.substring(aux) );
 	var myParams = NelioAB.checker.generateParamsForAltLoading();
 
+	try {
+		var referrer = '';
+		for ( var i = 0; i < getParams.length && referrer.length == 0; ++i )
+			if ( getParams[i][0] == 'utm_referrer' )
+				referrer = getParams[i][1];
+		if ( referrer.length == 0 ) {
+			var refDomain = document.referrer;
+			var thisDomain = document.URL;
+
+			refDomain = refDomain.replace( /^https?:\/\//, '' );
+			refDomain = refDomain.replace( /\/.*$/, '' );
+
+			thisDomain = thisDomain.replace( /^https?:\/\//, '' );
+			thisDomain = thisDomain.replace( /\/.*$/, '' );
+
+			if ( thisDomain != refDomain )
+				getParams.push( ['utm_referrer', decodeURIComponent( document.referrer )] );
+		}
+	}
+	catch ( e ) {
+	}
+
 	var aux = document.URL.indexOf( '?' );
 	if ( aux != -1 )
 		url = url.substring( 0, aux );

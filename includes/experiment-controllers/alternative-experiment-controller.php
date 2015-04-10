@@ -44,7 +44,6 @@ class NelioABAlternativeExperimentController {
 		// Make sure that the title is replaced everywhere
 		add_filter( 'wp_title',  array( &$this, 'fix_title_for_landing_page' ), 10, 2 );
 
-		add_filter( 'posts_results',     array( &$this, 'posts_results_intercept' ) );
 		add_filter( 'the_posts',         array( &$this, 'the_posts_intercept' ) );
 		add_filter( 'get_post_metadata', array( &$this, 'load_proper_page_template' ), 10, 4 );
 
@@ -52,9 +51,10 @@ class NelioABAlternativeExperimentController {
 		add_filter( 'comments_array',      array( &$this, 'prepare_comments_form' ) );
 		add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
 
-		add_filter( 'post_link',     array( &$this, 'use_originals_post_link' ) );
-		add_filter( 'page_link',     array( &$this, 'use_originals_post_link' ) );
-		add_filter( 'get_shortlink', array( &$this, 'use_originals_shortlink' ), 10, 2 );
+		add_filter( 'post_link',      array( &$this, 'use_originals_post_link' ) );
+		add_filter( 'page_link',      array( &$this, 'use_originals_post_link' ) );
+		add_filter( 'post_type_link', array( &$this, 'use_originals_post_link' ) );
+		add_filter( 'get_shortlink',  array( &$this, 'use_originals_shortlink' ), 10, 2 );
 
 		add_action( 'wp_get_nav_menu_items', array( &$this, 'show_the_appropriate_menu' ), 10, 3 );
 		add_action( 'wp_get_nav_menu_items', array( &$this, 'highlight_current_menu_option' ), 11 );
@@ -136,9 +136,9 @@ class NelioABAlternativeExperimentController {
 		global $post;
 		if ( !$post )
 			return $excerpt;
+		/** @var NelioABController $nelioab_controller */
 		global $nelioab_controller;
-		if ( $nelioab_controller->url_or_front_page_to_postid(
-		     $nelioab_controller->get_current_url() ) == $post->ID ) {
+		if ( $nelioab_controller->get_queried_post_id() == $post->ID ) {
 			return $excerpt;
 		}
 		$alt_id = $this->get_post_alternative( $post->ID );
@@ -160,9 +160,9 @@ class NelioABAlternativeExperimentController {
 		global $post;
 		if ( !$post )
 			return $content;
+		/** @var NelioABController $nelioab_controller */
 		global $nelioab_controller;
-		if ( $nelioab_controller->url_or_front_page_to_postid(
-		     $nelioab_controller->get_current_url() ) == $post->ID ) {
+		if ( $nelioab_controller->get_queried_post_id() == $post->ID ) {
 			return $content;
 		}
 		$alt_id = $this->get_post_alternative( $post->ID );
@@ -258,8 +258,8 @@ class NelioABAlternativeExperimentController {
 	}
 
 	private function get_actual_theme() {
-		require_once( NELIOAB_MODELS_DIR . '/user.php' );
 		if ( !$this->actual_theme ) {
+			require_once( NELIOAB_MODELS_DIR . '/user.php' );
 			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
 			remove_filter( 'template',   array( &$this, 'modify_template' ) );
 			$this->actual_theme = NelioABUser::get_assigned_theme();
@@ -402,31 +402,20 @@ class NelioABAlternativeExperimentController {
 		return $items;
 	}
 
-	public function posts_results_intercept( $posts ) {
-		if ( count( $posts ) != 1 )
-			return $posts;
-
-		$post = $posts[0];
-		if ( $this->is_post_in_a_post_alt_exp( $post->ID ) ) {
-			remove_filter( 'posts_results', array( $this, 'posts_results_intercept' ) );
-			$alt = get_post( $this->get_post_alternative( $post->ID ) );
-			if ( $alt )
-				$this->alternative_post = $alt;
-		}
-
-		return $posts;
-	}
-
 	public function the_posts_intercept( $posts ) {
-		if ( ! is_null( $this->alternative_post ) ) {
-			$result = array( $this->alternative_post );
-			$this->alternative_post = null;
-			return $result;
+		/** @var NelioABController $nelioab_controller */
+		global $nelioab_controller;
+		$post_id = $nelioab_controller->get_queried_post_id();
+		remove_filter( 'the_posts', array( &$this, 'the_posts_intercept' ) );
+		if ( $post_id > 0 ) {
+			$alt = NULL;
+			$alt_post_id = $this->get_post_alternative( $post_id );
+			if ( $alt_post_id != $post_id )
+				$alt = get_post( $this->get_post_alternative( $post_id ) );
+			if ( $alt )
+				return array( $alt );
 		}
-		else {
-			$this->alternative_post = null;
-			return $posts;
-		}
+		return $posts;
 	}
 
 	public function include_css_alternative_fragments_if_any() {
@@ -467,7 +456,8 @@ class NelioABAlternativeExperimentController {
 	public function use_originals_shortlink( $shortlink, $id ) {
 		global $post;
 		remove_filter( 'get_shortlink', array( &$this, 'use_originals_shortlink' ), 10, 2 );
-		$shortlink = wp_get_shortlink( $this->get_original_related_to( $post->ID ) );
+		if ( $post )
+			$shortlink = wp_get_shortlink( $this->get_original_related_to( $post->ID ) );
 		add_filter( 'get_shortlink', array( &$this, 'use_originals_shortlink' ), 10, 2 );
 		return $shortlink;
 	}
@@ -540,9 +530,9 @@ class NelioABAlternativeExperimentController {
 			$res['result'] = $ajax;
 
 		if ( NelioABSettings::get_headlines_quota_mode() == NelioABSettings::HEADLINES_QUOTA_MODE_ON_FRONT_PAGE ) {
+			/** @var NelioABController $nelioab_controller */
 			global $nelioab_controller;
-			$url = $nelioab_controller->get_current_url();
-			$current_post_id = $nelioab_controller->url_or_front_page_to_postid( $url );
+			$current_post_id = $nelioab_controller->get_queried_post_id();
 			$front_page_id = nelioab_get_page_on_front();
 			if ( $front_page_id == 0 )
 				$front_page_id = NelioABController::FRONT_PAGE__YOUR_LATEST_POSTS;
@@ -747,9 +737,9 @@ class NelioABAlternativeExperimentController {
 		global $post;
 		if ( !$post )
 			return $excerpt;
+		/** @var NelioABController $nelioab_controller */
 		global $nelioab_controller;
-		if ( $nelioab_controller->url_or_front_page_to_postid(
-		     $nelioab_controller->get_current_url() ) == $post->ID ) {
+		if ( $nelioab_controller->get_queried_post_id() == $post->ID ) {
 			return $excerpt;
 		}
 		$headline_data = $this->get_headline_experiment_and_alternative( $post->ID );
@@ -814,8 +804,12 @@ class NelioABAlternativeExperimentController {
 		if ( !$kap )
 			return;
 
-		$f = 'nelioab_form_current_url';
-		if ( !isset( $_POST[$f] ) || strlen( trim( $_POST[$f] ) ) === 0 )
+		$f = 'nelioab_current_id';
+		if ( !isset( $_POST[$f] ) )
+			return;
+
+		$f = 'nelioab_current_actual_id';
+		if ( !isset( $_POST[$f] ) )
 			return;
 
 		$f = 'nelioab_userid';
@@ -823,10 +817,8 @@ class NelioABAlternativeExperimentController {
 			return;
 
 		// Constructing FORM EVENT object:
-		$page_url = rtrim( json_decode( urldecode( $_POST['nelioab_form_current_url'] ) ), '/' );
-		global $nelioab_controller;
-		$page = $nelioab_controller->url_or_front_page_to_postid( $page_url );
-		$actual_page = $this->get_post_alternative( $page );
+		$page = $_POST['nelioab_current_id'];
+		$actual_page = $_POST['nelioab_current_actual_id'];
 
 		$ev = array(
 			'kind'       => $kap['kind'],

@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 4.0.3
+Stable tag: 4.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -260,6 +260,17 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.0.4 (Apr 10, 2015) =
+* Improvement: maintain external referrers, so that Google Analytics' reports
+include appropriate sources. This uses Google Analytics' `utm_referrer` GET
+parameter.
+* Improved support for Google Analytics by Yoast. Now, Google Analytics
+tracking scripts are added after Nelio's, so that the results tracked by both
+tools are more accurate.
+* Bug fix on certain installations, in which alternative headlines are not
+properly tracked.
+
 
 = 4.0.3 (Apr 3, 2015) =
 * Improvement: tracking external pages when the user leaves the current page
@@ -855,7 +866,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.0.3 =
-This revision includes some **important** bug fixes; it makes sure your old
-experiments run properly with this new version. **Nelio A/B Testing 4 is more
+= 4.0.4 =
+Google Analytics support has been improved. **Nelio A/B Testing 4 is more
 efficient than ever!**
+

@@ -363,7 +363,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$dashboard_link .= '    closeOnEscape : true,';
 				$dashboard_link .= '    buttons: [';
 				$dashboard_link .= '      {';
-				$dashboard_link .= '        text: "' . __( "Cancel", "nelioab" ) .'",';
+				$dashboard_link .= '        text: "' . __( 'Cancel', 'nelioab' ) .'",';
 				$dashboard_link .= '        click: function() {';
 				$dashboard_link .= '          jQuery(this).dialog("close");';
 				$dashboard_link .= '        }';
