@@ -204,7 +204,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				class="regular-text" />
 			<span class="description" style="display:block;"><?php
 				_e( 'Set a meaningful, descriptive name for the experiment.', 'nelioab' );
-			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129190-why-do-i-need-to-name-an-experiment-" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129190" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
@@ -214,7 +214,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				name="exp_descr" cols="45" rows="3"></textarea>
 			<span class="description" style="display:block;"><?php
 					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
-			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129192-what-is-the-description-of-an-experiment-used-for-" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129192" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
@@ -323,7 +323,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 						$options .= sprintf( '<option value="%s">%s</option>',
 							NelioABClickElementAction::ID_MODE, __( 'whose ID is', 'nelioab' ) );
 						$options .= sprintf( '<option value="%s">%s</option>',
-							NelioABClickElementAction::CSS_MODE, __( 'whose CSS path is', 'nelioab' ) );
+							NelioABClickElementAction::CSS_MODE, __( 'that matches the CSS Selector rule', 'nelioab' ) );
 						$options .= sprintf( '<option value="%s">%s</option>',
 							NelioABClickElementAction::TEXT_MODE, __( 'that contains the text', 'nelioab' ) );
 						$options .= '</select>';

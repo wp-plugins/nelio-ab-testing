@@ -563,7 +563,7 @@ the specific language governing permissions and limitations under the Apache Lic
    *
    * @param val string|function
    * @param context value of "this" to be passed to function
-   * @returns {*}
+   * @return {*}
    */
     function evaluate(val, context) {
         if ($.isFunction(val)) {

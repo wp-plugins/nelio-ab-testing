@@ -19,293 +19,280 @@ if ( !class_exists( 'NelioABUser' ) ) {
 
 	class NelioABUser {
 
-		const COOKIE_LIFETIME = 5184000; // 60 days
-		const TEN_YEARS = 315360000;
+		private static $ids = array();
 
-		private static $assigned_theme;
+		private static $css_info    = false;
+		private static $menu_info   = false;
+		private static $theme_info  = false;
+		private static $widget_info = false;
 
-		public static function get_id() {
-			global $NELIOAB_COOKIES;
+		private static $exps = array();
+		private static $headline_exps = array();
 
-			// Checking whether the user has to participate to experiments or not
-			$is_in_cookie_name     = NelioABSettings::cookie_prefix() . 'is_in';
-			$was_in_cookie_name = NelioABSettings::cookie_prefix() . 'was_in';
-			if ( !isset( $NELIOAB_COOKIES[$is_in_cookie_name] ) ) {
-				$was_in    = false;
-				$prev_perc = false;
-				if ( isset( $NELIOAB_COOKIES[$was_in_cookie_name] ) ) {
-					$value = explode( ':', $NELIOAB_COOKIES[$was_in_cookie_name] );
-					$was_in = $value[0];
-					$prev_perc = $value[1];
-				}
+		private static $is_fully_loaded = false;
 
-				if ( $was_in )
-					$is_in = $was_in;
 
-				$potu = NelioABSettings::get_percentage_of_tested_users();
-				if ( !$prev_perc || $prev_perc != $potu ) {
-					$is_in = 'no';
-					$rand = mt_rand( 0, 100 );
-					if ( $rand <= $potu )
-						$is_in = 'yes';
-				}
-				nelioab_setcookie( $is_in_cookie_name, $is_in );
-				nelioab_setrawcookie( $was_in_cookie_name, "$is_in:$potu", time() + self::TEN_YEARS );
-			}
-
-			// Retrieving (or creating) the user id
-			$cookie_name =  NelioABSettings::cookie_prefix() . 'userid';
-			if ( isset( $NELIOAB_COOKIES[$cookie_name] ) )
-				return $NELIOAB_COOKIES[$cookie_name];
-
-			if ( function_exists( 'uniqid' ) ) {
-				$user_id = uniqid( 'ui_', true );
-			}
-			else {
-				$user_id = get_option( 'nelioab_last_user_id', 0 ) + 1;
-				update_option( 'nelioab_last_user_id', $user_id );
-				$user_id = 'db_' . $user_id;
-			}
-			nelioab_setcookie( $cookie_name, $user_id, time() + self::TEN_YEARS );
-
-			return $user_id;
+		public static function load() {
+			add_action( 'setup_theme', array( 'NelioABUser', 'do_first_load' ) );
+			add_action( 'the_posts',   array( 'NelioABUser', 'do_late_load' ) );
 		}
 
-		public static function get_alternative_randomly( $options, $winning_option = false ) {
-			$num_of_options = count( $options );
-			$option_to_ignore = false;
 
-			switch ( NelioABSettings::get_algorithm() ) {
-
-				case NelioABSettings::ALGORITHM_PRIORITIZE_ORIGINAL:
-					$original_version = $options[0];
-					$original_percentage = NelioABSettings::get_original_percentage();
-					$rand = mt_rand( 0, 100 );
-					if ( $rand <= $original_percentage )
-						return $original_version;
-					// The original should not be used
-					$num_of_options = $num_of_options - 1;
-					$option_to_ignore = $original_version;
-					break;
-
-				case NelioABSettings::ALGORITHM_GREEDY:
-					if ( $winning_option !== false ) {
-						$exploitation_percentage = NelioABSettings::get_exploitation_percentage();
-						$rand = mt_rand( 0, 100 );
-						if ( $rand <= $exploitation_percentage )
-							return $winning_option;
-						// The winning should not be used
-						$num_of_options = $num_of_options - 1;
-						$option_to_ignore = $options[0];
-					}
-					break;
-
-			}
-
-			// Exploration
-			$value = mt_rand( 0, $num_of_options - 1 ); // Index goes from 0..SIZE-1
-			if ( $option_to_ignore && $options[$value] == $option_to_ignore )
-				$value = $num_of_options;
-			return $options[$value];
-		}
-
-		private static function get_alt_exp_for_post( $post_id, $headlines = 'no-headlines' ) {
+		public static function do_first_load() {
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-			$exp = false;
-			foreach ( $running_exps as $data ) {
-				if ( $data->get_type() != NelioABExperiment::POST_ALT_EXP &&
-				     $data->get_type() != NelioABExperiment::PAGE_ALT_EXP &&
-						 'no-headlines' == $headlines ) {
-					continue;
-				}
-				if ( $data->get_type() != NelioABExperiment::HEADLINE_ALT_EXP &&
-						 'headlines' == $headlines ) {
-					continue;
-				}
-				if ( $data->get_originals_id() == $post_id ) {
-					$exp = $data;
-					break;
+			$exp_and_alt_list = array();
+
+			if ( isset( $_POST['nelioab_env'] ) ) {
+				$exp_and_alt_list = $_POST['nelioab_env'];
+			}
+			elseif ( isset( $_POST['nelioab_form_env'] ) ) {
+				$exp_and_alt_list = json_decode( urldecode( $_POST['nelioab_form_env'] ) );
+			}
+			else if ( !is_admin() ) {
+				foreach ( $_GET as $key => $val ) {
+					switch ( $key ) {
+						case 'nabe':
+							try {
+								$aux = explode( ',', $val );
+								foreach ( $aux as $pair ) {
+									try {
+										$pair = explode( ':', $pair );
+										$exp_and_alt_list[$pair[0]] = $pair[1];
+									}
+									catch ( Exception $e ) {}
+								}
+							}
+							catch ( Exception $e ) {}
+							break;
+						case 'nabc':
+							foreach ( $running_exps as $exp )
+								if ( $exp->get_type() == NelioABExperiment::CSS_ALT_EXP )
+									$exp_and_alt_list[$exp->get_id()] = $val;
+							break;
+						case 'nabm':
+							foreach ( $running_exps as $exp )
+								if ( $exp->get_type() == NelioABExperiment::MENU_ALT_EXP )
+									$exp_and_alt_list[$exp->get_id()] = $val;
+							break;
+						case 'nabt':
+							foreach ( $running_exps as $exp )
+								if ( $exp->get_type() == NelioABExperiment::THEME_ALT_EXP )
+									$exp_and_alt_list[$exp->get_id()] = $val;
+							break;
+						case 'nabw':
+							foreach ( $running_exps as $exp )
+								if ( $exp->get_type() == NelioABExperiment::WIDGET_ALT_EXP )
+									$exp_and_alt_list[$exp->get_id()] = $val;
+							break;
+					}
 				}
 			}
-			return $exp;
+			NelioABUser::prepareEnvironment( $exp_and_alt_list );
 		}
+
+
+		public static function do_late_load( $posts ) {
+			if ( !is_admin() && isset( $_GET['nab'] ) ) {
+				/** @var NelioABController $nelioab_controller */
+				global $nelioab_controller;
+				$current_id = $nelioab_controller->get_queried_post_id();
+
+				$val = $_GET['nab'];
+				$exp = false;
+
+				require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+				$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+				for ( $i = 0; $i < count( $running_exps ) && !$exp; ++$i ) {
+					$aux = $running_exps[$i];
+					if ( $aux->get_originals_id() == $current_id )
+						$exp = $aux;
+				}
+				if ( $exp )
+					NelioABUser::completeEnvironment( $exp, $val );
+			}
+			self::$is_fully_loaded = true;
+
+			return $posts;
+		}
+
+
+		private static function prepareEnvironment( $env ) {
+			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
+
+			self::$ids = array();
+
+			self::$css_info    = false;
+			self::$menu_info   = false;
+			self::$theme_info  = false;
+			self::$widget_info = false;
+
+			self::$exps = array();
+			self::$headline_exps = array();
+
+			foreach ( $env as $exp_id => $alt ) {
+				$exp = false;
+				foreach ( $running_exps as $aux )
+					if ( $aux->get_id() == $exp_id )
+						$exp = $aux;
+				if ( $exp ) {
+					switch ( $exp->get_type() ) {
+						case NelioABExperiment::PAGE_ALT_EXP:
+						case NelioABExperiment::POST_ALT_EXP:
+							self::add_regular_exp( $exp, $alt );
+							array_push( self::$ids, $exp->get_id() );
+							break;
+						case NelioABExperiment::HEADLINE_ALT_EXP:
+							self::add_headline_exp( $exp, $alt );
+							array_push( self::$ids, $exp->get_id() );
+							break;
+						case NelioABExperiment::CSS_ALT_EXP:
+						case NelioABExperiment::MENU_ALT_EXP:
+						case NelioABExperiment::THEME_ALT_EXP:
+						case NelioABExperiment::WIDGET_ALT_EXP:
+							self::add_global_exp( $exp, $alt );
+							array_push( self::$ids, $exp->get_id() );
+							break;
+					}
+				}
+			}
+		}
+
+
+		private static function completeEnvironment( $exp, $alt ) {
+			switch ( $exp->get_type() ) {
+				case NelioABExperiment::PAGE_ALT_EXP:
+				case NelioABExperiment::POST_ALT_EXP:
+					self::add_regular_exp( $exp, $alt );
+					array_push( self::$ids, $exp->get_id() );
+					break;
+				case NelioABExperiment::HEADLINE_ALT_EXP:
+					self::add_headline_exp( $exp, $alt );
+					array_push( self::$ids, $exp->get_id() );
+					break;
+			}
+		}
+
+
+		public static function is_fully_loaded() {
+			return self::$is_fully_loaded;
+		}
+
+
+		public static function get_experiment_ids_in_request() {
+			return self::$ids;
+		}
+
+
+		private static function add_regular_exp( $exp, $alt_index ) {
+			$alt = $exp->get_originals_id();
+			if ( $alt_index > 0 ) {
+				--$alt_index;
+				$alts = $exp->get_alternatives();
+				if ( $alt_index < count( $alts ) )
+					$alt = $alts[$alt_index]->get_value();
+			}
+			if ( $alt )
+				self::$exps[$exp->get_originals_id()] = $alt;
+		}
+
 
 		public static function get_alternative_for_post_alt_exp( $post_id ) {
-			global $NELIOAB_COOKIES;
-			$exp = self::get_alt_exp_for_post( $post_id, 'no-headlines' );
-			if ( !$exp )
+			if ( isset( self::$exps[$post_id] ) )
+				return self::$exps[$post_id];
+			else
 				return $post_id;
-
-			$cookie_name = NelioABSettings::cookie_prefix() . 'altexp_' . $exp->get_id();
-			$cookie_life = time() + self::COOKIE_LIFETIME;
-
-			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
-				// Creating the cookie for the experiment information
-				$alternatives = $exp->get_alternatives();
-				array_unshift( $alternatives, $exp->get_original() );
-				$alt_post = self::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
-				$alt_post = $alt_post->get_value();
-
-				// Before setting any cookie, we check that the original and the alternative
-				// posts exist...
-				$post = get_post( $post_id );
-				if ( !$post ) return $post_id;
-
-				if ( $alt_post < 0 ) {
-					// The ALT_POST id is negative if we are testing titles only
-				}
-				else {
-					// If we are not, we check whether the post exists or not...
-					$post = get_post( $alt_post );
-					if ( !$post ) return $post_id;
-				}
-
-				// If everything seems to exist, we set the cookie and keep going
-				nelioab_setcookie( $cookie_name, $alt_post, $cookie_life );
-			}
-			else {
-				$alt_post = $NELIOAB_COOKIES[$cookie_name];
-			}
-
-			return $alt_post;
 		}
+
+
+		private static function add_headline_exp( $exp, $alt_index ) {
+			$alt = $exp->get_original();
+			if ( $alt_index > 0 ) {
+				--$alt_index;
+				$alts = $exp->get_alternatives();
+				if ( $alt_index < count( $alts ) )
+					$alt = $alts[$alt_index];
+			}
+			self::$headline_exps[$exp->get_originals_id()] = array(
+				'exp' => $exp, 'alt' => $alt );
+		}
+
 
 		public static function get_alternative_for_headline_alt_exp( $post_id ) {
-			global $NELIOAB_COOKIES;
-			$exp = self::get_alt_exp_for_post( $post_id, 'headlines' );
-			if ( !$exp )
+			if ( isset( self::$headline_exps[$post_id] ) )
+				return self::$headline_exps[$post_id];
+			else
 				return false;
-
-			$cookie_name = NelioABSettings::cookie_prefix() . 'altexp_' . $exp->get_id();
-			$cookie_life = time() + self::COOKIE_LIFETIME;
-
-			$alt = false;
-			$alternatives = $exp->get_alternatives();
-			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
-				// Creating the cookie for the experiment information
-				array_unshift( $alternatives, $exp->get_original() );
-				$alt = self::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
-				// If everything seems to exist, we set the cookie and keep going
-				nelioab_setcookie( $cookie_name, $alt->get_id(), $cookie_life );
-			}
-			else {
-				$alt_id = $NELIOAB_COOKIES[$cookie_name];
-				foreach ( $alternatives as $aux )
-					if ( $aux->get_id() == $alt_id )
-						$alt = $aux;
-				if ( !$alt )
-					$alt = $exp->get_original();
-			}
-
-			return array( 'exp' => $exp, 'alt' => $alt );
 		}
 
-		public static function get_alternative_for_global_alt_exp( $type ) {
-			global $NELIOAB_COOKIES;
 
-			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-			$exp = NULL;
-			foreach ( $running_exps as $data ) {
-				if ( $data->get_type() == $type ) {
-					$exp = $data;
+		private static function add_global_exp( $exp, $alt_index ) {
+			$alt = $exp->get_original();
+			if ( $alt_index > 0 ) {
+				--$alt_index;
+				$alts = $exp->get_alternatives();
+				if ( $alt_index < count( $alts ) )
+					$alt = $alts[$alt_index];
+			}
+			switch ( $exp->get_type() ) {
+				case NelioABExperiment::CSS_ALT_EXP:
+					self::$css_info = array( 'exp' => $exp, 'alt' => $alt );
 					break;
-				}
+				case NelioABExperiment::MENU_ALT_EXP:
+					self::$menu_info = array( 'exp' => $exp, 'alt' => $alt );
+					break;
+				case NelioABExperiment::THEME_ALT_EXP:
+					self::$theme_info = array( 'exp' => $exp, 'alt' => $alt );
+					break;
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					self::$widget_info = array( 'exp' => $exp, 'alt' => $alt );
+					break;
 			}
+		}
 
-			if ( $exp == NULL )
-				return false;
 
-			$cookie_name = NelioABSettings::cookie_prefix() . 'global_altexp_' . $exp->get_id();
-			$cookie_life = time() + self::COOKIE_LIFETIME;
-
-			// COMPATIBILITY WITH OLDER VERSIONS
-			$cookie_compat_name = NelioABSettings::cookie_prefix() . 'theme_altexp_' . $exp->get_id();
-			if ( isset( $NELIOAB_COOKIES[$cookie_compat_name] ) && !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
-				$NELIOAB_COOKIES[$cookie_name] = $NELIOAB_COOKIES[$cookie_compat_name];
+		public static function get_alternative_for_global_alt_exp( $type ) {
+			switch ( $type ) {
+				case NelioABExperiment::CSS_ALT_EXP:
+					if ( self::$css_info )
+						return self::$css_info['alt'];
+					break;
+				case NelioABExperiment::MENU_ALT_EXP:
+					if ( self::$menu_info )
+						return self::$menu_info['alt'];
+					break;
+				case NelioABExperiment::THEME_ALT_EXP:
+					if ( self::$theme_info )
+						return self::$theme_info['alt'];
+					break;
+				case NelioABExperiment::WIDGET_ALT_EXP:
+					if ( self::$widget_info )
+						return self::$widget_info['alt'];
+					break;
 			}
-
-			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
-				// Creating the cookie for the experiment information
-				$alternatives = $exp->get_alternatives();
-				array_unshift( $alternatives, $exp->get_original() );
-				$aux = self::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
-				$alt_id = $aux->get_id();
-
-				// If everything seems to exist, we set the cookie and keep going
-				nelioab_setcookie( $cookie_name, $alt_id, $cookie_life );
-			}
-
-			$alt_id = $NELIOAB_COOKIES[$cookie_name];
-
-			if ( $exp->get_original()->get_id() == $alt_id )
-				return $exp->get_original();
-
-			foreach ( $exp->get_alternatives() as $candidate )
-				if ( $candidate->get_id() == $alt_id )
-					return $candidate;
-
 			return false;
 		}
 
 
 		public static function get_alternative_for_menu_alt_exp( $menu_id ) {
-			global $NELIOAB_COOKIES;
-
-			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
-			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-			$exp = NULL;
-			foreach ( $running_exps as $data ) {
-				if ( $data->get_type() == NelioABExperiment::MENU_ALT_EXP &&
-				     $data->get_original()->get_value() == $menu_id ) {
-					$exp = $data;
-					break;
-				}
-			}
-
-			if ( $exp == NULL )
+			if ( !self::$menu_info )
 				return false;
-
-			$cookie_name = NelioABSettings::cookie_prefix() . 'global_altexp_' . $exp->get_id();
-			$cookie_life = time() + self::COOKIE_LIFETIME;
-
-			if ( !isset( $NELIOAB_COOKIES[$cookie_name] ) ) {
-				// Creating the cookie for the experiment information
-				$alternatives = $exp->get_alternatives();
-				array_unshift( $alternatives, $exp->get_original() );
-				$aux = self::get_alternative_randomly( $alternatives, $exp->get_winning_alternative() );
-				$alt_id = $aux->get_id();
-
-				// If everything seems to exist, we set the cookie and keep going
-				nelioab_setcookie( $cookie_name, $alt_id, $cookie_life );
-			}
-
-			$alt_id = $NELIOAB_COOKIES[$cookie_name];
-
-			if ( $exp->get_original()->get_id() == $alt_id )
-				return $exp->get_original();
-
-			foreach ( $exp->get_alternatives() as $candidate )
-				if ( $candidate->get_id() == $alt_id )
-					return $candidate;
-
-
-			return false;
+			if ( self::$menu_info['exp']->get_original()->get_value() != $menu_id )
+				return false;
+			return self::$menu_info['alt'];
 		}
+
 
 		public static function get_assigned_theme() {
 			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
-
 			$alt = self::get_alternative_for_global_alt_exp( NelioABExperiment::THEME_ALT_EXP );
-
 			if ( $alt ) {
 				$themes = wp_get_themes();
 				foreach ( $themes as $theme )
 					if ( $theme['Stylesheet'] == $alt->get_value() )
 						return $theme;
 			}
-
 			return wp_get_theme();
 		}
 
