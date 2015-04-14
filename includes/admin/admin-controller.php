@@ -110,15 +110,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			// Some relevant global warnings
 			// -----------------------------
 
-			// No more quota
-			if ( isset( $_GET['page'] ) && 'nelioab-account' !== $_GET['page'] && !NelioABAccountSettings::has_quota_left() ) {
-				array_push( $this->global_warnings,
-						sprintf(
-							__( '<b>Warning!</b> You have no more quota available. Please, <a href="%s">check your Nelio A/B Testing account</a> for obtaining additional quota.', 'nelioab' ),
-							admin_url( 'admin.php?page=nelioab-account' ) )
-					);
-			}
-
 			// If the current user is NOT admin, do not show the plugin
 			if ( !nelioab_can_user_manage_plugin() )
 				return;
@@ -144,7 +135,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// AJAX functions
 			add_action( 'wp_ajax_nelioab_get_html_content', array( $this, 'generate_html_content' ) ) ;
-			add_action( 'wp_ajax_nelioab_install_performance_muplugin', array( 'NelioABSettings', 'toggle_performance_muplugin_installation' ) ) ;
 
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			add_action( 'wp_ajax_nelioab_post_searcher',
@@ -373,7 +363,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$dashboard_link .= '    closeOnEscape : true,';
 				$dashboard_link .= '    buttons: [';
 				$dashboard_link .= '      {';
-				$dashboard_link .= '        text: "' . __( "Cancel", "nelioab" ) .'",';
+				$dashboard_link .= '        text: "' . __( 'Cancel', 'nelioab' ) .'",';
 				$dashboard_link .= '        click: function() {';
 				$dashboard_link .= '          jQuery(this).dialog("close");';
 				$dashboard_link .= '        }';
@@ -518,15 +508,20 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				array( 'NelioABSettingsPageController', 'build' ) );
 
 
-			// Feedback page
+			// Help
 			// ----------------------------------------------------------------------
-			require_once( NELIOAB_ADMIN_DIR . '/feedback-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
-				__( 'Share & Comment', 'nelioab' ),
-				__( 'Share & Comment', 'nelioab' ),
+				__( 'Help', 'nelioab' ),
+				__( 'Help', 'nelioab' ),
 				'manage_options',
-				'nelioab-feedback',
-				array( 'NelioABFeedbackPageController', 'build' ) );
+				'nelioab-help' );
+			global $submenu;
+			for ( $i = 0; $i < count( $submenu['nelioab-dashboard'] ); ++$i ) {
+				if ( 'nelioab-help' == $submenu['nelioab-dashboard'][$i][2] ) {
+					$submenu['nelioab-dashboard'][$i][2] = 'http://support.nelioabtesting.com/support/home';
+					break;
+				}
+			}
 
 
 			// OTHER PAGES (not included in the menu)

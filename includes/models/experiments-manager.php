@@ -33,9 +33,9 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 		const CACHE_ALL_EXPERIMENTS = false;
 
 		private static $running_experiments = false;
-		private static $running_headline_alt_exps = false;
 		private static $experiments = false;
 
+		private static $relevant_running_experiments = false;
 
 		public function list_elements() {
 			return self::get_experiments();
@@ -374,34 +374,40 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 		}
 
 
-		public static function update_current_winner_for_running_experiments( $force_update = 'dont_force' ) {
-			if ( 'force_update' === $force_update )
-				update_option( 'nelioab_last_winners_update', 0 );
-			$now = time();
-			$last_update = get_option( 'nelioab_last_winners_update', 0 );
-			if ( $now - $last_update < 1800 )
-				return;
-			update_option( 'nelioab_last_winners_update', $now );
+		/**
+		 * This function returns the list of running experiments for which the
+		 * current user has one alternative assigned.
+		 */
+		public static function get_relevant_running_experiments_from_cache() {
+			if ( self::$relevant_running_experiments )
+				return self::$relevant_running_experiments;
 
-			if ( self::CACHE_ALL_EXPERIMENTS ) {
-				$aux = self::get_experiments();
-				foreach ( self::$experiments as $exp ) {
-					if ( $exp->get_status() == NelioABExperimentStatus::RUNNING &&
-					     $exp->get_type() !== NelioABExperiment::HEATMAP_EXP )
-						$exp->update_winning_alternative_from_appengine();
+			global $NELIOAB_COOKIES;
+			$env_ids = NelioABUser::get_experiment_ids_in_request();
+			$running_experiments = self::get_running_experiments_from_cache();
+
+			$relevant_running_experiments = array();
+			foreach ( $running_experiments as $exp ) {
+				$is_relevant = false;
+				for ( $i=0; $i < count( $env_ids ) && !$is_relevant; ++$i )
+					if ( $exp->get_id() == $env_ids[$i] )
+						$is_relevant = true;
+				if ( $is_relevant ) {
+					$already_in_array = false;
+					foreach ( $relevant_running_experiments as $relevant_exp )
+						if ( $relevant_exp->get_id() == $exp->get_id() )
+							$already_in_array = true;
+					if ( !$already_in_array )
+						array_push( $relevant_running_experiments, $exp );
 				}
-				update_option( 'nelioab_experiments', self::$experiments );
 			}
-			else {
-				update_option( 'nelioab_running_experiments_date', time() );
-				$running_exps = self::get_running_experiments_from_cache();
-				foreach ( $running_exps as $exp ) {
-					if ( $exp->get_type() !== NelioABExperiment::HEATMAP_EXP )
-						$exp->update_winning_alternative_from_appengine();
-				}
-				update_option( 'nelioab_running_experiments', $running_exps );
-				update_option( 'nelioab_running_experiments_date', time() );
-			}
+
+			if ( NelioABUser::is_fully_loaded() )
+				self::$relevant_running_experiments = $relevant_running_experiments ;
+			else
+				self::$relevant_running_experiments = false;
+
+			return $relevant_running_experiments;
 		}
 
 
@@ -421,17 +427,6 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 				self::$running_experiments = get_option( 'nelioab_running_experiments', array() );
 				return self::$running_experiments;
 			}
-		}
-
-		public static function get_running_headline_experiments_from_cache() {
-			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
-			if ( self::$running_headline_alt_exps )
-				return self::$running_headline_alt_exps;
-			self::$running_headline_alt_exps = array();
-			foreach ( $running_exps as $exp )
-				if ( $exp->get_type() == NelioABExperiment::HEADLINE_ALT_EXP )
-					array_push( self::$running_headline_alt_exps, $exp );
-			return self::$running_headline_alt_exps;
 		}
 
 		public static function get_dashboard_summary() {

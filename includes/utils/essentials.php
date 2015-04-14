@@ -86,10 +86,6 @@ function nelioab_activate_plugin() {
 	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
 	NelioABMenuExpAdminController::restore_alternative_menu_backup();
 
-	// Update mu-plugin (if installed)
-	if ( !NelioABSettings::is_performance_muplugin_up_to_date() )
-		NelioABSettings::update_performance_muplugin();
-
 	// Make sure that the cache uses new classes
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	NelioABExperimentsManager::update_running_experiments_cache( 'now' );

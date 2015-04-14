@@ -460,12 +460,12 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 			if ( NelioABAccountSettings::get_subscription_plan() < NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
 				$expl = __( 'Feature only available in the Professional Plan', 'nelioab' );
+				if ( isset( $actions['duplicate'] ) )
+					$actions['duplicate'] = sprintf( '<span title="%s">%s</span>', $expl, __( 'Duplicate', 'nelioab' ) );
 			}
 
 			if ( NelioABAccountSettings::get_subscription_plan() < NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
 				$expl = __( 'Feature only available in the Enterprise Plan', 'nelioab' );
-				if ( isset( $actions['duplicate'] ) )
-					$actions['duplicate'] = sprintf( '<span title="%s">%s</span>', $expl, __( 'Duplicate', 'nelioab' ) );
 				if ( isset( $actions['schedule'] ) )
 					$actions['schedule'] = sprintf( '<span title="%s">%s</span>', $expl, __( 'Schedule', 'nelioab' ) );
 			}

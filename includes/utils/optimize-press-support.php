@@ -116,7 +116,7 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 					$status = get_post_status($id);
 					/* Nelio */ require_once( NELIOAB_MODELS_DIR . '/user.php' );
 					/* Nelio */ $id = NelioABUser::get_alternative_for_post_alt_exp( $id );
-					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative', false ) ) $status = 'publish';
+					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative' ) ) $status = 'publish';
 					if ( $status == 'publish' || (current_user_can('edit_posts') || current_user_can('edit_pages')) ){
 						if(get_post_meta($id,'_'.OP_SN.'_pagebuilder',true) == 'Y'){
 							op_init_page($id);
@@ -156,7 +156,7 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 					$status = get_post_status($id);
 					/* Nelio */ require_once( NELIOAB_MODELS_DIR . '/user.php' );
 					/* Nelio */ $id = NelioABUser::get_alternative_for_post_alt_exp( $id );
-					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative', false ) ) $status = 'publish';
+					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative' ) ) $status = 'publish';
 					if ( $status == 'publish' || (current_user_can('edit_posts') || current_user_can('edit_pages')) ){
 						if(get_post_meta($id,'_'.OP_SN.'_pagebuilder',true) == 'Y'){
 							op_init_page($id);

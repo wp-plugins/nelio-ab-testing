@@ -1,17 +1,20 @@
 <?php
 /**
  * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -19,9 +22,9 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 
 	class NelioABSettings {
 
-		const ALGORITHM_PURE_RANDOM         = 0;
-		const ALGORITHM_PRIORITIZE_ORIGINAL = 1;
-		const ALGORITHM_GREEDY              = 2;
+		const ALGORITHM_PURE_RANDOM         = 'r';
+		const ALGORITHM_PRIORITIZE_ORIGINAL = 'p';
+		const ALGORITHM_GREEDY              = 'g';
 
 		const FINISHED_EXPERIMENTS_HIDE_ALL    = 0;
 		const FINISHED_EXPERIMENTS_SHOW_ALL    = 1;
@@ -48,6 +51,13 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 		const ELEMENT_BASED_HEATMAP_TRACKING = 'ELEM_HEATMAP_TRACKING';
 		const HTML_BASED_HEATMAP_TRACKING    = 'HTML_HEATMAP_TRACKING';
 
+		const GET_PARAMS_VISIBILITY_HIDE_ALL     = 'all';
+		const GET_PARAMS_VISIBILITY_HIDE_NONE    = 'none';
+		const GET_PARAMS_VISIBILITY_HIDE_CONTEXT = 'context';
+
+		const USER_SPLIT = 'split';
+		const USER_ALLIN = 'allin';
+
 		const DEFAULT_CONVERSION_VALUE            = 25;
 		const DEFAULT_CONVERSION_UNIT             = '$';
 		const DEFAULT_USE_COLORBLIND_PALETTE      = false;
@@ -66,6 +76,8 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 		const DEFAULT_THEME_LANDING_PAGE          = false;
 		const DEFAULT_OUTWARDS_NAVIGATION_BLANK   = true;
 		const DEFAULT_PLUGIN_AVAILABLE_TO         = self::PLUGIN_AVAILABLE_TO_SITE_SETTING;
+		const DEFAULT_USER_SPLIT                  = self::USER_SPLIT;
+		const DEFAULT_GET_PARAMS_VISIBILITY       = self::GET_PARAMS_VISIBILITY_HIDE_CONTEXT;
 
 		const CONVERSION_UNIT_DOLLAR  = '$';
 		const CONVERSION_UNIT_EURO    = '€';
@@ -132,20 +144,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 				$new_input['use_colorblind'] = $new_input['use_colorblind'] == '1';
 			}
 
-			$new_input['make_site_consistent'] = self::DEFAULT_MAKE_SITE_CONSISTENT;
-			if ( isset( $input['make_site_consistent'] ) ) {
-				$new_input['make_site_consistent'] = sanitize_text_field( $input['make_site_consistent'] );
-				$new_input['make_site_consistent'] = $new_input['make_site_consistent'] == '1';
-			}
-
-			$new_input['alt_load_mode'] = self::DEFAULT_ALTERNATIVE_LOADING_MODE;
-			if ( isset( $input['alt_load_mode'] ) )
-				$new_input['alt_load_mode'] = sanitize_text_field( $input['alt_load_mode'] );
-
-			$new_input['hm_tracking_mode'] = self::DEFAULT_HEATMAP_TRACKING_MODE;
-			if ( isset( $input['hm_tracking_mode'] ) )
-				$new_input['hm_tracking_mode'] = sanitize_text_field( $input['hm_tracking_mode'] );
-
 			$new_input['theme_landing_page'] = self::DEFAULT_THEME_LANDING_PAGE;
 			if ( isset( $input['theme_landing_page'] ) ) {
 				$new_input['theme_landing_page'] = sanitize_text_field( $input['theme_landing_page'] );
@@ -162,27 +160,11 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $input['show_finished_experiments'] ) )
 				$new_input['show_finished_experiments'] = intval( $input['show_finished_experiments'] );
 
-			$new_input['algorithm'] = self::ALGORITHM_PURE_RANDOM;
-			if ( isset( $input['algorithm'] ) )
-				$new_input['algorithm'] = intval( $input['algorithm'] );
-
-			$new_input['expl_ratio'] = self::DEFAULT_EXPL_RATIO;
-			if ( isset( $input['expl_ratio'] ) )
-				$new_input['expl_ratio'] = intval( $input['expl_ratio'] );
-
-			$new_input['ori_perc'] = self::DEFAULT_ORIGINAL_PERCENTAGE;
-			if ( isset( $input['ori_perc'] ) )
-				$new_input['ori_perc'] = intval( $input['ori_perc'] );
-
 			$new_input['min_confidence_for_significance'] = self::DEFAULT_CONFIDENCE_FOR_SIGNIFICANCE;
 			if ( isset( $input['min_confidence_for_significance'] ) )
 				$new_input['min_confidence_for_significance'] = intval( $input['min_confidence_for_significance'] );
 			if ( 100 == $new_input['min_confidence_for_significance'] )
 				$new_input['min_confidence_for_significance'] = 99;
-
-			$new_input['perc_of_tested_users'] = self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
-			if ( isset( $input['perc_of_tested_users'] ) )
-				$new_input['perc_of_tested_users'] = intval( $input['perc_of_tested_users'] );
 
 			$new_input['menu_location'] = self::DEFAULT_MENU_LOCATION;
 			if ( isset( $input['menu_location'] ) )
@@ -198,6 +180,41 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 
 			// SYNC SOME SETTINGS WITH GOOGLE APP ENGINE
 			try {
+
+				$algorithm = self::ALGORITHM_PURE_RANDOM;
+				if ( isset( $input['algorithm'] ) )
+					$algorithm = sanitize_text_field( $input['algorithm'] );
+
+				$make_site_consistent = self::DEFAULT_MAKE_SITE_CONSISTENT;
+				if ( isset( $input['make_site_consistent'] ) ) {
+					$make_site_consistent = sanitize_text_field( $input['make_site_consistent'] );
+					$make_site_consistent = $make_site_consistent == '1';
+				}
+
+				$expl_ratio = self::DEFAULT_EXPL_RATIO;
+				if ( isset( $input['expl_ratio'] ) )
+					$expl_ratio = intval( $input['expl_ratio'] );
+
+				$get_params_visibility = self::DEFAULT_GET_PARAMS_VISIBILITY;
+				if ( isset( $input['get_params_visibility'] ) )
+					$get_params_visibility = sanitize_text_field( $input['get_params_visibility'] );
+
+				$hm_tracking_mode = self::DEFAULT_HEATMAP_TRACKING_MODE;
+				if ( isset( $input['hm_tracking_mode'] ) )
+					$hm_tracking_mode = sanitize_text_field( $input['hm_tracking_mode'] );
+
+				$user_split = self::DEFAULT_USER_SPLIT;
+				if ( isset( $input['user_split'] ) )
+					$user_split = sanitize_text_field( $input['user_split'] );
+
+				$ori_perc = self::DEFAULT_ORIGINAL_PERCENTAGE;
+				if ( isset( $input['ori_perc'] ) )
+					$ori_perc = intval( $input['ori_perc'] );
+
+				$perc_of_tested_users = self::DEFAULT_PERCENTAGE_OF_TESTED_USERS;
+				if ( isset( $input['perc_of_tested_users'] ) )
+					$perc_of_tested_users = intval( $input['perc_of_tested_users'] );
+
 				$limit = self::get_quota_limit_per_exp();
 				if ( isset( $input['quota_limit_per_exp'] ) )
 					$limit = intval( $input['quota_limit_per_exp'] );
@@ -211,13 +228,29 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 					$notifications .= self::NOTIFICATION_EXP_FINALIZATION . ' ';
 
 				// Attributes to control if sync was OK
-				$new_input['quota_limit_per_exp'] = self::get_quota_limit_per_exp();
-				$new_input['notification_email']  = self::get_notification_email();
-				$new_input['notifications']       = self::get_notifications();
+				$new_input['algorithm']             = self::get_algorithm();
+				$new_input['make_site_consistent']  = self::make_site_consistent();
+				$new_input['expl_ratio']            = self::get_exploitation_percentage();
+				$new_input['get_params_visibility'] = self::get_params_visibility();
+				$new_input['hm_tracking_mode']      = self::get_heatmap_tracking_mode();
+				$new_input['user_split']            = self::get_split_user_mode();
+				$new_input['ori_perc']              = self::get_original_percentage();
+				$new_input['perc_of_tested_users']  = self::get_percentage_of_tested_users();
+				$new_input['quota_limit_per_exp']   = self::get_quota_limit_per_exp();
+				$new_input['notification_email']    = self::get_notification_email();
+				$new_input['notifications']         = self::get_notifications();
 
-				$new_input['try_quota_limit_per_exp'] = $limit;
-				$new_input['try_notification_email']  = $email;
-				$new_input['try_notifications']       = $notifications;
+				$new_input['try_algorithm']             = $algorithm;
+				$new_input['try_make_site_consistent']  = $make_site_consistent;
+				$new_input['try_expl_ratio']            = $expl_ratio;
+				$new_input['try_get_params_visibility'] = $get_params_visibility;
+				$new_input['try_hm_tracking_mode']      = $hm_tracking_mode;
+				$new_input['try_user_split']            = $user_split;
+				$new_input['try_ori_perc']              = $ori_perc;
+				$new_input['try_perc_of_tested_users']  = $perc_of_tested_users;
+				$new_input['try_quota_limit_per_exp']   = $limit;
+				$new_input['try_notification_email']    = $email;
+				$new_input['try_notifications']         = $notifications;
 
 				// Send data to Google
 				$url = sprintf(
@@ -225,15 +258,31 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 						NelioABAccountSettings::get_site_id()
 					);
 				$object = array(
+						'algorithm'         => $algorithm,
+						'consistency'       => $make_site_consistent,
+						'exploitPerc'       => $expl_ratio,
+						'hideParams'        => $get_params_visibility,
+						'hmMode'            => $hm_tracking_mode,
+						'mode'              => $user_split,
+						'partChance'        => $perc_of_tested_users,
+						'oriPrio'           => $ori_perc,
 						'notificationEmail' => $email,
 						'notifications'     => $notifications,
 						'quotaLimit'        => $limit,
 					);
 				$result = NelioABBackend::remote_post( $url, $object );
 
-				$new_input['quota_limit_per_exp'] = $limit;
-				$new_input['notification_email']  = $email;
-				$new_input['notifications']  = $notifications;
+				$new_input['algorithm']             = $algorithm;
+				$new_input['make_site_consistent']  = $make_site_consistent;
+				$new_input['expl_ratio']            = $expl_ratio;
+				$new_input['get_params_visibility'] = $get_params_visibility;
+				$new_input['hm_tracking_mode']      = $hm_tracking_mode;
+				$new_input['user_split']            = $user_split;
+				$new_input['ori_perc']              = $ori_perc;
+				$new_input['perc_of_tested_users']  = $perc_of_tested_users;
+				$new_input['quota_limit_per_exp']   = $limit;
+				$new_input['notification_email']    = $email;
+				$new_input['notifications']         = $notifications;
 			}
 			catch ( Exception $e ) {
 			}
@@ -241,13 +290,22 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			return $new_input;
 		}
 
-		public static function get_alternative_loading_mode() {
-			if ( !self::is_field_enabled_for_current_plan( 'alt_load_mode' ) )
-				return self::DEFAULT_ALTERNATIVE_LOADING_MODE;
+		public static function get_unsync_fields( $new_options = false ) {
 			$options = self::get_settings();
-			if ( isset( $options['alt_load_mode'] ) )
-				return $options['alt_load_mode'];
-			return self::DEFAULT_ALTERNATIVE_LOADING_MODE;
+			if ( !$new_options )
+				$new_options = $options;
+			$names = array( 'algorithm', 'make_site_consistent', 'expl_ratio',
+				'get_params_visibility', 'hm_tracking_mode', 'user_split', 'ori_perc',
+				'perc_of_tested_users', 'quota_limit_per_exp', 'notification_email',
+				'notifications' );
+			$result = array();
+			foreach ( $names as $n ) {
+				if ( !isset( $new_options['try_' . $n] ) )
+					continue;
+				if ( !isset( $options[$n] ) || $options[$n] !== $new_options['try_' . $n] )
+					array_push( $result, $n );
+			}
+			return $result;
 		}
 
 		public static function get_heatmap_tracking_mode() {
@@ -259,19 +317,22 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			return self::DEFAULT_HEATMAP_TRACKING_MODE;
 		}
 
-		public static function get_unsync_fields( $new_options = false ) {
+		public static function get_split_user_mode() {
+			if ( !self::is_field_enabled_for_current_plan( 'user_split' ) )
+				return self::DEFAULT_USER_SPLIT;
 			$options = self::get_settings();
-			if ( !$new_options )
-				$new_options = $options;
-			$names = array( 'quota_limit_per_exp', 'notification_email', 'notifications' );
-			$result = array();
-			foreach ( $names as $n ) {
-				if ( !isset( $new_options['try_' . $n] ) )
-					continue;
-				if ( !isset( $options[$n] ) || $options[$n] !== $new_options['try_' . $n] )
-					array_push( $result, $n );
-			}
-			return $result;
+			if ( isset( $options['user_split'] ) )
+				return $options['user_split'];
+			return self::DEFAULT_USER_SPLIT;
+		}
+
+		public static function get_params_visibility() {
+			if ( !self::is_field_enabled_for_current_plan( 'get_params_visibility' ) )
+				return self::DEFAULT_GET_PARAMS_VISIBILITY;
+			$options = self::get_settings();
+			if ( isset( $options['get_params_visibility'] ) )
+				return $options['get_params_visibility'];
+			return self::DEFAULT_GET_PARAMS_VISIBILITY;
 		}
 
 		public static function get_def_conv_value() {
@@ -284,97 +345,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( strlen( $result ) == 0 )
 				$result = self::DEFAULT_CONVERSION_VALUE;
 			return $result;
-		}
-
-		public static function is_performance_muplugin_installed() {
-			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
-			$mu_dir = untrailingslashit( $mu_dir );
-			$mu_plugin = $mu_dir . '/nelioab-performance.php';
-			return file_exists( $mu_plugin );
-		}
-
-		public static function toggle_performance_muplugin_installation() {
-			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
-			$mu_dir = untrailingslashit( $mu_dir );
-			$source = NELIOAB_ROOT_DIR . '/mu-plugins/nelioab-performance.php';
-			$dest = $mu_dir . '/nelioab-performance.php';
-
-			if ( !self::is_performance_muplugin_installed() ) {
-				$result = self::install_performance_muplugin( $mu_dir, $source, $dest );
-			}
-			elseif ( !self::is_performance_muplugin_up_to_date() ) {
-				$result = self::uninstall_performance_muplugin( $dest );
-				if ( $result['status'] !== 'ERROR' )
-					$result = self::install_performance_muplugin( $mu_dir, $source, $dest );
-			}
-			else {
-				$result = self::uninstall_performance_muplugin( $dest );
-			}
-			header( 'Content-Type: application/json' );
-			echo json_encode( $result );
-			die();
-		}
-
-		public static function update_performance_muplugin() {
-			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
-			$mu_dir = untrailingslashit( $mu_dir );
-			$source = NELIOAB_ROOT_DIR . '/mu-plugins/nelioab-performance.php';
-			$dest = $mu_dir . '/nelioab-performance.php';
-			$result = self::uninstall_performance_muplugin( $dest );
-			if ( $result['status'] !== 'ERROR' )
-				$result = self::install_performance_muplugin( $mu_dir, $source, $dest );
-		}
-
-		private static function install_performance_muplugin( $mu_dir, $source, $dest ) {
-			$result = array( 'status' => 'OK', 'error' => '' );
-			if ( !wp_mkdir_p( $mu_dir ) ) {
-				$result['error'] = sprintf(
-					__( '<strong>Error!</strong> The following directory could not be created: <code>%s</code>.', 'nelioab' ),
-					$mu_dir );
-				$result['status'] = 'ERROR';
-			}
-			if ( $result['status'] !== 'ERROR' && !copy( $source, $dest ) ) {
-				$result['error'] = sprintf(
-					__( '<strong>Error!</strong> Could not copy Nelio\'s performance MU-Plugin from <code>%1$s</code> to <code>%2$s</code>.', 'nelioab' ),
-					$source, $dest );
-				$result['status'] = 'ERROR';
-			}
-			return $result;
-		}
-
-		private static function uninstall_performance_muplugin( $dest ) {
-			$result = array( 'status' => 'OK', 'error' => '' );
-			if ( file_exists( $dest ) && !unlink( $dest ) ) {
-				$result['error'] = sprintf(
-						__( '<strong>Error!</strong> Could not remove the Nelio\'s performance MU-Plugin from <code>%s</code>.', 'nelioab' ),
-					$dest );
-				$result['status'] = 'ERROR';
-			}
-			return $result;
-		}
-
-		public static function is_performance_muplugin_up_to_date() {
-			if ( !is_admin() || !function_exists( 'get_plugin_data' ) )
-				return true;
-
-			$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
-			$mu_dir = untrailingslashit( $mu_dir );
-			$mu_plugin = $mu_dir . '/nelioab-performance.php';
-
-			if ( !file_exists( $mu_plugin ) )
-				return true;
-
-			$mu_plugin_data = get_plugin_data( $mu_plugin );
-			$installed_version = $mu_plugin_data['Version'];
-
-			$source = NELIOAB_ROOT_DIR . '/mu-plugins/nelioab-performance.php';
-			$source_data = get_plugin_data( $source );
-			$new_version = $source_data['Version'];
-
-			if ( $new_version === $installed_version )
-				return true;
-			else
-				return false;
 		}
 
 		public static function set_site_option_regular_admins_can_manage_plugin( $value ) {
@@ -557,15 +527,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			$options = self::get_settings();
 			if ( isset( $options['algorithm'] ) )
 				return $options['algorithm'];
-
-			/**
-			 * We need this check for if the user comes from a previous version. We'll have to
-			 * delete it someday in the future.
-			 * @deprecated
-			 */
-			if ( isset( $options['greedy_enabled'] ) && $options['greedy_enabled'] )
-				return self::ALGORITHM_GREEDY;
-
 			return self::ALGORITHM_PURE_RANDOM;
 		}
 
@@ -576,10 +537,6 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 			if ( isset( $options['headlines_quota_mode'] ) )
 				return $options['headlines_quota_mode'];
 			return self::HEADLINES_QUOTA_MODE_ALWAYS;
-		}
-
-		public static function cookie_prefix() {
-			return 'nelioab_';
 		}
 
 		public static function set_copy_metadata( $enabled ) {
