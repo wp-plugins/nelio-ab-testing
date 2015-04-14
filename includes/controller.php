@@ -36,6 +36,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 		const NAVIGATION_ORIGIN_IS_UNKNOWN       = -102;
 		const WRONG_NAVIGATION_DESTINATION       = -103;
 		const UNKNOWN_PAGE_ID_FOR_NAVIGATION     = -105;
+		const SEARCH_RESULTS_PAGE_ID             = -106;
+		const CATEGORY_OR_TERM_PAGE_ID           = -107;
 
 		private $controllers;
 
