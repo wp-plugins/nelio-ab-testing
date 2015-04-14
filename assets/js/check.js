@@ -330,11 +330,11 @@ NelioAB.checker.loadAlternative = function() {
 	var myParams = NelioAB.checker.generateParamsForAltLoading();
 
 	try {
-		var referrer = '';
-		for ( var i = 0; i < getParams.length && referrer.length == 0; ++i )
+		var utm_referrer = '';
+		for ( var i = 0; i < getParams.length && utm_referrer.length == 0; ++i )
 			if ( getParams[i][0] == 'utm_referrer' )
-				referrer = getParams[i][1];
-		if ( referrer.length == 0 ) {
+				utm_referrer = getParams[i][1];
+		if ( utm_referrer.length == 0 && document.referrer.length > 0 ) {
 			var refDomain = document.referrer;
 			var thisDomain = document.URL;
 
