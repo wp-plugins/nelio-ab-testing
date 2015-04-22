@@ -192,9 +192,9 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 				$link = get_permalink( $alt->get_value() );
 
 				if ( $this->is_ori_page )
-					$link = add_query_arg( array(
+					$link = esc_url( add_query_arg( array(
 							'preview' => 'true',
-						), $link );
+						), $link ) );
 
 				$action_links = $this->get_action_links( $exp, $alt->get_value() );
 

@@ -3,8 +3,8 @@ var build = {
 	"dependencies": [
 		"generic",
 		"helpers",
-		"delayed",
 		"cookies",
+		"user",
 		"heatmaps",
 		"check",
 	]

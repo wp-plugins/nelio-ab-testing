@@ -98,11 +98,12 @@
 		$aux = get_post_type( $post_id );
 		if ( !$url ) {
 			if ( 'page' == $aux )
-				$url = add_query_arg( array( 'page_id' => $post_id ), get_option( 'home' ) );
+				$url = esc_url( add_query_arg( array( 'page_id' => $post_id ), get_option( 'home' ) ) );
 			else
-				$url = add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) );
+				$url = esc_url( add_query_arg( array( 'p' => $post_id ), get_option( 'home' ) ) );
 		}
-		$url = add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url );
+		$url = esc_url( add_query_arg( array( 'nelioab_show_heatmap' => 'true' ), $url ) );
+		$url = preg_replace( '/^https?:/', '', $url );
 		?>
 		<script type="text/javascript">
 			window.onerror = function(msg, url, line, col, error) {
@@ -224,6 +225,7 @@
 <head>
 	<title><?php _e( 'Nelio AB Testing &mdash; Heatmaps Viewer', 'nelioab' ); ?></title>
 	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/resizer.min.css' ); ?>">
+	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/nelioab-generic.min.css' ); ?>">
 	<link rel="stylesheet" href="<?php echo nelioab_admin_asset_link( '/css/nelioab-heatmap.min.css' ); ?>">
 	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9, chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">

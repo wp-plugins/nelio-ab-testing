@@ -80,7 +80,10 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 					</div>
 					<div class="right" style="font-size:32px; text-align:right; float:right; width:30%; padding-right:5%; margin-top:8px; opacity:0.7;">
 						<span><?php
-							$perc = ( $this->quota['used'] / $this->quota['total'] ) * 100;
+							if ( $this->quota['total'] > 0 )
+								$perc = ( $this->quota['used'] / $this->quota['total'] ) * 100;
+							else
+								$perc = 0;
 							$decs = 1;
 							if ( 100 == $perc )
 								$decs = 0;
