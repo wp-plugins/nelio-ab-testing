@@ -424,7 +424,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				foreach ( $this->goals as $goal ) {
 					$name   = $goal->get_name();
 					$params = array( 'goal' => $goal->get_id() );
-					$link   = add_query_arg( $params, $_SERVER['HTTP_REFERER'] );
+					$link   = esc_url( add_query_arg( $params, $_SERVER['HTTP_REFERER'] ) );
 					if ( $goal->get_id() == $this_goal_id )
 						echo "<span href=\"$link\" class=\"nav-tab nav-tab-active\">$name</span>";
 					else

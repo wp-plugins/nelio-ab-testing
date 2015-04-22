@@ -84,7 +84,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				case 'save-css':
 					update_option( 'nelioab_css_' . $_GET['nelioab_preview_css'], $_POST['content'] );
 					$url = get_option('home');
-					$url = add_query_arg( $_GET, $url );
+					$url = esc_url( add_query_arg( $_GET, $url ) );
 					header( "Location: $url" );
 					die();
 
@@ -629,8 +629,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 									else {
 										$preview_button = __( 'Preview' );
 									}
-									$preview_link = esc_url( get_permalink( $_GET['post'] ) );
-									$preview_link = add_query_arg( 'preview', 'true', $preview_link )
+									$preview_link = get_permalink( $_GET['post'] );
+									$preview_link = esc_url( add_query_arg( 'preview', 'true', $preview_link ) );
 									?>
 								<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview-<?php echo $_GET['post']; ?>" id="post-preview"><?php echo $preview_button; ?></a>
 								<input type="hidden" name="wp-preview" id="wp-preview" value="" />

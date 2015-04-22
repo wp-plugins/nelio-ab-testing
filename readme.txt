@@ -2,8 +2,8 @@
 Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
-Tested up to: 4.1
-Stable tag: 4.0.5
+Tested up to: 4.2
+Stable tag: 4.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -260,6 +260,12 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.0.7 (Apr 22, 2015) =
+* Plugin compatible with version 4.2.
+* Security fix (see [Fixing `add_query_arg()` and `remove_query\_arg()`
+usage](https://make.wordpress.org/plugins/2015/04/20/fixing-add_query_arg-and-remove_query_arg-usage/))
+
 
 = 4.0.5 (Apr 14, 2015) =
 * "Undefined constant" in one of our controllers fixed.
@@ -870,7 +876,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.0.5 =
-Google Analytics support has been improved. **Nelio A/B Testing 4 is more
-efficient than ever!**
+= 4.0.7 =
+**Nelio A/B Testing 4 is more efficient than ever!** This update makes Nelio
+compatible with WordPress 4.2 and adds an important security fix.
 
