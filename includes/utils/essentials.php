@@ -208,7 +208,7 @@ function nelioab_dismiss_cache_notice() {
  */
 function nelioab_asset_link( $resource ) {
 	$link = NELIOAB_ASSETS_URL . $resource;
-	$link = add_query_arg( array( 'version' => NELIOAB_PLUGIN_VERSION ), $link );
+	$link = esc_url( add_query_arg( array( 'version' => NELIOAB_PLUGIN_VERSION ), $link ) );
 	return $link;
 }
 
@@ -229,7 +229,7 @@ function nelioab_onetime_nonce( $action = -1 ) {
 	return $nonce . '-' . $time;
 }
 function nelioab_onetime_nonce_url( $url, $action, $name = '_nonce' ) {
-	return add_query_arg( $name, $action, $url );
+	return esc_url( add_query_arg( $name, $action, $url ) );
 }
 function nelioab_verify_onetime_nonce( $_nonce, $action = -1) {
 	// Extract timestamp and nonce part of $_nonce

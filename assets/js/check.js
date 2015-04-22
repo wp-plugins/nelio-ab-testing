@@ -33,7 +33,8 @@ NelioAB.checker.init = function() {
 	// Check if there's some AB experiment running, we can save the alternatives
 	// the user is supposed to see, or the user is in the experiment
 	if ( !NelioABBasic.hasExpsRunning || !NelioABBasic.hasQuota ||
-			!NelioAB.user.canInfoBeSaved() || !NelioAB.user.participates() ) {
+			!NelioAB.user.canInfoBeSaved() || !NelioAB.user.participates() ||
+			NelioAB.helpers.isDuplicatedFrame() ) {
 		return;
 	}
 
@@ -44,10 +45,10 @@ NelioAB.checker.init = function() {
 	// Make sure she has all the alternatives assigned and check if we need to
 	// load one
 	try {
-		console.log( 'Checking...' );
+		console.log( 'Checking `' + window.document.URL + '\'...' );
 		var isAltLoadingRequired = NelioAB.checker.assignAlternativesAndCheck();
 		if ( isAltLoadingRequired ) {
-			console.log( 'Loading...' );
+			console.log( 'Loading `' + window.document.URL + '\'...' );
 			NelioAB.checker.loadAlternative();
 		}
 		else {
@@ -178,11 +179,11 @@ NelioAB.checker.buildUrl = function( url, myParams, getParams ) {
 		var name = myParams[i][0];
 		var vals = myParams[i][1];
 		if ( NelioAB.checker.nabPrefix + 'e' == name ) {
-			url += NelioAB.checker.nabPrefix + 'e=';
+			var aux = '';
 			for ( var j = 0; j < vals.length; ++j )
-				url += vals[j][0] + ':' + vals[j][1] + ',';
-			url = url.substring( 0, url.length - 1);
-			url += '&';
+				aux += vals[j][0] + ':' + vals[j][1] + ',';
+			aux = aux.substring( 0, aux.length - 1);
+			url += NelioAB.checker.nabPrefix + 'e=' + encodeURIComponent( aux ) + '&';
 		}
 		else {
 			var val = '' + myParams[i][1];
@@ -345,7 +346,7 @@ NelioAB.checker.loadAlternative = function() {
 			thisDomain = thisDomain.replace( /\/.*$/, '' );
 
 			if ( thisDomain != refDomain )
-				getParams.push( ['utm_referrer', decodeURIComponent( document.referrer )] );
+				getParams.push( ['utm_referrer', encodeURIComponent( document.referrer )] );
 		}
 	}
 	catch ( e ) {

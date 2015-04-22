@@ -688,6 +688,33 @@ NelioAB.helpers.getGlobalCookiePrefix = function( type ) {
 
 
 /**
+ * Detects whether the script is running in an iframe and, if so, if the
+ * tracked page is already tracked in one of the parent pages.
+ *
+ * @return boolean whether the script is running in an iframe and loading
+ *                 duplicated content.
+ */
+NelioAB.helpers.isDuplicatedFrame = function() {
+	if ( window == window.top )
+		return false;
+	var MAX_ATTEMPTS = 5;
+	var ancestor = window.parent;
+	for ( var i = 0; i < MAX_ATTEMPTS; ++i ) {
+		if ( typeof ancestor.NelioABParams !== 'undefined' ) {
+			if ( ancestor.NelioABParams.info.currentId == NelioABParams.info.currentId ) {
+				console.log( 'Duplicated iFrame (`' + document.URL + '\') detected. Aborted!' );
+				return true;
+			}
+		}
+		if ( ancestor == window.top )
+			break;
+		ancestor = ancestor.parent;
+	}
+	return false;
+};
+
+
+/**
  * This function adds some relevant hooks and events. On the one hand, it adds
  * the "byebye" event when the user clicks on a link and/or submits a form. On
  * the other hand, it adds an "onbeforeunload" function that sets the referer
