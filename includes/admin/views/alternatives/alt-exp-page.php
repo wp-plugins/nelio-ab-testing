@@ -166,66 +166,36 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
 				NelioABHtmlGenerator::print_unsaved_changes_control( '#controllers .button-primary.save, .row-actions .edit-content' );
 				?>
-				<script type="text/javascript">
-					<?php $this->print_params_for_required_scripts(); ?>
-					(function() {
-						// Prepare the scripts
-						var scripts = [];
-						scripts.push('<?php echo nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ); ?>');
-						scripts.push('<?php echo nelioab_admin_asset_link( '/js/admin-table.min.js' ); ?>');
-						<?php foreach ( $this->get_required_scripts() as $script ) { ?>
-							scripts.push('<?php echo $script; ?>');
-						<?php } ?>
-
-						// Prepare a function for setting up the alternatives table
-						var setupAlternativesTable = function() {
-							<?php $this->print_code_for_setup_alternative_table(); ?>
-							NelioABEditExperiment.useTab(jQuery('#exp-tabs .nav-tab-active').attr('id'));
-						};
-
-						// Load scripts one by one and, once they're ready, prepare the table
-						var i = 0;
-						var loadScript = function(src) {
-							jQuery.getScript(src, function() {
-								++i;
-								if ( i == scripts.length )
-									setupAlternativesTable();
-								else
-									loadScript(scripts[i]);
-							});
-						};
-						loadScript(scripts[i]);
-					})();
-				</script>
+				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ); ?>"></script>
+				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/admin-table.min.js' ); ?>"></script>
+				<?php $this->print_alt_table_script(); ?>
+				<script type="text/javascript">NelioABEditExperiment.useTab(jQuery('#exp-tabs .nav-tab-active').attr('id'));</script>
 			</form>
 
 			<?php
 		}
 
-		protected function print_params_for_required_scripts() {
-			// Nothing to print here
-		}
-
-		protected function get_required_scripts() {
-			return array( nelioab_admin_asset_link( '/js/alt-table.min.js' ) );
-		}
-
-		protected function print_code_for_setup_alternative_table() { ?>
-			// PRINTING THE LIST OF ALTERNATIVES
-			var alts = JSON.parse( decodeURIComponent(
-					jQuery('#nelioab_alternatives').attr('value')
-				) );
-			var altsTable = NelioABAltTable.getTable();
-			if ( altsTable ) {
-				NelioABAltTable.init(alts);
-				for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
-					var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
-					newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
-					newRow.show();
-					altsTable.append(newRow);
+		protected function print_alt_table_script() { ?>
+			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/alt-table.min.js' ); ?>"></script>
+			<script type="text/javascript">
+			(function($) {
+				// PRINTING THE LIST OF ALTERNATIVES
+				var alts = JSON.parse( decodeURIComponent(
+						jQuery('#nelioab_alternatives').attr('value')
+					) );
+				var altsTable = NelioABAltTable.getTable();
+				if ( altsTable ) {
+					NelioABAltTable.init(alts);
+					for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
+						var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
+						newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
+						newRow.show();
+						altsTable.append(newRow);
+					}
+					NelioABAdminTable.repaint( NelioABAltTable.getTable() );
 				}
-				NelioABAdminTable.repaint( NelioABAltTable.getTable() );
-			}
+			})(jQuery);
+			</script>
 			<?php
 		}
 

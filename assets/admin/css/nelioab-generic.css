@@ -77,11 +77,6 @@ body.toplevel_page_nelioab-dashboard #poststuff .nelio-card {
 	height: auto;
 }
 
-body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3 {
-	cursor: hand;
-	cursor: pointer;
-}
-
 body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3:first-child .tab-type {
 	background-size: 20px 20px !important;
 	display: inline-block;
@@ -240,17 +235,17 @@ div.nelio-sect label.error,
 div.nelio-sect .error label,
 div.nelio-sect .error .description {
 	color:red;
-	-webkit-transition: color 0.2s ease-in-out;
-	-moz-transition: color 0.2s ease-in-out;
-	-ms-transition: color 0.2s ease-in-out;
-	-o-transition: color 0.2s ease-in-out;
+	-webkit-transition: color 0.20s ease-in-out;
+	-moz-transition: color 0.20s ease-in-out;
+	-ms-transition: color 0.20s ease-in-out;
+	-o-transition: color 0.20s ease-in-out;
 }
 div.nelio-sect .error label:before {
 	background:red;
-	-webkit-transition: background 0.2s ease-in-out;
-	-moz-transition: background 0.2s ease-in-out;
-	-ms-transition: background 0.2s ease-in-out;
-	-o-transition: background 0.2s ease-in-out;
+	-webkit-transition: background 0.20s ease-in-out;
+	-moz-transition: background 0.20s ease-in-out;
+	-ms-transition: background 0.20s ease-in-out;
+	-o-transition: background 0.20s ease-in-out;
 }
 div.nelio-sect a.select2-choice.error,
 div.nelio-card a.select2-choice.error,
@@ -290,11 +285,11 @@ div.nelio-sect .error select,
 div.nelio-card .error select,
 div.nelio-sect .error textarea,
 div.nelio-card .error textarea {
-	-webkit-transition: all 0.2s ease-in-out;
-	-moz-transition: all 0.2s ease-in-out;
-	-ms-transition: all 0.2s ease-in-out;
-	-o-transition: all 0.2s ease-in-out;
-	transition: all 0.2s ease-in-out;
+	-webkit-transition: all 0.20s ease-in-out;
+	-moz-transition: all 0.20s ease-in-out;
+	-ms-transition: all 0.20s ease-in-out;
+	-o-transition: all 0.20s ease-in-out;
+	transition: all 0.20s ease-in-out;
 	border: 1px solid red;
 }
 div.nelio-sect a.select2-choice.error:focus,
@@ -606,17 +601,7 @@ body #goal-list .nelio-card .actions .action input {
 	}
 }
 
-p.nelio-admin-explanation {
-    font-size: medium;
-    max-width: 500px;
-}
 
-div.nelio-message {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 500px;
-    text-align: center;
-}
 
 /* ------------------- */
 /*       ASSETS        */

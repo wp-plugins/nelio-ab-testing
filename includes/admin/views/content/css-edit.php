@@ -111,7 +111,8 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 							</div>
 								<input type="hidden" id="content" name="content"></input>
 								<pre id="editor"><?php echo $this->css_alt->get_value() ?></pre>
-								<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/lib/ace-editor/ace.js' ); ?>"></script>
+								<script type="text/javascript" src="<?php
+									echo nelioab_admin_asset_link( '/lib/ace-editor/ace.js' ); ?>"></script>
 								<script type="text/javascript">
 									var nelioabCssEditor = ace.edit('editor');
 									nelioabCssEditor.setTheme('ace/theme/tomorrow');
@@ -182,10 +183,10 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 								</div>
 								<?php
 									$url = admin_url( 'admin.php' );
-									$url = esc_url( add_query_arg( array(
+									$url = add_query_arg( array(
 										'nelioab-page' => 'save-css',
 										'preview' => 'true',
-										'nelioab_preview_css' => $_REQUEST['css_id'] ), $url ) );
+										'nelioab_preview_css' => $_REQUEST['css_id'] ), $url );
 								?>
 								<script>
 									jQuery("#preview-button").click(function(e) {

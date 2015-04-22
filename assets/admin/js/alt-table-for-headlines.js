@@ -1,8 +1,6 @@
 /* ALTERNATIVES TABLE */
 if ( typeof NelioABAltTable !== 'undefined' ) {
 
-	NelioABAltTable.NO_IMAGE = NelioABAltTableParams.noImageSrc;
-
 	NelioABAltTable.originalInfo = {
 		id: 0,
 		name: '',
@@ -36,7 +34,7 @@ if ( typeof NelioABAltTable !== 'undefined' ) {
 			var alt = false;
 			var arr = jQuery(this).data('last-search');
 			if ( typeof arr == 'undefined' )
-				return;
+			return;
 			for ( var i = 0; i < arr.length; ++i ) {
 				var aux = arr[i];
 				if ( aux.id == NelioABAltTable.originalInfo.id ) {
@@ -248,7 +246,7 @@ if ( typeof NelioABAltTable !== 'undefined' ) {
 
 		// Finally, open the modal
 		NelioABAltTable.imageSelectorFrame.open();
-	};
+	}
 
-}
+};
 

@@ -261,12 +261,6 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
-= 4.0.6 (Apr 22, 2015) =
-* Plugin compatible with version 4.2.
-* Security fix (see [Fixing `add_query_arg()` and `remove_query\_arg()`
-usage](https://make.wordpress.org/plugins/2015/04/20/fixing-add_query_arg-and-remove_query_arg-usage/))
-
-
 = 4.0.5 (Apr 14, 2015) =
 * "Undefined constant" in one of our controllers fixed.
 
@@ -876,7 +870,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.0.6 =
-**Nelio A/B Testing 4 is more efficient than ever!** This update makes Nelio
-compatible with WordPress 4.2 and adds an important security fix.
+= 4.0.5 =
+Google Analytics support has been improved. **Nelio A/B Testing 4 is more
+efficient than ever!**
 

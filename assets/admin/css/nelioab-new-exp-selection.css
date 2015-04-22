@@ -35,13 +35,6 @@
 	background-image: url( '../images/new-exp-landing-page.png?version=3.4.4' );
 }
 
-.empty {
-	font-size: 150%;
-	text-align: center;
-	padding: 20px 0px;
-	color: gray;
-}
-
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 .nelioab-image-landing-page {
 	background-image: url( '../images/2x/new-exp-landing-page.png?version=3.4.4' );
