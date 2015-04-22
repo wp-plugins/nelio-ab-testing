@@ -330,27 +330,6 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			NelioABAccountSettings::set_has_a_configured_site( false );
 		}
 
-		public static function has_quota_left() {
-			return self::get_nelioab_option( 'has_quota_left', true );
-		}
-
-		public static function set_has_quota_left( $has_quota_left ) {
-			self::update_nelioab_option( 'has_quota_left', $has_quota_left );
-			self::update_nelioab_option( 'last_quota_check', time() );
-		}
-
-		public static function assume_quota_check_will_occur_shortly() {
-			// Simulate the last check was 28 minutes (=1680s) ago
-			self::update_nelioab_option( 'last_quota_check', time() - 1680 );
-		}
-
-		public static function is_quota_check_required() {
-			$last_check = self::get_nelioab_option( 'last_quota_check', 0 );
-			$now        = time();
-			$offset     = 1800; // seg == 30min
-			return ( ( $last_check + $offset ) < $now );
-		}
-
 	}//NelioABAccountSettings
 
 

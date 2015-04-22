@@ -86,10 +86,6 @@ function nelioab_activate_plugin() {
 	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
 	NelioABMenuExpAdminController::restore_alternative_menu_backup();
 
-	// Update mu-plugin (if installed)
-	if ( !NelioABSettings::is_performance_muplugin_up_to_date() )
-		NelioABSettings::update_performance_muplugin();
-
 	// Make sure that the cache uses new classes
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	NelioABExperimentsManager::update_running_experiments_cache( 'now' );
@@ -212,7 +208,7 @@ function nelioab_dismiss_cache_notice() {
  */
 function nelioab_asset_link( $resource ) {
 	$link = NELIOAB_ASSETS_URL . $resource;
-	$link = add_query_arg( array( 'version' => NELIOAB_PLUGIN_VERSION ), $link );
+	$link = esc_url( add_query_arg( array( 'version' => NELIOAB_PLUGIN_VERSION ), $link ) );
 	return $link;
 }
 
@@ -233,7 +229,7 @@ function nelioab_onetime_nonce( $action = -1 ) {
 	return $nonce . '-' . $time;
 }
 function nelioab_onetime_nonce_url( $url, $action, $name = '_nonce' ) {
-	return add_query_arg( $name, $action, $url );
+	return esc_url( add_query_arg( $name, $action, $url ) );
 }
 function nelioab_verify_onetime_nonce( $_nonce, $action = -1) {
 	// Extract timestamp and nonce part of $_nonce

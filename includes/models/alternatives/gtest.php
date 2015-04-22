@@ -123,7 +123,7 @@ if( !class_exists( 'NelioABGTest' ) ) {
 				case NelioABGTest::WINNER:
 					$string = sprintf(
 						__( '«%%1$s» beats «%%2$s» with a %%3$s%%%% confidence. Therefore, we can conclude that «%%1$s» is the best alternative, but with a low confidence value <small>(<a href="%s">why is this important?</a>)</small>.', 'nelioab' ),
-						'http://support.nelioabtesting.com/support/solutions/articles/1000129226-what-is-the-meaning-of-the-confidence-value-you-provide-together-with-the-results-how-to-interpret-i'
+						'http://support.nelioabtesting.com/support/solutions/articles/1000129226'
 					);
 					$aux = $this->certainty;
 					if ( is_string( $aux ) )

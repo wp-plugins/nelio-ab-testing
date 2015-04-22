@@ -1,9 +1,9 @@
 === Nelio AB Testing ===
 Contributors: nelio, davilera, avillegasn
-Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
+Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
-Tested up to: 4.1
-Stable tag: 3.4.4
+Tested up to: 4.2
+Stable tag: 4.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,8 +26,9 @@ familiar user experience.
 > Improve your landing pages, write better posts, create alternative pages, go
 > beyond simple title testing and start testing headlines, try new themes, test
 > different menus, modify your CSS rules, and test alternative widgets!
-> Moreover, Nelio A/B is also compatible with some of your most beloved plugins
-> such as, for instance, OptimizePress, Gravity Forms, or Contact Form 7.
+> Moreover, we designed Nelio A/B Testing to be compatible with your most
+> beloved WordPress plugins such as, for instance, OptimizePress, Gravity
+> Forms, or Contact Form 7.
 >
 > **Designed as a Service**<br>
 > Our plugin lifts all the processing load from your own server and takes it
@@ -90,9 +91,9 @@ modify them with just a few clicks. Discover which combination improves your
 conversion rate!
 
 
-= #5 - Beautiful Heatmaps and Clickmaps =
+= #5 - Beautiful Heatmaps and Click-maps =
 
-**[Heatmaps (and Clickmaps) offer valuable
+**[Heatmaps (and Click-maps) offer valuable
 information](http://nelioabtesting.com/heatmaps-teach-us/?fp=wordpress.org)
 about what your visitors do and don't do** when they land to your website.
 Also, they are a perfect companion of A/B experiments, for they give insights
@@ -260,17 +261,64 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
+= 4.0.6 (Apr 22, 2015) =
+* Plugin compatible with version 4.2.
+* Security fix (see [Fixing `add_query_arg()` and `remove_query\_arg()`
+usage](https://make.wordpress.org/plugins/2015/04/20/fixing-add_query_arg-and-remove_query_arg-usage/))
+
+
+= 4.0.5 (Apr 14, 2015) =
+* "Undefined constant" in one of our controllers fixed.
+
+
+= 4.0.4 (Apr 10, 2015) =
+* Improvement: maintain external referrers, so that Google Analytics' reports
+include appropriate sources. This uses Google Analytics' `utm_referrer` GET
+parameter.
+* Improved support for Google Analytics by Yoast. Now, Google Analytics
+tracking scripts are added after Nelio's, so that the results tracked by both
+tools are more accurate.
+* Bug fix on certain installations, in which alternative headlines are not
+properly tracked.
+
+
+= 4.0.3 (Apr 3, 2015) =
+* Improvement: tracking external pages when the user leaves the current page
+clicking on a `map` » `area` element. Before this update, it only tracked
+conversions triggered by the user clicking on an `a` tag or submitting a
+form.
+* Bug fix with old Nelio tracking cookies.
+* Bug fix with direct page/post conversion actions.
+
+
+= 4.0.1 (Apr 1, 2015) =
+* Bug fix tracking visitors on older versions of Internet Explorer. In
+particular, accessing the object <code>window.history</code> is now nested
+in a <code>try-catch</code> block to prevent things from breaking.
+
+
+= 4.0.0 (Mar 30, 2015) =
+* **Efficiency Improvements**. We've redesigned several components of our
+plugin from scratch. Now it's faster and more reliable! We've solved most of
+the compatibility issues our plugin had with some JavaScript libraries and
+Frameworks (such as, for instance, Google Analytics, Google Tag Manager, or
+Angular.js).
+* **New Settings Screen**. This new version gets rid of some legacy settings
+and introduces some new ones. We've also included a small help icon for each
+setting, so that you can easily know what they do.
+
+
 = 3.4.4 =
 * Dashboard redesign. Quick access to your quota!
 * Test your Landing Page easily! You now have a specific experiment type for
 testing your Front Page.
 * Support for the plugin [WP Google Analytics
 Events](https://wordpress.org/plugins/wp-google-analytics-events/)
-* Added new JS funtion `NelioAB.delay`. With this function, one can delay the
-execution of some JavaScript code (surrounding that code with
-`NelioAB.delay(function(){` and `}`. This prevents JavaScript code from being
-executed twice (one for the original content and another one for the
-alternative's).
+* Added new JS funtion <code>NelioAB.delay</code>. With this function, one can
+delay the execution of some JavaScript code (surrounding that code with
+<code>NelioAB.delay( function(){</code> and <code>}</code>. This prevents
+JavaScript code from being executed twice (one for the original content and
+another one for the alternative's).
 
 
 = 3.4.3 =
@@ -828,8 +876,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.4.4 =
-Improved support for Google Analytics and some helper functions. 3.4 series
-includes **Menu Testing**, new conversion actions, and several improvements
-that make the creation and management of experiments much easier.
+= 4.0.6 =
+**Nelio A/B Testing 4 is more efficient than ever!** This update makes Nelio
+compatible with WordPress 4.2 and adds an important security fix.
 
