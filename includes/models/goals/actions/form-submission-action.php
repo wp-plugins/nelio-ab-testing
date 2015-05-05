@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -18,23 +18,70 @@
  */
 
 
-if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
+if ( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 
+	/**
+	 * Class representing a "form submission" conversion action.
+	 *
+	 * @package \NelioABTesting\Models\Goals\Actions
+	 * @since PHPDOC
+	 */
 	class NelioABFormSubmissionAction extends NelioABAction {
 
-		const SUBMIT_KIND           = 'submit';
-		const CONTACT_FORM_7_PLUGIN = 'contact-form-7';
-		const GRAVITY_FORM_PLUGIN   = 'gravity-form';
+		/**
+		 * Constant PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
+		const SUBMIT_KIND = 'submit';
 
-		private $form_id;
-		private $indirect;
 
 		/**
-		 * Constructor of this class. By default, a Page does not accept
-		 * indirect navigations, is internal to WordPress, and its ID is -1.
+		 * Constant PHPDOC
 		 *
-		 * @param form_id the POST_ID or the PAGE_URL that uniquely
-		 *        identifies a page.
+		 * @since PHPDOC
+		 * @var string
+		 */
+		const CONTACT_FORM_7_PLUGIN = 'contact-form-7';
+
+
+		/**
+		 * Constant PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
+		const GRAVITY_FORM_PLUGIN = 'gravity-form';
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		private $form_id;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var boolean
+		 */
+		private $indirect;
+
+
+		/**
+		 * Creates a new instance of this class.
+		 *
+		 * @param string $type    PHPDOC
+		 * @param string $form_id PHPDOC
+		 *
+		 * @return NelioABFormSubmissionAction a new instance of this class.
+		 *
+		 * @since PHPDOC
 		 */
 		public function __construct( $type, $form_id ) {
 			parent::__construct( $type );
@@ -42,42 +89,55 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 			$this->indirect = false;
 		}
 
+
 		/**
-		 * @return this form's ID
+		 * Returns PHPDOC
+		 *
+		 * @return int PHPDOC
+		 *
+		 * @since PHPDOC
 		 */
 		public function get_form_id() {
 			return $this->form_id;
 		}
 
+
 		/**
-		 * Returns whether submitting this form is to be counted as a
-		 * conversion this page is to be counted as a conversion, even
-		 * if the submission is not performed in the tested page.
+		 * Returns whether submitting this form from a page that is not the tested page should be counted as a conversion or not.
 		 *
-		 * @return whether submitting this form is to be counted as a
-		 *         conversion this page is to be counted as a conversion,
-		 *         even if the submission is not performed in the tested
-		 *         page.
+		 * @return boolean whether submitting this form from a page that is not the tested page should be counted as a conversion or not.
+		 *
+		 * @since PHPDOC
 		 */
 		public function accepts_submissions_from_any_page() {
 			return $this->indirect;
 		}
 
+
 		/**
-		 * This function is used to enable or disable whether a conversion
-		 * should be counted when the form is submitted from a page that is
-		 * not the tested page.
+		 * Enables or disables whether conversions should be counted when the form is submitted from a page that is not the tested page.
 		 *
-		 * @param indirect if false, then a conversion is counted only if the
-		 *        submission is performed from the tested page. Otherwise, it
-		 *        is counted from any page.
+		 * @param boolean $indirect It specifies whether conversion should be counted from any page or from the tested page only.
+		 *                If true, conversions are counted whenever the form is
+		 *                submitted, regardless of the page from which the
+		 *                submission was triggered. If false, only submissions
+		 *                from the tested page will convert.
+		 *
+		 * @since PHPDOC
 		 */
 		public function accept_sumissions_from_any_page( $indirect = true ) {
 			$this->indirect = $indirect;
 		}
 
+
 		/**
+		 * Returns PHPDOC
 		 *
+		 * @param string $type PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
 		 */
 		public static function type_to_kind_and_plugin( $type ) {
 			switch ( $type ) {
@@ -100,8 +160,16 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 			return array( 'kind' => $kind, 'plugin' => $plugin );
 		}
 
+
 		/**
+		 * Returns PHPDOC
 		 *
+		 * @param string $kind   PHPDOC
+		 * @param string $plugin PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
 		 */
 		public static function kind_and_plugin_to_type( $kind, $plugin ) {
 			$type = false;
@@ -120,12 +188,8 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 			return $type;
 		}
 
-		/**
-		 * Returns an array of values, ready to be JSON-codified and
-		 * prepared for AppEngine
-		 *
-		 * @return the JSON array for AppEngine
-		 */
+
+		// @Implements
 		public function encode_for_appengine() {
 			$action = false;
 			$kap = self::type_to_kind_and_plugin( $this->get_type() );
@@ -140,14 +204,16 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 			return $action;
 		}
 
+
 		/**
-		 * Creates a Form Submission Action using the information obtained
-		 * from the JSON parameter.
+		 * Returns a new action object built using the information described in $action.
 		 *
-		 * @param json the JSON array from AppEngine
+		 * @param object $json a JSON action returned by AppEngine.
 		 *
-		 * @return a Form Submission Action with the values obtained from
-		 *         the json
+		 * @return NelioABFormSubmissionAction the new action containing all the information in `$action`.
+		 *
+		 * @since PHPDOC
+		 * @Override
 		 */
 		public static function decode_from_appengine( $json ) {
 			$action = false;
@@ -161,9 +227,8 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 			return $action;
 		}
 
-		/**
-		 * @implements NelioABAction::json4js();
-		 */
+
+		// @Implements
 		public function json4js() {
 			$action = array(
 					'type'     => 'form-submit',
@@ -177,8 +242,16 @@ if( !class_exists( 'NelioABFormSubmissionAction' ) ) {
 			return $action;
 		}
 
+
 		/**
+		 * Returns a new action object built using the information described in $action.
 		 *
+		 * @param object $json a JSON action as used in the admin pages of our plugin.
+		 *
+		 * @return NelioABFormSubmissionAction the new action containing all the information in `$action`.
+		 *
+		 * @since PHPDOC
+		 * @Override
 		 */
 		public static function build_action_using_json4js( $json ) {
 			if ( 'cf7' == $json->form_type )

@@ -30,11 +30,18 @@ NelioAB.checker.nabMatcher = /^nab[cmtwe]?$/;
  * current user.
  */
 NelioAB.checker.init = function() {
-	// Check if there's some AB experiment running, we can save the alternatives
-	// the user is supposed to see, or the user is in the experiment
-	if ( !NelioABBasic.hasExpsRunning || !NelioABBasic.hasQuota ||
-			!NelioAB.user.canInfoBeSaved() || !NelioAB.user.participates() ||
-			NelioAB.helpers.isDuplicatedFrame() ) {
+	if ( !NelioABBasic.hasExpsRunning )
+		return;
+	if ( !NelioAB.user.canInfoBeSaved() )
+		return;
+	if ( !NelioAB.user.participates() )
+		return;
+	if ( NelioABParams.wasPostRequest ) {
+		console.log( 'Current page is the result of a POST request. Abort!' );
+		return;
+	}
+	if ( NelioAB.helpers.isDuplicatedFrame() ) {
+		console.log( 'Duplicated iFrame (`' + document.URL + '\') detected. Abort!' );
 		return;
 	}
 
@@ -54,8 +61,10 @@ NelioAB.checker.init = function() {
 		else {
 			NelioAB.checker.cleanUrl();
 			NelioAB.helpers.showBody();
-			NelioAB.helpers.addDocumentHooks();
-			NelioAB.helpers.track();
+			if ( NelioABBasic.hasQuota ) {
+				NelioAB.helpers.addDocumentHooks();
+				NelioAB.helpers.track();
+			}
 			console.log( 'Done!' );
 		}
 	}

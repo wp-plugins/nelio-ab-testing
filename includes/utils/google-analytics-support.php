@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -17,12 +17,10 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 if ( !class_exists( 'NelioABGoogleAnalyticsSupport' ) ) {
 
 	/**
-	 * This class helps us make sure that Google Analytics scripts are included
-	 * after Nelio's.
+	 * This class helps us make sure that Google Analytics scripts are included after Nelio's.
 	 *
 	 * @since 4.1.0
 	 */
@@ -34,22 +32,27 @@ if ( !class_exists( 'NelioABGoogleAnalyticsSupport' ) ) {
 		 *
 		 * @since 4.1.0
 		 *
-		 * @param string $plugin
-		 *        The name of the plugin we want to check. It usually follows the
-		 *        form <code>plugin-dir/main-file.php</code>.
+		 * @param string $plugin The name of the plugin we want to check.
+		 *                       It usually follows the form
+		 *                       `plugin-dir/main-file.php`.
 		 *
 		 * @return boolean Whether the given plugin is active or not.
+		 *
+		 * @since PHPDOC
 		 */
 		private static function is_plugin_active( $plugin ) {
 			return in_array( $plugin, (array) get_option( 'active_plugins', array() ) );
 		}
 
+
 		/**
-		 * This function checks whether there is some Google Analytics plugin
-		 * enabled. Supported plugins include:
-		 * <ul>
-		 *   <li>Google Analytics by Yoast</li>
-		 * </ul>
+		 * This function checks whether there is some Google Analytics plugin enabled.
+		 *
+		 * Supported plugins include:
+		 *
+		 * * Google Analytics by Yoast
+		 *
+		 * @return void
 		 *
 		 * @since 4.1.0
 		 */
@@ -69,6 +72,8 @@ if ( !class_exists( 'NelioABGoogleAnalyticsSupport' ) ) {
 		/**
 		 * This function moves Google Analytics by Yoast after Nelio scripts.
 		 *
+		 * @return void
+		 *
 		 * @since 4.1.0
 		 */
 		public static function relocate_google_analytics_by_yoast() {
@@ -79,6 +84,7 @@ if ( !class_exists( 'NelioABGoogleAnalyticsSupport' ) ) {
 			foreach ( $wp_filter['wp_head'][8] as $key => $value ) {
 				if ( is_array( $value['function'] ) ) {
 					$func = $value['function'];
+					/** @noinspection PhpUndefinedClassInspection */
 					if ( $func[0] instanceof Yoast_GA_Tracking && $func[1] == 'tracking' )
 						break;
 				}

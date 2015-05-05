@@ -274,10 +274,6 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 		 * by this function.
 		 */
 		protected function print_goals() { ?>
-			<h2><a class="add-new-h2" href="javascript:;" onClick="javascript:NelioABGoalCards.create();"><?php
-				_e( 'Add Additional Goal', 'nelioab' );
-			?></a></h2>
-
 			<div id="new-action-templates">
 				<?php require_once( NELIOAB_UTILS_DIR . '/html-generator.php' ); ?>
 				<div class="action page" style="display:none;">
@@ -387,7 +383,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 								NelioABSettings::get_def_conv_value()
 							) . '" />' .
 							'  </span>' .
-							'  <span class="value">' . __( 'New Goal', 'nelioab' ) . '</span>' .
+							'  <span class="value">' . __( 'Unnamed Goal', 'nelioab' ) . '</span>' .
 							'  <small class="isMain" style="display:none;font-weight:normal;">' . __( '[Main Goal]', 'nelioab' ) . '</small><br>' .
 							'  <div class="row-actions">' .
 							'    <span class="rename"><a href="javascript:;">' . __( 'Rename' ) . '</a></span>' .
@@ -400,6 +396,9 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				?>
 			</div>
 			<div id="goal-list"></div>
+			<h2 style="text-align:center;margin-top:-10px;"><a class="add-new-h2" href="javascript:;" onClick="javascript:NelioABGoalCards.create();"><?php
+				_e( 'Add Additional Goal', 'nelioab' );
+			?></a></h2>
 			<?php
 		}
 
@@ -502,13 +501,13 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				_e( 'A conversion is counted for this goal whenever any of the following actions occur:', 'nelioab' );
 			?></p>
 			<div class="empty">
-				<em><?php _e( 'You may add one or more actions using the links below.', 'nelioab' ); ?></em>
+				<em><?php _e( '<strong>Add one or more conversion actions</strong> using the links below.', 'nelioab' ); ?></em>
 			</div>
 			<div class="actions" style="display:none;">
 			</div>
 			<div class="new-actions">
 				<div class="wrapper">
-					<strong><?php _e( 'New Actions', 'nelioab' ); ?></strong><br>
+					<strong><?php _e( 'Available Conversion Actions', 'nelioab' ); ?></strong><br>
 					<small><?php _e( '(Hover over each action for help)', 'nelioab' ); ?></small><br>
 					<?php
 					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -19,10 +19,29 @@
 
 if ( !class_exists( 'NelioABWpHelper' ) ) {
 
+	/**
+	 * This class has some utility methods for dealing with WordPress.
+	 *
+	 * @since PHPDOC
+	 * @package \NelioABTesting\Utils
+	 */
 	abstract class NelioABWpHelper {
 
 		/**
+		 * PHPDOC
 		 *
+		 * @param int     $ori_id         PHPDOC
+		 * @param int     $overwriting_id PHPDOC
+		 * @param boolean $meta           PHPDOC
+		 *                                Default: `true`.
+		 * @param boolean $categories     PHPDOC
+		 *                                Default: `true`.
+		 * @param boolean $tags           PHPDOC
+		 *                                Default: `true`.
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
 		 */
 		public static function overwrite( $ori_id, $overwriting_id,
 				$meta = true, $categories = true, $tags = true ) {
@@ -51,6 +70,15 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 		/**
 		 * Copy all custom fields (post meta) from one object to another
+		 *
+		 * @param int     $src_id      PHPDOC
+		 * @param int     $dest_id     PHPDOC
+		 * @param boolean $copy_hidden PHPDOC
+		 *                             Default: `true`.
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
 		 */
 		public static function copy_meta_info( $src_id, $dest_id, $copy_hidden = true ) {
 
@@ -100,6 +128,15 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 		/**
 		 * Copy all terms (including categories and tags) from one object to another
+		 *
+		 * @param int     $src_id          PHPDOC
+		 * @param int     $dest_id         PHPDOC
+		 * @param boolean $copy_categories PHPDOC
+		 * @param boolean $copy_tags       PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
 		 */
 		public static function copy_terms( $src_id, $dest_id, $copy_categories, $copy_tags ) {
 
@@ -126,6 +163,13 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 		/**
 		 * Copy all comments from one post to another
+		 *
+		 * @param int     $src_id          PHPDOC
+		 * @param int     $dest_id         PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
 		 */
 		public static function copy_comments( $src_id, $dest_id ) {
 			foreach ( get_comments( array( 'post_id' => $src_id ) ) as $comment ) {
@@ -136,6 +180,12 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 		/**
 		 * Returns whether this WordPress installation is, at least, the queried version
+		 *
+		 * @param float $version PHPDOC
+		 *
+		 * @return boolean PHPDOC
+		 *
+		 * @since PHPDOC
 		 */
 		public static function is_at_least_version( $version ) {
 			return $version <= floatval( get_bloginfo( 'version' ) );
@@ -143,6 +193,10 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 
 		/**
 		 * Returns site_url, but using http instead of (maybe) https.
+		 *
+		 * @return string site_url, but using http instead of (maybe) https.
+		 *
+		 * @since PHPDOC
 		 */
 		public static function get_unsecured_site_url() {
 			$url = site_url();
@@ -151,7 +205,62 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		}
 
 
+		/**
+		 * PHPDOC
+		 *
+		 * @param string|boolean $name PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public static function get_custom_post_types( $name = false ) {
+			$args = array(
+				'public'   => true,
+				'_builtin' => false
+			);
+			if ( $name )
+				$args['name'] = $name;
+
+			$output = 'objects';
+			$operator = 'and';
+
+			$post_types = get_post_types( $args, $output, $operator );
+			uasort( $post_types, array( 'NelioABWpHelper', 'compare_post_types' ) );
+			if ( !$name )
+				return $post_types;
+			else
+				return reset( $post_types );
+		}
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param object $a PHPDOC
+		 * @param object $b PHPDOC
+		 *
+		 * @return int PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public static function compare_post_types( $a, $b ) {
+			return strcmp( $a->name, $b->name );
+		}
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string   $where    PHPDOC
+		 * @param WP_Query $wp_query PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function add_title_filter_to_wpquery( $where, &$wp_query ) {
+			/** @var wpdb $wpdb */
 			global $wpdb;
 			if ( $search_term = $wp_query->get( 'post_title_like' ) ) {
 				$search_term = $wpdb->esc_like( $search_term );
@@ -162,19 +271,23 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		}
 
 		/**
-		 * This function is an AJAX callback. It returns a list of up to 20 posts (or
-		 * pages). It is used by the select2 widget (an item selector that looks more
-		 * beautiful than regular the "select>option" combo.
+		 * This function is an AJAX callback that looks for posts.
+		 *
+		 * It returns a list of up to 20 posts (or pages). It is used by the
+		 * select2 widget (an item selector that looks more beautiful than regular
+		 * the "select>option" combo.
 		 *
 		 * Accepted POST params are:
-		 *   term: {string}
-		 *         the (part of the) string used to look for items.
-		 *   type: {array}
-		 *         array containing the types of element are we looking.
-		 *   default_id: {int} (optional)
-		 *         if set, the item with that ID will be returned. If that item is
-		 *         not found, then we'll perform a regular search (as if the param
-		 *         had not been set).
+		 *
+		 * * term: {string} the (part of the) string used to look for items.
+		 * * type: {array}  array containing the types of element are we looking.
+		 * * default_id: {int} (optional) if set, the item with that ID will be
+		 * returned. If that item is not found, then we'll perform a regular search
+		 * (as if the param had not been set).
+		 *
+		 * @return array a list of matching posts.
+		 *
+		 * @since PHPDOC
 		 */
 		public static function search_posts() {
 			$term = false;
@@ -221,8 +334,8 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 					if ( 'nelioab-all-post-types' == $type ) {
 						array_push( $aux, 'page' );
 						array_push( $aux, 'post' );
-						foreach ( get_post_types( array( 'public' => true, '_builtin' => false ), 'names' ) as $cpt )
-							array_push( $aux, $cpt );
+						foreach ( NelioABWpHelper::get_custom_post_types() as $cpt )
+							array_push( $aux, $cpt->name );
 					}
 				}
 				if ( count( $aux ) > 0 )
@@ -344,20 +457,25 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		}
 
 		/**
-		 * This function is an AJAX callback. It returns a list of up to 20 forms.
-		 * The forms can either be Gravity Forms or Contact Form 7 forms. It is
-		 * used by the select2 widget (an item selector that looks more beautiful
-		 * than regular the "select>option" combo.
+		 * This function is an AJAX callback that looks for forms.
+		 *
+		 * It returns a list of up to 20 forms.  The forms can either be Gravity
+		 * Forms or Contact Form 7 forms. It is used by the select2 widget (an item
+		 * selector that looks more beautiful than regular the "select>option"
+		 * combo.
 		 *
 		 * Accepted POST params are:
-		 *   term: {string}
-		 *         the (part of the) string used to look for items.
-		 *   type: {'cf7','gf'}
-		 *         we may look for Contact Forms 7 (cf7) or Gravity Forms (gf)
-		 *   default_id: {int} (optional)
-		 *         if set, the item with that ID will be returned. If that item is
-		 *         not found, then we'll perform a regular search (as if the param
-		 *         had not been set).
+		 *
+		 * * term: {string} the (part of the) string used to look for items.
+		 * * type: {'cf7','gf'} we may look for Contact Forms 7 (cf7) or Gravity
+		 * Forms (gf)
+		 * * default_id: {int} (optional) if set, the item with that ID will be
+		 * returned. If that item is not found, then we'll perform a regular search
+		 * (as if the param had not been set).
+		 *
+		 * @return array a list of forms.
+		 *
+		 * @since PHPDOC
 		 */
 		public static function search_forms() {
 			$term = false;
@@ -390,8 +508,14 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			// in one form only; I'm going to return that form to him
 			if ( $default_id !== false && $default_id > 0 ) {
 				if ( 'cf7' == $type && class_exists( 'WPCF7_ContactForm' ) ) {
+					/** @noinspection PhpUndefinedClassInspection */
 					$aux = WPCF7_ContactForm::find( array( 'p' => $default_id ) );
 					if ( count( $aux ) > 0 ) {
+						/**
+						 * @var object $form
+						 *      @method int    id()
+						 *      @method string title()
+						 */
 						$form = $aux[0];
 						$item = array(
 							'id'        => $form->id(),
@@ -405,6 +529,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 					}
 				}
 				elseif ( 'gf' == $type && class_exists( 'GFAPI' ) ) {
+					/** @noinspection PhpUndefinedClassInspection */
 					$form = GFAPI::get_form( $default_id );
 					if ( $form ) {
 						$item = array(
@@ -422,8 +547,14 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			$result = array();
 
 			if ( 'cf7' == $type && class_exists( 'WPCF7_ContactForm' ) ) {
+				/** @noinspection PhpUndefinedClassInspection */
 				$forms = WPCF7_ContactForm::find( $args );
 				foreach ( $forms as $form ) {
+					/**
+					 * @var object $form
+					 *      @method int    id()
+					 *      @method string title()
+					 */
 					$item = array(
 						'id'        => $form->id(),
 						'title'     => self::fix_title( $form->title() ),
@@ -435,6 +566,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			}
 
 			elseif ( 'gf' == $type && class_exists( 'RGFormsModel' ) ) {
+				/** @noinspection PhpUndefinedClassInspection */
 				$forms = RGFormsModel::get_forms();
 				foreach ( $forms as $form ) {
 					if ( $term && strpos( strtolower( $form->title ), strtolower( $term ) ) === false )
@@ -454,6 +586,16 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			die();
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $title PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		private static function fix_title( $title ) {
 			$title = strip_tags( $title );
 			if ( strlen( $title ) == 0 )
@@ -461,10 +603,29 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			return $title;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param array $i1 PHPDOC
+		 * @param array $i2 PHPDOC
+		 *
+		 * @return int PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function sort_post_search_by_title( $i1, $i2 ) {
 			return strcasecmp( $i1['title'], $i2['title'] );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function get_current_colorscheme() {
 			$result = array();
 
@@ -508,10 +669,20 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 		/**
 		 * date_handler($date_start, $date_end)
 		 *
-		 * Date Validation
-		 * $date_start expects a date formatted as YYYYMMDD or the string 'all' or ''
-		 * $date_end expects a date formatted as YYYYMMDD or the string 'all' or ''
-		 * If either $date_start or $date_end are set to 'all' or '', set dates to 00010101 and 99990101
+		 * Date Validation:
+		 *
+		 * * $date_start expects a date formatted as YYYYMMDD or the string 'all' or ''
+		 * * $date_end expects a date formatted as YYYYMMDD or the string 'all' or ''
+		 *
+		 * If either $date_start or $date_end are set to 'all' or '', set dates to
+		 * 00010101 and 99990101.
+		 *
+		 * @param string $date_start PHPDOC
+		 * @param string $date_end  PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
 		 */
 		public static function date_handler( $date_start, $date_end ) {
 

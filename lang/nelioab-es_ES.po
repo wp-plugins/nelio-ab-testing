@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2015-03-12 11:15:59+00:00\n"
-"PO-Revision-Date: 2015-03-12 12:52+0100\n"
+"POT-Creation-Date: 2015-05-05 08:46:11+00:00\n"
+"PO-Revision-Date: 2015-05-05 10:54+0100\n"
 "Last-Translator: David Aguilera <david.aguilera@neliosoftware.com>\n"
 "Language-Team: Spanish <david.aguilera@neliosoftware.com>\n"
 "Language: es\n"
@@ -17,8 +17,8 @@ msgstr ""
 
 #: includes/admin/account-page-controller.php:27
 #: includes/admin/account-page-controller.php:142
-#: includes/admin/admin-controller.php:494
-#: includes/admin/admin-controller.php:495
+#: includes/admin/admin-controller.php:542
+#: includes/admin/admin-controller.php:543
 msgid "My Account"
 msgstr "Mi Cuenta"
 
@@ -35,164 +35,190 @@ msgid "E-Mail is not registered in our service"
 msgstr "El e-mail no está registrado en nuestro servicio"
 
 #: includes/admin/account-page-controller.php:217
-msgid "This site has been successfully registered to your account."
-msgstr "Se ha registrado correctamente el site a su cuenta."
+msgid "This site has been successfully activated in your account."
+msgstr "Se ha activado correctamente el sitio."
 
 #: includes/admin/account-page-controller.php:221
-msgid "This site is no longer registered to your account."
-msgstr "Este site ya no está registrado en vuestra cuenta."
+msgid "This site is no longer active in your account."
+msgstr "Este sitio ya no consta como activo en tu cuenta."
 
 #: includes/admin/account-page-controller.php:224
 msgid ""
-"The site is no longer linked to any of your other registered sites, If you "
-"have free slots, you may now register it as a completely different and new "
-"site."
+"The site is no longer linked to any of your other active sites. If you have "
+"free slots, you may now activate it as a completely different and new site."
 msgstr ""
-"Este site ya no está vinculado a ninguno de sus otros sites. Si todavía "
-"puede registrar otros sites, ahora tiene la posibilidad de registrar este "
-"como uno nuevo y diferente a los demás."
+"Este sitio ya no está vinculado a ninguno de tus otros sitios. Si tienes "
+"huecos disponibles, activa este sitio como uno nuevo y diferente a los demás."
 
-#: includes/admin/admin-controller.php:366
+#: includes/admin/admin-controller.php:165
+msgid ""
+"If you like <strong>Nelio A/B Testing</strong> please leave us a %s&#9733;"
+"&#9733;&#9733;&#9733;&#9733;%s rating. A huge thank you from Nelio in "
+"advance!"
+msgstr ""
+"Si te gusta <strong>Nelio A/B Testing</strong>, no olvides puntuarnos "
+"%s&#9733;&#9733;&#9733;&#9733;&#9733;%s. ¡Muchísimas gracias de parte del "
+"equipo de Nelio!"
+
+#: includes/admin/admin-controller.php:165
+msgid "Thanks :)"
+msgstr "¡Gracias! :)"
+
+#: includes/admin/admin-controller.php:173
+msgid ""
+"Thank you for using <a href=\"https://nelioabtesting.com\" target=\"_blank"
+"\">Nelio A/B Testing.</a>"
+msgstr ""
+"Gracias por usar <a href=\"https://nelioabtesting.com\" target=\"_blank"
+"\">Nelio A/B Testing</a>."
+
+#: includes/admin/admin-controller.php:417
 #: includes/admin/views/alternatives/alternatives-table.php:100
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:258
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:290
-#: includes/admin/views/experiments-page.php:72
-#: includes/admin/views/experiments-page.php:222
-#: includes/admin/views/experiments-page.php:301
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:264
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:296
+#: includes/admin/views/experiments-page.php:74
+#: includes/admin/views/experiments-page.php:219
+#: includes/admin/views/experiments-page.php:298
 #: includes/admin/views/progress/alt-exp-progress-page.php:545
 #: includes/admin/views/progress/alt-exp-progress-page.php:723
 #: includes/admin/views/settings-page.php:105
-#: includes/utils/admin-table.php:248
+#: includes/utils/admin-table.php:300
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: includes/admin/admin-controller.php:372
+#: includes/admin/admin-controller.php:423
 msgid "Clean"
 msgstr "Borrar"
 
-#: includes/admin/admin-controller.php:386
+#: includes/admin/admin-controller.php:437
 msgid "Clean and Deactivate"
 msgstr "Borrar y Desactivar"
 
-#: includes/admin/admin-controller.php:387
+#: includes/admin/admin-controller.php:438
 msgid "Warning!"
 msgstr "Aviso"
 
-#: includes/admin/admin-controller.php:388
+#: includes/admin/admin-controller.php:439
 msgid ""
 "You are about to clean all your A/B testing data. This operation cannot be "
 "undone. Are you sure you want to continue?"
 msgstr ""
-"Está a punto de borrar toda la información sobre experimentos A/B que ha "
-"generado. Recuerde que <strong>esta operación no se puede deshacer</strong>. "
-"¿Está seguro que quiere continuar?"
+"Estás a punto de borrar toda la información sobre experimentos A/B que has "
+"generado. Recuerda que <strong>esta operación no se puede deshacer</strong>. "
+"¿Estás seguro que quieres continuar?"
 
-#: includes/admin/admin-controller.php:402
-#: includes/admin/admin-controller.php:403
-#: includes/admin/admin-controller.php:427
-#: includes/admin/admin-controller.php:428
-#: includes/admin/feedback-page-controller.php:31
-#: includes/admin/feedback-page-controller.php:39 includes/controller.php:421
+#: includes/admin/admin-controller.php:453
+#: includes/admin/admin-controller.php:454
+#: includes/admin/admin-controller.php:475
+#: includes/admin/admin-controller.php:476 includes/controller.php:589
 msgid "Nelio A/B Testing"
 msgstr "Nelio A/B Testing"
 
-#: includes/admin/admin-controller.php:441
-#: includes/admin/admin-controller.php:442
+#: includes/admin/admin-controller.php:489
+#: includes/admin/admin-controller.php:490
 #: includes/admin/dashboard-page-controller.php:34
-#: includes/admin/dashboard-page-controller.php:54 includes/controller.php:482
+#: includes/admin/dashboard-page-controller.php:50 includes/controller.php:650
 msgid "Dashboard"
 msgstr "Escritorio"
 
-#: includes/admin/admin-controller.php:471
-#: includes/admin/admin-controller.php:472
+#: includes/admin/admin-controller.php:519
+#: includes/admin/admin-controller.php:520
 #: includes/admin/experiments-page-controller.php:34
-#: includes/admin/experiments-page-controller.php:132
-#: includes/controller.php:491
+#: includes/admin/experiments-page-controller.php:128
+#: includes/controller.php:659
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: includes/admin/admin-controller.php:485
-#: includes/admin/admin-controller.php:486 includes/controller.php:430
+#: includes/admin/admin-controller.php:533
+#: includes/admin/admin-controller.php:534 includes/controller.php:598
 msgid "Add Experiment"
 msgstr "Añadir Experimento"
 
-#: includes/admin/admin-controller.php:504
-#: includes/admin/admin-controller.php:505
+#: includes/admin/admin-controller.php:552
+#: includes/admin/admin-controller.php:553
 #: includes/admin/settings-page-controller.php:30
 msgid "Settings"
 msgstr "Configuración"
 
-#: includes/admin/admin-controller.php:515
-#: includes/admin/admin-controller.php:516
-msgid "Share & Comment"
-msgstr "Compartir"
+#: includes/admin/admin-controller.php:562
+#: includes/admin/admin-controller.php:563
+#: includes/admin/views/account-page.php:297
+#: includes/admin/views/alternatives/alt-exp-page.php:241
+#: includes/admin/views/alternatives/alt-exp-page.php:251
+#: includes/admin/views/alternatives/alternatives-table.php:71
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:157
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:117
+#: includes/admin/views/others/heatmap-exp-edition-page.php:231
+#: includes/admin/views/others/heatmap-exp-edition-page.php:241
+msgid "Help"
+msgstr "Ayuda"
 
-#: includes/admin/admin-controller.php:528
-#: includes/admin/admin-controller.php:529
+#: includes/admin/admin-controller.php:581
+#: includes/admin/admin-controller.php:582
 msgid "CSS Edit"
 msgstr "Edición de CSS"
 
-#: includes/admin/admin-controller.php:564
-#: includes/admin/admin-controller.php:572
+#: includes/admin/admin-controller.php:622
 msgid "Edition of Alternative's Content"
 msgstr "Edición del contenido de una alternativa"
 
-#: includes/admin/admin-controller.php:605
+#: includes/admin/admin-controller.php:656
 #: includes/admin/views/alternatives/alternatives-table.php:109
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:280
-#: includes/admin/views/content/css-edit.php:152
-#: includes/admin/views/content/css-edit.php:170
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:286
+#: includes/admin/views/content/css-edit.php:151
+#: includes/admin/views/content/css-edit.php:169
 msgid "Update"
 msgstr "Actualizar"
 
-#: includes/admin/admin-controller.php:622
+#: includes/admin/admin-controller.php:673
 msgid "Preview Changes"
 msgstr "Previsualizar Cambios"
 
-#: includes/admin/admin-controller.php:625
+#: includes/admin/admin-controller.php:676
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:148
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:95
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:110
-#: includes/admin/views/content/css-edit.php:179
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:140
+#: includes/admin/views/content/css-edit.php:178
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:145
 msgid "Preview"
 msgstr "Vista Previa"
 
-#: includes/admin/admin-controller.php:636
-#: includes/admin/views/content/css-edit.php:206
+#: includes/admin/admin-controller.php:687
+#: includes/admin/views/content/css-edit.php:205
 #: includes/experiment-controllers/menu-experiment-controller.php:169
 #: includes/experiment-controllers/widget-experiment-controller.php:189
 msgid "Go back to..."
 msgstr "Volver a..."
 
-#: includes/admin/admin-controller.php:644
-#: includes/admin/views/content/css-edit.php:220
+#: includes/admin/admin-controller.php:695
+#: includes/admin/views/content/css-edit.php:219
 #: includes/experiment-controllers/menu-experiment-controller.php:174
 #: includes/experiment-controllers/widget-experiment-controller.php:194
 msgid "Editing this experiment"
 msgstr "La edición de este experimento"
 
-#: includes/admin/admin-controller.php:650
-#: includes/admin/views/content/css-edit.php:226
+#: includes/admin/admin-controller.php:701
+#: includes/admin/views/content/css-edit.php:225
 #: includes/experiment-controllers/menu-experiment-controller.php:178
 #: includes/experiment-controllers/widget-experiment-controller.php:198
 msgid "The results of the related experiment"
 msgstr "Los resultados de este experimento"
 
-#: includes/admin/admin-controller.php:658
-#: includes/admin/views/content/css-edit.php:234
+#: includes/admin/admin-controller.php:709
+#: includes/admin/views/content/css-edit.php:233
 #: includes/experiment-controllers/menu-experiment-controller.php:181
 #: includes/experiment-controllers/widget-experiment-controller.php:201
 msgid "My list of experiments"
 msgstr "Mi lista de experimentos"
 
-#: includes/admin/admin-controller.php:660
-#: includes/admin/views/content/css-edit.php:235
+#: includes/admin/admin-controller.php:711
+#: includes/admin/views/content/css-edit.php:234
 msgid "The Dashboard"
 msgstr "El Escritorio"
 
 #: includes/admin/alternatives/alt-exp-super-controller.php:71
-#: includes/admin/others/heatmap-exp-edition-page-controller.php:156
-#: includes/utils/admin-page.php:200
+#: includes/admin/others/heatmap-exp-edition-page-controller.php:157
+#: includes/utils/admin-page.php:393
 msgid "The following errors have been encountered:"
 msgstr "Se han encontrado los siguientes errores:"
 
@@ -200,22 +226,51 @@ msgstr "Se han encontrado los siguientes errores:"
 msgid ""
 "Naming an experiment is mandatory. Please, choose a name for the experiment."
 msgstr ""
-"Nombrar los experimentos es obligatorio. Por favor, déle un nombre a este "
+"Nombrar los experimentos es obligatorio. Por favor, dale un nombre a este "
 "experimento."
 
 #: includes/admin/alternatives/alt-exp-super-controller.php:102
-#: includes/admin/others/heatmap-exp-edition-page-controller.php:181
+#: includes/admin/others/heatmap-exp-edition-page-controller.php:182
 msgid ""
 "There is another experiment with the same name. Please, choose a new one."
 msgstr ""
-"Existe otro experimento con el mismo nombre. Por favor, use uno diferente."
+"Existe otro experimento con el mismo nombre. Por favor, usa uno diferente."
+
+#: includes/admin/alternatives/cpt-alt-exp-creation-page-controller.php:51
+msgid "Add Custom Post Type Experiment"
+msgstr "Añadir experimento de entrada personalizada"
+
+#: includes/admin/alternatives/cpt-alt-exp-edition-page-controller.php:65
+#: includes/admin/alternatives/cpt-alt-exp-edition-page-controller.php:171
+msgid "Edit Custom Post Type Experiment"
+msgstr "Editar experimento de entrada personalizada"
+
+#: includes/admin/alternatives/cpt-alt-exp-edition-page-controller.php:110
+msgid "There are no custom post types available."
+msgstr "No hay disponibles tipos de entrada personalizada."
+
+#: includes/admin/alternatives/cpt-alt-exp-edition-page-controller.php:111
+msgid ""
+"You have to create a public custom post type and publish some custom posts "
+"first to use this type of experiment."
+msgstr ""
+"Para usar este tipo de experimento, primero tienes que crear un tipo de "
+"entrada personalizada y publicar algunas entradas personalizadas."
+
+#: includes/admin/alternatives/cpt-alt-exp-edition-page-controller.php:134
+msgid "There are no custom posts available."
+msgstr "No hay entradas personalizadas disponibles."
+
+#: includes/admin/alternatives/cpt-alt-exp-edition-page-controller.php:135
+msgid "Please, create one custom post and try again."
+msgstr "Por favor, crea una entrada personalizada e inténtalo de nuevo."
 
 #: includes/admin/alternatives/css-alt-exp-creation-page-controller.php:48
 msgid "Add CSS Experiment"
 msgstr "Añadir experimento CSS"
 
 #: includes/admin/alternatives/css-alt-exp-edition-page-controller.php:54
-#: includes/admin/alternatives/headline-alt-exp-edition-page-controller.php:137
+#: includes/admin/alternatives/headline-alt-exp-edition-page-controller.php:138
 #: includes/admin/alternatives/menu-alt-exp-edition-page-controller.php:54
 #: includes/admin/alternatives/widget-alt-exp-edition-page-controller.php:54
 #: includes/admin/select-exp-edition-page-controller.php:34
@@ -224,9 +279,9 @@ msgstr "Editar experimento"
 
 #: includes/admin/alternatives/css-alt-exp-edition-page-controller.php:115
 #: includes/admin/alternatives/menu-alt-exp-edition-page-controller.php:114
-#: includes/admin/alternatives/theme-alt-exp-edition-page-controller.php:184
+#: includes/admin/alternatives/theme-alt-exp-edition-page-controller.php:185
 #: includes/admin/alternatives/widget-alt-exp-edition-page-controller.php:112
-#: includes/admin/views/alternatives/alt-exp-page.php:340
+#: includes/admin/views/alternatives/alt-exp-page.php:369
 msgid "Default"
 msgstr "Por defecto"
 
@@ -243,9 +298,12 @@ msgid "Edit Headline Experiment"
 msgstr "Editar experimento de titulares"
 
 #: includes/admin/alternatives/headline-alt-exp-edition-page-controller.php:107
-#: includes/admin/others/heatmap-exp-edition-page-controller.php:130
-msgid "There are no pages nor posts available."
-msgstr "No hay disponibles ni páginas ni entradas."
+msgid "There are no posts available."
+msgstr "No hay entradas disponibles."
+
+#: includes/admin/alternatives/headline-alt-exp-edition-page-controller.php:108
+msgid "Please, create one post and try again."
+msgstr "Por favor, crea una entrada e inténtalo de nuevo."
 
 #: includes/admin/alternatives/menu-alt-exp-creation-page-controller.php:44
 msgid "There are no menus available.<br><a href=\"%s\">Create one now.</a>"
@@ -268,34 +326,45 @@ msgid "Add Post Experiment"
 msgstr "Añadir experimento de entrada"
 
 #: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:65
-#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:168
+#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:176
 msgid "Edit Page Experiment"
 msgstr "Editar experimento de página"
 
 #: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:69
-#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:170
+#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:178
 msgid "Edit Post Experiment"
 msgstr "Editar experimento de entrada"
 
-#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:118
-msgid "There are no pages available."
-msgstr "No hay páginas disponibles."
+#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:119
+msgid ""
+"There are no pages available.<br/><br/><a class=\"button button-primary\" "
+"href=\"%s\">Create one now.</a>"
+msgstr ""
+"No hay páginas disponibles.<br/><br/><a class=\"button button-primary\" href="
+"\"%s\">Crear una ahora.</a>"
 
-#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:132
-msgid "There are no posts available."
-msgstr "No hay entradas disponibles."
+#: includes/admin/alternatives/post-alt-exp-edition-page-controller.php:137
+msgid ""
+"There are no posts available.<br/><br/><a class=\"button button-primary\" "
+"href=\"%s\">Create one now</a>"
+msgstr ""
+"No hay entradas disponibles.<br/><br/><a class=\"button button-primary\" "
+"href=\"%s\">Crear una ahora.</a>"
 
 #: includes/admin/alternatives/theme-alt-exp-edition-page-controller.php:97
-msgid "There are no posts or posts available."
-msgstr "No hay disponibles ni páginas ni entradas."
+msgid "There are no posts or pages available."
+msgstr "No hay páginas ni entradas disponibles."
 
 #: includes/admin/alternatives/theme-alt-exp-edition-page-controller.php:109
+msgid "There is only one theme available"
+msgstr "Sólo hay un tema disponible"
+
+#: includes/admin/alternatives/theme-alt-exp-edition-page-controller.php:110
 msgid ""
-"There is only one theme available.<br />Please, install one or more themes "
-"to create an experiment of this type."
+"Please, install one or more themes to create an experiment of this type."
 msgstr ""
-"Sólo hay un tema disponible.<br />Por favor, instale uno o más temas "
-"adicionales para poder crear un experimento de este tipo."
+"Por favor, instala uno o más temas adicionales para poder crear un "
+"experimento de este tipo."
 
 #: includes/admin/alternatives/widget-alt-exp-creation-page-controller.php:51
 msgid "Add Widget Experiment"
@@ -314,9 +383,17 @@ msgid "Add Heatmap Experiment"
 msgstr "Añadir experimento de heatmaps"
 
 #: includes/admin/others/heatmap-exp-edition-page-controller.php:54
-#: includes/admin/others/heatmap-exp-edition-page-controller.php:141
+#: includes/admin/others/heatmap-exp-edition-page-controller.php:142
 msgid "Edit Heatmap Experiment"
 msgstr "Editar experimento de heatmaps"
+
+#: includes/admin/others/heatmap-exp-edition-page-controller.php:130
+msgid "There are no pages nor posts available."
+msgstr "No hay disponibles ni páginas ni entradas."
+
+#: includes/admin/others/heatmap-exp-edition-page-controller.php:131
+msgid "Please, create some pages or posts and then try again."
+msgstr "Por favor, crea alguna página o entrada e inténtalo de nuevo."
 
 #: includes/admin/progress/css-alt-exp-progress-page-controller.php:34
 #: includes/admin/progress/css-alt-exp-progress-page-controller.php:77
@@ -340,7 +417,7 @@ msgstr "Selección de tipo de experimento"
 
 #: includes/admin/views/account-page.php:98
 msgid "Nelio AB Testing &ndash; Account Access Details"
-msgstr "Nelio AB Testing &ndash; Detalles de acceso a su cuenta"
+msgstr "Nelio AB Testing &ndash; Detalles de acceso a tu cuenta"
 
 #: includes/admin/views/account-page.php:101
 msgid "E-Mail"
@@ -369,9 +446,9 @@ msgid ""
 "and choose the one that best fits you</a></b>! All our plans come with a "
 "<b>14-day free trial period</b>."
 msgstr ""
-"¿Aún no se ha suscrito a ninguno de nuestros planes? <b><a href=\"http://"
-"nelioabtesting.com/subscription-plans/\" target=\"_blank\">¡Écheles un "
-"vistazo y suscríbase al que mejor cumpla con sus necesidades!</a></b> Todos "
+"¿Aún no te has suscrito a ninguno de nuestros planes? <b><a href=\"http://"
+"nelioabtesting.com/subscription-plans/\" target=\"_blank\">¡Échales un "
+"vistazo y suscríbete al que mejor cumpla con tus necesidades!</a></b> Todos "
 "nuestros planes incluyen un <b>periodo de pruebas gratuito de dos semanas</"
 "b>."
 
@@ -400,12 +477,14 @@ msgid ""
 "Please, fill in all required fields in order to view your account details "
 "and use our service."
 msgstr ""
-"Por favor, rellene todos los campos obligatorios para poder ver los detalles "
-"de su cuenta y usar el servicio."
+"Por favor, rellena todos los campos obligatorios para poder ver los detalles "
+"de tu cuenta y usar el servicio."
 
 #: includes/admin/views/account-page.php:184
-#: includes/admin/views/alternatives/alt-exp-page.php:266
+#: includes/admin/views/alternatives/alt-exp-page.php:295
 #: includes/admin/views/alternatives/alternatives-table.php:43
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:81
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:282
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:59
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:175
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:67
@@ -416,7 +495,7 @@ msgstr ""
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:91
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:63
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:181
-#: includes/admin/views/experiments-page.php:368
+#: includes/admin/views/experiments-page.php:365
 #: includes/admin/views/others/heatmap-exp-edition-page.php:178
 #: includes/admin/views/progress/alt-exp-progress-page.php:641
 #: includes/admin/views/progress/alt-exp-progress-page.php:1358
@@ -433,56 +512,57 @@ msgstr "La información de suscripción no está disponible."
 
 #: includes/admin/views/account-page.php:194
 msgid "You are using a <b>beta free-pass</b>."
-msgstr "Está usando la <b>licencia beta</b>."
+msgstr "Estás usando la <b>licencia beta</b>."
 
 #: includes/admin/views/account-page.php:199
 msgid "You are using the <b>Free Trial</b> version of Nelio A/B Testing."
-msgstr "Está utilizando la <b>versión de evaluación</b> de Nelio A/B Testing."
+msgstr "Estás utilizando la <b>versión de evaluación</b> de Nelio A/B Testing."
 
 #: includes/admin/views/account-page.php:201
 msgid "Subscribe now and continue using our service!"
-msgstr "¡Suscríbase ahora y continúe usando nuestro servicio!"
+msgstr "¡Suscríbete ahora y continúa usando nuestro servicio!"
 
 #: includes/admin/views/account-page.php:207
 msgid "You are subscribed to our <b>Basic Plan</b>."
-msgstr "Está suscrito a nuestro <b>Plan Básico</b>."
+msgstr "Estás suscrito a nuestro <b>Plan Básico</b>."
 
 #: includes/admin/views/account-page.php:210
 msgid "You are subscribed to our <b>Professional Plan</b>."
-msgstr "Está suscrito a nuestro <b>Plan Profesional</b>."
+msgstr "Estás suscrito a nuestro <b>Plan Profesional</b>."
 
 #: includes/admin/views/account-page.php:213
 msgid "You are subscribed to our <b>Enterprise Plan</b>."
-msgstr "Está suscrito a nuestro <b>Plan Enterprise</b>."
+msgstr "Estás suscrito a nuestro <b>Plan Enterprise</b>."
 
 #: includes/admin/views/account-page.php:218
 msgid "Check your subscription details."
-msgstr "Compruebe los detalles de su suscripción."
+msgstr "Comprueba los detalles de tu suscripción."
 
 #: includes/admin/views/account-page.php:224
 msgid "Upgrade to our Professional Plan."
-msgstr "Actualícese a nuestro <b>Plan Profesional</b>."
+msgstr "Pásate a nuestro <b>Plan Profesional</b>."
 
 #: includes/admin/views/account-page.php:235
 msgid "Upgrade to our Enterprise Plan."
-msgstr "Actualícese a nuestro <b>Plan Enterprise</b>."
+msgstr "Pásate a nuestro <b>Plan Enterprise</b>."
 
 #: includes/admin/views/account-page.php:246
 msgid "You are subscribed to Nelio A/B Testing <b>Basic Plan</b> thanks to %s."
-msgstr "Está suscrito al <b>Plan Básico</b> de Nelio A/B Testing gracias a %s."
+msgstr ""
+"Estás suscrito al <b>Plan Básico</b> de Nelio A/B Testing gracias a %s."
 
 #: includes/admin/views/account-page.php:251
 msgid ""
 "You are subscribed to Nelio A/B Testing <b>Professional Plan</b> thanks to "
 "%s."
 msgstr ""
-"Está suscrito al <b>Plan Profesional</b> de Nelio A/B Testing gracias a %s."
+"Estás suscrito al <b>Plan Profesional</b> de Nelio A/B Testing gracias a %s."
 
 #: includes/admin/views/account-page.php:256
 msgid ""
 "You are subscribed to Nelio A/B Testing <b>Enterprise Plan</b> thanks to %s."
 msgstr ""
-"Está suscrito al <b>Plan Enterprise</b> de Nelio A/B Testing gracias a %s."
+"Estás suscrito al <b>Plan Enterprise</b> de Nelio A/B Testing gracias a %s."
 
 #: includes/admin/views/account-page.php:270
 msgid ""
@@ -491,9 +571,9 @@ msgid ""
 "need them using the button below, or <a href=\"%2$s\">contact us for an "
 "update of your monthly quota</a>."
 msgstr ""
-"<br />Su plan actual permite hasta %1$s visitas a página por mes. Si "
-"necesita más cuota puede comprar visitas a página adicionales con el "
-"siguiente botón o, si lo prefiere, <a href=\"%2$s\">contactando con "
+"<br />Tu plan actual permite hasta %1$s visitas a página por mes. Si "
+"necesitas más cuota puedes comprar visitas a página adicionales con el "
+"siguiente botón o, si lo prefieres, <a href=\"%2$s\">contactando con "
 "nosotros</a>."
 
 #: includes/admin/views/account-page.php:275
@@ -501,8 +581,8 @@ msgid ""
 "<br />Your current plan permits up to %1$s page views under test per month. "
 "If you need more quota, please contact <a href=\"%2$s\">%3$s</a>."
 msgstr ""
-"<br />Su plan actual permite hasta %1$s visitas a página por mes. Si "
-"necesita más cuota, por favor contacte con <a href=\"%2$s\">%3$s</a>."
+"<br />Tu plan actual permite hasta %1$s visitas a página por mes. Si "
+"necesitas más cuota, por favor contacta con <a href=\"%2$s\">%3$s</a>."
 
 #: includes/admin/views/account-page.php:283
 msgid "Available Quota:"
@@ -513,204 +593,194 @@ msgid "<span style=\"font-size:120%%;color:%1$s;\">%2$s</span> Page Views"
 msgstr ""
 "<span style=\"font-size:120%%;color:%1$s;\">%2$s</span> Visitas a Página"
 
-#: includes/admin/views/account-page.php:297
-#: includes/admin/views/alternatives/alt-exp-page.php:208
-#: includes/admin/views/alternatives/alt-exp-page.php:218
-#: includes/admin/views/alternatives/alternatives-table.php:71
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:117
-#: includes/admin/views/others/heatmap-exp-edition-page.php:231
-#: includes/admin/views/others/heatmap-exp-edition-page.php:241
-msgid "Help"
-msgstr "Ayuda"
-
 #: includes/admin/views/account-page.php:303
 msgid "Buy More"
 msgstr "Comprar más"
 
 #: includes/admin/views/account-page.php:315
-#: includes/admin/views/account-page.php:334
-#: includes/admin/views/account-page.php:585
-msgid "Registered Sites"
-msgstr "Sites registrados"
+#: includes/admin/views/account-page.php:335
+#: includes/admin/views/account-page.php:586
+msgid "Active Sites"
+msgstr "Sitios activos"
 
 #: includes/admin/views/account-page.php:319
 msgid ""
-"There was an error while retrieving the list of all registered sites to this "
+"There was an error while retrieving the list of active sites related to this "
 "account."
 msgstr ""
-"Ha habido un error mientras se obtenía la lista de sites registrados en esta "
-"cuenta."
+"Ha habido un error mientras se obtenía la lista de sitios activos "
+"relacionados con esta cuenta."
 
-#: includes/admin/views/account-page.php:322
-msgid ""
-"Nonetheless, please note this site is registered to your account, which "
-"means you can still use all plugin's functionalities."
-msgstr ""
-"En cualquier caso, puede seguir usando el servicio con normalidad, puesto "
-"que el site está correctamente registrado en su cuenta."
+#: includes/admin/views/account-page.php:323
+msgid "Nonetheless, this site is active and ready to be tested."
+msgstr "No obstante, el sitio está activo y listo para ser testeado."
 
-#: includes/admin/views/account-page.php:344
-msgid "This Site is Not Registered"
-msgstr "Este site no está registrado"
+#: includes/admin/views/account-page.php:345
+msgid "This Site is Not Active"
+msgstr "Este sitio no está activo."
 
-#: includes/admin/views/account-page.php:375
+#: includes/admin/views/account-page.php:376
 msgid "About Your Site"
 msgstr "Información del Site"
 
-#: includes/admin/views/account-page.php:378
-msgid "Skip and Register"
-msgstr "Omitir y Registrar"
+#: includes/admin/views/account-page.php:379
+msgid "Skip and Activate"
+msgstr "Omitir y Activar"
 
-#: includes/admin/views/account-page.php:388
-msgid "Register"
-msgstr "Registrar"
+#: includes/admin/views/account-page.php:389
+msgid "Activate"
+msgstr "Activar"
 
-#: includes/admin/views/account-page.php:440
+#: includes/admin/views/account-page.php:441
 msgid ""
 "In order to offer relevant and valuable suggestions, we need to know a "
 "little bit more about your site. Please, answer the following two questions:"
 msgstr ""
-"Para poder ofrecerle sugerencias que le resulten útiles necesitamos conocer "
-"un poco mejor su site. Por favor, responda las dos siguientes preguntas:"
+"Para poder ofrecerte sugerencias que te resulten útiles necesitamos conocer "
+"un poco mejor tu web. Por favor, responde las dos siguientes preguntas:"
 
-#: includes/admin/views/account-page.php:443
+#: includes/admin/views/account-page.php:444
 msgid "How would you describe your site?"
-msgstr "¿Cómo describiría su web?"
+msgstr "¿Cómo describirías tu web?"
 
-#: includes/admin/views/account-page.php:449
+#: includes/admin/views/account-page.php:450
 msgid "Publishing Platform"
 msgstr "Plataforma Editorial"
 
-#: includes/admin/views/account-page.php:450
+#: includes/admin/views/account-page.php:451
 msgid "Personal Blog"
 msgstr "Blog personal"
 
-#: includes/admin/views/account-page.php:451
+#: includes/admin/views/account-page.php:452
 msgid "Business/Corporate Website"
 msgstr "Web corporativa o de negocio"
 
-#: includes/admin/views/account-page.php:452
+#: includes/admin/views/account-page.php:453
 msgid "E-Commerce"
 msgstr "E-Commerce"
 
-#: includes/admin/views/account-page.php:460
+#: includes/admin/views/account-page.php:461
 msgid "What is it focused on?"
 msgstr "¿Con qué sector se identifica más?"
 
-#: includes/admin/views/account-page.php:466
+#: includes/admin/views/account-page.php:467
 msgid "Computer Software & Services"
 msgstr "Software y servicios informáticos"
 
-#: includes/admin/views/account-page.php:467
+#: includes/admin/views/account-page.php:468
 msgid "Education"
 msgstr "Educación"
 
-#: includes/admin/views/account-page.php:468
+#: includes/admin/views/account-page.php:469
 msgid "Financial Services"
 msgstr "Servicios financieros"
 
-#: includes/admin/views/account-page.php:469
+#: includes/admin/views/account-page.php:470
 msgid "Food & Beverage"
 msgstr "Restauración y comida"
 
-#: includes/admin/views/account-page.php:470
+#: includes/admin/views/account-page.php:471
 msgid "Health Services"
 msgstr "Salud"
 
-#: includes/admin/views/account-page.php:471
+#: includes/admin/views/account-page.php:472
 msgid "Leisure"
 msgstr "Ocio"
 
-#: includes/admin/views/account-page.php:472
+#: includes/admin/views/account-page.php:473
 msgid "Media (Adv & Mkt Ag & Publishing)"
 msgstr "Medios (Publicidad, Márketing y Editoriales)"
 
-#: includes/admin/views/account-page.php:473
+#: includes/admin/views/account-page.php:474
 msgid "Real Estate"
 msgstr "Inmobiliaria"
 
-#: includes/admin/views/account-page.php:474
+#: includes/admin/views/account-page.php:475
 msgid "Retail"
 msgstr "Venta al por menor"
 
-#: includes/admin/views/account-page.php:477
+#: includes/admin/views/account-page.php:478
 msgid "Others"
 msgstr "Otros"
 
-#: includes/admin/views/account-page.php:495
-#: includes/admin/views/experiments-page.php:78
+#: includes/admin/views/account-page.php:496
+#: includes/admin/views/experiments-page.php:80
 #: includes/admin/views/progress/alt-exp-progress-page.php:551
 msgid "OK"
 msgstr "OK"
 
-#: includes/admin/views/account-page.php:498
+#: includes/admin/views/account-page.php:499
 msgid "INVALID"
 msgstr "INVÁLIDO"
 
-#: includes/admin/views/account-page.php:510
-msgid "This site is not yet registered to your account."
-msgstr "Este site no está registrado a su cuenta."
-
 #: includes/admin/views/account-page.php:511
-msgid "Register it now!"
-msgstr "¡Registrarlo ahora!"
+msgid "This site is not yet active in your account."
+msgstr "Este sitio aún no consta como activo en tu cuenta."
 
-#: includes/admin/views/account-page.php:517
-msgid ""
-"It looks like this site is not connected to you account. In order to use our "
-"service in this site, first you have to register it. Unfortunately, you "
-"already reached the maximum number of sites allowed by your current "
-"subscription plan (see the table below)."
-msgstr ""
-"Parece que el site no está registrado en su cuenta. Para poder usar el "
-"servicio debe registrarlo. Por desgracia, ya ha registrado el máximo número "
-"de sites que su plan actual permite (vea la tabla inferior)."
+#: includes/admin/views/account-page.php:512
+msgid "Activate it now!"
+msgstr "¡Activarlo ahora!"
 
 #: includes/admin/views/account-page.php:518
 msgid ""
-"Please, <a href=\"%s\"><b>upgrade your <i>Nelio A/B Testing</i> "
-"subscription</b></a> so that you can register and manage more sites, or "
-"<b>access one of the other sites to cancel its subscription</b> and try "
-"again. Keep in mind that canceling the registration of a site may cause "
-"permanent loss of all experiments associated to that site."
+"It looks like this site is not connected to you account. In order to use our "
+"service in this site, you have to activate it. Unfortunately, you already "
+"reached the maximum number of sites allowed by your current subscription "
+"plan (see the table below)."
 msgstr ""
-"Por favor, <a href=\"%s\"><b>actualice su suscripció a <i>Nelio A/B Testing</"
-"i></b></a> para poder registrar y gestionar más sites o, si lo prefiere, "
-"<b>acceda a alguno de los otros sites registrados y desvincúlelo de su "
-"cuenta</b>. Recuerde que cancelar el registro de un site a su cuenta puede "
-"resultar en la pérdida de todos los experimentos que pudiera tener."
+"Parece que el sitio no está enlazado con tu cuenta. Para poder usar el "
+"servicio debes activar el sitio. Por desgracia, ya has activado el máximo "
+"número de sitios que tu plan actual permite (vea la tabla inferior)."
 
-#: includes/admin/views/account-page.php:558
+#: includes/admin/views/account-page.php:519
+msgid ""
+"Please, <a href=\"%s\"><b>upgrade your <i>Nelio A/B Testing</i> "
+"subscription</b></a> so that you can activate and manage more sites, or "
+"<b>access one of the other sites to deactivate it</b> and try again. Keep in "
+"mind that deactivating a site may cause permanent loss of all experiments "
+"associated to that site."
+msgstr ""
+"Por favor, <a href=\"%s\"><b>actualiza tu suscripción a <i>Nelio A/B "
+"Testing</i></b></a> para poder registrar y gestionar más sitios web o, si lo "
+"prefieres, <b>accede a alguno de los otros sitios activos y desactívalo</b>. "
+"Recuerda que desactivar un sitio de tu cuenta puede resultar en la pérdida "
+"de todos los experimentos que pudiera tener."
+
+#: includes/admin/views/account-page.php:559
 msgid "Empty Slot"
 msgstr "Vacío"
 
-#: includes/admin/views/account-page.php:576
-msgid "registered site"
-msgstr "site registrado"
-
 #: includes/admin/views/account-page.php:577
-msgid "registered sites"
-msgstr "sites registrados"
+msgid "active site"
+msgstr "Sitio activo"
 
-#: includes/admin/views/account-page.php:607
-msgid "In your account, the site is actually registered as «%s»"
-msgstr "En su cuenta, el site está registrado como «%s»"
+#: includes/admin/views/account-page.php:578
+msgid "active sites"
+msgstr "Sitios activos"
 
-#: includes/admin/views/account-page.php:612
+#: includes/admin/views/account-page.php:608
+msgid "Activation URL is «%s»"
+msgstr "La URL de activación es «%s»"
+
+#: includes/admin/views/account-page.php:613
 msgid "this site"
 msgstr "este site"
 
-#: includes/admin/views/account-page.php:621
-msgid "Cancel Registration"
-msgstr "Cancelar Registro"
+#: includes/admin/views/account-page.php:622
+msgid "Deactivate"
+msgstr "Desactivar"
 
-#: includes/admin/views/account-page.php:629
+#: includes/admin/views/account-page.php:630
 msgid "Unlink Site"
 msgstr "Desvincular Site"
 
-#: includes/admin/views/account-page.php:638
-msgid "*The site was registered using a different URL"
-msgstr "*El site se registró usando una URL diferente"
+#: includes/admin/views/account-page.php:639
+msgid ""
+"* The site was activated using a different URL. If you want to activate this "
+"site using its own URL, unlink it first."
+msgstr ""
+"* El sitio se registró usando una URL diferente. Si quieres activarlo con su "
+"propia URL, desvincúlalo primero."
 
 #: includes/admin/views/alternatives/alt-exp-page.php:158
 msgid "Previous"
@@ -720,139 +790,138 @@ msgstr "Anterior"
 msgid "Next"
 msgstr "Siguiente"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:206
+#: includes/admin/views/alternatives/alt-exp-page.php:239
 #: includes/admin/views/others/heatmap-exp-edition-page.php:229
 msgid "Set a meaningful, descriptive name for the experiment."
 msgstr "Use un nombre claro y descriptivo para el experimento."
 
-#: includes/admin/views/alternatives/alt-exp-page.php:216
+#: includes/admin/views/alternatives/alt-exp-page.php:249
 #: includes/admin/views/others/heatmap-exp-edition-page.php:239
 msgid "In a few words, describe what this experiment aims to test."
-msgstr "Describa, en pocas palabras, qué pretende probar con el experimento."
+msgstr "Describe, en pocas palabras, qué pretendes probar con el experimento."
 
-#: includes/admin/views/alternatives/alt-exp-page.php:231
+#: includes/admin/views/alternatives/alt-exp-page.php:264
 #: includes/admin/views/others/heatmap-exp-edition-page.php:84
 msgid "Basic Information"
 msgstr "Información básica"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:245
-msgid "Add Additional Goal"
-msgstr "Añadir Nuevo Objetivo"
-
-#: includes/admin/views/alternatives/alt-exp-page.php:254
-#: includes/admin/views/alternatives/alt-exp-page.php:260
-#: includes/admin/views/alternatives/alt-exp-page.php:304
-#: includes/admin/views/alternatives/alt-exp-page.php:309
-#: includes/admin/views/alternatives/alt-exp-page.php:314
-#: includes/admin/views/alternatives/alt-exp-page.php:335
-#: includes/admin/views/alternatives/alt-exp-page.php:362
+#: includes/admin/views/alternatives/alt-exp-page.php:283
+#: includes/admin/views/alternatives/alt-exp-page.php:289
+#: includes/admin/views/alternatives/alt-exp-page.php:333
+#: includes/admin/views/alternatives/alt-exp-page.php:338
+#: includes/admin/views/alternatives/alt-exp-page.php:343
+#: includes/admin/views/alternatives/alt-exp-page.php:364
+#: includes/admin/views/alternatives/alt-exp-page.php:391
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:245
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:116
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:204
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:210
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:160
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:177
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:121
 msgid "Delete"
 msgstr "Borrar"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:270
+#: includes/admin/views/alternatives/alt-exp-page.php:299
 msgid "URL"
 msgstr "URL"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:274
+#: includes/admin/views/alternatives/alt-exp-page.php:303
 msgid "whose URL is"
 msgstr "cuya URL es"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:276
+#: includes/admin/views/alternatives/alt-exp-page.php:305
 msgid "whose URL starts with"
 msgstr "cuya URL empieza por"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:278
+#: includes/admin/views/alternatives/alt-exp-page.php:307
 msgid "whose URL contains"
 msgstr "cuya URL contiene"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:280
+#: includes/admin/views/alternatives/alt-exp-page.php:309
 msgid "whose URL ends with"
 msgstr "cuya URL acaba en"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:286
-#: includes/admin/views/alternatives/alt-exp-page.php:380
-#: includes/admin/views/alternatives/alt-exp-page.php:393
+#: includes/admin/views/alternatives/alt-exp-page.php:315
+#: includes/admin/views/alternatives/alt-exp-page.php:412
+#: includes/admin/views/alternatives/alt-exp-page.php:425
 #: includes/admin/views/progress/alt-exp-progress-page.php:204
 #: includes/admin/views/progress/alt-exp-progress-page.php:299
 #: includes/admin/views/progress/alt-exp-progress-page.php:317
 msgid "from the tested page"
 msgstr "desde la página bajo test"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:287
-#: includes/admin/views/alternatives/alt-exp-page.php:291
-#: includes/admin/views/alternatives/alt-exp-page.php:381
-#: includes/admin/views/alternatives/alt-exp-page.php:385
-#: includes/admin/views/alternatives/alt-exp-page.php:394
-#: includes/admin/views/alternatives/alt-exp-page.php:398
+#: includes/admin/views/alternatives/alt-exp-page.php:316
+#: includes/admin/views/alternatives/alt-exp-page.php:320
+#: includes/admin/views/alternatives/alt-exp-page.php:413
+#: includes/admin/views/alternatives/alt-exp-page.php:417
+#: includes/admin/views/alternatives/alt-exp-page.php:426
+#: includes/admin/views/alternatives/alt-exp-page.php:430
 #: includes/admin/views/progress/alt-exp-progress-page.php:301
 #: includes/admin/views/progress/alt-exp-progress-page.php:319
 msgid "from any page"
 msgstr "desde cualquier página"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:290
-#: includes/admin/views/alternatives/alt-exp-page.php:384
-#: includes/admin/views/alternatives/alt-exp-page.php:397
+#: includes/admin/views/alternatives/alt-exp-page.php:319
+#: includes/admin/views/alternatives/alt-exp-page.php:416
+#: includes/admin/views/alternatives/alt-exp-page.php:429
 #: includes/admin/views/progress/alt-exp-progress-page.php:206
 msgid "from the tested post"
 msgstr "desde la entrada bajo test"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:294
+#: includes/admin/views/alternatives/alt-exp-page.php:323
 msgid "A visitor accesses %4$s the page %1$s, %2$s %3$s"
 msgstr "Un visitante accede %4$s a la página %1$s, %2$s %3$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:299
+#: includes/admin/views/alternatives/alt-exp-page.php:328
 msgid "A visitor accesses the page %1$s, %2$s %3$s"
 msgstr "Un visitante accede a la página %1$s, %2$s %3$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:319
+#: includes/admin/views/alternatives/alt-exp-page.php:348
 msgid "Matcher"
 msgstr "Matcher"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:324
+#: includes/admin/views/alternatives/alt-exp-page.php:353
 msgid "whose ID is"
 msgstr "cuyo ID es"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:326
+#: includes/admin/views/alternatives/alt-exp-page.php:355
 msgid "that matches the CSS Selector rule"
 msgstr "que coincide con la regla de selección CSS"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:328
+#: includes/admin/views/alternatives/alt-exp-page.php:357
 msgid "that contains the text"
 msgstr "que contenga el texto"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:332
+#: includes/admin/views/alternatives/alt-exp-page.php:361
 msgid "A visitor clicks on an element %1$s %2$s"
 msgstr "Un visitante hace click en un elemento %1$s%2$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:346
+#: includes/admin/views/alternatives/alt-exp-page.php:375
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:73
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:53
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:59
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:68
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:70
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:58
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:57
-#: includes/utils/admin-table.php:256
+#: includes/utils/admin-table.php:316
 msgid "Save"
 msgstr "Guardar"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:352
+#: includes/admin/views/alternatives/alt-exp-page.php:381
 msgid "Benefit - %1$s%2$s"
 msgstr "Beneficio - %2$s%1$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:357
-msgid "New Goal"
-msgstr "Nuevo Objetivo"
+#: includes/admin/views/alternatives/alt-exp-page.php:386
+msgid "Unnamed Goal"
+msgstr "Sin nombre"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:358
+#: includes/admin/views/alternatives/alt-exp-page.php:387
 msgid "[Main Goal]"
 msgstr "[Objetivo Principal]"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:360
+#: includes/admin/views/alternatives/alt-exp-page.php:389
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:233
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:104
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:148
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:165
@@ -860,39 +929,43 @@ msgstr "[Objetivo Principal]"
 msgid "Rename"
 msgstr "Cambiar nombre"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:410
+#: includes/admin/views/alternatives/alt-exp-page.php:400
+msgid "Add Additional Goal"
+msgstr "Añadir Nuevo Objetivo"
+
+#: includes/admin/views/alternatives/alt-exp-page.php:442
 msgid "A visitor accesses %2$s the page %1$s"
 msgstr "Un visitante accede %2$s a la página %1$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:414
+#: includes/admin/views/alternatives/alt-exp-page.php:446
 msgid "A visitor accesses page %1$s%2$s"
 msgstr "Un visitante accede a la página %1$s%2$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:421
+#: includes/admin/views/alternatives/alt-exp-page.php:453
 msgid "A visitor accesses %2$s the post %1$s"
 msgstr "Un visitante accede %2$s a la entrada %1$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:425
+#: includes/admin/views/alternatives/alt-exp-page.php:457
 msgid "A visitor accesses post %1$s%2$s"
 msgstr "Un visitante accede a la entrada %1$s%2$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:432
+#: includes/admin/views/alternatives/alt-exp-page.php:464
 msgid "A visitor submits %2$s the Contact Form 7 %1$s"
 msgstr "Un visitante envía %2$s el formulario Contact Form 7 %1$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:436
+#: includes/admin/views/alternatives/alt-exp-page.php:468
 msgid "A visitor submits the Contact Form 7 %1$s%2$s"
 msgstr "Un visitante envía el formulario Contact Form 7 %1$s%2$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:443
+#: includes/admin/views/alternatives/alt-exp-page.php:475
 msgid "A visitor submits %2$s the Gravity Form %1$s"
 msgstr "Un visitante envía %2$s el formulario Gravity Form %1$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:447
+#: includes/admin/views/alternatives/alt-exp-page.php:479
 msgid "A visitor submits the Gravity Form %1$s%2$s"
 msgstr "Un visitante envía el formulario Gravity Form %1$s%2$s"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:469
+#: includes/admin/views/alternatives/alt-exp-page.php:501
 msgid ""
 "A conversion is counted for this goal whenever any of the following actions "
 "occur:"
@@ -900,45 +973,47 @@ msgstr ""
 "Se contabilizará una conversión cuando ocurra alguna de las siguientes "
 "acciones:"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:472
-msgid "You may add one or more actions using the links below."
-msgstr ""
-"Puede añadir una o más acciones usando los enlaces de la parte inferior."
+#: includes/admin/views/alternatives/alt-exp-page.php:504
+msgid ""
+"<strong>Add one or more conversion actions</strong> using the links below."
+msgstr "Añade una o más acciones usando los enlaces de la parte inferior."
 
-#: includes/admin/views/alternatives/alt-exp-page.php:478
-msgid "New Actions"
-msgstr "Nuevas Acciones"
+#: includes/admin/views/alternatives/alt-exp-page.php:510
+msgid "Available Conversion Actions"
+msgstr "Acciones de conversión"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:479
+#: includes/admin/views/alternatives/alt-exp-page.php:511
 msgid "(Hover over each action for help)"
-msgstr "(Ponga el cursor encima para obtener ayuda)"
+msgstr "(Pon el cursor encima para obtener ayuda)"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:482
-#: includes/admin/views/dashboard-page.php:199
-#: includes/admin/views/experiments-page.php:556
+#: includes/admin/views/alternatives/alt-exp-page.php:514
+#: includes/admin/views/dashboard-page.php:246
+#: includes/admin/views/experiments-page.php:553
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:56
 msgid "Post"
 msgstr "Entrada"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:483
+#: includes/admin/views/alternatives/alt-exp-page.php:515
 msgid "A visitor accesses a post in your WordPress site"
 msgstr "Un visitante accede a una entrada de WordPress"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:488
-#: includes/admin/views/dashboard-page.php:192
-#: includes/admin/views/dashboard-page.php:195
-#: includes/admin/views/experiments-page.php:553
+#: includes/admin/views/alternatives/alt-exp-page.php:520
+#: includes/admin/views/dashboard-page.php:239
+#: includes/admin/views/dashboard-page.php:242
+#: includes/admin/views/experiments-page.php:550
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:49
 msgid "Page"
 msgstr "Página"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:489
+#: includes/admin/views/alternatives/alt-exp-page.php:521
 msgid "A visitor accesses a page in your WordPress site"
 msgstr "Un visitante accede a una página de WordPress"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:494
+#: includes/admin/views/alternatives/alt-exp-page.php:526
 msgid "External Page"
 msgstr "Página externa"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:495
+#: includes/admin/views/alternatives/alt-exp-page.php:527
 msgid ""
 "A visitor tries to access an external page (either by clicking a link or by "
 "sutbmitting a form) specified using its URL"
@@ -946,11 +1021,11 @@ msgstr ""
 "Un visitante intenta acceder a una página externa (ya sea haciendo clic a un "
 "enlace o enviando un formulario), la cual se especifica a través de su URL"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:500
+#: includes/admin/views/alternatives/alt-exp-page.php:532
 msgid "Click"
 msgstr "Click"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:501
+#: includes/admin/views/alternatives/alt-exp-page.php:533
 msgid ""
 "A visitor clicks on an element in your site (for instance, a button, a link, "
 "or an image)"
@@ -958,24 +1033,24 @@ msgstr ""
 "Un visitante hace click en un elemento de su web (por ejemplo, un botón, un "
 "enlace o una imagen)"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:506
-#: includes/admin/views/alternatives/alt-exp-page.php:507
+#: includes/admin/views/alternatives/alt-exp-page.php:538
+#: includes/admin/views/alternatives/alt-exp-page.php:539
 msgid "Form Submit"
 msgstr "Envío de Formulario"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:509
+#: includes/admin/views/alternatives/alt-exp-page.php:541
 msgid "Contact Form 7"
 msgstr "Contact Form 7"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:510
+#: includes/admin/views/alternatives/alt-exp-page.php:542
 msgid "Gravity Form"
 msgstr "Gravity Form"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:516
+#: includes/admin/views/alternatives/alt-exp-page.php:548
 msgid "A visitor successfully submits a «Contact Form 7» form"
 msgstr "Un visitante envía correctamente un formulario «Contact Form 7»"
 
-#: includes/admin/views/alternatives/alt-exp-page.php:523
+#: includes/admin/views/alternatives/alt-exp-page.php:555
 msgid "A visitor successfully submits a «Gravity Forms» form"
 msgstr "Un visitante envía correctamente un formulario «Gravity Forms»"
 
@@ -989,17 +1064,18 @@ msgstr "alternativas"
 
 #: includes/admin/views/alternatives/alternatives-table.php:69
 msgid "Set a descriptive name for the alternative."
-msgstr "Use un nombre descriptivo para la alternativa."
+msgstr "Usa un nombre descriptivo para la alternativa."
 
 #: includes/admin/views/alternatives/alternatives-table.php:80
 msgid "New Alternative Creation"
 msgstr "Creación de nueva alternativa"
 
 #: includes/admin/views/alternatives/alternatives-table.php:96
+#: includes/admin/views/alternatives/cpt-alt-exp-creation-page.php:30
 #: includes/admin/views/alternatives/css-alt-exp-creation-page.php:30
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:166
 #: includes/admin/views/alternatives/headline-alt-exp-creation-page.php:30
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:254
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:260
 #: includes/admin/views/alternatives/menu-alt-exp-creation-page.php:30
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:117
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:123
@@ -1012,6 +1088,7 @@ msgstr "Creación de nueva alternativa"
 msgid "Create"
 msgstr "Crear"
 
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:45
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:39
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:37
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:45
@@ -1021,6 +1098,7 @@ msgstr "Crear"
 msgid "General"
 msgstr "General"
 
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:46
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:40
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:38
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:46
@@ -1028,7 +1106,7 @@ msgstr "General"
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:49
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:109
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:40
-#: includes/admin/views/dashboard-page.php:249
+#: includes/admin/views/dashboard-page.php:296
 #: includes/admin/views/progress/alt-exp-progress-page.php:705
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:156
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:167
@@ -1036,9 +1114,9 @@ msgstr "General"
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:229
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:240
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:251
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:275
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:289
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:303
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:293
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:304
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:315
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:182
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:193
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:204
@@ -1048,6 +1126,7 @@ msgstr "General"
 msgid "Alternatives"
 msgstr "Alternativas"
 
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:47
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:41
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:47
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:45
@@ -1056,6 +1135,15 @@ msgstr "Alternativas"
 msgid "Goals"
 msgstr "Objetivos"
 
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:77
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:266
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:63
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:76
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:202
+msgid "Original Post"
+msgstr "Entrada Original"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:86
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:64
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:72
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:79
@@ -1067,6 +1155,16 @@ msgstr "Objetivos"
 msgid "Description"
 msgstr "Descripción"
 
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:90
+#: includes/admin/views/experiments-page.php:556
+msgid "Custom Post Type"
+msgstr "Tipo de Entrada Personalizada"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:95
+msgid "Original Custom Post"
+msgstr "Entrada personalizada original"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:100
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:68
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:81
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:88
@@ -1078,18 +1176,72 @@ msgstr "Descripción"
 msgid "Finalization Mode"
 msgstr "Modo de finalización"
 
-#: includes/admin/views/alternatives/css-alt-exp-edition-page.php:81
-msgid "New Alternative CSS"
-msgstr "Nueva alternativa CSS"
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:153
+msgid "This is the %1$s for which alternatives will be created."
+msgstr "Se crearán alternativas de %1$s."
 
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:192
+msgid "based on an existing custom post"
+msgstr "basada en una entrada personalizada existente"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:196
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:131
+msgid "New Alternative <small>(empty)</small>"
+msgstr "Nueva Alternativa <small>(vacía)</small>"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:200
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:135
+msgid "New Alternative <small>(%s)</small>"
+msgstr "Nueva alternativa <small>(%s)</small>"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:239
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:110
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:171
 msgid "Save Experiment & Edit Content"
 msgstr "Guardar experimento & Editar contenido"
 
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:258
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:192
+msgid ""
+"Please, <b>add one or more</b> alternatives to the Original Post using the "
+"buttons above."
+msgstr ""
+"Por favor, <b>añade una o más</b> alternativas a la entrada original usando "
+"los botones superiores."
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:267
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:206
+msgid ""
+"The original post can be considered an alternative that has to be tested."
+msgstr ""
+"La entrada original puede ser considerada como una de las alternativas a "
+"evaluar."
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:278
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:217
+msgid "Rename Alternative"
+msgstr "Renombrar alternativa"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:287
+#: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:205
+#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:226
+msgid "Source"
+msgstr "Fuente"
+
+#: includes/admin/views/alternatives/cpt-alt-exp-edition-page.php:293
+msgid ""
+"The selected post's content will be duplicated and used by this alternative."
+msgstr ""
+"Los contenidos de la entrada seleccionada se duplicarán para crear esta "
+"nueva alternativa."
+
+#: includes/admin/views/alternatives/css-alt-exp-edition-page.php:81
+msgid "New Alternative CSS"
+msgstr "Nueva alternativa CSS"
+
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:129
 msgid "Please, <b>add one or more</b> CSS fragments as alternatives."
-msgstr "Por favor, <b>añada uno o más</b> fragmentos CSS como alternativa."
+msgstr "Por favor, <b>añade uno o más</b> fragmentos CSS como alternativa."
 
 #: includes/admin/views/alternatives/css-alt-exp-edition-page.php:137
 msgid "Original: Default CSS without any additions"
@@ -1115,12 +1267,6 @@ msgstr "Guardar experimento & Editar CSS"
 msgid "Rename CSS Alternative"
 msgstr "Renombrar alternativa CSS"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:63
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:76
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:202
-msgid "Original Post"
-msgstr "Entrada Original"
-
 #: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:97
 msgid ""
 "You will create alternative headlines (title, featured image, and excerpt) "
@@ -1133,55 +1279,55 @@ msgstr ""
 msgid "New Headline"
 msgstr "Nuevo Titular"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:160
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:166
 msgid "Headlines"
 msgstr "Titulares"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:198
-#: includes/admin/views/experiments-page.php:410
-#: includes/admin/views/experiments-page.php:416
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:204
+#: includes/admin/views/experiments-page.php:407
+#: includes/admin/views/experiments-page.php:413
 #: includes/admin/views/progress/alt-exp-progress-page.php:579
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:119
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:117
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:131
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:157
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:117
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:161
 msgid "Edit"
 msgstr "Editar"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:217
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:223
 msgid "Please, <b>add one or more</b> title alternatives."
-msgstr "Por favor, <b>añada uno o más</b> títulos alternativos."
+msgstr "Por favor, <b>añade uno o más</b> títulos alternativos."
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:226
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:232
 msgid "Original Headline"
 msgstr "Titular Original"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:227
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:233
 msgid ""
 "Your current Headline, defined as a combination of a title, a featured "
 "image, and an excerpt."
 msgstr ""
-"Su titular actual, definido como la combinación de título, imagen desatacada "
+"El titular actual, definido como la combinación de título, imagen desatacada "
 "y entradilla."
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:250
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:256
 msgid "New Alternative Headline"
 msgstr "Nuevo titular alternativo"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:269
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:275
 msgid "Edit Headline"
 msgstr "Editar Titular"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:311
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:317
 msgid "Change"
 msgstr "Cambiar"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:316
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:322
 msgid "Title"
 msgstr "Título"
 
-#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:318
+#: includes/admin/views/alternatives/headline-alt-exp-edition-page.php:324
 msgid "Original Excerpt"
 msgstr "Entradilla Original"
 
@@ -1203,7 +1349,7 @@ msgstr "Guardar experimento & Editar Menús"
 
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:173
 msgid "Please, <b>add one or more</b> alternative menus."
-msgstr "Por favor, <b>añada uno o más</b> menús alternativos."
+msgstr "Por favor, <b>añade uno o más</b> menús alternativos."
 
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:181
 msgid "Original: Default Menu Set"
@@ -1211,18 +1357,13 @@ msgstr "Original: Menú por defecto"
 
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:182
 msgid "The original version of this experiment uses your current menu."
-msgstr "La versión original de este experimento utiliza su menú actual."
-
-#: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:205
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:226
-msgid "Source"
-msgstr "Fuente"
+msgstr "La versión original de este experimento utiliza tu menú actual."
 
 #: includes/admin/views/alternatives/menu-alt-exp-edition-page.php:217
 msgid ""
 "The selected menu's items will be duplicated and used by this alternative."
 msgstr ""
-"Los elementos del menú seleccionado serán duplicados para y usados por esta "
+"Los elementos del menú seleccionado serán duplicados y usados por esta "
 "alternativa."
 
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:74
@@ -1246,28 +1387,12 @@ msgstr "basada en una página existente"
 msgid "based on an existing post"
 msgstr "basada en una entrada existente"
 
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:131
-msgid "New Alternative <small>(empty)</small>"
-msgstr "Nueva Alternativa <small>(vacía)</small>"
-
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:135
-msgid "New Alternative <small>(%s)</small>"
-msgstr "Nueva alternativa <small>(%s)</small>"
-
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:190
 msgid ""
 "Please, <b>add one or more</b> alternatives to the Original Page using the "
 "buttons above."
 msgstr ""
-"Por favor, <b>añada una o más</b> alternativas a la página original usando "
-"los botones superiores."
-
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:192
-msgid ""
-"Please, <b>add one or more</b> alternatives to the Original Post using the "
-"buttons above."
-msgstr ""
-"Por favor, <b>añada una o más</b> alternativas a la entrada original usando "
+"Por favor, <b>añade una o más</b> alternativas a la página original usando "
 "los botones superiores."
 
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:204
@@ -1276,17 +1401,6 @@ msgid ""
 msgstr ""
 "La página original puede ser considerada como una de las alternativas a "
 "evaluar."
-
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:206
-msgid ""
-"The original post can be considered an alternative that has to be tested."
-msgstr ""
-"La entrada original puede ser considerada como una de las alternativas a "
-"evaluar."
-
-#: includes/admin/views/alternatives/post-alt-exp-edition-page.php:217
-msgid "Rename Alternative"
-msgstr "Renombrar alternativa"
 
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:235
 msgid ""
@@ -1321,7 +1435,7 @@ msgstr "Guardar experimento & Editar widgets"
 
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:134
 msgid "Please, <b>add one or more</b> widget sets as alternatives."
-msgstr "Por favor, <b>añada uno o más</b> conjuntos alternativos de widgets."
+msgstr "Por favor, <b>añade uno o más</b> conjuntos alternativos de widgets."
 
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:142
 msgid "Original: Default Widget Set"
@@ -1332,27 +1446,26 @@ msgid ""
 "The original version of this experiment uses your current set of widgets."
 msgstr ""
 "La versión original de este experimento utiliza el conjunto de widgets que "
-"tenga definido en este momento."
+"tengas definido en este momento."
 
 #: includes/admin/views/content/css-edit.php:80
 msgid "Edit CSS"
 msgstr "Editar CSS"
 
-#: includes/admin/views/content/css-edit.php:157
+#: includes/admin/views/content/css-edit.php:156
 msgid "Select a page or post for preview"
-msgstr "Seleccione una página o entrada para previsualizar"
+msgstr "Selecciona una página o entrada para previsualizar"
 
 #: includes/admin/views/content/heatmaps.php:83
-#: includes/admin/views/errors/error-page.php:35
-#: includes/utils/admin-ajax-page.php:200
+#: includes/utils/admin-ajax-page.php:269
 msgid "Funny image to graphically notify of an error."
-msgstr "Graciosa imagen para notificar de un error."
+msgstr "Imagen para notificar de un error."
 
-#: includes/admin/views/content/heatmaps.php:138
+#: includes/admin/views/content/heatmaps.php:139
 msgid "Building heatmap...<br>This might take a while. Please, wait."
-msgstr "Generando heatmap...<br>Por favor, espere durante unos instantes."
+msgstr "Generando heatmap...<br>Por favor, espera unos instantes."
 
-#: includes/admin/views/content/heatmaps.php:147
+#: includes/admin/views/content/heatmaps.php:148
 msgid ""
 "Apparently, there's a script that's trying to overwrite the location in the "
 "address bar and take you somewhere else. Please, in order to see the "
@@ -1360,216 +1473,219 @@ msgid ""
 "and don't leave."
 msgstr ""
 "Aparentemente, hay un script que está intentando modificar la URL de la "
-"página actual para llevarle a otro sitio. Para la correcta visualización de "
-"los Heatmaps y Clickmaps de este experimento, asegúrese que permanece en la "
-"página actual."
+"página actual para redireccionarte a otro sitio. Para la correcta "
+"visualización de los Heatmaps y Clickmaps de este experimento, asegúrate que "
+"permaneces en la página actual."
 
-#: includes/admin/views/content/heatmaps.php:161
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:123
+#: includes/admin/views/content/heatmaps.php:162
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:149
 msgid "View Heatmap"
 msgstr "Mostrar Heatmap"
 
-#: includes/admin/views/content/heatmaps.php:162
-#: includes/admin/views/content/heatmaps.php:172
+#: includes/admin/views/content/heatmaps.php:163
+#: includes/admin/views/content/heatmaps.php:173
 msgid "Smartphone"
 msgstr "Smartphone"
 
-#: includes/admin/views/content/heatmaps.php:163
-#: includes/admin/views/content/heatmaps.php:239
+#: includes/admin/views/content/heatmaps.php:164
+#: includes/admin/views/content/heatmaps.php:241
 msgid "Smartphone (no Heatmap available)"
 msgstr "Smartphone (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:164
-#: includes/admin/views/content/heatmaps.php:174
+#: includes/admin/views/content/heatmaps.php:165
+#: includes/admin/views/content/heatmaps.php:175
 msgid "Tablet"
 msgstr "Tablet"
 
-#: includes/admin/views/content/heatmaps.php:165
-#: includes/admin/views/content/heatmaps.php:241
+#: includes/admin/views/content/heatmaps.php:166
+#: includes/admin/views/content/heatmaps.php:243
 msgid "Tablet (no Heatmap available)"
 msgstr "Tablet (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:166
-#: includes/admin/views/content/heatmaps.php:176
+#: includes/admin/views/content/heatmaps.php:167
+#: includes/admin/views/content/heatmaps.php:177
 msgid "Laptop Monitor"
 msgstr "Pantalla de portátil"
 
-#: includes/admin/views/content/heatmaps.php:167
-#: includes/admin/views/content/heatmaps.php:243
+#: includes/admin/views/content/heatmaps.php:168
+#: includes/admin/views/content/heatmaps.php:245
 msgid "Laptop Monitor (no Heatmap available)"
 msgstr "Pantalla de portátil (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:168
-#: includes/admin/views/content/heatmaps.php:178
+#: includes/admin/views/content/heatmaps.php:169
+#: includes/admin/views/content/heatmaps.php:179
 msgid "Regular Desktop Monitor"
 msgstr "Pantalla normal"
 
-#: includes/admin/views/content/heatmaps.php:169
-#: includes/admin/views/content/heatmaps.php:245
+#: includes/admin/views/content/heatmaps.php:170
+#: includes/admin/views/content/heatmaps.php:247
 msgid "Regular Desktop Monitor (no Heatmap available)"
 msgstr "Pantalla normal (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:171
-#: includes/admin/views/content/heatmaps.php:263
+#: includes/admin/views/content/heatmaps.php:172
+#: includes/admin/views/content/heatmaps.php:265
 msgid "View Clickmap"
 msgstr "Mostrar Clickmap"
 
-#: includes/admin/views/content/heatmaps.php:173
+#: includes/admin/views/content/heatmaps.php:174
 msgid "Smartphone (no Clickmap available)"
 msgstr "Smartphone (Heatmaps no disponibles)"
 
-#: includes/admin/views/content/heatmaps.php:175
+#: includes/admin/views/content/heatmaps.php:176
 msgid "Tablet (no Clickmap available)"
 msgstr "Tablet (Heatmaps no disponibles)"
 
-#: includes/admin/views/content/heatmaps.php:177
+#: includes/admin/views/content/heatmaps.php:178
 msgid "Laptop Monitor (no Clickmap available)"
 msgstr "Pantalla de portátil (Heatmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:179
+#: includes/admin/views/content/heatmaps.php:180
 msgid "Regular Desktop Monitor (no Clickmap available)"
 msgstr "Pantalla normal (Clickmap no disponible)"
 
-#: includes/admin/views/content/heatmaps.php:187
+#: includes/admin/views/content/heatmaps.php:188
 msgid "Clickmap built using data from only one page view"
 msgid_plural "Clickmap built using data from %s page views"
 msgstr[0] "Clickmap basado en los datos de una única visita a página"
 msgstr[1] "Clickmap basado en los datos de %s visitas a página"
 
-#: includes/admin/views/content/heatmaps.php:193
+#: includes/admin/views/content/heatmaps.php:194
 msgid "Heatmap built using data from only one page view"
 msgid_plural "Heatmap built using data from %s page views"
 msgstr[0] "Heatmap basado en los datos de una única visita a página"
 msgstr[1] "Heatmap basado en los datos de %s visitas a página"
 
-#: includes/admin/views/content/heatmaps.php:225
+#: includes/admin/views/content/heatmaps.php:226
 msgid "Nelio AB Testing &mdash; Heatmaps Viewer"
 msgstr "Nelio AB Testing &mdash; Visor de Heatmaps"
 
-#: includes/admin/views/content/heatmaps.php:249
+#: includes/admin/views/content/heatmaps.php:251
 msgid "Heatmap built using data from %s page views"
 msgstr "Heatmap basado en los datos de %s visitas a página"
 
-#: includes/admin/views/content/heatmaps.php:255
+#: includes/admin/views/content/heatmaps.php:257
 msgid "Back"
 msgstr "Atrás"
 
-#: includes/admin/views/content/heatmaps.php:264
+#: includes/admin/views/content/heatmaps.php:266
 msgid "List of experiments"
 msgstr "Lista de experimentos"
 
-#: includes/admin/views/content/heatmaps.php:272
+#: includes/admin/views/content/heatmaps.php:274
 msgid "Please, wait a moment<br /> while we are retrieving the heatmaps..."
-msgstr "Por favor, espere un momento<br />mientras obtenemos los heatmaps..."
+msgstr "Por favor, espera un momento<br />mientras obtenemos los heatmaps..."
 
-#: includes/admin/views/dashboard-page.php:30
+#: includes/admin/views/dashboard-page.php:31
 msgid "New Experiment"
 msgstr "Nuevo experimento"
 
-#: includes/admin/views/dashboard-page.php:51
-#: includes/admin/views/experiments-page.php:51
-msgid "Happy smile."
-msgstr "Sonrisa feliz."
+#: includes/admin/views/dashboard-page.php:53
+msgid "Dashboard Icon"
+msgstr "Icono del Escritorio"
 
-#: includes/admin/views/dashboard-page.php:55
-msgid ""
-"Hi! You're now in Nelio's Dashboard, where you'll find all relevant "
-"information about your running experiments. Right now, however, there are "
-"none...<br><a href=\"%s\">Create one now!</a>"
+#: includes/admin/views/dashboard-page.php:57
+msgid "Here you'll find relevant information about your running experiments."
 msgstr ""
-"¡Hola! Este es el Escritorio de Nelio. Aquí encontrará toda la información "
-"relevante acerca de los experimentos en ejecución. Sin embargo, parece que "
-"todavía no hay ninguno...<br><a href=\"%s\">¡Cree uno ahora!</a>"
+"Aquí encontrarás toda la información relevante sobre tus experimentos en "
+"ejecución."
 
-#: includes/admin/views/dashboard-page.php:61
+#: includes/admin/views/dashboard-page.php:58
+msgid "Create One Now!"
+msgstr "¡Crear uno ahora!"
+
+#: includes/admin/views/dashboard-page.php:64
 msgid "Running Experiments"
 msgstr "Experimentos en ejecución"
 
-#: includes/admin/views/dashboard-page.php:66
+#: includes/admin/views/dashboard-page.php:69
 msgid "Account Usage"
 msgstr "Información de Uso"
 
-#: includes/admin/views/dashboard-page.php:74
+#: includes/admin/views/dashboard-page.php:77
 msgid "QUOTA USED"
 msgstr "CUOTA USADA"
 
-#: includes/admin/views/dashboard-page.php:190
-#: includes/admin/views/experiments-page.php:551
+#: includes/admin/views/dashboard-page.php:122
+msgid "Latest News"
+msgstr "Últimas Noticias"
+
+#: includes/admin/views/dashboard-page.php:237
+#: includes/admin/views/experiments-page.php:548
 msgid "Landing Page"
 msgstr "Página Principal"
 
-#: includes/admin/views/dashboard-page.php:202
+#: includes/admin/views/dashboard-page.php:249
 #: includes/admin/views/experiments-page.php:559
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:63
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:68
 msgid "Headline"
 msgstr "Titular"
 
-#: includes/admin/views/dashboard-page.php:205
+#: includes/admin/views/dashboard-page.php:252
 #: includes/admin/views/experiments-page.php:562
 msgid "Theme"
 msgstr "Tema"
 
-#: includes/admin/views/dashboard-page.php:208
+#: includes/admin/views/dashboard-page.php:255
 #: includes/admin/views/experiments-page.php:565
 msgid "CSS"
 msgstr "CSS"
 
-#: includes/admin/views/dashboard-page.php:211
+#: includes/admin/views/dashboard-page.php:258
 #: includes/admin/views/experiments-page.php:568
 msgid "Heatmap"
 msgstr "Heatmap"
 
-#: includes/admin/views/dashboard-page.php:214
+#: includes/admin/views/dashboard-page.php:261
 #: includes/admin/views/experiments-page.php:571
 msgid "Widget"
 msgstr "Widget"
 
-#: includes/admin/views/dashboard-page.php:217
+#: includes/admin/views/dashboard-page.php:264
 #: includes/admin/views/experiments-page.php:574
 msgid "Menu"
 msgstr "Menú"
 
-#: includes/admin/views/dashboard-page.php:245
+#: includes/admin/views/dashboard-page.php:292
 #: includes/admin/views/progress/alt-exp-progress-page.php:1019
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:180
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:253
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:305
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:317
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:206
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:231
 msgid "Page Views"
 msgstr "Visitas a página"
 
-#: includes/admin/views/dashboard-page.php:261
+#: includes/admin/views/dashboard-page.php:308
 msgid "Original Version's Conversion Rate"
 msgstr "Conversiones de la original"
 
-#: includes/admin/views/dashboard-page.php:271
+#: includes/admin/views/dashboard-page.php:318
 msgid "Best Alternative's Conversion Rate"
 msgstr "Conversiones de la mejor alternativa"
 
-#: includes/admin/views/dashboard-page.php:322
+#: includes/admin/views/dashboard-page.php:369
 #: includes/admin/views/progress/alt-exp-progress-page.php:1020
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:181
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:254
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:306
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:318
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:207
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:232
 msgid "Conversions"
 msgstr "Conversiones"
 
-#: includes/admin/views/dashboard-page.php:337
+#: includes/admin/views/dashboard-page.php:384
 msgid "Views on Phone"
 msgstr "Visualizaciones en Móvil"
 
-#: includes/admin/views/dashboard-page.php:341
+#: includes/admin/views/dashboard-page.php:388
 msgid "Views on Tablet"
 msgstr "Visualizaciones en Tablet"
 
-#: includes/admin/views/dashboard-page.php:347
+#: includes/admin/views/dashboard-page.php:394
 msgid "Views on Desktop"
 msgstr "Visualizaciones en Escritorio"
 
-#: includes/admin/views/dashboard-page.php:351
+#: includes/admin/views/dashboard-page.php:398
 msgid "Views on Large Screens"
 msgstr "Visualizaciones en Pantallas Grandes"
 
@@ -1584,24 +1700,28 @@ msgid ""
 "service, you may want to consider subscribing to one of our packages again."
 msgstr ""
 "La cuenta de usuario ha sido desactivada. En general, esto es debido a que "
-"ha decidido finalizar su suscripción a nuestro servicio Nelio A/B Testing. "
-"Si desea seguir usando el servicio, considere suscribirse de nuevo a alguno "
-"de nuestros planes."
+"has decidido finalizar tu suscripción a nuestro servicio Nelio A/B Testing. "
+"Si deseas seguir usando el servicio, suscríbete de nuevo a alguno de "
+"nuestros planes."
 
 #: includes/admin/views/errors/deactivated-user-page.php:42
 msgid "Please, go to the settings page and check your subscription details."
 msgstr ""
-"Por favor, acceda a la página de configuración y compruebe los detalles de "
-"su sucripción."
+"Por favor, accede a la página de configuración y comprueba los detalles de "
+"tu suscripción."
 
 #: includes/admin/views/errors/deactivated-user-page.php:47
 #: includes/admin/views/errors/non-active-site-page.php:47
 msgid "Go to My Account"
 msgstr "Ir a Mi Cuenta"
 
-#: includes/admin/views/errors/error-page.php:27
-msgid "Error"
-msgstr "Error"
+#: includes/admin/views/errors/error-page.php:30
+msgid "Something happened..."
+msgstr "Algo pasó..."
+
+#: includes/admin/views/errors/error-page.php:38
+msgid "Error Notice"
+msgstr "Notificación de Error"
 
 #: includes/admin/views/errors/invalid-config-page.php:29
 msgid "Welcome!"
@@ -1613,8 +1733,8 @@ msgid ""
 "Software</i>. We are very excited you chose our solution for optimizing your "
 "site."
 msgstr ""
-"Muchas gracias por instalar <b>Nelio A/B Testing</b>. Nos encanta que haya "
-"decidido usar nuestra solución para optimizar su site."
+"Muchas gracias por instalar <b>Nelio A/B Testing</b>. Nos encanta que hayas "
+"decidido usar nuestra solución para optimizar tu WordPress."
 
 #: includes/admin/views/errors/invalid-config-page.php:42
 msgid ""
@@ -1622,13 +1742,13 @@ msgid ""
 "the plugin properly. In order to do so, just click the button below to "
 "access the plugin's settings page and fill in the required fields. These "
 "include your <i>e-mail</i> and your <i>Product Registration Number</i>. "
-"Finally, do not forget to register this site to your account!"
+"Finally, do not forget to activate the site!"
 msgstr ""
-"Para poder empezar a usar el servicio, asegúrese que ha configurado el "
-"plugin correctamente. Para ello, haga click en el botón que encontrará al "
-"final de la página para acceder a la configuración del plugin y rellene los "
-"campos necesarios. Éstos incluyen su <i>e-mail</i> y su <i>número de "
-"registro</i>. ¡Y, por cierto, no olvide registrar este site a su cuenta!"
+"Para poder empezar a usar el servicio, comprueba que hayas configurado el "
+"plugin correctamente. Para ello, haz click en el botón que encontrarás al "
+"final de la página para acceder a la configuración del plugin y rellena los "
+"campos necesarios. Éstos incluyen tu <i>e-mail</i> y tu <i>número de "
+"registro</i>. ¡Y, por cierto, no olvides activar este sitio a tu cuenta!"
 
 #: includes/admin/views/errors/invalid-config-page.php:46
 msgid ""
@@ -1637,40 +1757,47 @@ msgid ""
 "\"_blank\">check them out and choose the one that best fits you</a>! Keep in "
 "mind <b>all our plans come with a 14-day free trial period</b>."
 msgstr ""
-"Si, por un lado, aún no se ha suscrito a ninguno de nuestros planes, <a href="
-"\"http://nelioabtesting.com/subscription-plans/\" target=\"_blank\">écheles "
-"un vistazo y seleccione el que mejor se adapte a sus necesidades</a>. "
-"Además, no olvide que <b>todos nuestros planes incluyen un período de "
+"Si, por un lado, aún no te has suscrito a ninguno de nuestros planes, <a "
+"href=\"http://nelioabtesting.com/subscription-plans/\" target=\"_blank"
+"\">échales un vistazo y selecciona el que mejor se adapte a tus necesidades</"
+"a>. Además, no olvides que <b>todos nuestros planes incluyen un período de "
 "pruebas gratuito de dos semanas</b>."
 
 #: includes/admin/views/errors/invalid-config-page.php:50
 msgid "<b>Optimize your site based on real data</b>, not opinions!"
-msgstr "<b>¡Optimice su sitio basándose en datos reales</b>, no en opiniones!"
+msgstr "<b>¡Optimiza tu web basándote en datos reales</b>, no en opiniones!"
 
 #: includes/admin/views/errors/invalid-config-page.php:55
 msgid "Configure now"
 msgstr "Configurar ahora"
 
+#: includes/admin/views/errors/message-page.php:31
+msgid "Information"
+msgstr "Información"
+
+#: includes/admin/views/errors/message-page.php:40
+#: includes/admin/views/experiments-page.php:51
+msgid "Information Notice"
+msgstr "Notificación"
+
 #: includes/admin/views/errors/non-active-site-page.php:29
-msgid "This site is not registered"
-msgstr "Este site no está registrado"
+msgid "This site is not active"
+msgstr "El sitio no está activo."
 
 #: includes/admin/views/errors/non-active-site-page.php:38
 msgid ""
 "Appearently, your account information is properly configured, but this site "
-"has not been registered yet. In order to create, manage, and execute "
-"experiments, you have to register the site to your account."
+"has not been activated yet. In order to create, manage, and execute "
+"experiments, you have to activate the site in your account."
 msgstr ""
-"Parece que ha configurado correctamente su cuenta, pero aún no ha registrado "
-"este site. Para poder crear, gestionar y ejecutar experimentos debe "
-"registrar este site en su cuenta."
+"Parece que has configurado correctamente tu cuenta, pero aún no has activado "
+"este sitio web. Para poder crear, gestionar y ejecutar experimentos debes "
+"activarlo."
 
 #: includes/admin/views/errors/non-active-site-page.php:42
 msgid ""
-"Please, go to the settings page and make sure you register this site to your "
-"account."
-msgstr ""
-"Por favor, acceda a la configuración del plugin y asegúrese de registrarlo."
+"Please, go to the «My Account» page and make sure you activate this site."
+msgstr "Por favor, accede a la página de «Mi cuenta» y actívalo."
 
 #: includes/admin/views/experiments-page.php:32
 msgid "Add New"
@@ -1678,138 +1805,142 @@ msgstr "Añadir nuevo"
 
 #: includes/admin/views/experiments-page.php:55
 msgid ""
-"Hey! It looks like you have not defined any experiment...<br /><a href=\"%s"
-"\">Create one now</a>!"
+"Find and manage all your experiments from this page.<br>Click the following "
+"button and create your first experiment!"
 msgstr ""
-"¡Ey! Es hora de optimizar su site, ¿no?<br /><a href=\"%s\">¡Cree un "
-"experimento!</a>"
+"Encuentra y gestiona todos tus experimentos desde aquí.<br>¡Pulsa el "
+"siguiente botón y crea tu primer experimento!"
 
-#: includes/admin/views/experiments-page.php:93
+#: includes/admin/views/experiments-page.php:56
+msgid "Create Experiment"
+msgstr "Crear Experimento"
+
+#: includes/admin/views/experiments-page.php:95
 msgid "Start Experiment"
 msgstr "Iniciar Experimento"
 
-#: includes/admin/views/experiments-page.php:95
+#: includes/admin/views/experiments-page.php:97
 msgid ""
 "You are about to start an experiment. Once the experiment has started, you "
 "cannot edit it. Are you sure you want to start the experiment?"
 msgstr ""
-"Está a punto de iniciar un experimento. Una vez el experimento haya "
-"empezado, no puede, en principio, editarlo. ¿Quiere iniciar el experimento?"
+"Estás a punto de iniciar un experimento. Una vez el experimento haya "
+"empezado, no podrás editarlo. ¿Quieres iniciar el experimento?"
 
-#: includes/admin/views/experiments-page.php:99
-#: includes/admin/views/experiments-page.php:417
-#: includes/admin/views/experiments-page.php:457
+#: includes/admin/views/experiments-page.php:101
+#: includes/admin/views/experiments-page.php:414
+#: includes/admin/views/experiments-page.php:454
 msgid "Start"
 msgstr "Iniciar"
 
-#: includes/admin/views/experiments-page.php:103
+#: includes/admin/views/experiments-page.php:105
 #: includes/admin/views/progress/alt-exp-progress-page.php:590
 msgid "Stop Experiment"
 msgstr "Detener Experimento"
 
-#: includes/admin/views/experiments-page.php:105
+#: includes/admin/views/experiments-page.php:107
 #: includes/admin/views/progress/alt-exp-progress-page.php:592
 msgid ""
 "You are about to stop an experiment. Once the experiment is stopped, you "
 "cannot resume it. Are you sure you want to stop the experiment?"
 msgstr ""
-"Está a punto de detener un experimento. Una vez el experimento haya sido "
-"detenido no podrá volver a iniciarlo. ¿Quiere detener el experimento?"
+"Estás a punto de detener un experimento. Una vez el experimento haya sido "
+"detenido no podrás volver a iniciarlo. ¿Quieres detener el experimento?"
 
-#: includes/admin/views/experiments-page.php:109
-#: includes/admin/views/experiments-page.php:433
+#: includes/admin/views/experiments-page.php:111
+#: includes/admin/views/experiments-page.php:430
 #: includes/admin/views/progress/alt-exp-progress-page.php:597
 msgid "Stop"
 msgstr "Detener"
 
-#: includes/admin/views/experiments-page.php:132
+#: includes/admin/views/experiments-page.php:134
 msgid "All"
 msgstr "Todo"
 
-#: includes/admin/views/experiments-page.php:204
+#: includes/admin/views/experiments-page.php:201
 msgid "Experiment Duplication"
 msgstr "Duplicar Experimento"
 
-#: includes/admin/views/experiments-page.php:206
+#: includes/admin/views/experiments-page.php:203
 msgid "You are about to duplicate an experiment.<br>New name:"
-msgstr "Está a punto de duplicar un experimento.<br>Nuevo nombre:"
+msgstr "Estás a punto de duplicar un experimento.<br>Nuevo nombre:"
 
-#: includes/admin/views/experiments-page.php:228
-#: includes/admin/views/experiments-page.php:419
-#: includes/admin/views/experiments-page.php:427
-#: includes/admin/views/experiments-page.php:434
-#: includes/admin/views/experiments-page.php:440
-#: includes/admin/views/experiments-page.php:464
+#: includes/admin/views/experiments-page.php:225
+#: includes/admin/views/experiments-page.php:416
+#: includes/admin/views/experiments-page.php:424
+#: includes/admin/views/experiments-page.php:431
+#: includes/admin/views/experiments-page.php:437
+#: includes/admin/views/experiments-page.php:461
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: includes/admin/views/experiments-page.php:276
+#: includes/admin/views/experiments-page.php:273
 msgid "Experiment Scheduling"
 msgstr "Programar Experimento"
 
-#: includes/admin/views/experiments-page.php:278
+#: includes/admin/views/experiments-page.php:275
 msgid "Schedule experiment start for:"
 msgstr "Fecha para el inicio del experimento:"
 
-#: includes/admin/views/experiments-page.php:284
+#: includes/admin/views/experiments-page.php:281
 msgid "Please, specify a full date (month, day, and year) in the future."
-msgstr "Por favor, indique una fecha futura (día, mes y año)."
+msgstr "Por favor, indica una fecha futura (día, mes y año)."
 
-#: includes/admin/views/experiments-page.php:307
-#: includes/admin/views/experiments-page.php:418
-#: includes/admin/views/experiments-page.php:470
+#: includes/admin/views/experiments-page.php:304
+#: includes/admin/views/experiments-page.php:415
+#: includes/admin/views/experiments-page.php:467
 msgid "Schedule"
 msgstr "Programar"
 
-#: includes/admin/views/experiments-page.php:357
+#: includes/admin/views/experiments-page.php:354
 msgid "experiment"
 msgstr "experimento"
 
-#: includes/admin/views/experiments-page.php:358
+#: includes/admin/views/experiments-page.php:355
 msgid "experiments"
 msgstr "experimentos"
 
-#: includes/admin/views/experiments-page.php:369
+#: includes/admin/views/experiments-page.php:366
 msgid "Status"
 msgstr "Estado"
 
-#: includes/admin/views/experiments-page.php:370
+#: includes/admin/views/experiments-page.php:367
 msgid "Relevant Date"
 msgstr "Fecha Relevante"
 
-#: includes/admin/views/experiments-page.php:411
-#: includes/admin/views/experiments-page.php:420
-#: includes/models/experiment.php:445
+#: includes/admin/views/experiments-page.php:408
+#: includes/admin/views/experiments-page.php:417
+#: includes/models/experiment.php:1227
 msgid "Trash"
 msgstr "Papelera"
 
-#: includes/admin/views/experiments-page.php:424
+#: includes/admin/views/experiments-page.php:421
 msgid "Start Now"
 msgstr "Iniciar Ahora"
 
-#: includes/admin/views/experiments-page.php:425
+#: includes/admin/views/experiments-page.php:422
 msgid "Reschedule"
 msgstr "Re-programar"
 
-#: includes/admin/views/experiments-page.php:426
+#: includes/admin/views/experiments-page.php:423
 msgid "Cancel Schedule"
 msgstr "Cancelar Programación"
 
-#: includes/admin/views/experiments-page.php:432
-#: includes/admin/views/experiments-page.php:439
+#: includes/admin/views/experiments-page.php:429
+#: includes/admin/views/experiments-page.php:436
 msgid "View"
 msgstr "Ver"
 
-#: includes/admin/views/experiments-page.php:441
-#: includes/admin/views/experiments-page.php:448
+#: includes/admin/views/experiments-page.php:438
+#: includes/admin/views/experiments-page.php:445
 msgid "Delete Permanently"
 msgstr "Borrar permanentemente"
 
-#: includes/admin/views/experiments-page.php:447
+#: includes/admin/views/experiments-page.php:444
 msgid "Restore"
 msgstr "Restaurar"
 
-#: includes/admin/views/experiments-page.php:456
+#: includes/admin/views/experiments-page.php:453
 msgid ""
 "The experiment cannot be started because the tested element has not been "
 "published yet"
@@ -1817,98 +1948,29 @@ msgstr ""
 "El experimento no se puede iniciar porque el elemento bajo test aún no ha "
 "sido publicado"
 
-#: includes/admin/views/experiments-page.php:462
+#: includes/admin/views/experiments-page.php:459
 msgid "Feature only available in the Professional Plan"
 msgstr "Funcionalidad disponible únicamente en el Plan Profesional"
 
-#: includes/admin/views/experiments-page.php:468
+#: includes/admin/views/experiments-page.php:465
 msgid "Feature only available in the Enterprise Plan"
 msgstr "Funcionalidad disponible únicamente en el Plan Enterprise"
 
-#: includes/admin/views/experiments-page.php:491
+#: includes/admin/views/experiments-page.php:488
 msgid "Finalization Date"
 msgstr "Fecha de finalización"
 
-#: includes/admin/views/experiments-page.php:498
+#: includes/admin/views/experiments-page.php:495
 msgid "Start Date"
 msgstr "Fecha de inicio"
 
-#: includes/admin/views/experiments-page.php:505
+#: includes/admin/views/experiments-page.php:502
 msgid "Scheduled Date"
 msgstr "Fecha programada"
 
-#: includes/admin/views/experiments-page.php:512
+#: includes/admin/views/experiments-page.php:509
 msgid "Creation Date"
 msgstr "Fecha de creación"
-
-#: includes/admin/views/feedback-page.php:32
-msgid "Together, we'll build a better service!"
-msgstr "Juntos, crearemos un mejor servicio."
-
-#: includes/admin/views/feedback-page.php:35
-msgid ""
-"We're honoured you're using our service. We hope Nelio A/B Testing is "
-"meeting your expectations. Together, we'll get your site to the next level!"
-msgstr ""
-"Nos encanta que use nuestro servicio y esperamos que Nelio A/B Testing esté "
-"satisfaciendo sus necesidades. ¡Juntos llevaremos su site al siguiente nivel!"
-
-#: includes/admin/views/feedback-page.php:39
-msgid ""
-"If you're happy with our service, please help us <b>spread the word and let "
-"others know about your experience with Nelio A/B Testing</b>!"
-msgstr ""
-"Si está contento con el servicio, <b>¡difunda sus experiencias y facilite "
-"que otros conozcan Nelio A/B Testing!</b>"
-
-#: includes/admin/views/feedback-page.php:70
-msgid ""
-"And, please, don't forget to <a href=\"%s\" target=\"_blank\">rate the "
-"plugin in the WordPress Plugin Directory</a>!"
-msgstr ""
-"Y, por favor, no olvide <a href=\"%s\" target=\"_blank\">puntuar nuestro "
-"plugin en el directorio oficial de plugins para WordPress</a>."
-
-#: includes/admin/views/feedback-page.php:94
-msgid "Your opinion matters!"
-msgstr "¡Su opinión es importante!"
-
-#: includes/admin/views/feedback-page.php:97
-msgid ""
-"Would you like to request a new feature? Do you have any doubt using our "
-"service? Have you encountered any problems?"
-msgstr ""
-"¿Echa de menos alguna funcionalidad? ¿Tiene dificultades para usar el "
-"producto? ¿Ha encontrado algún problema?"
-
-#: includes/admin/views/feedback-page.php:101
-msgid ""
-"Please, <b>do not hesitate to contact us and tell what you are thinking!</b>"
-msgstr "Por favor, <b>no dude en contactarnos y díganos qué está pensando</b>."
-
-#: includes/admin/views/feedback-page.php:110
-msgid "Contact with Nelio"
-msgstr "Contacte con Nelio"
-
-#: includes/admin/views/feedback-page.php:113
-msgid "Message"
-msgstr "Mensaje"
-
-#: includes/admin/views/feedback-page.php:125
-msgid "Send Comment"
-msgstr "Enviar comentario"
-
-#: includes/admin/views/feedback-page.php:130
-msgid "Sending..."
-msgstr "Enviando..."
-
-#: includes/admin/views/feedback-page.php:132
-msgid "There was an error while sending your comment. Please, try again."
-msgstr "Ha habido un error durante el envío. Por favor, inténtelo otra vez."
-
-#: includes/admin/views/feedback-page.php:133
-msgid "Comment successfully sent."
-msgstr "Comentario enviado correctamente."
 
 #: includes/admin/views/multisite-settings-page.php:41
 #: includes/admin/views/settings-page.php:232
@@ -1952,9 +2014,9 @@ msgid "Update"
 msgstr "Actualizar"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:82
-#: includes/models/goals/actions/page-accessed-action.php:45
-#: includes/models/goals/actions/page-accessed-action.php:233
-#: includes/models/goals/goal.php:43
+#: includes/models/goals/actions/page-accessed-action.php:84
+#: includes/models/goals/actions/page-accessed-action.php:301
+#: includes/models/goals/goal.php:145
 msgid "Undefined"
 msgstr "Indeterminado"
 
@@ -1979,7 +2041,7 @@ msgid "from the tested element"
 msgstr "desde el elemento bajo test"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:216
-#: includes/utils/wp-helper.php:439
+#: includes/utils/wp-helper.php:602
 msgid "(no title)"
 msgstr "(sin título)"
 
@@ -2066,13 +2128,13 @@ msgstr "Ninguno"
 #: includes/admin/views/progress/alt-exp-progress-page.php:1124
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:81
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:151
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:161
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:187
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:90
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:102
-#: includes/models/goals/alternative-experiment-goal.php:233
-#: includes/models/goals/alternative-experiment-goal.php:314
-#: includes/models/goals/alternative-experiment-goal.php:316
-#: includes/models/summaries/alt-exp-summary.php:72
+#: includes/models/goals/alternative-experiment-goal.php:357
+#: includes/models/goals/alternative-experiment-goal.php:438
+#: includes/models/goals/alternative-experiment-goal.php:440
+#: includes/models/summaries/alt-exp-summary.php:204
 msgid "Original"
 msgstr "Original"
 
@@ -2110,7 +2172,7 @@ msgid ""
 "results of the experiment. Do you really want to continue?"
 msgstr ""
 "Editar una alternativa mientras el experimento está en ejecución puede "
-"invalidar los resultados de éste. ¿Desea continuar?"
+"invalidar los resultados de éste. ¿Quieres continuar?"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:624
 msgid "Stop Experiment Now"
@@ -2121,37 +2183,37 @@ msgid "The experiment can only be stopped manually"
 msgstr "El experimento solo se puede detener manualmente"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:662
-#: includes/utils/html-generator.php:117
+#: includes/utils/html-generator.php:153
 msgid "24 hours"
 msgstr "24 horas"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:664
-#: includes/utils/html-generator.php:118
+#: includes/utils/html-generator.php:154
 msgid "48 hours"
 msgstr "48 horas"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:666
-#: includes/utils/html-generator.php:119
+#: includes/utils/html-generator.php:155
 msgid "5 days"
 msgstr "5 días"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:668
-#: includes/utils/html-generator.php:120
+#: includes/utils/html-generator.php:156
 msgid "1 week"
 msgstr "1 semana"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:670
-#: includes/utils/html-generator.php:121
+#: includes/utils/html-generator.php:157
 msgid "2 weeks"
 msgstr "2 semanas"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:672
-#: includes/utils/html-generator.php:122
+#: includes/utils/html-generator.php:158
 msgid "1 month"
 msgstr "1 mes"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:674
-#: includes/utils/html-generator.php:123
+#: includes/utils/html-generator.php:159
 msgid "2 months"
 msgstr "2 meses"
 
@@ -2218,9 +2280,9 @@ msgid ""
 "There are no results available yet. Please, be patient until we collect more "
 "data. It might take up to half an hour to get your first results."
 msgstr ""
-"Todavía no tenemos los resultados listos. Por favor, tenga paciencia hasta "
-"que dispongamos de más datos. Recuerde que los primeros resultados pueden "
-"tardar hasta media hora en aparecer."
+"Todavía no tenemos los resultados listos. Por favor, ten paciencia hasta que "
+"dispongamos de más datos. Recuerda que los primeros resultados pueden tardar "
+"hasta media hora en aparecer."
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:857
 msgid ""
@@ -2248,7 +2310,7 @@ msgstr "Pellizcar para hacer zoom"
 #: includes/admin/views/progress/alt-exp-progress-page.php:1018
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:176
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:249
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:298
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:313
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:202
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:227
 msgid "Page Views and Conversions"
@@ -2264,19 +2326,19 @@ msgstr "Ratio de conversión"
 #: includes/admin/views/progress/alt-exp-progress-page.php:1231
 #: includes/admin/views/progress/alt-exp-progress-page.php:1304
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:131
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:175
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:180
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:186
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:206
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:232
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:142
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:183
-#: includes/models/goals/alternative-experiment-goal.php:307
+#: includes/models/goals/alternative-experiment-goal.php:431
 msgid "Alternative %s"
 msgstr "Alternativa %s"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:1153
 #: includes/admin/views/progress/alt-exp-progress-page.php:1227
 #: includes/admin/views/progress/alt-exp-progress-page.php:1300
-#: includes/models/summaries/alt-exp-summary.php:70
+#: includes/models/summaries/alt-exp-summary.php:202
 msgid "Alt %s"
 msgstr "Alt %s"
 
@@ -2289,7 +2351,7 @@ msgid "results"
 msgstr "resultados"
 
 #: includes/admin/views/progress/alt-exp-progress-page.php:1359
-#: includes/utils/html-generator.php:93
+#: includes/utils/html-generator.php:129
 msgid "Number of Page Views"
 msgstr "Número de visitas a páginas"
 
@@ -2311,7 +2373,7 @@ msgstr "Por defecto, no se usa ningún código CSS más"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:56
 msgid "Right now, no CSS alternative is helping to improve your site."
-msgstr "Ahora mismo, ninguna alternativa CSS ayuda a mejorar su site."
+msgstr "Ahora mismo, ninguna alternativa CSS ayuda a mejorar tu web."
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:58
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:79
@@ -2327,9 +2389,9 @@ msgid "CSS alternative %s was better than none to improve your site."
 msgstr "La alternativa CSS %s es mejor que nada para mejorar tu site"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:145
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:186
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:191
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:200
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:224
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:250
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:154
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:140
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:196
@@ -2338,7 +2400,7 @@ msgstr "(¡Hecho!)"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:154
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:227
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:270
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:291
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:180
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:205
 msgid "Conversion Rates"
@@ -2351,7 +2413,7 @@ msgstr "para el CSS por defecto y sus alternativas"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:157
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:230
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:276
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:294
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:183
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:208
 msgid "Conversion Rate (%)"
@@ -2361,8 +2423,8 @@ msgstr "Ratio de conversión (%)"
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:169
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:231
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:242
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:277
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:291
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:295
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:306
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:184
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:195
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:209
@@ -2372,7 +2434,7 @@ msgstr "{0}%"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:159
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:232
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:278
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:296
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:185
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:210
 msgid "<b>{0}</b><br />Conversions: {1}%"
@@ -2380,7 +2442,7 @@ msgstr "<b>{0}</b><br />Conversiones: {1}%"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:165
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:238
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:284
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:302
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:191
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:216
 msgid "Improvement Factors"
@@ -2392,7 +2454,7 @@ msgstr "respecto a no usar ningún CSS"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:168
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:241
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:290
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:305
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:194
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:219
 msgid "Improvement (%)"
@@ -2400,7 +2462,7 @@ msgstr "Mejora (%)"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:170
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:243
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:292
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:307
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:196
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:221
 msgid "<b>{0}</b><br />{1}% improvement"
@@ -2408,7 +2470,7 @@ msgstr "<b>{0}</b><br />mejora del {1}%"
 
 #: includes/admin/views/progress/css-alt-exp-progress-page.php:179
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:252
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:304
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:316
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:205
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:230
 msgid "Number of {series.name}: <b>{point.y}</b>"
@@ -2418,39 +2480,39 @@ msgstr "Número de {series.name}: <b>{point.y}</b>"
 msgid "Details of the Headline Experiment"
 msgstr "Detalles del experimento de titular"
 
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:85
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:90
 msgid "Close"
 msgstr "Cerrar"
 
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:147
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:152
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:138
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:148
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:174
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:133
 msgid "Apply"
 msgstr "Aplicar"
 
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:196
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:201
 msgid ""
 "You are about to overwrite the original title with an alternative. Are you "
 "sure you want overwrite it?"
 msgstr ""
-"Está a punto de sobrescribir el título original con el alternativo. ¿Quiere "
-"sobrescribirlo?"
+"Estás a punto de sobrescribir el título original con el alternativo. "
+"¿Quieres sobrescribirlo?"
 
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:214
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:226
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:219
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:231
 msgid "for the original and the alternative titles"
 msgstr "para los títulos original y alternativos"
 
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:220
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:225
 msgid "with respect to the original title"
 msgstr "respecto al título original"
 
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:231
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:236
 msgid "Conversion Action"
 msgstr "Acción de conversión"
 
-#: includes/admin/views/progress/headline-alt-exp-progress-page.php:233
+#: includes/admin/views/progress/headline-alt-exp-progress-page.php:238
 msgid ""
 "The user accesses the tested post in order to, hopefully, further read it"
 msgstr ""
@@ -2486,9 +2548,9 @@ msgid ""
 "ones. Please, remember <strong>this operation cannot be undone</strong>. Are "
 "you sure you want to overwrite the menu?"
 msgstr ""
-"Está a punto de sobrescribir los elementos del menú original con los "
-"alternativos. Recuerde que <strong>esta operación no se puede deshacer</"
-"strong>. ¿Quiere sobrescribir el menú?"
+"Estás a punto de sobrescribir los elementos del menú original con los "
+"alternativos. Recuerda que <strong>esta operación no se puede deshacer</"
+"strong>. ¿Quieres sobrescribir el menú?"
 
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:228
 #: includes/admin/views/progress/menu-alt-exp-progress-page.php:250
@@ -2499,108 +2561,85 @@ msgstr "para los menús original y alternativos"
 msgid "with respect to the original menu"
 msgstr "respecto al menú original"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:39
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:50
+msgid "Pages"
+msgstr "Páginas"
+
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:57
+msgid "Posts"
+msgstr "Entradas"
+
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:75
 msgid "Details of the Page Experiment"
 msgstr "Detalles del experimento de página"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:41
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:77
 msgid "Details of the Post Experiment"
 msgstr "Detalles del experimento de entrada"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:48
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:79
+msgid "Details of the %s Post Type Experiment"
+msgstr "Detalles del experimento de entrada personalizadas"
+
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:86
 msgid "Unknown (post_id is %s)"
 msgstr "Desconocido (post_id es %s)"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:79
-msgid "Right now, no alternative is beating the original page."
-msgstr "Ahora mismo, ninguna alternativa gana a la página original."
-
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:81
-msgid "Right now, no alternative is beating the original post."
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:116
+msgid "Right now, no alternative is beating the original %s."
 msgstr "Ahora mismo, ninguna alternativa gana a la entrada original."
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:85
-msgid "Right now, alternative %s is better than the original page."
-msgstr "Ahora mismo, la alternativa %s es mejor que la página original."
-
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:87
-msgid "Right now, alternative %s is better than the original post."
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:119
+msgid "Right now, alternative %s is better than the original %s."
 msgstr "Ahora mismo, la alternativa %s es mejor que la entrada original."
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:93
-msgid "No alternative was better the original page."
-msgstr "Ninguna alternativa es mejor que la página original."
-
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:95
-msgid "No alternative was better the original post."
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:124
+msgid "No alternative was better the original %s."
 msgstr "Ninguna alternativa es mejor que la entrada original."
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:99
-msgid "Alternative %s was better than the original page."
-msgstr "La alternativa %s fue mejor que la página original."
-
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:101
-msgid "Alternative %s was better than the original post."
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:127
+msgid "Alternative %s was better than the original %s."
 msgstr "La alternativa %s fue mejor que la entrada original."
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:174
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:212
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:200
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:238
 msgid "(Not found)"
 msgstr "(No se ha encontrado)"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:235
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:260
 msgid ""
-"You are about to overwrite the original page with the content of an "
+"You are about to overwrite the original %s with the content of an "
 "alternative. Please, remember <strong>this operation cannot be undone</"
 "strong>. Are you sure you want to overwrite it?"
 msgstr ""
-"Está a punto de sobrescribir la página original con el contenido de una "
-"alternativa. Recuerde que <strong>esta operación no se puede deshacer</"
-"strong>. ¿Quiere sobrescribirla?"
+"Estás a punto de sobrescribir la entrada original con el contenido de una "
+"alternativa. Recuerda que <strong>esta operación no se puede deshacer</"
+"strong>. ¿Quieres sobrescribirla?"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:238
-msgid ""
-"You are about to overwrite the original post with the content of an "
-"alternative. Please, remember <strong>this operation cannot be undone</"
-"strong>. Are you sure you want to overwrite it?"
-msgstr ""
-"Está a punto de sobrescribir la entrada original con el contenido de una "
-"alternativa. Recuerde que <strong>esta operación no se puede deshacer</"
-"strong>. ¿Quiere sobrescribirla?"
-
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:251
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:272
 msgid "Override title and content"
 msgstr "Sobrescribir título y contenido"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:254
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:275
 msgid "Override all metadata"
 msgstr "Sobrescribir todos los metadatos"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:259
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:280
 msgid "Override categories"
 msgstr "Sobrescribir categorías"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:262
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:283
 msgid "Override tags"
 msgstr "Sobrescribir etiquetas"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:272
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:300
-msgid "for the original and the alternative pages"
-msgstr "para las páginas original y alternativas"
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:292
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:314
+msgid "for the original and the alternative %s"
+msgstr "para la original y la alternativa %s"
 
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:274
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:302
-msgid "for the original and the alternative posts"
-msgstr "para las entradas original y alternativas"
-
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:286
-msgid "with respect to the original page"
-msgstr "respecto a la página original"
-
-#: includes/admin/views/progress/post-alt-exp-progress-page.php:288
-msgid "with respect to the original post"
-msgstr "respecto a la entrada original"
+#: includes/admin/views/progress/post-alt-exp-progress-page.php:303
+msgid "with respect to the original %s"
+msgstr "respecto a la entrada original %s"
 
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:35
 msgid "Details of the Theme Experiment"
@@ -2627,7 +2666,7 @@ msgid ""
 "You are about to overwrite the original theme with the alternative. Are you "
 "sure you want to overwrite your current theme?"
 msgstr ""
-"Está a punto de sobrescribir el tema original con el alternativo. ¿Quiere "
+"Estás a punto de sobrescribir el tema original con el alternativo. ¿Quieres "
 "sobrescribirlo?"
 
 #: includes/admin/views/progress/theme-alt-exp-progress-page.php:181
@@ -2649,11 +2688,11 @@ msgstr "Conjunto de widgets por defecto"
 
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:77
 msgid "Right now, no alternative Widget set is helping to improve your site."
-msgstr "Ahora mismo, ninguna alternativa de Widgets ayuda a mejorar su site."
+msgstr "Ahora mismo, ninguna alternativa de Widgets ayuda a mejorar tu web."
 
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:83
 msgid "No alternative Widget set helped to improve your site."
-msgstr "Ninguna de las alternativas de Widgets ha ayudado a mejorar tu site."
+msgstr "Ninguna de las alternativas de Widgets ha ayudado a mejorar tu sitio."
 
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:85
 msgid "The alternative Widget set %s was better than the original set."
@@ -2680,10 +2719,10 @@ msgid ""
 "operation cannot be undone</strong>.<br><br>Are you sure you want to make "
 "them permanent?"
 msgstr ""
-"Está a punto de <strong>convertir sus widgets actuales en permanentes</"
-"strong>.<br><br>Recuerde que los conjuntos de widgets alternativos serán "
-"borrados. <strong>Esta operación no de puede deshacer</strong>."
-"<br><br>¿Desea que sean permanentes?"
+"Estás a punto de <strong>convertir tus widgets actuales en permanentes</"
+"strong>.<br><br>Recuerda que los conjuntos de widgets alternativos serán "
+"borrados. <strong>Esta operación no se puede deshacer</strong>."
+"<br><br>¿Quieres que los widgets actuales sean permanentes?"
 
 #: includes/admin/views/progress/widget-alt-exp-progress-page.php:243
 msgid ""
@@ -2692,10 +2731,10 @@ msgid ""
 "<strong>This operation cannot be undone</strong>.<br><br>Are you sure you "
 "want to replace your current set of widgets?"
 msgstr ""
-"Está a punto de <strong>reemplazar sus widgets actuales por un conjunto de "
-"widgets alternativo</strong>.<br><br>Recuerde que todos los widgets que no "
-"se usen serán borrados. <strong>Esta operación no de puede deshacer</strong>."
-"<br><br>¿Desea reemplazar su conjunto de widgets actual?"
+"Estás a punto de <strong>reemplazar tus widgets actuales por un conjunto de "
+"widgets alternativo</strong>.<br><br>Recuerda que todos los widgets que no "
+"se usen serán borrados. <strong>Esta operación no se puede deshacer</strong>."
+"<br><br>¿Estás seguro que deseas reemplazar tu conjunto de widgets actual?"
 
 #: includes/admin/views/select-exp-creation-page.php:38
 msgid "A/B Test Your Landing Page"
@@ -2707,9 +2746,9 @@ msgid ""
 "more alternatives of your landing page and see which one converts better! If "
 "your website starts at your Landing Page, why shouldn't you start it first?"
 msgstr ""
-"<strong>¡A/B Testing desde el instante cero!</strong> Cree una o más "
-"alternativas de su página principal y descubra cuál es mejor. A fin de "
-"cuentas, si lo que ven primero sus visitantes es esa página, ¿por qué no "
+"<strong>¡A/B Testing desde el instante cero!</strong> Crea una o más "
+"alternativas de tu página principal y descubre cuál es mejor. A fin de "
+"cuentas, si lo que ven primero tus visitantes es esa página, ¿por qué no "
 "testearla ya mismo?"
 
 #: includes/admin/views/select-exp-creation-page.php:51
@@ -2723,9 +2762,9 @@ msgid ""
 "layout... and do it using your default WordPress editor! Then define the "
 "goals and you're ready!"
 msgstr ""
-"<strong>¡Puro Test A/B!</strong> Cree una o más alternativas de una página y "
-"<strong>cambie lo que quiera</strong>: los colores, el texto, la "
-"distribución... ¡y todo ello con el editor por defecto de WordPress! Añada "
+"<strong>¡Puro Test A/B!</strong> Crea una o más alternativas de una página y "
+"<strong>cambia lo que quieras</strong>: los colores, el texto, la "
+"distribución... ¡y todo ello con el editor por defecto de WordPress! Añade "
 "los objetivos y ¡listo!"
 
 #: includes/admin/views/select-exp-creation-page.php:63
@@ -2739,9 +2778,9 @@ msgid ""
 "layout... and do it using your default WordPress editor! Then define the "
 "goals and you're ready!"
 msgstr ""
-"<strong>¡Puro Test A/B!</strong> Cree una o más alternativas de una entrada "
-"y <strong>cambie lo que quiera</strong>: los colores, el texto, la "
-"distribución... ¡y todo ello con el editor por defecto de WordPress! Añada "
+"<strong>¡Puro Test A/B!</strong> Crea una o más alternativas de una entrada "
+"y <strong>cambia lo que quieras</strong>: los colores, el texto, la "
+"distribución... ¡y todo ello con el editor por defecto de WordPress! Añade "
 "los objetivos y ¡listo!"
 
 #: includes/admin/views/select-exp-creation-page.php:75
@@ -2757,9 +2796,9 @@ msgid ""
 "conversion!"
 msgstr ""
 "Los experimentos de titulares son geniales para <em>bloggers</em> y "
-"<em>editores</em>. <strong>Pruebe diferentes título, imágenes destacadas y "
-"entradillas</strong>. ¿El objetivo? ¡Que sus visitantes quieran leer toda la "
-"entrada después de ver el titular en cualquier página de su site!"
+"<em>editores</em>. <strong>Prueba diferentes títulos, imágenes destacadas y "
+"entradillas</strong>. ¿El objetivo? ¡Que tus visitantes quieran leer toda la "
+"entrada después de ver el titular en cualquier página de tu web!"
 
 #: includes/admin/views/select-exp-creation-page.php:88
 msgid "New A/B Theme Test "
@@ -2772,10 +2811,10 @@ msgid ""
 "this gives you what you need! Just keep in mind to configure each theme "
 "individually before using this kind of experiment."
 msgstr ""
-"¿Quiere <strong>cambiar completamente su WordPress</strong>? ¿Quiere "
+"¿Quieres <strong>cambiar completamente su WordPress</strong>? ¿Quieres "
 "<strong>probar pequeñas variaciones entre dos temas hijo</strong>? ¡Aquí "
-"tiene lo que necesita! Configure cada tema individualmente y luego "
-"selecciónelos todos para que roten automáticamente."
+"tienes lo que necesitas! Configura cada tema individualmente y luego "
+"selecciónalos todos para que roten automáticamente."
 
 #: includes/admin/views/select-exp-creation-page.php:102
 msgid "New Heatmap Experiment for Page or Post"
@@ -2788,9 +2827,9 @@ msgid ""
 "through your website</strong>! This is one of the easiest ways to get ideas "
 "on what to do next."
 msgstr ""
-"Si no sabe por dónde empezar con el Test A/B, los experimentos de Heatmaps "
-"son perfectos para <strong>descubrir cómo se comportan sus usuarios cuando "
-"navegan por su web</strong>. La mejor forma de obtener ideas empieza aquí."
+"Si no sabes por dónde empezar con el Test A/B, los experimentos de Heatmaps "
+"son perfectos para <strong>descubrir cómo se comportan tus usuarios cuando "
+"navegan por tu web</strong>. La mejor forma de obtener ideas empieza aquí."
 
 #: includes/admin/views/select-exp-creation-page.php:114
 msgid "New A/B CSS Test"
@@ -2803,42 +2842,58 @@ msgid ""
 "you're looking for. Create one or more CSS fragments that will be applied to "
 "your website and discover which one offers the better results."
 msgstr ""
-"¿Quiere <strong>cambiar la apariencia de su WordPress, pero centrándose en "
-"pequeños detallitos</strong>? Los Tests de CSS es lo que necesita. Cree uno "
-"o más fragmentos de código CSS, cada uno de los cuales podrá aplicarse a su "
-"web en un Test A/B,  y descubra cuál es mejor."
+"¿Quieres <strong>cambiar la apariencia de tu WordPress, pero centrándote en "
+"pequeños detallitos</strong>? Los Tests de CSS son lo que necesitas. Crea "
+"uno o más fragmentos de código CSS, cada uno de los cuales podrá aplicarse a "
+"tu web en un Test A/B,  y descubre cuál es mejor."
 
 #: includes/admin/views/select-exp-creation-page.php:126
+msgid "New Custom Post Type Test"
+msgstr "Nuevo Test de Entradas Personalizadas"
+
+#: includes/admin/views/select-exp-creation-page.php:130
+msgid ""
+"<strong>Pure A/B Testing!</strong> Create one or more alternatives of a "
+"custom post type and <strong>change whatever you want</strong>: the title, "
+"the text, the custom fields... and do it using your default WordPress "
+"editor! Then define the goals and you're ready!"
+msgstr ""
+"<strong>¡Puro Test A/B!</strong> Crea una o más alternativas de una entrada "
+"personalizada y <strong>cambia lo que quieras</strong>: los colores, el "
+"texto, la distribución... ¡y todo ello con el editor por defecto de "
+"WordPress! Añade los objetivos y ¡listo!"
+
+#: includes/admin/views/select-exp-creation-page.php:138
 msgid "New Widget Test"
 msgstr "Nuevo Test A/B de Widgets"
 
-#: includes/admin/views/select-exp-creation-page.php:130
+#: includes/admin/views/select-exp-creation-page.php:142
 msgid ""
 "Do you want to <strong>arrange widgets in a different order, use different "
 "widget setups, or even introduce completely new widgets?</strong> Then "
 "Widget Tests is what you need. Select and arrange the widgets you need as a "
 "new alternative and discover which one offers the better results."
 msgstr ""
-"¿Quiere <strong>ordenar los widgets de otra forma, probar otras "
+"¿Quieres <strong>ordenar los widgets de otra forma, probar otras "
 "configuraciones o incluso añadir widgets completamente nuevos</strong>? Los "
-"Tests de Widget son lo que necesita. Seleccione y ordene los widgets como "
-"quiera y descubra qué configuración le ofrece mejores resultados."
+"Tests de Widget son lo que necesitas. Selecciona y ordena los widgets como "
+"quieras y descubre qué configuración te ofrece mejores resultados."
 
-#: includes/admin/views/select-exp-creation-page.php:138
+#: includes/admin/views/select-exp-creation-page.php:150
 msgid "New Menu Test"
 msgstr "Nuevo Test de Menús"
 
-#: includes/admin/views/select-exp-creation-page.php:142
+#: includes/admin/views/select-exp-creation-page.php:154
 msgid ""
 "Menus are one of the most important elements in your WordPress site, for "
 "they get a lot of attention from your visitors. <strong>Modify the labels of "
 "your menu items, rearrange them, or use a completely different menu</strong> "
 "and test which one helps you get more conversions!"
 msgstr ""
-"Los menús son uno de los elementos más importantes de un site cualquiera, ya "
-"que atraen muchísimo la atención de los visitantes. <strong>Modifique los "
-"nombres de cada elemento del menú, reordene las opciones o pruebe un menú "
-"totalmente nuevo</strong> y descubra con cual obtiene más conversiones."
+"Los menús son uno de los elementos más importantes de una web cualquiera, ya "
+"que atraen muchísimo la atención de los visitantes. <strong>Modifica los "
+"nombres de cada elemento del menú, reordena las opciones o prueba un menú "
+"totalmente nuevo</strong> y descubre con cual obtienes más conversiones."
 
 #: includes/admin/views/settings-page.php:32
 msgid ""
@@ -2848,7 +2903,7 @@ msgid ""
 msgstr ""
 "Se ha producido un error mientras se actualizaban algunas de sus opciones. "
 "Los siguientes campos no han podido ser actualizados correctamente:</p>"
-"%s<p>Por favor, espere unos instantes e inténtelo de nuevo."
+"%s<p>Por favor, espera unos instantes e inténtelo de nuevo."
 
 #: includes/admin/views/settings-page.php:36
 #: includes/admin/views/settings-page.php:373
@@ -2926,7 +2981,7 @@ msgid ""
 "continue?"
 msgstr ""
 "Esta operación va a restablecer los valores por defecto de todos los "
-"parámetros de configuración. ¿Desea continuar?"
+"parámetros de configuración. ¿Deseas continuar?"
 
 #: includes/admin/views/settings-page.php:204
 msgid "External Page Actions"
@@ -2987,10 +3042,10 @@ msgid ""
 "finer control of the plugin's settings, <a target=\"_blank\" href=\"%s"
 "\">please upgrade your current subscription</a>."
 msgstr ""
-"Los siguientes parámetros sólo se pueden modificar si está registrado a "
-"nuestros <b>Planes Profesional</b> o <b>Enterprise</b>.<br>Si desea tener un "
-"mayor control sobre la configuración del plugin, <a target=\"_blank\" href="
-"\"%s\">por favor actualice su suscripción</a>."
+"Los siguientes parámetros sólo se pueden modificar si estás registrado a "
+"nuestros <b>Planes Profesional</b> o <b>Enterprise</b>.<br>Si deseas tener "
+"un mayor control sobre la configuración del plugin, <a target=\"_blank\" "
+"href=\"%s\">pásate a un plan superior</a>."
 
 #: includes/admin/views/settings-page.php:557
 msgid "%1$s %2$s"
@@ -3003,10 +3058,10 @@ msgid ""
 "converts (that is, she buys a product or subscribes to a service). The "
 "conversion value can be overwritten when adding goals into an experiment."
 msgstr ""
-"Defina el valor monetario por defecto de sus conversiones. Este valor puede "
-"ser, por ejemplo, el beneficio medio que obtiene cada vez que un visitante "
+"Define el valor monetario por defecto de tus conversiones. Este valor puede "
+"ser, por ejemplo, el beneficio medio que obtienes cada vez que un visitante "
 "se convierte (es decir, cuando compra un producto o se suscribe a un "
-"servicio). Este valor por defecto se puede sobrescribir cuando añada "
+"servicio). Este valor por defecto se puede sobrescribir cuando añadas "
 "objetivos a un experimento."
 
 #: includes/admin/views/settings-page.php:573
@@ -3027,7 +3082,7 @@ msgid ""
 "alternative should see each of your visitors."
 msgstr ""
 "Nelio A/B Testing ofrece diferentes algoritmos para decidir qué alternativa "
-"debe ver cada uno de sus visitantes."
+"debe ver cada uno de tus visitantes."
 
 #: includes/admin/views/settings-page.php:588
 msgid ""
@@ -3035,7 +3090,7 @@ msgid ""
 "chance to be seen by any of your visitors.</li>"
 msgstr ""
 "<li><strong>Aleatorio.</strong> Todas las alternativas tienen las mismas "
-"posibilidades de ser vistas por sus usuarios.</li>"
+"posibilidades de ser vistas por tus usuarios.</li>"
 
 #: includes/admin/views/settings-page.php:589
 msgid ""
@@ -3069,9 +3124,9 @@ msgid ""
 "of an experiment are updated and the number of page views is equal to (or a "
 "little bit greater than) the limit you set. Don't waste your quota anymore!"
 msgstr ""
-"Defina la cuota máxima que un experimento cualquiera puede consumir. Cada "
+"Define la cuota máxima que un experimento cualquiera puede consumir. Cada "
 "vez que se actualicen los resultados de un experimento, el plugin comprobará "
-"si el experimento dispone de cuota o ya se ha excedido. ¡No malgaste más "
+"si el experimento dispone de cuota o ya se ha excedido. ¡No malgastes más "
 "cuota!"
 
 #: includes/admin/views/settings-page.php:634
@@ -3092,17 +3147,17 @@ msgid ""
 "always see coherent headlines for your posts."
 msgstr ""
 "Durante un experimento de titulares, las Visitas a Página se contabilizan "
-"cada vez que el titular aparece en cualquier página de su site. Estas "
+"cada vez que el titular aparece en cualquier página de tu web. Estas "
 "apariciones pueden darse en barras laterales, la página de últimas entradas, "
-"los menús, etc. Si desea limitar el uso de cuota de este tipo de "
-"experimentos, puede hacer que únicamente cuenten los titulares que aparezcan "
-"en la página frontal.<br>Independientemente de este parámetro, los titulares "
-"se reemplazarán en todo el site siempre, asegurando una experiencia "
-"coherente y unificada a sus usuarios."
+"los menús, etc. Si deseas limitar el uso de cuota de este tipo de "
+"experimentos, puedes hacer que únicamente cuenten los titulares que "
+"aparezcan en la página frontal.<br>Independientemente de este parámetro, los "
+"titulares se reemplazarán en todo el site siempre, asegurando una "
+"experiencia coherente y unificada a sus usuarios."
 
 #: includes/admin/views/settings-page.php:655
 msgid "Force Consistency All Along the Site"
-msgstr "Forzar consistencia en todo el site"
+msgstr "Forzar consistencia en todo el sitio web"
 
 #: includes/admin/views/settings-page.php:659
 msgid "Load Alternative Content for Tested Elements Only"
@@ -3128,7 +3183,7 @@ msgstr ""
 "<li><strong>Forzar Consistencia</strong>. Permite que un visitante vea "
 "siempre la misma alternativa a lo largo de todo el sitio web. Si está "
 "habilitado, cualquier página del site cargará el contenido alternativo que "
-"esté definido en sus experimentos. Tenga en cuenta que esta configuración "
+"esté definido en sus experimentos. Ten en cuenta que esta configuración "
 "<strong>no</strong> consume cuota adicional.</li>"
 
 #: includes/admin/views/settings-page.php:665
@@ -3161,7 +3216,7 @@ msgid ""
 "If you enable the Colorblind Palette, Nelio A/B Testing icons will not be "
 "simple, plain colors, but they will include visual clues."
 msgstr ""
-"Si habilita la paleta para daltónicos, los iconos que usa Nelio A/B Testing "
+"Si habilitas la paleta para daltónicos, los iconos que usa Nelio A/B Testing "
 "incluirán ayudas visuales adicionales a los colores planos para "
 "diferenciarlos."
 
@@ -3189,7 +3244,7 @@ msgstr "Última opción"
 msgid ""
 "Set the location of «Nelio A/B Testing» in the left pane of the Dashboard."
 msgstr ""
-"Defina la ubicación de «Nelio A/B Testing» en el panel izquierdo del "
+"Define la ubicación de «Nelio A/B Testing» en el panel izquierdo del "
 "Escritorio."
 
 #: includes/admin/views/settings-page.php:731
@@ -3206,8 +3261,8 @@ msgid ""
 "entry in the top bar, which includes some shortcuts to common A/B Testing "
 "functions."
 msgstr ""
-"Si está navegando por su site, el plugin puede añadir una entrada de «Nelio "
-"A/B Testing» en la barra superior, facilitando, así, el acceso a las "
+"Si estás navegando por tu WordPress, el plugin puede añadir una entrada de "
+"«Nelio A/B Testing» en la barra superior, facilitando, así, el acceso a las "
 "funciones más comunes de A/B Testing desde cualquier página."
 
 #: includes/admin/views/settings-page.php:749
@@ -3219,7 +3274,7 @@ msgid ""
 "If you type an e-mail address, all Nelio A/B Testing notifications will be "
 "sent to both the new address and «%s»."
 msgstr ""
-"Si introduce una dirección de correo electrónico, todas las notificaciones "
+"Si introduces una dirección de correo electrónico, todas las notificaciones "
 "de Nelio A/B Testing se enviarán a esa dirección y a «%s»."
 
 #: includes/admin/views/settings-page.php:799
@@ -3248,7 +3303,7 @@ msgid ""
 msgstr ""
 "Por defecto, la lista de experimentos de nuestro plugin muestra todos los "
 "experimentos que ha definido. Estos experimentos se pueden filtrar por su "
-"estado. Cuando visualiza la lista de todos los experimentos, puede decidir "
+"estado. Cuando visualices la lista de todos los experimentos, puedes decidir "
 "si aquellos que hayan <em>finalizado</em> deben ser visibles o no."
 
 #: includes/admin/views/settings-page.php:849
@@ -3277,7 +3332,7 @@ msgid ""
 "<strong>{value}%</strong> of the users that access your site will "
 "participate in the running experiments."
 msgstr ""
-"El <strong>{value}%</strong> de los usuarios que accedan a su sitio formarán "
+"El <strong>{value}%</strong> de los usuarios que accedan a tu sitio formarán "
 "parte de los experimentos en ejecución."
 
 #: includes/admin/views/settings-page.php:889
@@ -3286,8 +3341,8 @@ msgid ""
 "experiments. This setting defines how likely it is for a visitor to be part "
 "of your tests."
 msgstr ""
-"Cuando un usuario accede a su página web puede (o no) formar parte de los "
-"experimentos que tiene en marcha. Este parámetro le permite determinar cuán "
+"Cuando un usuario accede a tu web puede (o no) formar parte de los "
+"experimentos que tiene en marcha. Este parámetro te permite determinar cuán "
 "probable es que participe."
 
 #: includes/admin/views/settings-page.php:896
@@ -3335,12 +3390,12 @@ msgid ""
 msgstr ""
 "Por defecto, Nelio A/B Testing tiene en cuenta los elementos HTML que hay "
 "debajo del cursor de los usuarios para construir los heatmaps y clickmaps de "
-"su site. Esto ofrece una mayor precisión a la hora de visualizar los "
+"tu sitio web. Esto ofrece una mayor precisión a la hora de visualizar los "
 "resultados, puesto que los puntos de mayor interés están basados en "
-"componentes del site y no en las páginas en si. Sin embargo, hay casos en "
-"los que este método puede no funcionar. Algunos ejemplos son aquellas "
+"componentes HTML de la web y no en las páginas en si. Sin embargo, hay casos "
+"en los que este método puede no funcionar. Algunos ejemplos son aquellas "
 "páginas que cargan contenido dinámicamente o aquellos temas que generan IDs "
-"aleatoriamente. Si ese es su caso, utilice la etiqueta body para el tracking "
+"aleatoriamente. Si ese es tu caso, utiliza la etiqueta body para el tracking "
 "de heatmaps."
 
 #: includes/admin/views/settings-page.php:989
@@ -3372,18 +3427,19 @@ msgid ""
 "process will occur in the original tab. If, on the other hand, you don't "
 "want pages to be opened in new tabs, select «Do Not Force New Tab»."
 msgstr ""
-"Si utiliza acciones de conversión a páginas externas, una conversión debería "
-"ocurrir cuando el usuario accede a una de esas páginas. Sin embargo, Nelio A/"
-"B Testing no tiene acceso al contenido que está fuera de WordPress, con lo "
-"cual se ve obligado a contabilizar una conversión cuando el usuario está a "
-"punto de irse de WordPress para acceder a esa página (es decir, cuando pulsa "
-"en un enlace que le llevará allí). Cuando el visitante pulsa sobre el "
-"enlace, Nelio detecta el evento y tiene que sincronizarlo con nuestros "
-"servidores (lo cual puede llevar alguna décima de segundo). Si quiere que su "
-"site sea lo más ágil posible, seleccione «Forzar Nueva Pestaña». De esta "
-"forma, los enlaces se abrirán en una nueva pestaña y el proceso de "
-"sincronización se podrá realizar en segundo plano en la pestaña original. Si "
-"no desea este comportamiento, seleccione «No Forzar Nueva Pestaña»."
+"Si utilizas acciones de conversión a páginas externas, una conversión "
+"debería ocurrir cuando el usuario accede a una de esas páginas. Sin embargo, "
+"Nelio A/B Testing no tiene acceso al contenido que está fuera de WordPress, "
+"con lo cual se ve obligado a contabilizar una conversión cuando el usuario "
+"está a punto de irse de WordPress para acceder a esa página (es decir, "
+"cuando pulsa en un enlace que le llevará allí). Cuando el visitante pulsa "
+"sobre el enlace, Nelio detecta el evento y tiene que sincronizarlo con "
+"nuestros servidores (lo cual puede llevar alguna décima de segundo). Si "
+"quieres que tu site sea lo más ágil posible, selecciona «Forzar Nueva "
+"Pestaña». De esta forma, los enlaces se abrirán en una nueva pestaña y el "
+"proceso de sincronización se podrá realizar en segundo plano en la pestaña "
+"original. Si no deseas este comportamiento, selecciona «No Forzar Nueva "
+"Pestaña»."
 
 #: includes/admin/views/settings-page.php:1040
 msgid "Group Experiments and Divide Visitors"
@@ -3403,12 +3459,12 @@ msgid ""
 "visitor accesses your website, she only participates in the experiments of "
 "one of the available groups. <a%s>Read More</a>"
 msgstr ""
-"Cuando esté ejecutando más de un experimento con múltiples alternativas cada "
-"uno, el número de combinaciones posibles crece de forma exponencial, lo cual "
-"puede degradar el funcionamiento de su servidor. Para solucionar este "
-"problema, active la opción «Agrupar Experimentos y Dividir Visitantes», de "
-"forma que sus experimentos se agrupen en uno o más grupos. Cuando un "
-"visitante acceda su site, participará únicamente en los experimentos que "
+"Cuando estés ejecutando más de un experimento con múltiples alternativas "
+"cada uno, el número de combinaciones posibles crece de forma exponencial, lo "
+"cual puede degradar el funcionamiento de tu servidor. Para solucionar este "
+"problema, activa la opción «Agrupar Experimentos y Dividir Visitantes», de "
+"forma que tus experimentos se agrupen en uno o más grupos. Cuando un "
+"visitante acceda tu web, participará únicamente en los experimentos que "
 "incluya alguno de los grupos disponibles. <a%s>Leer Más (en inglés)</a>"
 
 #: includes/admin/views/settings-page.php:1065
@@ -3431,8 +3487,8 @@ msgid ""
 "which ones."
 msgstr ""
 "Nelio A/B Testing carga el contenido alternativo añadiendo algunos "
-"parámetros en la URL. En principio, estos parámetros serán visibles por sus "
-"visitantes. Si lo desea, puede ocultarlos:"
+"parámetros en la URL. En principio, estos parámetros serán visibles por tus "
+"visitantes. Si quieres puedes ocultarlos:"
 
 #: includes/admin/views/settings-page.php:1085
 msgid ""
@@ -3486,42 +3542,42 @@ msgid ""
 msgstr ""
 "Tal y como se especifica en el <a href=\"%s\">WordPress Codex</a> (en "
 "inglés), por defecto WordPress muestra sus entradas relacionadas en orden "
-"cronológico inverso. Si desea usar una página estática como página "
-"principal, debe seleccionar esa opción desde Escritorio » Ajustes » Lectura."
+"cronológico inverso. Si deseas usar una página estática como página "
+"principal, debes seleccionar esa opción desde Escritorio » Ajustes » Lectura."
 "<br>Algunos temas definen \"páginas principales dinámicas\", las cuales no "
-"pueden ser testeadas directamente con Nelio. No obstante, si desea "
-"monitorizar los Heatmaps de ese tipo de páginas, seleccione la opción "
-"\"Página Frontal (generada por el tema)\" y tendrá la posibilidad de "
+"pueden ser testeadas directamente con Nelio. No obstante, si deseas "
+"monitorizar los Heatmaps de ese tipo de páginas, selecciona la opción "
+"\"Página Frontal (generada por el tema)\" y tendrás la posibilidad de "
 "seleccionarla durante la creación de un experimento de Heatmaps."
 
-#: includes/controller.php:440
+#: includes/controller.php:608
 msgid "Create Headline Test for this Post"
 msgstr "Crear un experimento de Titulares para esta entrada"
 
-#: includes/controller.php:449
+#: includes/controller.php:617
 msgid "Create A/B Test for this Post"
 msgstr "Crear Test A/B para esta entrada"
 
-#: includes/controller.php:461
+#: includes/controller.php:629
 msgid "Create A/B Test for this Page"
 msgstr "Crear Test A/B para esta página"
 
-#: includes/controller.php:472
+#: includes/controller.php:640
 msgid "Create Heatmap Experiment"
 msgstr "Crear experimento de heatmaps"
 
-#: includes/controller.php:529
+#: includes/controller.php:701
 msgid "Create Headline Experiment"
 msgstr "Crear experimento de titulares"
 
-#: includes/controller.php:537
+#: includes/controller.php:709
 msgid "Create A/B Experiment"
 msgstr "Crear nuevo Test A/B"
 
 #: includes/experiment-controllers/menu-experiment-controller.php:48
 #: includes/experiment-controllers/widget-experiment-controller.php:30
 msgid "You do not have sufficient permissions to access this page."
-msgstr "No tiene permisos suficientes para acceder a esta página."
+msgstr "No tienes permisos suficientes para acceder a esta página."
 
 #: includes/experiment-controllers/menu-experiment-controller.php:57
 msgid "Cheatin&#8217; uh?"
@@ -3541,69 +3597,69 @@ msgid ""
 "Use the following button to duplicate the widgets you're currently using in "
 "your site."
 msgstr ""
-"Utilice el siguiente botón para duplicar los widgets que está usando "
-"actualmente en su site."
+"Utiliza el siguiente botón para duplicar los widgets que estás usando "
+"actualmente en tu web."
 
 #: includes/experiment-controllers/widget-experiment-controller.php:187
 msgid "Duplicate Widgets"
 msgstr "Duplicar Widgets"
 
-#: includes/models/alternatives/global-alternative-experiment.php:102
-#: includes/models/heatmap-experiment.php:145
+#: includes/models/alternatives/global-alternative-experiment.php:179
+#: includes/models/heatmap-experiment.php:246
 msgid ""
 "The experiment cannot be started, because there is a theme experiment "
 "running. Please, stop the experiment named «%s» before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay un experimento de temas en "
-"marcha. Por favor, detenga el experimento «%s» antes de iniciar el nuevo."
+"marcha. Por favor, detén el experimento «%s» antes de iniciar el nuevo."
 
-#: includes/models/alternatives/global-alternative-experiment.php:110
+#: includes/models/alternatives/global-alternative-experiment.php:188
 msgid ""
 "The experiment cannot be started, because there is a CSS experiment running. "
 "Please, stop the experiment named «%s» before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay un experimento de tipo CSS en "
-"marcha. Por favor, detenga el experimento «%s» antes de iniciar el nuevo."
+"marcha. Por favor, detén el experimento «%s» antes de iniciar el nuevo."
 
-#: includes/models/alternatives/global-alternative-experiment.php:120
+#: includes/models/alternatives/global-alternative-experiment.php:200
 msgid ""
 "The experiment cannot be started, because there is a Widget experiment "
 "running. Please, stop the experiment named «%s» before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay un experimento de widgets en "
-"marcha. Por favor, detenga el experimento «%s» antes de iniciar el nuevo."
+"marcha. Por favor, detén el experimento «%s» antes de iniciar el nuevo."
 
-#: includes/models/alternatives/global-alternative-experiment.php:130
+#: includes/models/alternatives/global-alternative-experiment.php:212
 msgid ""
 "The experiment cannot be started, because there is a Menu experiment "
 "running. Please, stop the experiment named «%s» before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay un experimento de menús en "
-"marcha. Por favor, detenga el experimento «%s» antes de iniciar el nuevo."
+"marcha. Por favor, detén el experimento «%s» antes de iniciar el nuevo."
 
-#: includes/models/alternatives/global-alternative-experiment.php:138
+#: includes/models/alternatives/global-alternative-experiment.php:221
 msgid ""
 "The experiment cannot be started, because there is one (or more) heatmap "
 "experiments running. Please make sure to stop any running heatmap experiment "
 "before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay uno (o más) experimentos de "
-"tipo Heatmap en marcha. Por favor, detenga el experimento «%s» antes de "
+"tipo Heatmap en marcha. Por favor, detén el experimento «%s» antes de "
 "iniciar el nuevo."
 
-#: includes/models/alternatives/gtest.php:110
+#: includes/models/alternatives/gtest.php:394
 msgid "No alternative is better than the rest."
 msgstr "Ninguna alternativa es mejor que las demás."
 
-#: includes/models/alternatives/gtest.php:113
+#: includes/models/alternatives/gtest.php:397
 msgid "No statistic results available due to too few visits."
 msgstr "No hay resultados disponibles debido al bajo número de visitas."
 
-#: includes/models/alternatives/gtest.php:117
+#: includes/models/alternatives/gtest.php:401
 msgid "«%1$s» beats «%2$s» with a %3$s%% confidence."
 msgstr "«%1$s» gana a la «%2$s» con una confianza del %3$s%%."
 
-#: includes/models/alternatives/gtest.php:125
+#: includes/models/alternatives/gtest.php:409
 msgid ""
 "«%%1$s» beats «%%2$s» with a %%3$s%%%% confidence. Therefore, we can "
 "conclude that «%%1$s» is the best alternative, but with a low confidence "
@@ -3614,7 +3670,7 @@ msgstr ""
 "confianza aún pequeño <small>(<a href=\"%s\">¿por qué es importante?</a>)</"
 "small>."
 
-#: includes/models/alternatives/gtest.php:132
+#: includes/models/alternatives/gtest.php:416
 msgid ""
 "«%1$s» beats «%2$s» with a %3$s%% confidence. Therefore, we can conclude "
 "that «%1$s» is the best alternative."
@@ -3622,96 +3678,107 @@ msgstr ""
 "«%1$s» gana a «%2$s» con una confianza del %3$s%%. Por consiguiente, podemos "
 "concluir que «%1$s» es la mejor alternativa."
 
-#: includes/models/alternatives/gtest.php:141
+#: includes/models/alternatives/gtest.php:425
 msgid "There was an error while processing the statistics."
 msgstr "Ha habido un error mientras se procesaban las estadísticas."
 
-#: includes/models/alternatives/gtest.php:170
+#: includes/models/alternatives/gtest.php:474
 msgid "There is a clear winner, with a confidence greater than %s%%"
 msgstr "Hay un ganador claro, con una confianza superior al %s%%"
 
-#: includes/models/alternatives/gtest.php:176
+#: includes/models/alternatives/gtest.php:480
 msgid ""
 "There is a possible winner, but keep in mind the confidence does not reach %s"
 "%%"
 msgstr "Hay un posible ganador, pero la confianza todavía es inferior al %s%%"
 
-#: includes/models/alternatives/gtest.php:181
+#: includes/models/alternatives/gtest.php:485
 msgid "There is not enough data to determine any winner"
 msgstr "No hay suficientes datos para determinar un ganador"
 
-#: includes/models/alternatives/gtest.php:185
-#: includes/models/alternatives/gtest.php:190
+#: includes/models/alternatives/gtest.php:489
+#: includes/models/alternatives/gtest.php:494
 msgid "There are not enough visits"
 msgstr "No hay suficientes visitas"
 
-#: includes/models/alternatives/headline-alternative-experiment.php:277
-#: includes/models/alternatives/post-alternative-experiment.php:399
+#: includes/models/alternatives/headline-alternative-experiment.php:351
+#: includes/models/alternatives/post-alternative-experiment.php:564
 msgid ""
 "The experiment cannot be started, because there is another experiment "
 "running that is testing the same page. Please, stop the experiment named "
 "«%s» before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay otro experimento en marcha que "
-"está testeando la misma página. Por favor, detenga el experimento «%s» antes "
+"está testeando la misma página. Por favor, detén el experimento «%s» antes "
 "de empezar el nuevo."
 
-#: includes/models/alternatives/headline-alternative-experiment.php:282
-#: includes/models/alternatives/post-alternative-experiment.php:404
+#: includes/models/alternatives/headline-alternative-experiment.php:356
+#: includes/models/alternatives/post-alternative-experiment.php:569
 msgid ""
 "The experiment cannot be started, because there is another experiment "
 "running that is testing the same post. Please, stop the experiment named "
 "«%s» before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay otro experimento en marcha que "
-"está testeando la misma entrada. Por favor, detenga el experimento «%s» "
-"antes de empezar el nuevo."
+"está testeando la misma entrada. Por favor, detén el experimento «%s» antes "
+"de empezar el nuevo."
 
-#: includes/models/alternatives/headline-alternative-experiment.php:287
-#: includes/models/alternatives/post-alternative-experiment.php:409
+#: includes/models/alternatives/headline-alternative-experiment.php:361
+#: includes/models/alternatives/post-alternative-experiment.php:574
+msgid ""
+"The experiment cannot be started, because there is another experiment "
+"running that is testing the same custom post. Please, stop the experiment "
+"named «%s» before starting the new one."
+msgstr ""
+"El experimento no se puede iniciar porque hay otro experimento en marcha que "
+"está testeando la misma entrada. Por favor, detén el experimento «%s» antes "
+"de empezar el nuevo."
+
+#: includes/models/alternatives/headline-alternative-experiment.php:366
+#: includes/models/alternatives/post-alternative-experiment.php:579
 msgid ""
 "The experiment cannot be started, because there is another experiment that "
 "is testing the title of the same page. Please, stop the experiment named "
 "«%s» before starting the new one."
 msgstr ""
 "El experimento no se puede iniciar porque hay otro experimento en marcha que "
-"está testeando el título de la misma página. Por favor, detenga el "
-"experimento «%s» antes de empezar el nuevo."
+"está testeando el título de la misma página. Por favor, detén el experimento "
+"«%s» antes de empezar el nuevo."
 
-#: includes/models/experiment.php:433
+#: includes/models/experiment.php:1215
 msgid "Draft"
 msgstr "Borrador"
 
-#: includes/models/experiment.php:435
+#: includes/models/experiment.php:1217
 msgid "Paused"
 msgstr "Pausado"
 
-#: includes/models/experiment.php:437
+#: includes/models/experiment.php:1219
 msgid "Prepared"
 msgstr "Preparado"
 
-#: includes/models/experiment.php:439
+#: includes/models/experiment.php:1221
 msgid "Finished"
 msgstr "Finalizado"
 
-#: includes/models/experiment.php:441
+#: includes/models/experiment.php:1223
 msgid "Running"
 msgstr "Activo"
 
-#: includes/models/experiment.php:443
+#: includes/models/experiment.php:1225
 msgid "Scheduled"
 msgstr "Programado"
 
-#: includes/models/experiment.php:447
+#: includes/models/experiment.php:1229
 msgid "Unknown Status"
 msgstr "Desconocido"
 
-#: includes/models/goals/alternative-experiment-goal.php:301
-#: includes/models/goals/alternative-experiment-goal.php:302
+#: includes/models/goals/alternative-experiment-goal.php:426
+#: includes/models/goals/alternative-experiment-goal.php:427
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: includes/models/heatmap-experiment.php:151
+#: includes/models/heatmap-experiment.php:252
 msgid ""
 "The experiment cannot be started, because there is a running CSS experiment "
 "that may be changing the appearence of the tested page. Please, stop the "
@@ -3719,30 +3786,30 @@ msgid ""
 msgstr ""
 "El experimento no se puede iniciar porque hay un experimento de tipo CSS en "
 "marcha, el cual puede estar modificando la apariencia de la página cuyo "
-"heatmap quiere obtener. Por favor, detenga el experimento «%s» antes de "
+"heatmap quieres obtener. Por favor, detén el experimento «%s» antes de "
 "empezar el nuevo."
 
-#: includes/utils/admin-ajax-page.php:102
+#: includes/utils/admin-ajax-page.php:165
 msgid "Loading..."
 msgstr "Cargando..."
 
-#: includes/utils/admin-ajax-page.php:103
+#: includes/utils/admin-ajax-page.php:166
 msgid "Please, wait a moment."
-msgstr "Por favor, espere un momento."
+msgstr "Por favor, espera un momento."
 
-#: includes/utils/admin-ajax-page.php:104
+#: includes/utils/admin-ajax-page.php:167
 msgid "Keep waiting..."
 msgstr "Ya casi estamos..."
 
-#: includes/utils/admin-ajax-page.php:105
+#: includes/utils/admin-ajax-page.php:168
 msgid "Internet connection seems very slow."
 msgstr "La conexión a internet parece muy lenta."
 
-#: includes/utils/admin-ajax-page.php:203
+#: includes/utils/admin-ajax-page.php:272
 msgid "Oops! There was an AJAX-related error."
 msgstr "¡Vaya! Se ha producido un error en la comunicación AJAX."
 
-#: includes/utils/admin-page.php:44
+#: includes/utils/admin-page.php:100
 msgid ""
 "<b><a href=\"%s\">Upgrade to our Professional Plan</a></b> and get the most "
 "out of Nelio A/B Testing. Track <b>more visitors</b>, use the service on "
@@ -3750,124 +3817,123 @@ msgid ""
 "<small><a class=\"dismiss-upgrade-notice\" href=\"#\" onClick=\"javascript:"
 "dismissUpgradeNotice();\">Dismiss</a></small>"
 msgstr ""
-"<b><a href=\"%s\">Pásese a nuestro Plan Profesional</a></b> y disfrute más y "
-"mejor de todas las características de Nelio A/B Testing: controle a <b>más "
-"visitantes</b>, use el servicio en <b>más <i>sites</i></b> y aproveche "
-"nuestros <b>servicios de consultoría</b>. <small><a id=\"dismiss-upgrade-"
-"notice\" href=\"#\">Descartar</a></small>"
+"<b><a href=\"%s\">Pásate a nuestro Plan Profesional</a></b> y disfruta más y "
+"mejor de todas las características de Nelio A/B Testing: controla a <b>más "
+"visitantes</b>, usa el servicio en <b>más webs</b> y aprovecha nuestros "
+"<b>servicios de consultoría</b>. <small><a id=\"dismiss-upgrade-notice\" "
+"href=\"#\">Descartar</a></small>"
 
-#: includes/utils/admin-page.php:264
+#: includes/utils/admin-page.php:503
 msgid ""
-"This option is only available for users registered to our Professional Plan."
+"This option is only available for users subscribed to our Professional Plan."
 msgstr ""
-"Esta opción solo está disponible para los usuarios registrados a nuestro "
-"Plan Profesional."
+"Esta opción solo está disponible para los usuarios suscritos a nuestro Plan "
+"Profesional."
 
-#: includes/utils/admin-page.php:267
+#: includes/utils/admin-page.php:506
 msgid ""
-"This option is only available for users registered to our Enterprise Plan."
+"This option is only available for users subscribed to our Enterprise Plan."
 msgstr ""
-"Esta opción solo está disponible para los usuarios registrados a nustro Plan "
+"Esta opción solo está disponible para los usuarios suscritos a nustro Plan "
 "Enterprise."
 
-#: includes/utils/admin-table.php:71
+#: includes/utils/admin-table.php:103
 msgid "Error displaying column `%s'."
 msgstr "Error mostrando la columna `%s'."
 
-#: includes/utils/backend.php:155
+#: includes/utils/backend.php:581
 msgid "Invalid product registration number."
 msgstr "Número de registro inválido."
 
-#: includes/utils/backend.php:157
+#: includes/utils/backend.php:583
 msgid "Invalid site."
 msgstr "Site inválido."
 
-#: includes/utils/backend.php:159
+#: includes/utils/backend.php:585
 msgid "This site is not active."
 msgstr "El site no está activo."
 
-#: includes/utils/backend.php:161
-msgid ""
-"This account has reached the maximum allowed number of registered sites."
-msgstr "La cuenta ha alcanzado el número máximo de sites registrados."
+#: includes/utils/backend.php:587
+msgid "This account has reached the maximum allowed number of active sites."
+msgstr "La cuenta ha alcanzado el número máximo de sitios activos."
 
-#: includes/utils/backend.php:163
+#: includes/utils/backend.php:589
 msgid "There is no more quota available."
 msgstr "No hay más cuota disponible."
 
-#: includes/utils/backend.php:165
+#: includes/utils/backend.php:591
 msgid "Subscription has not been paid yet."
 msgstr "La suscripción está pendiente de pago."
 
-#: includes/utils/backend.php:167
+#: includes/utils/backend.php:593
 msgid "Invalid e-mail."
 msgstr "E-mail inválido."
 
-#: includes/utils/backend.php:169
+#: includes/utils/backend.php:595
 msgid "This e-mail is already registered."
 msgstr "Este e-mail ya está registrado."
 
-#: includes/utils/backend.php:171
+#: includes/utils/backend.php:597
 msgid "Too few parameters."
 msgstr "Faltan parámetros."
 
-#: includes/utils/backend.php:173
+#: includes/utils/backend.php:599
 msgid "The URL of the site is invalid."
 msgstr "La URL del site es inválida."
 
-#: includes/utils/backend.php:175
+#: includes/utils/backend.php:601
 msgid "Invalid parameters."
 msgstr "Parámetros inválidos."
 
-#: includes/utils/backend.php:177
+#: includes/utils/backend.php:603
 msgid "Invalid experiment."
 msgstr "Experimento inválido."
 
-#: includes/utils/backend.php:179
+#: includes/utils/backend.php:605
 msgid "Invalid alternative."
 msgstr "Alternativa inválida."
 
-#: includes/utils/backend.php:181
+#: includes/utils/backend.php:607
 msgid "Results for this experiment are not yet available."
 msgstr "Los resultados del experimento aún no están disponibles."
 
-#: includes/utils/backend.php:183
+#: includes/utils/backend.php:609
 msgid "User account has been deactivated."
 msgstr "Cuenta de usuario desactivada."
 
-#: includes/utils/backend.php:185
+#: includes/utils/backend.php:611
 msgid "Experiment not found."
 msgstr "No se encuentra el experimento."
 
-#: includes/utils/backend.php:187
+#: includes/utils/backend.php:613
 msgid "Go to my list of experiments..."
 msgstr "Ir a mi lista de experimentos..."
 
-#: includes/utils/backend.php:190
+#: includes/utils/backend.php:616
 msgid "Goal not found."
 msgstr "Objetivo no encontrado."
 
-#: includes/utils/backend.php:192
+#: includes/utils/backend.php:618
 msgid "The experiment cannot be modified."
 msgstr "No se puede modificar el experimento."
 
-#: includes/utils/backend.php:194
+#: includes/utils/backend.php:620
 msgid "The experiment is not running."
 msgstr "El experimento no está ejecutándose."
 
-#: includes/utils/backend.php:196
+#: includes/utils/backend.php:622
 msgid "The feature you are trying to use is not available."
-msgstr "La funcionalidad que está intentando utilizar no está disponible."
+msgstr "La funcionalidad que estás intentando utilizar no estás disponible."
 
-#: includes/utils/backend.php:198
+#: includes/utils/backend.php:624
 msgid "The experiment cannot be scheduled for the given date."
 msgstr "El experimento no se puede programar para la fecha propuesta."
 
-#: includes/utils/backend.php:200
+#: includes/utils/backend.php:626
 msgid "The experiment cannot be duplicated."
 msgstr "No se puede duplicar el experimento."
 
-#: includes/utils/backend.php:202
+#: includes/utils/backend.php:628
 msgid ""
 "The experiment cannot be started: missing information (for instance, an "
 "alternative or a set of actions in a goal)."
@@ -3875,81 +3941,81 @@ msgstr ""
 "El experimento no pudo ser iniciado por falta de información (por ejemplo, "
 "las alternativas y/o las acciones de conversión pueden no estar definidas)."
 
-#: includes/utils/backend.php:209
+#: includes/utils/backend.php:635
 msgid ""
 "Oops! The experiment cannot be started because it defines more than one goal "
 "page. Please, modify your experiment so that it includes one goal page only "
 "or <a href=\"%s\">upgrade your Nelio A/B Testing subscription package</a>."
 msgstr ""
 "¡Vaya! El experimento no se ha podido iniciar porque define más de una "
-"página objetivo. Por favor, modifíquelo para que sólo tenga una o <a href="
-"\"%s\">actualice su suscripción a Nelio A/B Testing</a>."
+"página objetivo. Por favor, modifícalo para que sólo tenga una o <a href=\"%s"
+"\">actualiza su suscripción a Nelio A/B Testing</a>."
 
-#: includes/utils/backend.php:214
+#: includes/utils/backend.php:640
 msgid ""
 "Oops! Your current subscription plan does not permit you to use Heatmap "
 "Experiments. Please, consider <a href=\"%s\">upgrading your Nelio A/B "
 "subscription package</a>."
 msgstr ""
-"¡Vaya! Su plan de suscripción actual no permite usar experimentos de "
-"Heatmaps. Por favor, <a href=\"%s\">actualice su suscripción a Nelio A/B "
+"¡Vaya! Tu plan de suscripción actual no permite usar experimentos de "
+"Heatmaps. Por favor, <a href=\"%s\">actualiza tu suscripción a Nelio A/B "
 "Testing</a> para habilitarlos."
 
-#: includes/utils/backend.php:221
+#: includes/utils/backend.php:647
 msgid "Backend is not available."
 msgstr "El backend no está disponible."
 
-#: includes/utils/backend.php:223
+#: includes/utils/backend.php:649
 msgid "No site has been configured."
 msgstr "No se ha configurado ningún site."
 
-#: includes/utils/backend.php:225
+#: includes/utils/backend.php:651
 msgid "Error 404 when accessing an endpoint."
 msgstr "Error 404 mientras se accedía al endpoint."
 
-#: includes/utils/backend.php:227
+#: includes/utils/backend.php:653
 msgid "Terms and conditions are not accepted."
 msgstr "Los términos y condiciones no han sido aceptados."
 
-#: includes/utils/backend.php:229
+#: includes/utils/backend.php:655
 msgid ""
 "Backend is not accessible.<br />Please, try again in just a few moments."
 msgstr ""
-"El backend no esta disponible.<br />Por favor, vuelva a intentarlo en unos "
+"El backend no esta disponible.<br />Por favor, inténtalo de nuevo en unos "
 "momentos."
 
-#: includes/utils/backend.php:231
+#: includes/utils/backend.php:657
 msgid ""
 "Be patient... We are still collecting the data for your heatmaps and "
 "clickmaps."
 msgstr ""
-"Sea paciente... Aún estamos recogiendo datos para preparar los heatmaps y "
+"Espera un poco... Aún estamos recogiendo datos para preparar los heatmaps y "
 "clickmaps."
 
-#: includes/utils/backend.php:233
+#: includes/utils/backend.php:659
 msgid ""
 "We did not collect enough data for building your heatmaps and clickmaps. "
 "Sorry."
 msgstr ""
 "No pudimos recoger suficientes datos para generar los heatmaps y clickmaps."
 
-#: includes/utils/backend.php:235
+#: includes/utils/backend.php:661
 msgid "An unknown error has occurred."
 msgstr "Se ha producido un error desconocido."
 
-#: includes/utils/backend.php:237
+#: includes/utils/backend.php:663
 msgid "Experiment cannot be started."
 msgstr "No se puede iniciar el experimento."
 
-#: includes/utils/backend.php:239
+#: includes/utils/backend.php:665
 msgid "Invalid «_nonce». Are you sure you want to do this?"
-msgstr "«_nonce» inválido. ¿Seguro que desea hacer esto?"
+msgstr "«_nonce» inválido. ¿Seguro que deseas hacer esto?"
 
-#: includes/utils/backend.php:242
+#: includes/utils/backend.php:668
 msgid "An unknown error occurred while accessing the backend."
 msgstr "Se ha producido un error desconocido mientras se accedía al backend."
 
-#: includes/utils/essentials.php:179
+#: includes/utils/essentials.php:230
 msgid ""
 "You've recently upgraded to <strong>Nelio A/B Testing %s</strong>. "
 "<strong>If you're running a cache system</strong> (such as <em>W3 Total "
@@ -3959,40 +4025,40 @@ msgid ""
 "may not work properly."
 msgstr ""
 "Gracias por instalar <strong>Nelio A/B Testing %s</strong>. <strong>Si "
-"utiliza algún mecanismo de cache (como, por ejemplo, <em>W3 Total Cache</em> "
-"o <em>WP Super Cache</em>) <strong>o si su servidor está detrás de una CDN</"
-"strong>, por favor asegúrese de <strong>borrar los datos de su cache</"
-"strong>. Si no lo hiciera, podría estar sirviendo versiones antiguas de "
-"nuestros scripts de tracking y, por tanto, el plugin podría no funcionar "
-"correctamente."
+"utilizas algún mecanismo de cache (como, por ejemplo, <em>W3 Total Cache</"
+"em> o <em>WP Super Cache</em>) <strong>o si tu servidor está detrás de una "
+"CDN</strong>, por favor asegúrate de <strong>borrar los datos de tu cache</"
+"strong>. Si no lo hicieras, tu servidor podría estar sirviendo versiones "
+"antiguas de nuestros scripts de tracking y, por tanto, el plugin podría no "
+"funcionar correctamente."
 
-#: includes/utils/essentials.php:186
+#: includes/utils/essentials.php:237
 msgid "Dismiss"
 msgstr "Entendido"
 
-#: includes/utils/html-generator.php:77
+#: includes/utils/html-generator.php:113
 msgid "Manual"
 msgstr "Manual"
 
-#: includes/utils/html-generator.php:85
+#: includes/utils/html-generator.php:121
 msgid "Duration"
 msgstr "Duración"
 
-#: includes/utils/html-generator.php:101
+#: includes/utils/html-generator.php:137
 msgid "Winning Alternative Reaches a Minimum Confidence"
 msgstr "La alternativa ganadora iguala o supera una cierta Confianza Mínima"
 
-#: includes/utils/html-generator.php:110
+#: includes/utils/html-generator.php:146
 msgid "The experiment will be running until you manually stop it."
 msgstr ""
 "El experimento se estará ejecutando hasta que usted lo detenga manualmente."
 
-#: includes/utils/html-generator.php:113 includes/utils/html-generator.php:128
-#: includes/utils/html-generator.php:170
+#: includes/utils/html-generator.php:149 includes/utils/html-generator.php:164
+#: includes/utils/html-generator.php:206
 msgid "Mode Configuration"
 msgstr "Configuración Específica"
 
-#: includes/utils/html-generator.php:115
+#: includes/utils/html-generator.php:151
 msgid ""
 "The experiment will be runnning for %s and will then be automatically "
 "stopped."
@@ -4000,7 +4066,7 @@ msgstr ""
 "El experimento se estará ejecutando durante %s y, después, se detendrá "
 "automáticamente."
 
-#: includes/utils/html-generator.php:130
+#: includes/utils/html-generator.php:166
 msgid ""
 "If the tested page (and its alternatives) have been seen over %s times, the "
 "experiment will be automatically stopped."
@@ -4008,99 +4074,258 @@ msgstr ""
 "Cuando la página bajo test (y sus alternativas) hayan sido vistas, como "
 "mínimo, %s veces, el experimento se detendrá automáticamente."
 
-#: includes/utils/html-generator.php:151
+#: includes/utils/html-generator.php:187
 msgid ""
 "According to your global settings, there's a Quota Limit of %s page views "
 "per experiment. For this experiment, however, the global setting will be "
 "overriden."
 msgstr ""
-"Según su configuración global, hay un límite de cuota de %s páginas bajo "
+"Según tu configuración global, hay un límite de cuota de %s páginas bajo "
 "test por experimento. Sin embargo, este experimento define un valor "
 "superior, con lo cual se ignorará el límite global."
 
-#: includes/utils/html-generator.php:172
+#: includes/utils/html-generator.php:208
 msgid "%s the experiment will be automatically stopped."
 msgstr "%s el experimento se detendrá automáticamente."
 
-#: includes/utils/html-generator.php:174
+#: includes/utils/html-generator.php:210
 msgid "99% - If we are absolutely confident there's a clear winner"
 msgstr "99% - Si estamos absolutamente seguros de que hay una clara ganadora"
 
-#: includes/utils/html-generator.php:175
+#: includes/utils/html-generator.php:211
 msgid "98% - If we are extremely confident there's a clear winner"
 msgstr "98% - Si estamos muy seguros de que hay una clara ganadora"
 
-#: includes/utils/html-generator.php:176
+#: includes/utils/html-generator.php:212
 msgid "97% - If we are quite confident there's a winner"
 msgstr "97% - Si estamos bastante seguros de que hay una ganadora"
 
-#: includes/utils/html-generator.php:177
+#: includes/utils/html-generator.php:213
 msgid "96% - If we are confident there's a winner"
 msgstr "96% - Si estamos seguros de que hay una ganadora"
 
-#: includes/utils/html-generator.php:178
+#: includes/utils/html-generator.php:214
 msgid "95% - If we are slightly confident there's a winner"
 msgstr "95% - Si podemos estar ligeramente seguros de que hay una ganadora"
 
-#: includes/utils/html-generator.php:179
+#: includes/utils/html-generator.php:215
 msgid "90% - If it is possible that there's a winner"
 msgstr "90% - Si es posible que haya una ganadora"
 
-#: includes/utils/html-generator.php:243
+#: includes/utils/html-generator.php:301
 msgid "Month"
 msgstr "Mes"
 
-#: includes/utils/html-generator.php:251 includes/utils/html-generator.php:253
+#: includes/utils/html-generator.php:309 includes/utils/html-generator.php:311
 msgid "Day"
 msgstr "Día"
 
-#: includes/utils/html-generator.php:255 includes/utils/html-generator.php:257
+#: includes/utils/html-generator.php:313 includes/utils/html-generator.php:315
 msgid "Year"
 msgstr "Año"
 
-#: includes/utils/html-generator.php:263
+#: includes/utils/html-generator.php:322
 msgid "%1$s %2$s, %3$s"
 msgstr "%2$s %1$s %3$s"
 
-#: includes/utils/html-generator.php:293
+#: includes/utils/html-generator.php:362
 msgid "The changes you made will be lost if you navigate away from this page."
-msgstr "Los cambios realizados se perderán si deja esta página."
+msgstr "Los cambios realizados se perderán si dejas esta página."
 
-#: includes/utils/html-generator.php:370
+#: includes/utils/html-generator.php:622
 msgid "Select an option..."
-msgstr "Seleccione una opción..."
+msgstr "Selecciona una opción..."
 
-#: includes/utils/html-generator.php:374
+#: includes/utils/html-generator.php:626
 msgid "Select a page..."
-msgstr "Seleccione una página..."
+msgstr "Selecciona una página..."
 
-#: includes/utils/html-generator.php:377
+#: includes/utils/html-generator.php:629
 msgid "Select a post..."
-msgstr "Seleccione una entrada..."
+msgstr "Selecciona una entrada..."
 
-#: includes/utils/html-generator.php:380
+#: includes/utils/html-generator.php:632
 msgid "Select a form..."
-msgstr "Seleccione un formulario..."
+msgstr "Selecciona un formulario..."
 
-#: includes/utils/html-generator.php:384
+#: includes/utils/html-generator.php:636
 msgid "Select a page, post, or custom element..."
-msgstr "Seleccione una página, entrada o elemento cualquiera..."
+msgstr "Selecciona una página, entrada o elemento cualquiera..."
 
-#: includes/utils/html-generator.php:390
+#: includes/utils/html-generator.php:642
 msgid "Select a page or post..."
-msgstr "Seleccione una página o entrada..."
+msgstr "Selecciona una página o entrada..."
 
-#: includes/utils/wp-helper.php:193 includes/utils/wp-helper.php:358
+#: includes/utils/wp-helper.php:317 includes/utils/wp-helper.php:497
 msgid "No featured image available"
 msgstr "No hay ninguna imagen destacada disponible"
 
-#: includes/utils/wp-helper.php:220
+#: includes/utils/wp-helper.php:352
 msgid "Your latest posts"
 msgstr "Tus últimas entradas"
 
-#: includes/utils/wp-helper.php:237
+#: includes/utils/wp-helper.php:369
 msgid "Landing Page (Theme-based)"
 msgstr "Página Frontal (generada por el tema)"
+
+#~ msgid "registered site"
+#~ msgstr "site registrado"
+
+#~ msgid "registered sites"
+#~ msgstr "sites registrados"
+
+#~ msgid "This site is not registered"
+#~ msgstr "Este site no está registrado"
+
+#~ msgid "Share & Comment"
+#~ msgstr "Compartir"
+
+#~ msgid "There are no pages available."
+#~ msgstr "No hay páginas disponibles."
+
+#~ msgid "Registered Sites"
+#~ msgstr "Sites registrados"
+
+#~ msgid ""
+#~ "Nonetheless, please note this site is registered to your account, which "
+#~ "means you can still use all plugin's functionalities."
+#~ msgstr ""
+#~ "En cualquier caso, puede seguir usando el servicio con normalidad, puesto "
+#~ "que el site está correctamente registrado en su cuenta."
+
+#~ msgid "This Site is Not Registered"
+#~ msgstr "Este site no está registrado"
+
+#~ msgid "Register"
+#~ msgstr "Registrar"
+
+#~ msgid "In your account, the site is actually registered as «%s»"
+#~ msgstr "En su cuenta, el site está registrado como «%s»"
+
+#~ msgid "Cancel Registration"
+#~ msgstr "Cancelar Registro"
+
+#~ msgid "*The site was registered using a different URL"
+#~ msgstr "*El site se registró usando una URL diferente"
+
+#~ msgid "New Goal"
+#~ msgstr "Nuevo Objetivo"
+
+#~ msgid "New Actions"
+#~ msgstr "Nuevas Acciones"
+
+#~ msgid "Happy smile."
+#~ msgstr "Sonrisa feliz."
+
+#~ msgid ""
+#~ "Hi! You're now in Nelio's Dashboard, where you'll find all relevant "
+#~ "information about your running experiments. Right now, however, there are "
+#~ "none...<br><a href=\"%s\">Create one now!</a>"
+#~ msgstr ""
+#~ "¡Hola! Este es el Escritorio de Nelio. Aquí encontrará toda la "
+#~ "información relevante acerca de los experimentos en ejecución. Sin "
+#~ "embargo, parece que todavía no hay ninguno...<br><a href=\"%s\">¡Cree uno "
+#~ "ahora!</a>"
+
+#~ msgid "Error"
+#~ msgstr "Error"
+
+#~ msgid ""
+#~ "Hey! It looks like you have not defined any experiment...<br /><a href="
+#~ "\"%s\">Create one now</a>!"
+#~ msgstr ""
+#~ "¡Ey! Es hora de optimizar su site, ¿no?<br /><a href=\"%s\">¡Cree un "
+#~ "experimento!</a>"
+
+#~ msgid "Together, we'll build a better service!"
+#~ msgstr "Juntos, crearemos un mejor servicio."
+
+#~ msgid ""
+#~ "We're honoured you're using our service. We hope Nelio A/B Testing is "
+#~ "meeting your expectations. Together, we'll get your site to the next "
+#~ "level!"
+#~ msgstr ""
+#~ "Nos encanta que use nuestro servicio y esperamos que Nelio A/B Testing "
+#~ "esté satisfaciendo sus necesidades. ¡Juntos llevaremos su site al "
+#~ "siguiente nivel!"
+
+#~ msgid ""
+#~ "If you're happy with our service, please help us <b>spread the word and "
+#~ "let others know about your experience with Nelio A/B Testing</b>!"
+#~ msgstr ""
+#~ "Si está contento con el servicio, <b>¡difunda sus experiencias y facilite "
+#~ "que otros conozcan Nelio A/B Testing!</b>"
+
+#~ msgid ""
+#~ "And, please, don't forget to <a href=\"%s\" target=\"_blank\">rate the "
+#~ "plugin in the WordPress Plugin Directory</a>!"
+#~ msgstr ""
+#~ "Y, por favor, no olvide <a href=\"%s\" target=\"_blank\">puntuar nuestro "
+#~ "plugin en el directorio oficial de plugins para WordPress</a>."
+
+#~ msgid "Your opinion matters!"
+#~ msgstr "¡Su opinión es importante!"
+
+#~ msgid ""
+#~ "Would you like to request a new feature? Do you have any doubt using our "
+#~ "service? Have you encountered any problems?"
+#~ msgstr ""
+#~ "¿Echa de menos alguna funcionalidad? ¿Tiene dificultades para usar el "
+#~ "producto? ¿Ha encontrado algún problema?"
+
+#~ msgid ""
+#~ "Please, <b>do not hesitate to contact us and tell what you are thinking!</"
+#~ "b>"
+#~ msgstr ""
+#~ "Por favor, <b>no dude en contactarnos y díganos qué está pensando</b>."
+
+#~ msgid "Contact with Nelio"
+#~ msgstr "Contacte con Nelio"
+
+#~ msgid "Message"
+#~ msgstr "Mensaje"
+
+#~ msgid "Send Comment"
+#~ msgstr "Enviar comentario"
+
+#~ msgid "Sending..."
+#~ msgstr "Enviando..."
+
+#~ msgid "There was an error while sending your comment. Please, try again."
+#~ msgstr "Ha habido un error durante el envío. Por favor, inténtelo otra vez."
+
+#~ msgid "Comment successfully sent."
+#~ msgstr "Comentario enviado correctamente."
+
+#~ msgid "Right now, no alternative is beating the original page."
+#~ msgstr "Ahora mismo, ninguna alternativa gana a la página original."
+
+#~ msgid "Right now, alternative %s is better than the original page."
+#~ msgstr "Ahora mismo, la alternativa %s es mejor que la página original."
+
+#~ msgid "No alternative was better the original page."
+#~ msgstr "Ninguna alternativa es mejor que la página original."
+
+#~ msgid "Alternative %s was better than the original page."
+#~ msgstr "La alternativa %s fue mejor que la página original."
+
+#~ msgid ""
+#~ "You are about to overwrite the original page with the content of an "
+#~ "alternative. Please, remember <strong>this operation cannot be undone</"
+#~ "strong>. Are you sure you want to overwrite it?"
+#~ msgstr ""
+#~ "Está a punto de sobrescribir la página original con el contenido de una "
+#~ "alternativa. Recuerde que <strong>esta operación no se puede deshacer</"
+#~ "strong>. ¿Quiere sobrescribirla?"
+
+#~ msgid "for the original and the alternative pages"
+#~ msgstr "para las páginas original y alternativas"
+
+#~ msgid "for the original and the alternative posts"
+#~ msgstr "para las entradas original y alternativas"
+
+#~ msgid "with respect to the original page"
+#~ msgstr "respecto a la página original"
 
 #~ msgid "Quota Limit per Experiment"
 #~ msgstr "Límite de cuota para un experimento"
@@ -4568,12 +4793,6 @@ msgstr "Página Frontal (generada por el tema)"
 
 #~ msgid "Ignore GET parameters"
 #~ msgstr "Ignorar los parámetros GET"
-
-#~ msgid "Pages"
-#~ msgstr "Páginas"
-
-#~ msgid "Posts"
-#~ msgstr "Entradas"
 
 #~ msgid "Preview with..."
 #~ msgstr "Previsualizar con..."

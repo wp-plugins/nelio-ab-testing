@@ -67,7 +67,7 @@
 				}
 			}
 			if ( $counter == 0 ) {
-				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+				if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 					$err = NelioABErrCodes::NO_HEATMAPS_AVAILABLE;
 					throw new Exception( NelioABErrCodes::to_string( $err ), $err );
 				}

@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.0.7
+Stable tag: 4.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,10 +25,11 @@ familiar user experience.
 > Solution for WordPress**<br>
 > Improve your landing pages, write better posts, create alternative pages, go
 > beyond simple title testing and start testing headlines, try new themes, test
-> different menus, modify your CSS rules, and test alternative widgets!
-> Moreover, we designed Nelio A/B Testing to be compatible with your most
-> beloved WordPress plugins such as, for instance, OptimizePress, Gravity
-> Forms, or Contact Form 7.
+> different menus, modify your CSS rules, test custom post types (such as
+> WooCommerce's _Products_), and test alternative widgets! Moreover, we
+> designed Nelio A/B Testing to be compatible with your most beloved WordPress
+> plugins such as, for instance, OptimizePress, Gravity Forms, or Contact Form
+> 7.
 >
 > **Designed as a Service**<br>
 > Our plugin lifts all the processing load from your own server and takes it
@@ -61,13 +62,18 @@ interface** that simplifies the process of creating alternatives and applying
 the winning ones.
 
 
-= #2 - Create Alternative Content for your Pages (and Posts) =
+= #2 - Create Alternative Content for your Pages, Posts, and Custom Post Types =
 
 When creating A/B experiments, the first things you'll want to test are the
 pages of your website. Does this button work? Do my visitors go from the
 landing page to my pricing page? What if I change this background image? Nelio
 A/B Testing makes [page (and post) experiments super
 easy](http://nelioabtesting.com/wordpress-splitmultivariate-testing-pages/?fp=wordpress.org)!
+
+Moreover, **version 4.1** includes support for custom post types. Use Nelio A/B
+Testing with WooCommerce and many other plugins/themes that define their own
+types (such as _Products_, _Videos_, _Reviews_, and more).
+
 
 
 = #3 - Go beyond simple title tests&mdash;Test Headlines! =
@@ -261,6 +267,20 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
+= 4.1.0 (May 5, 2015) =
+* **New Feature** Support for Custom Post Types. Use it with WooCommerce
+(Experimental) and many other plugins that define their own types: videos,
+articles, products, and so on!
+* **New Feature** Experiment Duplication is available to all plans. Don't waste
+any more time creating experiments from scratch!
+* **Improvement** Improved support for iframes. Nelio A/B Testing will no
+longer load alternative content (or track conversions) for nested, duplicated
+iframes.
+* **Improvement** User interface has been slightly redesigned. Now, it's more
+intuitive and more beautiful than ever!
+* Several additional improvements and some other bug fixes.
+
+
 = 4.0.7 (Apr 22, 2015) =
 * Plugin compatible with version 4.2.
 * Security fix (see [Fixing `add_query_arg()` and `remove_query\_arg()`
@@ -306,6 +326,8 @@ Angular.js).
 * **New Settings Screen**. This new version gets rid of some legacy settings
 and introduces some new ones. We've also included a small help icon for each
 setting, so that you can easily know what they do.
+* **Deprecated**. The function we introduced in version 3.4.4 (NelioAB.delay)
+has been deprecated. Make sure you no longer use it!
 
 
 = 3.4.4 =
@@ -315,8 +337,8 @@ testing your Front Page.
 * Support for the plugin [WP Google Analytics
 Events](https://wordpress.org/plugins/wp-google-analytics-events/)
 * Added new JS funtion <code>NelioAB.delay</code>. With this function, one can
-delay the execution of some JavaScript code (surrounding that code with
-<code>NelioAB.delay( function(){</code> and <code>}</code>. This prevents
+delay the execution of some JavaScript code (surrounding that code
+with <code>NelioAB.delay( function(){</code> and <code>}</code>. This prevents
 JavaScript code from being executed twice (one for the original content and
 another one for the alternative's).
 
@@ -876,7 +898,8 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.0.7 =
-**Nelio A/B Testing 4 is more efficient than ever!** This update makes Nelio
-compatible with WordPress 4.2 and adds an important security fix.
+= 4.1.0 =
+**Support for Custom Post Types**. Use Nelio A/B Testing with WooCommerce
+(Experimental) and many other plugins/themes that define their own types (such
+as Products, Videos, Reviews, and so on).
 

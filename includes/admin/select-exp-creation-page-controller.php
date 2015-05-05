@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public License.
  *
  * This script is free software: you can redistribute it and/or modify it under
@@ -83,6 +83,10 @@ if ( !class_exists( 'NelioABSelectExpCreationPageController' ) ) {
 				case NelioABExperiment::HEATMAP_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/others/heatmap-exp-creation-page-controller.php' );
 					return 'NelioABHeatmapExpCreationPageController';
+
+				case NelioABExperiment::CPT_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/cpt-alt-exp-creation-page-controller.php' );
+					return 'NelioABCptAltExpCreationPageController';
 
 				default:
 					require_once( NELIOAB_UTILS_DIR . '/backend.php' );

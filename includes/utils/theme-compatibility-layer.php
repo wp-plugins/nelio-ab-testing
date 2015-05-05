@@ -36,9 +36,11 @@ if ( !class_exists( 'NelioABThemeCompatibilityLayer' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			$found = false;
-			foreach ( $running_exps as $exp )
+			foreach ( $running_exps as $exp ) {
+				/** @var NelioABExperiment $exp */
 				if ( $exp->get_type() == NelioABExperiment::THEME_ALT_EXP )
 					$found = true;
+			}
 			if ( !$found )
 				return;
 

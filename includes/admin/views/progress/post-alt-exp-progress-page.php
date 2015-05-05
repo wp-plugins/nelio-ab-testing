@@ -25,20 +25,58 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 	class NelioABPostAltExpProgressPage extends NelioABAltExpProgressPage {
 
 		protected $ori;
-		protected $is_ori_page;
+		protected $post_type;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->set_icon( 'icon-nelioab' );
 			$this->exp          = null;
 			$this->results      = null;
+			$this->post_type = array(
+				'name'     => 'page',
+				'singular' => 'Page',
+				'plural'   => 'Pages'
+			);
+		}
+
+		public function set_experiment( $exp ) {
+			parent::set_experiment( $exp );
+
+			switch ( $exp->get_post_type() ) {
+				case 'page':
+					$this->post_type = array(
+						'name'     => 'page',
+						'singular' => __( 'Page', 'nelioab' ),
+						'plural'   => __( 'Pages', 'nelioab' )
+					);
+					break;
+				case 'post';
+					$this->post_type = array(
+						'name'     => 'post',
+						'singular' => __( 'Post', 'nelioab' ),
+						'plural'   => __( 'Posts', 'nelioab' )
+					);
+					break;
+				default:
+					require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+					$ptn = $exp->get_post_type();
+					$pt = NelioABWpHelper::get_custom_post_types( $ptn );
+					$this->post_type = array(
+						'name'     => $pt->name,
+						'singular' => __( $pt->labels->singular_name, 'nelioab' ),
+						'plural'   => __( $pt->labels->name, 'nelioab' )
+					);
+
+			}
 		}
 
 		protected function print_experiment_details_title() {
-			if ( $this->is_ori_page )
+			if ( 'page' == $this->post_type['name'] )
 				_e( 'Details of the Page Experiment', 'nelioab' );
-			else
+			else if ( 'post' == $this->post_type['name'] )
 				_e( 'Details of the Post Experiment', 'nelioab' );
+			else
+				printf( __( 'Details of the %s Post Type Experiment', 'nelioab' ), $this->post_type['singular'] );
 		}
 
 		protected function get_original_name() {
@@ -73,32 +111,20 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			$the_winner_confidence = $this->get_winning_confidence();
 
 			$exp = $this->exp;
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+			if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 				if ( $the_winner == 0 ) {
-					if ( $this->is_ori_page )
-						echo '<p><b>' . __( 'Right now, no alternative is beating the original page.', 'nelioab' ) . '</b></p>';
-					else
-						echo '<p><b>' . __( 'Right now, no alternative is beating the original post.', 'nelioab' ) . '</b></p>';
+					echo '<p><b>' . sprintf( __( 'Right now, no alternative is beating the original %s.', 'nelioab' ), $this->post_type['name'] ) . '</b></p>';
 				}
 				if ( $the_winner > 0 ) {
-					if ( $this->is_ori_page )
-						echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original page.', 'nelioab' ), $the_winner ) . '</b></p>';
-					else
-						echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original post.', 'nelioab' ), $the_winner ) . '</b></p>';
+					echo '<p><b>' . sprintf( __( 'Right now, alternative %s is better than the original %s.', 'nelioab' ), $the_winner, $this->post_type['name'] ) . '</b></p>';
 				}
 			}
 			else {
 				if ( $the_winner == 0 ) {
-					if ( $this->is_ori_page )
-						echo '<p><b>' . __( 'No alternative was better the original page.', 'nelioab' ) . '</b></p>';
-					else
-						echo '<p><b>' . __( 'No alternative was better the original post.', 'nelioab' ) . '</b></p>';
+					echo '<p><b>' . sprintf( __( 'No alternative was better the original %s.', 'nelioab' ), $this->post_type['name'] ) . '</b></p>';
 				}
 				if ( $the_winner > 0 ) {
-					if ( $this->is_ori_page )
-						echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original page.', 'nelioab' ), $the_winner ) . '</b></p>';
-					else
-						echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original post.', 'nelioab' ), $the_winner ) . '</b></p>';
+					echo '<p><b>' . sprintf( __( 'Alternative %s was better than the original %s.', 'nelioab' ), $the_winner, $this->post_type['name'] ) . '</b></p>';
 				}
 			}
 		}
@@ -137,10 +163,10 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			if ( $exp->are_heatmaps_tracked() )
 				array_push( $action_links, $this->make_link_for_heatmap( $exp, $alt_id ) );
 			switch ( $exp->get_status() ) {
-				case NelioABExperimentStatus::RUNNING:
+				case NelioABExperiment::STATUS_RUNNING:
 					array_push( $action_links, $this->make_link_for_edit( $alt_id ) );
 					break;
-				case NelioABExperimentStatus::FINISHED:
+				case NelioABExperiment::STATUS_FINISHED:
 					if ( $alt_id == $exp->get_originals_id() )
 						break;
 					$aux = sprintf(
@@ -231,12 +257,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 			$exp = $this->exp;
 			?>
 			<p><?php
-				if ( $this->is_ori_page ) {
-					_e( 'You are about to overwrite the original page with the content of an alternative. Please, remember <strong>this operation cannot be undone</strong>. Are you sure you want to overwrite it?', 'nelioab' );
-				}
-				else {
-					_e( 'You are about to overwrite the original post with the content of an alternative. Please, remember <strong>this operation cannot be undone</strong>. Are you sure you want to overwrite it?', 'nelioab' );
-				}
+				printf( __( 'You are about to overwrite the original %s with the content of an alternative. Please, remember <strong>this operation cannot be undone</strong>. Are you sure you want to overwrite it?', 'nelioab' ), $this->post_type['name'] );
 			?></p>
 			<form id="apply_alternative" method="post" action="<?php
 				echo admin_url(
@@ -253,7 +274,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 					if ( NelioABSettings::is_copying_metadata_enabled() ) echo 'checked="checked" ';
 				?>/><?php _e( 'Override all metadata', 'nelioab' ); ?></p>
 				<?php
-				if ( !$this->is_ori_page ) { ?>
+				if ( ! 'page' == $this->post_type['name'] ) { ?>
 					<p><input type="checkbox" id="copy_categories" name="copy_categories" <?php
 						if ( NelioABSettings::is_copying_categories_enabled() ) echo 'checked="checked" ';
 					?>/><?php _e( 'Override categories', 'nelioab' ); ?></p>
@@ -268,10 +289,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		protected function get_labels_for_conversion_rate_js() {
 			$labels = array();
 			$labels['title']    = __( 'Conversion Rates', 'nelioab' );
-			if ( $this->is_ori_page )
-				$labels['subtitle'] = __( 'for the original and the alternative pages', 'nelioab' );
-			else
-				$labels['subtitle'] = __( 'for the original and the alternative posts', 'nelioab' );
+			$labels['subtitle'] = sprintf( __( 'for the original and the alternative %s', 'nelioab' ), strtolower( $this->post_type['plural'] ) );
 			$labels['xaxis']    = __( 'Alternatives', 'nelioab' );
 			$labels['yaxis']    = __( 'Conversion Rate (%)', 'nelioab' );
 			$labels['column']   = __( '{0}%', 'nelioab' );
@@ -282,10 +300,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		protected function get_labels_for_improvement_factor_js() {
 			$labels = array();
 			$labels['title']    = __( 'Improvement Factors', 'nelioab' );
-			if ( $this->is_ori_page )
-				$labels['subtitle'] = __( 'with respect to the original page', 'nelioab' );
-			else
-				$labels['subtitle'] = __( 'with respect to the original post', 'nelioab' );
+			$labels['subtitle'] = sprintf( __( 'with respect to the original %s', 'nelioab' ), $this->post_type['name'] );
 			$labels['xaxis']    = __( 'Alternatives', 'nelioab' );
 			$labels['yaxis']    = __( 'Improvement (%)', 'nelioab' );
 			$labels['column']   = __( '{0}%', 'nelioab' );
@@ -296,10 +311,7 @@ if ( !class_exists( 'NelioABPostAltExpProgressPage' ) ) {
 		protected function get_labels_for_visitors_js() {
 			$labels = array();
 			$labels['title']       = __( 'Page Views and Conversions', 'nelioab' );
-			if ( $this->is_ori_page )
-				$labels['subtitle']    = __( 'for the original and the alternative pages', 'nelioab' );
-			else
-				$labels['subtitle']    = __( 'for the original and the alternative posts', 'nelioab' );
+			$labels['subtitle']    = sprintf( __( 'for the original and the alternative %s', 'nelioab' ) , strtolower( $this->post_type['plural'] ) );
 			$labels['xaxis']       = __( 'Alternatives', 'nelioab' );
 			$labels['detail']      = __( 'Number of {series.name}: <b>{point.y}</b>', 'nelioab' );
 			$labels['visitors']    = __( 'Page Views', 'nelioab' );

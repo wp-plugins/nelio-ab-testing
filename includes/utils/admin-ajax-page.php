@@ -1,41 +1,111 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * Copyright 2015 Nelio Software S.L.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
 
+	/**
+	 * This class is an abstract page prepared for loading content using AJAX.
+	 *
+	 * @since PHPDOC
+	 * @package \NelioABTesting\Utils
+	 */
 	abstract class NelioABAdminAjaxPage extends NelioABAdminPage {
 
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var boolean
+		 */
 		private $is_data_pending;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
 		private $controller_file;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
 		private $controller_class;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var array
+		 */
 		private $post_params;
 
+
+		/**
+		 * It creates a new instance of this class.
+		 *
+		 * @param string $title The title of the page.
+		 *
+		 * @return NelioABAdminAjaxPage a new instance of this class.
+		 *
+		 * @since PHPDOC
+		 */
 		public function __construct( $title ) {
 			parent::__construct( $title );
 			$this->is_data_pending = false;
 			$this->post_params = array();
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $name PHPDOC
+		 * @param mixed  $val  PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function keep_request_param( $name, $val ) {
 			array_push( $this->post_params, array( $name, $val ) );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $controller_file  PHPDOC
+		 * @param string $controller_class PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function get_content_with_ajax_and_render( $controller_file, $controller_class ) {
 			$this->is_data_pending  = true;
 
@@ -48,6 +118,8 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			$this->render();
 		}
 
+
+		// @Override
 		public function render() { ?>
 			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tablesorter.min.js' ); ?>"></script><?php
 			$is_data_pending_loader = 'display:none;';
@@ -66,20 +138,11 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 				jQuery("#message-div").delay(100).fadeOut(150);
 				jQuery("#ajax-loader").delay(260).fadeIn(150);
 			}
-			function smoothTransitionsDontLeave(errors, message) {
-				jQuery("#ajax-loader").delay(500).fadeOut(150);
-				try {
-				}
-				catch (e) {
-				}
-				jQuery("#poststuff").delay(550).fadeIn(150);
-			}
 			</script>
 			<div class="wrap">
 				<div class="icon32" id="<?php echo $this->icon_id; ?>"></div>
 				<h2><?php echo $this->title . ' ' . $this->title_action; ?></h2>
 				<?php
-					global $nelioab_admin_controller;
 					if ( $this->is_data_pending ) {
 						$this->print_global_warnings();
 						$this->print_error_message( 'none' );
@@ -99,10 +162,10 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 					<div style="text-align:center;height:50px;">
 						<div class="nelioab_spinner"></div>
 					</div>
-					<h2 style="color:#555;margin:0px;padding:0px;"><?php _e( 'Loading...', 'nelioab' ); ?></h2>
-					<p id="ajax-loader-label1" style="color:#777;margin:0px;padding:0px;"><?php _e( 'Please, wait a moment.', 'nelioab' ); ?></p>
-					<p id="ajax-loader-label2" style="color:#777;margin:0px;padding:0px;display:none;"><?php _e( 'Keep waiting...', 'nelioab' ); ?></p>
-					<p id="ajax-loader-label3" style="color:#777;margin:0px;padding:0px;display:none;"><?php _e( 'Internet connection seems very slow.', 'nelioab' ); ?></p>
+					<h2 style="color:#555;margin:0;padding:0;"><?php _e( 'Loading...', 'nelioab' ); ?></h2>
+					<p id="ajax-loader-label1" style="color:#777;margin:0;padding:0;"><?php _e( 'Please, wait a moment.', 'nelioab' ); ?></p>
+					<p id="ajax-loader-label2" style="color:#777;margin:0;padding:0;display:none;"><?php _e( 'Keep waiting...', 'nelioab' ); ?></p>
+					<p id="ajax-loader-label3" style="color:#777;margin:0;padding:0;display:none;"><?php _e( 'Internet connection seems very slow.', 'nelioab' ); ?></p>
 				</div>
 				<div id="poststuff" class="metabox-hold" style="<?php echo $is_data_pending_data; ?>">
 					<div id="ajax-data"><?php
@@ -131,40 +194,46 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			<script>
 
 				function nelioabHideSpinnerAndShowContent() {
-					jQuery("#ajax-loader").fadeOut(200, function() {
-						jQuery("#poststuff").fadeIn(200);
+					var $ajaxLoader = jQuery("#ajax-loader");
+					$ajaxLoader.fadeOut(200, function() {
+						var $postStuff = jQuery("#poststuff");
+						$postStuff.fadeIn(200);
+
 						var aux;
+						var $errMsgDiv = jQuery("#error-message-div");
+						var $msgDiv = jQuery("#message-div");
+						var $errorsDiv = jQuery("#errors-div");
 
 						aux = jQuery.trim( jQuery("#error-message-box-delayed").html() );
 						if ( aux.length > 0 ) {
-							jQuery("#error-message-div").addClass("to-be-shown");
-							jQuery("#error-message-div").html( aux );
+							$errMsgDiv.addClass("to-be-shown");
+							$errMsgDiv.html( aux );
 						}
 						aux = jQuery.trim( jQuery("#message-box-delayed").html() );
 						if ( aux.length > 0 ) {
-							jQuery("#message-div").addClass("to-be-shown");
-							jQuery("#message-div").html( aux );
+							$msgDiv.addClass("to-be-shown");
+							$msgDiv.html( aux );
 						}
 						aux = jQuery.trim( jQuery("#errors-box-delayed").html() );
 						if ( aux.length > 0 ) {
-							jQuery("#errors-div").addClass("to-be-shown");
-							jQuery("#errors-div").html( aux );
+							$errorsDiv.addClass("to-be-shown");
+							$errorsDiv.html( aux );
 						}
 
-						if ( jQuery("#error-message-div").hasClass("to-be-shown") ) {
-							jQuery("#error-message-div").css('display','block');
-							jQuery("#error-message-div").hide();
-							jQuery("#error-message-div").fadeIn(200);
+						if ( $errMsgDiv.hasClass("to-be-shown") ) {
+							$errMsgDiv.css('display','block');
+							$errMsgDiv.hide();
+							$errMsgDiv.fadeIn(200);
 						}
-						if ( jQuery("#message-div").hasClass("to-be-shown") ) {
-							jQuery("#message-div").css('display','block');
-							jQuery("#message-div").hide();
-							jQuery("#message-div").fadeIn(200);
+						if ( $msgDiv.hasClass("to-be-shown") ) {
+							$msgDiv.css('display','block');
+							$msgDiv.hide();
+							$msgDiv.fadeIn(200);
 						}
-						if ( jQuery("#errors-div").hasClass("to-be-shown") ) {
-							jQuery("#errors-div").css('display','block');
-							jQuery("#errors-div").hide();
-							jQuery("#errors-div").fadeIn(200);
+						if ( $errorsDiv.hasClass("to-be-shown") ) {
+							$errorsDiv.css('display','block');
+							$errorsDiv.hide();
+							$errorsDiv.fadeIn(200);
 						}
 
 						jQuery(document).trigger('nelioab-ajax-page-loaded');
@@ -192,14 +261,14 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 							jQuery("#poststuff > #ajax-data").html(response);
 							nelioabHideSpinnerAndShowContent();
 						},
-						error: function(XMLHttpRequest, textStatus, errorThrown) {
+						error: function() {
 							jQuery("#ajax-loader").html(
 							"<?php
 								printf( "<img src='%s' alt='%s' />",
 									nelioab_asset_link( '/admin/images/error-icon.png' ),
 									__( 'Funny image to graphically notify of an error.', 'nelioab' )
 							); ?>" +
-							"<h2 style='color:#555;margin:0px;padding:0px;'><?php
+							"<h2 style='color:#555;margin:0;padding:0;'><?php
 								_e( 'Oops! There was an AJAX-related error.' );
 							?></h2>" +
 							"<div style='color:#999;text-align:left;max-width:600px;margin:auto;'>" +
@@ -218,6 +287,14 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			}
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function render_content() {
 			$this->do_render();
 			?>
@@ -244,15 +321,8 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 			</div><?php
 		}
 
-		protected function make_submit_button( $name, $form_name, $hidden_action = 'none' ) {
-			return sprintf(
-				'<input type="submit" class="button-primary" ' .
-				'value="%1$s" %2$s></input>&nbsp;',
-				$name,
-				$this->make_form_javascript( $form_name, $hidden_action )
-			);
-		}
 
+		// @Override
 		protected function make_form_javascript( $form_name, $hidden_action ) {
 			return sprintf(
 				' onclick="javascript:' .
@@ -267,4 +337,3 @@ if ( !class_exists( 'NelioABAdminAjaxPage' ) ) {
 
 }
 
-?>

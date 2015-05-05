@@ -212,20 +212,20 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 										<?php
 										require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 										switch( $exp_status ){
-											case NelioABExperimentStatus::DRAFT:
-											case NelioABExperimentStatus::READY:
+											case NelioABExperiment::STATUS_DRAFT:
+											case NelioABExperiment::STATUS_READY:
 												?><li><a href="<?php
 													echo $url . '&action=edit&ctab=tab-alts&id=' . $exp_id . '&exp_type=' . $this->experiment->get_type(); ?>"><?php
 													 _e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
 												break;
-											case NelioABExperimentStatus::RUNNING:
-											case NelioABExperimentStatus::FINISHED:
+											case NelioABExperiment::STATUS_RUNNING:
+											case NelioABExperiment::STATUS_FINISHED:
 												?><li><a href="<?php
 													echo $url . '&action=progress&id=' . $exp_id . '&exp_type=' . $this->experiment->get_type(); ?>"><?php
 													_e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
 												break;
-											case NelioABExperimentStatus::TRASH:
-											case NelioABExperimentStatus::PAUSED:
+											case NelioABExperiment::STATUS_TRASH:
+											case NelioABExperiment::STATUS_PAUSED:
 											default:
 												// Nothing here
 										}

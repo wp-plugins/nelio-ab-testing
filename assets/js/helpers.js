@@ -702,7 +702,6 @@ NelioAB.helpers.isDuplicatedFrame = function() {
 	for ( var i = 0; i < MAX_ATTEMPTS; ++i ) {
 		if ( typeof ancestor.NelioABParams !== 'undefined' ) {
 			if ( ancestor.NelioABParams.info.currentId == NelioABParams.info.currentId ) {
-				console.log( 'Duplicated iFrame (`' + document.URL + '\') detected. Aborted!' );
 				return true;
 			}
 		}

@@ -1,24 +1,29 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 /**
- * This function determines whether the current user is able to manage the plugin
- * or not.
+ * This function determines whether the current user is able to manage the plugin or not.
+ *
+ * @return boolean PHPDOC
+ *
+ * @since PHPDOC
  */
 function nelioab_can_user_manage_plugin() {
 	// If the user is super admin, he can use the plugin
@@ -34,10 +39,17 @@ function nelioab_can_user_manage_plugin() {
 	return false;
 }
 
+
 /**
+ * Checks if our plugin is up-to-date.
+ *
  * This function is called every time the plugins are loaded, and checks
  * whether our plugin is up-to-date or not. If it isn't, the
  * nelioab_activate_plugin is called.
+ *
+ * @return void
+ *
+ * @since PHPDOC
  */
 function nelioab_update_plugin_info_if_required() {
 	$last_available_version = get_option( 'nelioab_last_version_installed', false );
@@ -46,15 +58,23 @@ function nelioab_update_plugin_info_if_required() {
 	}
 }
 
+
 /**
+ * Activates Nelio A/B Testing
+ *
  * This function is called by the "registed_activation_hook". It is the
  * opposite of the nelioab_deactivate_plugin function. Its aim is to make sure
  * that alternatives (draft post/pages with a metatype) are not visible in the
  * admin area, but can be editted and used.
  *
  * We also make sure that it's called after an update.
+ *
+ * @return void
+ *
+ * @since PHPDOC
  */
 function nelioab_activate_plugin() {
+	/** @var wpdb $wpdb */
 	global $wpdb;
 
 	// Old Stuff Compa: rename the meta key that identifies post/page alternatives...
@@ -71,12 +91,22 @@ function nelioab_activate_plugin() {
 	$query = '' .
 		'DELETE FROM ' . $wpdb->postmeta . ' WHERE ' .
 			'post_id < 15 AND meta_key = \'_is_nelioab_alternative\'';
-	$aux = $wpdb->query( $query );
+	$wpdb->query( $query );
 
 	// Showing previous page and post alternatives
+	require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+	$cpts = NelioABWpHelper::get_custom_post_types();
+	$post_types = array( 'post', 'page' );
+	foreach ( $cpts as $post_type ) {
+		array_push( $post_types, $post_type->name );
+	}
+
 	$query = 'UPDATE ' . $wpdb->posts . ' SET post_type = %s WHERE post_type = %s';
-	$aux = $wpdb->query( $wpdb->prepare( $query, 'post', 'nelioab_alt_post' ) );
-	$aux = $wpdb->query( $wpdb->prepare( $query, 'page', 'nelioab_alt_page' ) );
+
+	// execute the query
+	foreach ( $post_types as $post_type ) {
+		$wpdb->query( $wpdb->prepare( $query, $post_type, 'nelioab_alt_' . $post_type ) );
+	}
 
 	// Recover previous widget alternatives
 	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
@@ -95,13 +125,20 @@ function nelioab_activate_plugin() {
 }
 
 /**
+ * Deactivates our plugin.
+ *
  * This function is called by the "registed_deactivation_hook". Alternatives
  * are regular pages or posts (draft status) with a special metaoption that
  * is used to hide them from the admin menu. When the plugin is deactivated,
  * no one hides the alternatives... In order to prevent them from appearing,
  * we change their post_type to a fake type.
+ *
+ * @return void
+ *
+ * @since PHPDOC
  */
 function nelioab_deactivate_plugin() {
+	/** @var wpdb $wpdb */
 	global $wpdb;
 	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/widget-experiment-controller.php' );
 	require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
@@ -120,7 +157,7 @@ function nelioab_deactivate_plugin() {
 					'SELECT post_id FROM ' . $wpdb->postmeta . ' WHERE ' .
 						'meta_key = \'_is_nelioab_alternative\' ' .
 				')';
-		$aux = $wpdb->query( $query );
+		$wpdb->query( $query );
 
 		// Clean all experiments in AE
 		require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -137,12 +174,12 @@ function nelioab_deactivate_plugin() {
 
 		// Remove all Nelio options
 		$query = 'DELETE FROM ' . $wpdb->postmeta . ' WHERE meta_key LIKE \'%nelioab%\'';
-		$aux = $wpdb->query( $query );
+		$wpdb->query( $query );
 		$query = 'DELETE FROM ' . $wpdb->options . ' WHERE option_name LIKE \'%nelioab%\'';
-		$aux = $wpdb->query( $query );
+		$wpdb->query( $query );
 	}
 	else {
-		// Hiding alternative pages
+		// Hiding alternative posts
 		$query = '' .
 			'UPDATE ' . $wpdb->posts . ' SET post_type = %s WHERE ' .
 				'id IN (' .
@@ -150,27 +187,41 @@ function nelioab_deactivate_plugin() {
 						'meta_key = \'_is_nelioab_alternative\' ' .
 				') AND ' .
 				'post_type = %s';
-		$aux = $wpdb->query( $wpdb->prepare( $query, 'nelioab_alt_post', 'post' ) );
-		$aux = $wpdb->query( $wpdb->prepare( $query, 'nelioab_alt_page', 'page' ) );
+
+		// recover post type names
+		require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+		$cpts = NelioABWpHelper::get_custom_post_types();
+		$post_types = array( 'post', 'page' );
+		foreach ( $cpts as $post_type ) {
+			array_push( $post_types, $post_type->name );
+		}
+
+		// execute the query
+		foreach ( $post_types as $post_type ) {
+			$wpdb->query( $wpdb->prepare( $query, 'nelioab_alt_' . $post_type, $post_type ) );
+		}
 
 		// Hiding widget alternatives
 		NelioABWidgetExpAdminController::backup_alternative_widgets();
-		// Hiding widget alternatives
+		// Hiding menu alternatives
 		NelioABMenuExpAdminController::backup_alternative_menus();
 	}
 }
 
+
 /**
  * Remind users that they have to clean their cache after an update
+ *
+ * @return void
+ *
+ * @since PHPDOC
  */
-if ( get_option( 'nelioab_cache_notice', false ) !== NELIOAB_PLUGIN_VERSION  )
-	add_action( 'admin_notices', 'nelioab_add_cache_notice' );
 function nelioab_add_cache_notice() {
 	global $pagenow;
 	if ( 'plugins.php' == $pagenow || 'update.php' == $pagenow )
 		return;
 	try {
-		$aux = NelioABAccountSettings::check_user_settings();
+		NelioABAccountSettings::check_user_settings();
 	}
 	catch ( Exception $e ) {
 		return;
@@ -196,41 +247,104 @@ function nelioab_add_cache_notice() {
 	</div>
 	<?php
 }
-add_action( 'wp_ajax_nelioab_dismiss_cache_notice', 'nelioab_dismiss_cache_notice' );
+if ( get_option( 'nelioab_cache_notice', false ) !== NELIOAB_PLUGIN_VERSION  )
+	add_action( 'admin_notices', 'nelioab_add_cache_notice' );
+
+
+/**
+ * PHPDOC
+ *
+ * @return void
+ *
+ * @since PHPDOC
+ */
 function nelioab_dismiss_cache_notice() {
 	update_option( 'nelioab_cache_notice', NELIOAB_PLUGIN_VERSION );
 	die();
 }
+add_action( 'wp_ajax_nelioab_dismiss_cache_notice', 'nelioab_dismiss_cache_notice' );
+
 
 /**
  * This function returns the URL of the given resource, appending the current
  * version of the plugin. The resource has to be a file in NELIOAB_ASSETS_DIR
+ *
+ * @param string  $resource        PHPDOC
+ * @param boolean $include_version PHPDOC
+ *                                 Default: `true`.
+ *
+ * @return string PHPDOC
+ *
+ * @since PHPDOC
  */
-function nelioab_asset_link( $resource ) {
+function nelioab_asset_link( $resource, $include_version = true ) {
 	$link = NELIOAB_ASSETS_URL . $resource;
-	$link = esc_url( add_query_arg( array( 'version' => NELIOAB_PLUGIN_VERSION ), $link ) );
+	if ( $include_version )
+		$link = esc_url( add_query_arg( array( 'ver' => NELIOAB_PLUGIN_VERSION ), $link ) );
 	return $link;
 }
 
+
 /**
  * This function returns the URL of the given resource, appending the current
  * version of the plugin. The resource has to be a file in NELIOAB_ASSETS_DIR
+ *
+ * @param string  $resource        PHPDOC
+ * @param boolean $include_version PHPDOC
+ *                                 Default: `true`.
+ *
+ * @return string PHPDOC
+ *
+ * @since PHPDOC
  */
-function nelioab_admin_asset_link( $resource ) {
-	return nelioab_asset_link( '/admin' . $resource );
+function nelioab_admin_asset_link( $resource, $include_version = true ) {
+	return nelioab_asset_link( '/admin' . $resource, $include_version );
 }
+
 
 /**
  * Real one time nonces
+ *
+ * @param string|int $action PHPDOC
+ *
+ * @return string PHPDOC
+ *
+ * @since PHPDOC
  */
 function nelioab_onetime_nonce( $action = -1 ) {
 	$time = time();
 	$nonce = wp_create_nonce( $time . $action );
 	return $nonce . '-' . $time;
 }
+
+
+/**
+ * PHPDOC
+ *
+ * @param string $action PHPDOC
+ * @param string $url    PHPDOC
+ * @param string $name   PHPDOC
+ *                       Default: `_nonce`.
+ *
+ * @return string PHPDOC
+ *
+ * @since PHPDOC
+ */
 function nelioab_onetime_nonce_url( $url, $action, $name = '_nonce' ) {
 	return esc_url( add_query_arg( $name, $action, $url ) );
 }
+
+
+/**
+ * PHPDOC
+ *
+ * @param string     $_nonce PHPDOC
+ * @param string|int $action PHPDOC
+ *
+ * @return boolean PHPDOC
+ *
+ * @since PHPDOC
+ */
 function nelioab_verify_onetime_nonce( $_nonce, $action = -1) {
 	// Extract timestamp and nonce part of $_nonce
 	$parts = explode( '-', $_nonce );
@@ -270,8 +384,13 @@ function nelioab_verify_onetime_nonce( $_nonce, $action = -1) {
 	return true;
 }
 
+
 /**
  * This function always returns the REAL page on front.
+ *
+ * @return int PHPDOC
+ *
+ * @since PHPDOC
  */
 function nelioab_get_page_on_front() {
 	global $nelioab_controller;
