@@ -112,6 +112,10 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 					require_once( NELIOAB_ADMIN_DIR . '/others/heatmap-exp-edition-page-controller.php' );
 					return 'NelioABHeatmapExpEditionPageController';
 
+				case NelioABExperiment::CPT_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/cpt-alt-exp-edition-page-controller.php' );
+					return 'NelioABCptAltExpEditionPageController';
+
 				default:
 					require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );

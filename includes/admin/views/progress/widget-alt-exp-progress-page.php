@@ -72,7 +72,7 @@ if ( !class_exists( 'NelioABWidgetAltExpProgressPage' ) ) {
 			$the_winner_confidence = $this->get_winning_confidence();
 
 			$exp = $this->exp;
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+			if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 				if ( $the_winner == 0 )
 					echo '<p><b>' . __( 'Right now, no alternative Widget set is helping to improve your site.', 'nelioab' ) . '</b></p>';
 				if ( $the_winner > 0 )
@@ -110,14 +110,14 @@ if ( !class_exists( 'NelioABWidgetAltExpProgressPage' ) ) {
 
 			switch ( $exp->get_status() ) {
 
-				case NelioABExperimentStatus::RUNNING:
+				case NelioABExperiment::STATUS_RUNNING:
 					$action_links['edit'] = sprintf( ' ' .
 						'<a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
 						admin_url( 'widgets.php' ),
 						__( 'Edit' ) );
 					break;
 
-				case NelioABExperimentStatus::FINISHED:
+				case NelioABExperiment::STATUS_FINISHED:
 					if ( $this->alts_to_apply ) {
 						$action_links['apply-and-clean'] = sprintf( ' ' .
 							'<a class="apply-link" href="javascript:nelioab_confirm_overwriting(%1$s,\'apply-ori-and-clean\');">%2$s</a>',
@@ -152,7 +152,7 @@ if ( !class_exists( 'NelioABWidgetAltExpProgressPage' ) ) {
 
 				switch ( $exp->get_status() ) {
 
-					case NelioABExperimentStatus::RUNNING:
+					case NelioABExperiment::STATUS_RUNNING:
 						$action_links['edit'] = sprintf( ' ' .
 							'<a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
 							admin_url( 'widgets.php?nelioab_exp=' . $exp->get_id() .
@@ -161,13 +161,13 @@ if ( !class_exists( 'NelioABWidgetAltExpProgressPage' ) ) {
 							__( 'Edit' ) );
 						break;
 
-				case NelioABExperimentStatus::FINISHED:
-					if ( $this->alts_to_apply ) {
-						$action_links['edit-and-clean'] = sprintf( ' ' .
-							'<a class="apply-link" href="javascript:nelioab_confirm_overwriting(%1$s,\'apply-alt-and-clean\');">%2$s</a>',
-							$alt->get_id(), __( 'Apply and Clean' ) );
-					}
-					break;
+					case NelioABExperiment::STATUS_FINISHED:
+						if ( $this->alts_to_apply ) {
+							$action_links['edit-and-clean'] = sprintf( ' ' .
+								'<a class="apply-link" href="javascript:nelioab_confirm_overwriting(%1$s,\'apply-alt-and-clean\');">%2$s</a>',
+								$alt->get_id(), __( 'Apply and Clean' ) );
+						}
+						break;
 
 				}
 

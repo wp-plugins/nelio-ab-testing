@@ -100,6 +100,7 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::PAGE_ALT_EXP:
+				case NelioABExperiment::CPT_ALT_EXP:
 					require_once( NELIOAB_ADMIN_DIR . '/progress/post-alt-exp-progress-page-controller.php' );
 					return 'NelioABPostAltExpProgressPageController';
 

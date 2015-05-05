@@ -53,6 +53,18 @@
 	background-size: 32px 32px;
 } }
 
+.tab-type-cpt {
+    background:       url( '../images/tab-type-cpt.png?version=3.4.4' );
+    background-image: url( '../images/tab-type-cpt.png?version=3.4.4' );
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
+    .tab-type-cpt {
+        background:       url( '../images/2x/tab-type-cpt.png?version=3.4.4' );
+        background-image: url( '../images/2x/tab-type-cpt.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
+
 .tab-type-theme {
 	background:       url( '../images/tab-type-theme.png?version=3.4.4' );
 	background-image: url( '../images/tab-type-theme.png?version=3.4.4' );

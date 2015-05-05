@@ -39,7 +39,7 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'In order to use our service, please make sure you have already configured the plugin properly. In order to do so, just click the button below to access the plugin\'s settings page and fill in the required fields. These include your <i>e-mail</i> and your <i>Product Registration Number</i>. Finally, do not forget to register this site to your account!', 'nelioab' )
+					__( 'In order to use our service, please make sure you have already configured the plugin properly. In order to do so, just click the button below to access the plugin\'s settings page and fill in the required fields. These include your <i>e-mail</i> and your <i>Product Registration Number</i>. Finally, do not forget to activate the site!', 'nelioab' )
 				);
 
 			echo sprintf( "<p style=\"$style\">%s</p>\n",
