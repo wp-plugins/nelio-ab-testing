@@ -271,8 +271,6 @@ on your site so that you can understand your customers better.
 * **New Feature** Support for Custom Post Types. Use it with WooCommerce
 (Experimental) and many other plugins that define their own types: videos,
 articles, products, and so on!
-* **New Feature** Experiment Duplication is available to all plans. Don't waste
-any more time creating experiments from scratch!
 * **Improvement** Improved support for iframes. Nelio A/B Testing will no
 longer load alternative content (or track conversions) for nested, duplicated
 iframes.
