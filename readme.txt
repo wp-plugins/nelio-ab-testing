@@ -25,11 +25,10 @@ familiar user experience.
 > Solution for WordPress**<br>
 > Improve your landing pages, write better posts, create alternative pages, go
 > beyond simple title testing and start testing headlines, try new themes, test
-> different menus, modify your CSS rules, test custom post types (such as
-> WooCommerce's _Products_), and test alternative widgets! Moreover, we
-> designed Nelio A/B Testing to be compatible with your most beloved WordPress
-> plugins such as, for instance, OptimizePress, Gravity Forms, or Contact Form
-> 7.
+> different menus, modify your CSS rules, test custom post types, and test
+> alternative widgets! Moreover, we designed Nelio A/B Testing to be compatible
+> with your most beloved WordPress plugins such as, for instance,
+> OptimizePress, Gravity Forms, or Contact Form 7.
 >
 > **Designed as a Service**<br>
 > Our plugin lifts all the processing load from your own server and takes it
@@ -71,9 +70,9 @@ A/B Testing makes [page (and post) experiments super
 easy](http://nelioabtesting.com/wordpress-splitmultivariate-testing-pages/?fp=wordpress.org)!
 
 Moreover, **version 4.1** includes support for custom post types. Use Nelio A/B
-Testing with WooCommerce and many other plugins/themes that define their own
-types (such as _Products_, _Videos_, _Reviews_, and more).
-
+Testing with any plugin that defines its own custom post types (such as
+_Products_, _Videos_, _Reviews_, and more). **Warning!** Full WooCommerce
+support is not covered yet.
 
 
 = #3 - Go beyond simple title tests&mdash;Test Headlines! =
@@ -275,9 +274,8 @@ any more time creating experiments from scratch!
 
 
 = 4.1.0 (May 5, 2015) =
-* **New Feature** Support for Custom Post Types. Use it with WooCommerce
-(Experimental) and many other plugins that define their own types: videos,
-articles, products, and so on!
+* **New Feature** Support for Custom Post Types. Use it with any plugin that
+defines its own types: videos, articles, products, and so on!
 * **Improvement** Improved support for iframes. Nelio A/B Testing will no
 longer load alternative content (or track conversions) for nested, duplicated
 iframes.
@@ -904,7 +902,8 @@ replaceText function
 == Upgrade Notice ==
 
 = 4.1.1 =
-**Support for Custom Post Types**. Use Nelio A/B Testing with WooCommerce
-(Experimental) and many other plugins/themes that define their own types (such
-as Products, Videos, Reviews, and so on).
+**Support for Custom Post Types**. Use Nelio A/B Testing with any
+plugins/themes that defines its own custom post types (such as Products,
+Videos, Reviews, and so on). **Warning** Full WooCommerce support is
+not covered yet.
 
