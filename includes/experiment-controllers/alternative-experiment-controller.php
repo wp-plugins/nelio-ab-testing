@@ -387,11 +387,29 @@ class NelioABAlternativeExperimentController {
 			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
 			remove_filter( 'template',   array( &$this, 'modify_template' ) );
 			$this->actual_theme = NelioABVisitor::get_assigned_theme();
-			$this->original_theme = wp_get_theme();
 			add_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
 			add_filter( 'template',   array( &$this, 'modify_template' ) );
 		}
 		return $this->actual_theme;
+	}
+
+
+	/**
+	 * PHPDOC
+	 *
+	 * @return WP_Theme PHPDOC
+	 *
+	 * @since PHPDOC
+	 */
+	private function get_original_theme() {
+		if ( !$this->original_theme ) {
+			remove_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
+			remove_filter( 'option_stylesheet', array( &$this, 'modify_option_stylesheet' ) );
+			$this->original_theme = wp_get_theme();
+			add_filter( 'option_stylesheet', array( &$this, 'modify_option_stylesheet' ) );
+			add_filter( 'stylesheet', array( &$this, 'modify_stylesheet' ) );
+		}
+		return $this->original_theme;
 	}
 
 
@@ -636,10 +654,10 @@ class NelioABAlternativeExperimentController {
 	 */
 	private function fix_widgets_for_theme_exp( $all_widgets ) {
 		$actual_theme = $this->get_actual_theme();
+		$original_theme = $this->get_original_theme();
 		$actual_theme_id = $actual_theme['Stylesheet'];
 
-		if ( !$this->original_theme['Stylesheet'] ||
-		     $this->original_theme['Stylesheet'] == $actual_theme_id )
+		if ( !$original_theme || $original_theme['Stylesheet'] == $actual_theme_id )
 			return $all_widgets;
 
 		$aux = get_option( 'theme_mods_' . $actual_theme_id, array() );

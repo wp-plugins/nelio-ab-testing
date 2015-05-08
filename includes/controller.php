@@ -380,6 +380,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 				$this->queried_post_id = self::FRONT_PAGE__YOUR_LATEST_POSTS;
 			}
 
+			// If it's posts page...
+			else if ( $this->main_query->is_posts_page && get_option( 'page_for_posts' ) ) {
+				$this->queried_post_id = intval( get_option( 'page_for_posts' ) );
+			}
+
 			// If we only found one post...
 			else if ( count( $posts ) == 1 ) {
 				$this->queried_post_id = $posts[0]->ID;

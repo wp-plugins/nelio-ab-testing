@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.1.0
+Stable tag: 4.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -266,6 +266,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.1.1 (May 8, 2015) =
+* **New Feature** Experiment Duplication is available to all plans. Don't waste
+any more time creating experiments from scratch!
+* **Improvement** Now all dates are properly localized to your own timezone.
+* **Bug Fix** Alternative Widgets are properly loaded on a theme experiment.
+
 
 = 4.1.0 (May 5, 2015) =
 * **New Feature** Support for Custom Post Types. Use it with WooCommerce
@@ -896,7 +903,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.1.0 =
+= 4.1.1 =
 **Support for Custom Post Types**. Use Nelio A/B Testing with WooCommerce
 (Experimental) and many other plugins/themes that define their own types (such
 as Products, Videos, Reviews, and so on).

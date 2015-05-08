@@ -181,11 +181,10 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			else { ?>
 
 				<?php if ( !$this->user_info['agency'] ) { ?>
-					<h3><?php _e( 'Name', 'nelioab' ); ?></h3>
-					<p style="margin-top:0em;margin-left:3em;"><?php echo $this->user_info['lastname'] . ', ' . $this->user_info['firstname']; ?></p>
+					<p style="margin-top:0em;margin-left:3em;"><?php
+						printf( __( 'Hi, %s!', 'nelioab' ), $this->user_info['firstname'] ); ?></p>
 				<?php } ?>
 
-				<h3><?php _e( 'Subscription Details', 'nelioab' ); ?></h3>
 				<p style="margin-top:0em;margin-left:3em;"><?php
 					if ( !isset( $this->user_info['subscription_url'] ) ) {
 						_e( 'No subscription information available.', 'nelioab' );
@@ -213,9 +212,12 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 										_e( 'You are subscribed to our <b>Enterprise Plan</b>.', 'nelioab' );
 										break;
 								}
-								echo ' ';
-								printf( '<small><a href="%s">%s</a></small>', $this->user_info['subscription_url'],
-									__( 'Check your subscription details.', 'nelioab' ) );
+								echo '<br><span class="subscription-actions">';
+								printf( '<a class="edit" href="%s">%s</a> ', $this->user_info['subscription_url'],
+									__( 'Edit Subscription', 'nelioab' ) );
+								printf( '<a class="delete" href="%s">%s</a> ', $this->user_info['subscription_url'],
+									__( 'Cancel Subscription', 'nelioab' ) );
+								echo '</span>';
 
 								if ( $this->user_info['subscription_plan'] == NelioABAccountSettings::BASIC_SUBSCRIPTION_PLAN ) {
 									echo '<br />';

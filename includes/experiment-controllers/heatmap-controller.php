@@ -39,26 +39,8 @@ class NelioABHeatmapController {
 	public function __construct() {
 		if ( isset( $_GET['nelioab_show_heatmap'] ) ) {
 			add_action( 'wp_enqueue_scripts', array( &$this, 'add_heatmap_script' ) );
-			add_filter( 'user_has_cap',       array( &$this, 'make_user_regular' ) );
-			add_filter( 'show_admin_bar',     '__return_false' );
+			add_filter( 'show_admin_bar', '__return_false' );
 		}
-	}
-
-
-	/**
-	 * PHPDOC
-	 *
-	 * @param array $allcaps PHPDOC
-	 *
-	 * @return array PHPDOC
-	 *
-	 * @since PHPDOC
-	 */
-	public function make_user_regular( $allcaps ) {
-		wp_set_current_user( NULL, '__nelioab_no_one' );
-		foreach( $allcaps as $key => $val )
-			$allcaps[$key] = 0;
-		return $allcaps;
 	}
 
 
