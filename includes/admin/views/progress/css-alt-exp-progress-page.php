@@ -51,7 +51,7 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 			$the_winner_confidence = $this->get_winning_confidence();
 
 			$exp = $this->exp;
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+			if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 				if ( $the_winner == 0 )
 					echo '<p><b>' . __( 'Right now, no CSS alternative is helping to improve your site.', 'nelioab' ) . '</b></p>';
 				if ( $the_winner > 0 )
@@ -113,7 +113,7 @@ if ( !class_exists( 'NelioABCssAltExpProgressPage' ) ) {
 				$i++;
 				$action_links = array();
 
-				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+				if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 					$action_links['edit'] = sprintf( ' <a href="javascript:nelioabConfirmEditing(\'%s\',\'dialog\');">%s</a>',
 						admin_url( 'admin.php?page=nelioab-css-edit&exp_id=' . $this->exp->get_id() . '&css_id=' . $alt->get_id() ),
 						__( 'Edit' ) );

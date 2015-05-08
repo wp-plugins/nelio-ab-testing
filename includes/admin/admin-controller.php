@@ -19,17 +19,16 @@
 
 $nelioab_admin_controller = false;
 
-/**
- * Nelio AB Testing admin controller
- *
- * @package Nelio AB Testing
- * @subpackage Experiment
- * @since 0.1
- */
 if ( !class_exists( 'NelioABAdminController' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 
+	/**
+	 * Nelio AB Testing admin controller
+	 *
+	 * @package \NelioABTesting\Controllers
+	 * @since 0.1
+	 */
 	class NelioABAdminController {
 
 		public $error_message;
@@ -43,9 +42,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		/**
 		 * The class constructor
-		 *
-		 * @package Nelio AB Testing
-		 * @subpackage Main Admin Plugin Controller
 		 *
 		 * @since 0.1
 		 */
@@ -84,7 +80,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				case 'save-css':
 					update_option( 'nelioab_css_' . $_GET['nelioab_preview_css'], $_POST['content'] );
 					$url = get_option('home');
-					$url = add_query_arg( $_GET, $url );
+					$url = esc_url( add_query_arg( $_GET, $url ) );
 					header( "Location: $url" );
 					die();
 
@@ -109,15 +105,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Some relevant global warnings
 			// -----------------------------
-
-			// No more quota
-			if ( isset( $_GET['page'] ) && 'nelioab-account' !== $_GET['page'] && !NelioABAccountSettings::has_quota_left() ) {
-				array_push( $this->global_warnings,
-						sprintf(
-							__( '<b>Warning!</b> You have no more quota available. Please, <a href="%s">check your Nelio A/B Testing account</a> for obtaining additional quota.', 'nelioab' ),
-							admin_url( 'admin.php?page=nelioab-account' ) )
-					);
-			}
 
 			// If the current user is NOT admin, do not show the plugin
 			if ( !nelioab_can_user_manage_plugin() )
@@ -144,7 +131,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// AJAX functions
 			add_action( 'wp_ajax_nelioab_get_html_content', array( $this, 'generate_html_content' ) ) ;
-			add_action( 'wp_ajax_nelioab_install_performance_muplugin', array( 'NelioABSettings', 'toggle_performance_muplugin_installation' ) ) ;
+
+			add_action( 'wp_ajax_nelioab_rated', array( $this, 'mark_as_rated' ) ) ;
 
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			add_action( 'wp_ajax_nelioab_post_searcher',
@@ -154,11 +142,43 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// TODO: this hook has to be placed inside the proper controller (don't know how, yet)
 			add_action( 'admin_enqueue_scripts', array( &$this, 'load_custom_style_and_scripts' ) );
+
+			// Footer Message
+			add_filter( 'admin_footer_text', array( $this, 'admin_footer_text' ), 1 );
+		}
+
+		public function mark_as_rated() {
+			update_option( 'nelioab_admin_footer_text_rated', true );
+		}
+
+		public function admin_footer_text( $footer_text ) {
+
+			if ( !isset ( $_GET['page'] ) )
+				return $footer_text;
+
+			$page = $_GET['page'];
+			if ( strrpos( $page, 'nelioab', -strlen( $page )) === FALSE )
+				return $footer_text;
+
+			// Change the footer text
+			if ( ! get_option( 'nelioab_admin_footer_text_rated' ) ) {
+				$footer_text = sprintf( __( 'If you like <strong>Nelio A/B Testing</strong> please leave us a %s&#9733;&#9733;&#9733;&#9733;&#9733;%s rating. A huge thank you from Nelio in advance!', 'nelioab' ), '<a href="https://wordpress.org/support/view/plugin-reviews/nelio-ab-testing?filter=5#postform" target="_blank" class="nelioab-rating-link" data-rated="' . __( 'Thanks :)', 'nelioab' ) . '">', '</a>' );
+				$footer_text .= '<script type="text/javascript">';
+				$footer_text .= '	jQuery("a.nelioab-rating-link").click(function() {';
+				$footer_text .= '		jQuery.post( ajaxurl, { action: "nelioab_rated" } );';
+				$footer_text .= '		jQuery(this).parent().text( jQuery(this).data( "rated" ) );';
+				$footer_text .= '	});';
+				$footer_text .= '</script>';
+			} else {
+				$footer_text = __( 'Thank you for using <a href="https://nelioabtesting.com" target="_blank">Nelio A/B Testing.</a>', 'nelioab' );
+			}
+
+			return $footer_text;
 		}
 
 		public function deactivate_plugin() {
 			// Clean and Deactivate Nelio A/B Testing
-				deactivate_plugins( NELIOAB_PLUGIN_ID, false, is_network_admin() );
+			deactivate_plugins( NELIOAB_PLUGIN_ID, false, is_network_admin() );
 		}
 
 		public function add_css_for_creation_page() {
@@ -319,6 +339,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 				remove_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 
+				$post_type_names = array();
+
 				// Hiding alternative pages
 				$args = array(
 					'meta_key'       => '_is_nelioab_alternative',
@@ -335,15 +357,34 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					'post_status'    => 'draft',
 					'posts_per_page' => -1,
 				);
-				$alternative_pages = get_posts( $args );
-				if ( is_array( $alternative_pages ) )
-					foreach ( $alternative_pages as $page )
-						array_push( $alt_ids, $page->ID );
+				$alternative_posts = get_posts( $args );
+				if ( is_array( $alternative_posts ) )
+					foreach ( $alternative_posts as $post )
+						array_push( $alt_ids, $post->ID );
+
+				// Hiding alternative custom post types
+				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+				$post_types = NelioABWpHelper::get_custom_post_types();
+				foreach ( $post_types as $post_type ) {
+					array_push( $post_type_names, $post_type->name );
+				}
+				$args = array(
+					'meta_key'       => '_is_nelioab_alternative',
+					'post_status'    => 'draft',
+					'posts_per_page' => -1,
+					'post_type'      => $post_type_names
+				);
+				$alternative_cpts = get_posts( $args );
+				if ( is_array( $alternative_cpts ) )
+					foreach ( $alternative_cpts as $cpt )
+						array_push( $alt_ids, $cpt->ID );
 
 				add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 
 				// WordPress 3.0
-				if ( 'page' === get_query_var('post_type') || 'post' === get_query_var('post_type') ) {
+				array_push( $post_type_names, 'post' );
+				array_push( $post_type_names, 'page' );
+				if ( in_array( get_query_var( 'post_type' ), $post_type_names ) ) {
 					$query->set( 'post__not_in', $alt_ids );
 				}
 			}
@@ -373,7 +414,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$dashboard_link .= '    closeOnEscape : true,';
 				$dashboard_link .= '    buttons: [';
 				$dashboard_link .= '      {';
-				$dashboard_link .= '        text: "' . __( "Cancel", "nelioab" ) .'",';
+				$dashboard_link .= '        text: "' . __( 'Cancel', 'nelioab' ) .'",';
 				$dashboard_link .= '        click: function() {';
 				$dashboard_link .= '          jQuery(this).dialog("close");';
 				$dashboard_link .= '        }';
@@ -421,9 +462,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		/**
 		 * This function creates all the relevant pages for our plugin.
 		 * These pages appear in the Dashboard.
-		 *
-		 * @package Nelio AB Testing
-		 * @subpackage Main Admin Plugin Controller
 		 *
 		 * @since 0.1
 		 */
@@ -518,15 +556,20 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				array( 'NelioABSettingsPageController', 'build' ) );
 
 
-			// Feedback page
+			// Help
 			// ----------------------------------------------------------------------
-			require_once( NELIOAB_ADMIN_DIR . '/feedback-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
-				__( 'Share & Comment', 'nelioab' ),
-				__( 'Share & Comment', 'nelioab' ),
+				__( 'Help', 'nelioab' ),
+				__( 'Help', 'nelioab' ),
 				'manage_options',
-				'nelioab-feedback',
-				array( 'NelioABFeedbackPageController', 'build' ) );
+				'nelioab-help' );
+			global $submenu;
+			for ( $i = 0; $i < count( $submenu['nelioab-dashboard'] ); ++$i ) {
+				if ( 'nelioab-help' == $submenu['nelioab-dashboard'][$i][2] ) {
+					$submenu['nelioab-dashboard'][$i][2] = 'http://support.nelioabtesting.com/support/home';
+					break;
+				}
+			}
 
 
 			// OTHER PAGES (not included in the menu)
@@ -559,33 +602,31 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// ... but if it is ...
 
-			// a) Hide some metaboxes whose contents are managed by the plugin
-			remove_meta_box( 'submitdiv', 'page', 'side' );        // Publish options
-			remove_meta_box( 'commentstatusdiv', 'page', 'side' ); // Comments
-			remove_meta_box( 'slugdiv', 'page', 'normal' );        // Comments
+			// recover post type names
+			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
+			$cpts = NelioABWpHelper::get_custom_post_types();
+			$post_types = array( 'post', 'page' );
+			foreach ( $cpts as $post_type ) {
+				array_push( $post_types, $post_type->name );
+			}
 
-			remove_meta_box( 'submitdiv', 'post', 'side' );        // Publish options
-			remove_meta_box( 'commentstatusdiv', 'post', 'side' ); // Comments
-			remove_meta_box( 'slugdiv', 'post', 'normal' );        // Comments
+			foreach ( $post_types as $post_type ) {
+				// a) Hide some metaboxes whose contents are managed by the plugin
+				remove_meta_box( 'submitdiv', $post_type, 'side' );        // Publish options
+				remove_meta_box( 'commentstatusdiv', $post_type, 'side' ); // Comments
+				remove_meta_box( 'slugdiv', $post_type, 'normal' );        // Comments
 
-			// b) Create a custom box for saving the alternative page
-			add_meta_box(
-				'save_nelioab_alternative_box',      // HTML identifier
-				__( 'Edition of Alternative\'s Content', 'nelioab' ), // Box title
-				array( $this, 'print_alternative_box' ),
-				'page',
-				'side',
-				'high' );
-
-			add_meta_box(
-				'save_nelioab_alternative_box',      // HTML identifier
-				__( 'Edition of Alternative\'s Content', 'nelioab' ), // Box title
-				array( $this, 'print_alternative_box' ),
-				'post',
-				'side',
-				'high' );
-
+				// b) Create a custom box for saving the alternative post
+				add_meta_box(
+					'save_nelioab_alternative_box',      // HTML identifier
+					__( 'Edition of Alternative\'s Content', 'nelioab' ), // Box title
+					array( $this, 'print_alternative_box' ),
+					$post_type,
+					'side',
+					'high' );
+			}
 		}
+
 
 		public function print_alternative_box() { ?>
 			<div id="submitdiv"><?php
@@ -628,14 +669,14 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 								<?php
 									$type = 'post';
 									$ori_id = get_post_meta( $_GET['post'], '_nelioab_original_id', true );
-									if ( NelioABExperimentStatus::RUNNING == $exp_status || NelioABExperimentStatus::FINISHED == $exp_status ) {
+									if ( NelioABExperiment::STATUS_RUNNING == $exp_status || NelioABExperiment::STATUS_FINISHED == $exp_status ) {
 										$preview_button = __( 'Preview Changes' );
 									}
 									else {
 										$preview_button = __( 'Preview' );
 									}
-									$preview_link = esc_url( get_permalink( $_GET['post'] ) );
-									$preview_link = add_query_arg( 'preview', 'true', $preview_link )
+									$preview_link = get_permalink( $_GET['post'] );
+									$preview_link = esc_url( add_query_arg( 'preview', 'true', $preview_link ) );
 									?>
 								<a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview-<?php echo $_GET['post']; ?>" id="post-preview"><?php echo $preview_button; ?></a>
 								<input type="hidden" name="wp-preview" id="wp-preview" value="" />
@@ -647,26 +688,26 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						<ul style="margin-left:1.5em;">
 							<?php
 							switch( $exp_status ){
-								case NelioABExperimentStatus::DRAFT:
-								case NelioABExperimentStatus::READY:
+								case NelioABExperiment::STATUS_DRAFT:
+								case NelioABExperiment::STATUS_READY:
 									?><li><a href="<?php echo $url . '&action=edit&ctab=tab-alts&id=' . $exp_id .
 										'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
 											_e( 'Editing this experiment', 'nelioab' ); ?></a></li><?php
 									break;
-								case NelioABExperimentStatus::RUNNING:
-								case NelioABExperimentStatus::FINISHED:
+								case NelioABExperiment::STATUS_RUNNING:
+								case NelioABExperiment::STATUS_FINISHED:
 									?><li><a href="<?php echo $url . '&action=progress&id=' . $exp_id .
 									'&exp_type=' . NelioABExperiment::PAGE_OR_POST_ALT_EXP; ?>"><?php
 										_e( 'The results of the related experiment', 'nelioab' ); ?></a></li><?php
 									break;
-								case NelioABExperimentStatus::TRASH:
-								case NelioABExperimentStatus::PAUSED:
+								case NelioABExperiment::STATUS_TRASH:
+								case NelioABExperiment::STATUS_PAUSED:
 								default:
 									// Nothing here
 							}
 							?>
 							<li><a href="<?php echo $url; ?>"><?php _e( 'My list of experiments', 'nelioab' ); ?></a></li>
-							<?php if( $exp_status == NelioABExperimentStatus::RUNNING ) { ?>
+							<?php if( $exp_status == NelioABExperiment::STATUS_RUNNING ) { ?>
 								<li><a href="<?php echo admin_url( 'admin.php?page=nelioab-dashboard' ); ?>"><?php _e( 'The Dashboard', 'nelioab' ); ?></a></li>
 							<?php } ?>
 						</ul>

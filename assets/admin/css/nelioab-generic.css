@@ -2,6 +2,14 @@
 /*   GENERIC STUFF     */
 /* ------------------- */
 
+.subscription-actions .delete {
+	color: #a00;
+}
+
+.subscription-actions .delete:hover {
+	color: red;
+}
+
 .setting-disabled {
 	color: grey;
 }
@@ -73,8 +81,38 @@ label.error-in-field.mandatory:before { background:red; }
 /*      DASHBOARD      */
 /* ------------------- */
 
+.nelio-rss-item {
+    display: block;
+    margin-bottom: 1em;
+    position: relative;
+    min-height: 60px;
+}
+
+.nelio-rss-featured-image {
+    display: inline-block;
+    height: 60px;
+    overflow-y: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.nelio-rss-title {
+    margin-left: 110px;
+}
+
+.nelio-rss-featured-image .attachment-thumbnail {
+    width: 100px;
+    height: 100px;
+}
+
 body.toplevel_page_nelioab-dashboard #poststuff .nelio-card {
 	height: auto;
+}
+
+body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3 {
+	cursor: hand;
+	cursor: pointer;
 }
 
 body.toplevel_page_nelioab-dashboard #poststuff .nelio-card h3:first-child .tab-type {
@@ -235,17 +273,17 @@ div.nelio-sect label.error,
 div.nelio-sect .error label,
 div.nelio-sect .error .description {
 	color:red;
-	-webkit-transition: color 0.20s ease-in-out;
-	-moz-transition: color 0.20s ease-in-out;
-	-ms-transition: color 0.20s ease-in-out;
-	-o-transition: color 0.20s ease-in-out;
+	-webkit-transition: color 0.2s ease-in-out;
+	-moz-transition: color 0.2s ease-in-out;
+	-ms-transition: color 0.2s ease-in-out;
+	-o-transition: color 0.2s ease-in-out;
 }
 div.nelio-sect .error label:before {
 	background:red;
-	-webkit-transition: background 0.20s ease-in-out;
-	-moz-transition: background 0.20s ease-in-out;
-	-ms-transition: background 0.20s ease-in-out;
-	-o-transition: background 0.20s ease-in-out;
+	-webkit-transition: background 0.2s ease-in-out;
+	-moz-transition: background 0.2s ease-in-out;
+	-ms-transition: background 0.2s ease-in-out;
+	-o-transition: background 0.2s ease-in-out;
 }
 div.nelio-sect a.select2-choice.error,
 div.nelio-card a.select2-choice.error,
@@ -285,11 +323,11 @@ div.nelio-sect .error select,
 div.nelio-card .error select,
 div.nelio-sect .error textarea,
 div.nelio-card .error textarea {
-	-webkit-transition: all 0.20s ease-in-out;
-	-moz-transition: all 0.20s ease-in-out;
-	-ms-transition: all 0.20s ease-in-out;
-	-o-transition: all 0.20s ease-in-out;
-	transition: all 0.20s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	-moz-transition: all 0.2s ease-in-out;
+	-ms-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
 	border: 1px solid red;
 }
 div.nelio-sect a.select2-choice.error:focus,
@@ -372,6 +410,11 @@ body #goal-list .nelio-card {
 	width: 100%;
 	height: auto;
 	min-height: 180px;
+}
+
+body #goal-list .nelio-card:hover {
+	box-shadow: 0 2px 2px -1px rgba(0,0,0,.3) !important;
+	cursor: default;
 }
 
 body #goal-list .nelio-card h3 .row-actions {
@@ -601,7 +644,17 @@ body #goal-list .nelio-card .actions .action input {
 	}
 }
 
+p.nelio-admin-explanation {
+    font-size: medium;
+    max-width: 500px;
+}
 
+div.nelio-message {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 500px;
+    text-align: center;
+}
 
 /* ------------------- */
 /*       ASSETS        */
@@ -639,8 +692,8 @@ body #goal-list .nelio-card .actions .action input {
   background-color: #555;
 
   border-radius: 100%;  
-  -webkit-animation: scaleout 1.0s infinite ease-in-out;
-  animation: scaleout 1.0s infinite ease-in-out;
+  -webkit-animation: scaleout 1s infinite ease-in-out;
+  animation: scaleout 1s infinite ease-in-out;
 }
 
 .white_spinner {
@@ -648,7 +701,7 @@ body #goal-list .nelio-card .actions .action input {
 }
 
 @-webkit-keyframes scaleout {
-  0% { -webkit-transform: scale(0.0) }
+  from { -webkit-transform: scale(0.0) }
   100% {
     -webkit-transform: scale(1.0);
     opacity: 0;
@@ -656,10 +709,90 @@ body #goal-list .nelio-card .actions .action input {
 }
 
 @keyframes scaleout {
-  0% { transform: scale(0.0) }
+  from { transform: scale(0.0) }
   100% {
     transform: scale(1.0);
     opacity: 0;
   }
+}
+
+.animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@-webkit-keyframes flipInY {
+    from {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+        -webkit-transition-timing-function: ease-in;
+        transition-timing-function: ease-in;
+        opacity: 0;
+    }
+
+    40% {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+        -webkit-transition-timing-function: ease-in;
+        transition-timing-function: ease-in;
+    }
+
+    60% {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+        opacity: 1;
+    }
+
+    80% {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+    }
+
+    100% {
+        -webkit-transform: perspective(400px);
+        transform: perspective(400px);
+    }
+}
+
+@keyframes flipInY {
+    from {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+        -webkit-transition-timing-function: ease-in;
+        transition-timing-function: ease-in;
+        opacity: 0;
+    }
+
+    40% {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+        -webkit-transition-timing-function: ease-in;
+        transition-timing-function: ease-in;
+    }
+
+    60% {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+        opacity: 1;
+    }
+
+    80% {
+        -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+        transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+    }
+
+    100% {
+        -webkit-transform: perspective(400px);
+        transform: perspective(400px);
+    }
+}
+
+.flipInY {
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+    -webkit-animation-name: flipInY;
+    animation-name: flipInY;
 }
 

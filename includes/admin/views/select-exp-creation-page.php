@@ -120,6 +120,18 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 				)
 			);
 
+			// CUSTOM POST TYPES
+			$this->print_beautiful_box(
+				'cpt',
+				__( 'New Custom Post Type Test', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'cpt', $url . NelioABExperiment::CPT_ALT_EXP,
+						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a custom post type and <strong>change whatever you want</strong>: the title, the text, the custom fields... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
+					)
+				)
+			);
+
 			// WIDGET
 			$this->print_beautiful_box(
 				'widget',

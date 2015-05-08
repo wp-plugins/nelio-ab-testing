@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -17,24 +17,53 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
+
+if ( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/global-alternative-experiment.php' );
 
+	/**
+	 * PHPDOC
+	 *
+	 * @package \NelioABTesting\Models\Experiments\AB
+	 * @since PHPDOC
+	 */
 	class NelioABThemeAlternativeExperiment extends NelioABGlobalAlternativeExperiment {
 
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var array
+		 */
 		private $original_appspot_theme;
 
+
 		/**
-		 * We'll use a different approach, here. I'll store the list of appsport IDs, and
-		 * overwrite them as necessary. If I have less selected themes than appspot ids,
-		 * I'll remove the ones that are no longer necessary. If there are less appspot ids
-		 * than selected themes, I'll create the new ones.
+		 * PHPDOC
+		 *
+		 * This class uses a different approach. It stores the list of appspot IDs
+		 * and overwrites them as necessary. If the user has less selected themes
+		 * than appspot ids, we'll remove the ones that are no longer necessary. If
+		 * there are less appspot ids than selected themes, we'll create the new
+		 * ones.
+		 *
+		 * @since PHPDOC
+		 * @var array
 		 */
 		private $appspot_ids;
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var array
+		 */
 		private $selected_themes;
 
+
+		// @Override
 		public function __construct( $id ) {
 			parent::__construct( $id );
 			$this->set_type( NelioABExperiment::THEME_ALT_EXP );
@@ -43,24 +72,36 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			$this->appspot_ids = array();
 		}
 
+
+		// @Override
 		public function get_original() {
 			return $this->original_appspot_theme;
 		}
 
+
+		// @Override
 		public function get_originals_id() {
-			return $this->get_original()->get_id();
+			/** @var NelioABAlternative $aux */
+			$aux = $this->get_original();
+			return $aux->get_id();
 		}
 
+
+		// @Override
 		protected function determine_proper_status() {
 			if ( count( $this->selected_themes ) <= 0 )
-				return NelioABExperimentStatus::DRAFT;
+				return NelioABExperiment::STATUS_DRAFT;
 			return parent::determine_proper_status();
 		}
 
+
+		// @Override
 		public function set_appspot_alternatives( $alts ) {
 			$aux = array();
-			foreach ( $alts as $alt )
+			foreach ( $alts as $alt ) {
+				/** @var NelioABAlternative $alt */
 				array_push( $this->appspot_ids, $alt->get_id() );
+			}
 			if ( count( $alts ) > 0 ) {
 				$this->original_appspot_theme = $alts[0];
 				for ( $i = 1; $i < count( $alts ); $i++ )
@@ -69,14 +110,43 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			parent::set_appspot_alternatives( $aux );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param array $ids PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function set_appspot_ids( $ids ) {
 			$this->appspot_ids = $ids;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function get_appspot_ids() {
 			return $this->appspot_ids;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param int    $id   PHPDOC
+		 * @param string $name PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function add_selected_theme( $id, $name ) {
 			foreach ( $this->selected_themes as $theme )
 				if ( $theme->value === $id )
@@ -89,10 +159,28 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 				) ) );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function get_selected_themes() {
 			return $this->selected_themes;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param int $theme_id
+		 *
+		 * @return boolean PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function is_theme_selected( $theme_id ) {
 			foreach( $this->selected_themes as $selected_theme )
 				if ( $selected_theme->value == $theme_id )
@@ -100,6 +188,8 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			return false;
 		}
 
+
+		// @Override
 		public function save() {
 			$exp_id = parent::save();
 
@@ -118,7 +208,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 					NELIOAB_BACKEND_URL . '/alternative/%s/update',
 					$this->appspot_ids[$i]
 				);
-				$result = NelioABBackend::remote_post( $url, $body );
+				NelioABBackend::remote_post( $url, $body );
 				$i++;
 			}
 
@@ -146,7 +236,7 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			while ( $i < count( $this->appspot_ids ) ) {
 				$id = $this->appspot_ids[$i];
 				$url = sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/delete', $id );
-				$result = NelioABBackend::remote_post( $url );
+				NelioABBackend::remote_post( $url );
 				$i++;
 			}
 
@@ -159,6 +249,8 @@ if( !class_exists( 'NelioABThemeAlternativeExperiment' ) ) {
 			NelioABExperimentsManager::update_experiment( $this );
 		}
 
+
+		// @Implements
 		public static function load( $id ) {
 			$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/global/' . $id );
 			$json_data = json_decode( $json_data['body'] );
