@@ -111,10 +111,6 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 				}
 			}
 
-			// Force update results
-			global $nelioab_controller;
-			$nelioab_controller->compute_results_for_running_experiments();
-
 			// Obtain DATA from APPSPOT
 			$experiments = array();
 			try {
@@ -258,7 +254,7 @@ if ( !class_exists( 'NelioABExperimentsPageController' ) ) {
 		public static function trash_experiment( $exp_id, $exp_type ) {
 			try {
 				$exp = NelioABExperimentsManager::get_experiment_by_id( $exp_id, $exp_type );
-				$exp->update_status_and_save( NelioABExperimentStatus::TRASH );
+				$exp->update_status_and_save( NelioABExperiment::STATUS_TRASH );
 			}
 			catch ( Exception $e ) {
 				require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );

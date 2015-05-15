@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -17,19 +17,38 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
+
+if ( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/global-alternative-experiment.php' );
 
+	/**
+	 * PHPDOC
+	 *
+	 * @package \NelioABTesting\Models\Experiments\AB
+	 * @since PHPDOC
+	 */
 	class NelioABMenuAlternativeExperiment extends NelioABGlobalAlternativeExperiment {
 
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var array
+		 */
 		private $new_ids;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var array
+		 */
 		private $original_appspot_menu;
 
-		public function __construct( $id ) {
-			parent::__construct( $id );
-		}
 
+		// @Override
 		public function clear() {
 			parent::clear();
 			$this->set_type( NelioABExperiment::MENU_ALT_EXP );
@@ -37,19 +56,31 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			$this->original_appspot_menu = $this->create_alternative_menu( 'FakeOriginalMenu' );
 		}
 
+
+		// @Override
 		public function get_original() {
 			return $this->original_appspot_menu;
 		}
 
+
+		// @Override
 		public function get_originals_id() {
-			return $this->get_original()->get_id();
+			/** @var NelioABAlternative $aux */
+			$aux = $this->get_original();
+			return $aux->get_id();
 		}
 
+
+		// @Override
 		public function set_original_ids( $ae_id, $menu_id ) {
-			$this->get_original()->set_id( $ae_id );
-			$this->get_original()->set_value( $menu_id );
+			/** @var NelioABAlternative $aux */
+			$aux = $this->get_original();
+			$aux->set_id( $ae_id );
+			$aux->set_value( $menu_id );
 		}
 
+
+		// @Override
 		public function set_appspot_alternatives( $alts ) {
 			$aux = array();
 			if ( count( $alts ) > 0 ) {
@@ -60,12 +91,23 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			parent::set_appspot_alternatives( $aux );
 		}
 
+		/**
+		 * Returns PHPDOC
+		 *
+		 * @param string $name PHPDOC
+		 *
+		 * @return NelioABAlternative PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function create_alternative_menu( $name ) {
 			$alts = $this->get_alternatives();
 			$fake_post_id = -1;
-			foreach ( $alts as $aux )
+			foreach ( $alts as $aux ) {
+				/** @var NelioABAlternative $aux */
 				if ( $aux->get_id() <= $fake_post_id )
 					$fake_post_id = $aux->get_id() - 1;
+			}
 			$alt = new NelioABAlternative();
 			$alt->set_id( $fake_post_id );
 			$alt->set_name( $name );
@@ -73,12 +115,16 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			return $alt;
 		}
 
+
+		// @Override
 		protected function determine_proper_status() {
 			if ( count( $this->get_alternatives() ) <= 0 )
-				return NelioABExperimentStatus::DRAFT;
+				return NelioABExperiment::STATUS_DRAFT;
 			return parent::determine_proper_status();
 		}
 
+
+		// @Override
 		public function save() {
 			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
 			$controller = NelioABMenuExpAdminController::get_instance();
@@ -92,36 +138,40 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			// -------------------------------------------------------------------------
 
 			// 2.0. FIRST OF ALL, WE CREATE A FAKE ORIGINAL FOR NEW EXPERIMENTS
-			if ( $this->get_original()->get_id() < 0 ) {
+			/** @var NelioABAlternative $original */
+			$original = $this->get_original();
+			if ( $original->get_id() < 0 ) {
 				$body = array(
-					'name'  => $this->get_original()->get_name(),
-					'value' => $this->get_original()->get_value(),
+					'name'  => $original->get_name(),
+					'value' => $original->get_value(),
 					'kind'  => $this->get_textual_type(),
 				);
 				try {
+					/** @var int $result */
 					$result = NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 						$body );
-					$this->get_original()->set_id( $result );
+					$original->set_id( $result );
 				} catch ( Exception $e ) {}
 			}
 			// AND WE UPDATE THE ORIGINAL VALUE (WHICH MAY HAVE BEEN CHANGED)
 			else {
-				$body = array( 'value' => $this->get_original()->get_value() );
+				$body = array( 'value' => $original->get_value() );
 				try {
-					$result = NelioABBackend::remote_post(
+					NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update',
-							$this->get_original()->get_id() ), $body );
+							$original->get_id() ), $body );
 				} catch ( Exception $e ) {}
 			}
 
 			// 2.1. UPDATE CHANGES ON ALREADY EXISTING APPSPOT ALTERNATIVES
 			foreach ( $this->get_appspot_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				if ( $alt->was_removed() || !$alt->is_dirty() )
 					continue;
 				$body = array( 'name' => $alt->get_name() );
 				try {
-					$result = NelioABBackend::remote_post(
+					NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update', $alt->get_id() ),
 						$body );
 				} catch ( Exception $e ) {}
@@ -130,6 +180,7 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			// 2.2. REMOVE FROM APPSPOT THE REMOVED ALTERNATIVES
 			$controller->begin();
 			foreach ( $this->get_appspot_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				if ( !$alt->was_removed() )
 					continue;
 
@@ -139,7 +190,7 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 				);
 
 				try {
-					$result = NelioABBackend::remote_post( $url );
+					NelioABBackend::remote_post( $url );
 					$controller->remove_alternative_menu( $alt->get_value() );
 				} catch( Exception $e ) {}
 			}
@@ -149,6 +200,7 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			$this->new_ids = array();
 			$controller->begin();
 			foreach ( $this->get_local_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				if ( $alt->was_removed() )
 					continue;
 				if ( $alt->is_based_on_another_element() )
@@ -164,6 +216,7 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 				);
 
 				try {
+					/** @var object|array $result */
 					$result = NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/exp/global/%s/alternative', $exp_id ),
 						$body );
@@ -181,6 +234,16 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			NelioABExperimentsManager::update_experiment( $this );
 		}
 
+
+		/**
+		 * Returns PHPDOC
+		 *
+		 * @param int $id PHPDOC
+		 *
+		 * @return int PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function get_real_id_for_alt( $id ) {
 			if ( isset( $this->new_ids[$id] ) )
 				return $this->new_ids[$id];
@@ -188,40 +251,45 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 				return $id;
 		}
 
+		/**
+		 * PHPDOC
+		 *
+		 * @param int    $alt_id  PHPDOC
+		 * @param string $name    PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public static function update_menu_set_alternative( $alt_id, $name ) {
 			$body = array(
 				'name' => $name,
 			);
-			$result = NelioABBackend::remote_post(
+			NelioABBackend::remote_post(
 				sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update', $alt_id ),
 				$body );
 		}
 
+
+		// @Override
 		public function remove() {
 			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/menu-experiment-controller.php' );
 			$controller = NelioABMenuExpAdminController::get_instance();
 
 			// 1. Remove the local alternatives
 			$controller->begin();
-			foreach ( $this->get_alternatives() as $alt )
+			foreach ( $this->get_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				$controller->remove_alternative_menu( $alt->get_value() );
+			}
 			$controller->commit();
 
 			// 2. We remove the experiment itself
 			parent::remove();
 		}
 
-		/**
-		 * This function duplicates the current experiment in AE. It returns
-		 * the new experiment ID. The experiment is READY to be started.
-		 *
-		 * Moreover, it duplicates the local copies of the alternative pages
-		 * and posts.
-		 *
-		 * @param $new_name the new name of the duplicated experiment.
-		 * @return the ID of the new experiment (if successfully duplicated)
-		 *         or -1 otherwise.
-		 */
+
+		// @Override
 		public function duplicate( $new_name ) {
 			$id = parent::duplicate( $new_name );
 			if ( -1 == $id )
@@ -231,16 +299,18 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			$controller = NelioABMenuExpAdminController::get_instance();
 
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			/** @var NelioABMenuAlternativeExperiment $exp */
 			$exp = NelioABExperimentsManager::get_experiment_by_id( $id, $this->get_type() );
 
 			$alts = 0;
 			$controller->begin();
 			foreach ( $exp->get_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				$menu_id = $controller->duplicate_menu_and_create_alternative(
 					$alt->get_value(), $exp->get_id() );
 				$body = array( 'value' => $menu_id );
 				try {
-					$result = NelioABBackend::remote_post(
+					NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update',
 							$alt->get_id() ), $body );
 					$alts++;
@@ -249,11 +319,14 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 			$controller->commit();
 
 			if ( 0 == $alts )
-				$exp->set_status( NelioABExperimentStatus::DRAFT );
+				$exp->set_status( NelioABExperiment::STATUS_DRAFT );
 
 			$exp->save();
+			return $exp->get_id();
 		}
 
+
+		// @Implements
 		public static function load( $id ) {
 			$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/global/' . $id );
 			$json_data = json_decode( $json_data['body'] );
@@ -287,6 +360,7 @@ if( !class_exists( 'NelioABMenuAlternativeExperiment' ) ) {
 
 			return $exp;
 		}
+
 	}//NelioABMenuAlternativeExperiment
 
 }

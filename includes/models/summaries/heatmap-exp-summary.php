@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -18,17 +18,56 @@
  */
 
 
-
-if( !class_exists( 'NelioABHeatmapExpSummary' ) ) {
+if ( !class_exists( 'NelioABHeatmapExpSummary' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/summaries/experiment-summary.php' );
+
+	/**
+	 * This class summarizes a Heatmap experiment.
+	 *
+	 * This class can be used in Nelio's _Dashboard_ or in the
+	 * _Experiment List_. It contains the basic, essential information that is
+	 * shown in those pages.
+	 *
+	 * @package \NelioABTesting\Models\Experiments\Summaries
+	 * @since 3.0.0
+	 */
 	class NelioABHeatmapExpSummary extends NelioABExperimentSummary {
 
+		/**
+		 * The number of visitors that contributed to build this experiment's heatmap.
+		 *
+		 * These visitors are classified in four groups:
+		 * * phone
+		 * * tablet
+		 * * desktop
+		 * * hd
+		 *
+		 * @since 3.0.0
+		 * @var array
+		 */
 		private $heatmap_info;
+
+
+		/**
+		 * The number of visitors that contributed to build this experiment's clickmap.
+		 *
+		 * These visitors are classified in four groups:
+		 * * phone
+		 * * tablet
+		 * * desktop
+		 * * hd
+		 *
+		 * @since 3.0.0
+		 * @var array
+		 */
 		private $clickmap_info;
 
+
+		// @Override
 		public function __construct( $id ) {
-			parent::__construct( $id, NelioABExperiment::HEATMAP_EXP );
+			parent::__construct( $id );
+			$this->set_type( NelioABExperiment::HEATMAP_EXP );
 			$this->heatmap_info = array(
 					'phone'   => 0,
 					'tablet'  => 0,
@@ -43,18 +82,42 @@ if( !class_exists( 'NelioABHeatmapExpSummary' ) ) {
 				);
 		}
 
+
+		// @Implements
 		public function has_result_status() {
 			return false;
 		}
 
+
+		/**
+		 * This function returns the heatmap information of this experiment.
+		 *
+		 * @return array the heatmap information of this experiment.
+		 *
+		 * @see self::heatmap_info
+		 *
+		 * @since 3.0.0
+		 */
 		public function get_heatmap_info() {
 			return $this->heatmap_info;
 		}
 
+
+		/**
+		 * This function returns the heatmap information of this experiment.
+		 *
+		 * @return array the heatmap information of this experiment.
+		 *
+		 * @see self::clickmap_info
+		 *
+		 * @since 3.0.0
+		 */
 		public function get_clickmap_info() {
 			return $this->clickmap_info;
 		}
 
+
+		// @Implements
 		public function load_json4ae( $json ) {
 			$this->set_name( $json->name );
 			$this->set_creation_date( $json->creation );
@@ -67,3 +130,4 @@ if( !class_exists( 'NelioABHeatmapExpSummary' ) ) {
 	}//NelioABHeatmapExpSummary
 
 }
+

@@ -69,7 +69,7 @@ if ( !class_exists( 'NelioABMenuAltExpProgressPage' ) ) {
 			$the_winner_confidence = $this->get_winning_confidence();
 
 			$exp = $this->exp;
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+			if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 				if ( $the_winner == 0 )
 					echo '<p><b>' . __( 'Right now, no alternative is beating the original menu.', 'nelioab' ) . '</b></p>';
 				if ( $the_winner > 0 )
@@ -121,10 +121,10 @@ if ( !class_exists( 'NelioABMenuAltExpProgressPage' ) ) {
 		protected function get_action_links( $exp, $alt_id ) {
 			$action_links = array();
 			switch ( $exp->get_status() ) {
-				case NelioABExperimentStatus::RUNNING:
+				case NelioABExperiment::STATUS_RUNNING:
 					array_push( $action_links, $this->make_link_for_edit( $alt_id ) );
 					break;
-				case NelioABExperimentStatus::FINISHED:
+				case NelioABExperiment::STATUS_FINISHED:
 					if ( $alt_id == $exp->get_originals_id() )
 						break;
 					$menu = false;

@@ -102,9 +102,10 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPageController' ) ) {
 			NelioABArrays::sort_posts( $list_of_posts );
 
 			if ( count( $list_of_pages ) + count( $list_of_posts ) == 0) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
-				$view = new NelioABErrorPage(
-					__( 'There are no pages nor posts available.', 'nelioab' ) );
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
+				$view = new NelioABMessagePage(
+					__( 'There are no posts available.', 'nelioab' ),
+					__( 'Please, create one post and try again.', 'nelioab' ) );
 				return $view;
 			}
 

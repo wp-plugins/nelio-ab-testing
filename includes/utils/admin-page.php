@@ -1,30 +1,87 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * Copyright 2015 Nelio Software S.L.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 if ( !class_exists( 'NelioABAdminPage' ) ) {
 
+	/**
+	 * This class is an abstract page.
+	 *
+	 * @since PHPDOC
+	 * @package \NelioABTesting\Utils
+	 */
 	abstract class NelioABAdminPage {
 
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
 		protected $title;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
 		protected $title_action;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
 		protected $icon_id;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
 		protected $message;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var array
+		 */
 		protected $classes;
 
+
+		/**
+		 * It creates a new instance of this class.
+		 *
+		 * @param string $title The title of the page.
+		 *                      Default: empty string.
+		 *
+		 * @return NelioABAdminPage a new instance of this class.
+		 *
+		 * @since PHPDOC
+		 */
 		public function __construct( $title = '' ) {
 			$this->title        = $title;
 			$this->title_action = '';
@@ -32,7 +89,6 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			$this->classes      = array();
 
 			$this->message = false;
-			$config = true;
 			try {
 				$config = NelioABAccountSettings::check_user_settings();
 			}
@@ -47,38 +103,93 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 						'body=' . esc_html( 'I\'d like to upgrade my subscription plan. I\'m subscribed to Nelio A/B Testing with the following e-mail address: ' . NelioABAccountSettings::get_email() . '.' )
 				);
 			}
-			elseif ( $config && !NelioABSettings::is_performance_muplugin_up_to_date() ) {
-				global $nelioab_admin_controller;
-				if ( NULL == $nelioab_admin_controller->error_message ) {
-					$nelioab_admin_controller->error_message = sprintf(
-						__( '<b>Performance MU-Plugin</b>. You\'re currently using an outdated version of Nelio A/B Testing\'s Performance MU-Plugin. We tried to automatically update it, but something went wrong. Please, go to the <a href="%s">Settings</a> page and reinstall the Performance MU-Plugin.', 'nelioab' ),
-						admin_url( 'admin.php?page=nelioab-settings' )
-					) ;
-				}
-			}
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $message PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function set_message( $message ) {
 			$this->message = $message;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $title PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function set_title( $title ) {
 			$this->title = $title;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $icon_id PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function set_icon( $icon_id ) {
 			$this->icon_id = $icon_id;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected abstract function do_render();
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function print_page_buttons() {
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $class PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function add_class( $class ) {
 			array_push( $this->classes, $class );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function render() { ?>
 			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tablesorter.min.js' ); ?>"></script>
 			<div class="wrap <?php echo implode( ' ', $this->classes ); ?>">
@@ -105,9 +216,25 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_dialog_content() {
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_global_warnings() {
 			global $nelioab_admin_controller;
 			$warnings = $nelioab_admin_controller->global_warnings;
@@ -124,6 +251,17 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			</div><?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $display PHPDOC
+		 *                        Default: block.
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_error_message( $display = 'block' ) {
 			global $nelioab_admin_controller;
 			$message = $nelioab_admin_controller->error_message;
@@ -140,6 +278,14 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			</div><?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_error_message_content() {
 			global $nelioab_admin_controller;
 			$message = $nelioab_admin_controller->error_message;
@@ -147,6 +293,17 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 				echo '<p>' . $message . '</p>';
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $display PHPDOC
+		 *                        Default: block.
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_message( $display = 'block' ) {
 			global $nelioab_admin_controller;
 			$message = $nelioab_admin_controller->message;
@@ -167,7 +324,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<script type="text/javascript" >
 			function dismissUpgradeNotice() {
 				var data = { action: 'dismiss_upgrade_notice' };
-				jQuery.post(ajaxurl, data, function(response) {
+				jQuery.post(ajaxurl, data, function() {
 					jQuery("#message-div").fadeOut();
 				});
 			}
@@ -175,6 +332,14 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_message_content() {
 			if ( $this->message ) {
 				echo '<p>' . $this->message . '</p>';
@@ -187,6 +352,17 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			}
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $display PHPDOC
+		 *                        Default: block.
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_errors( $display = 'block' ) {
 			global $nelioab_admin_controller;
 			$aux_class = '';
@@ -203,6 +379,14 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			</div><?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_errors_content() {
 			global $nelioab_admin_controller;
 			if ( count( $nelioab_admin_controller->validation_errors ) > 0 ) { ?>
@@ -215,10 +399,27 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			}
 		}
 
-		protected function make_section( $section_title, $fields ) { ?>
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $section_title PHPDOC
+		 * @param array  $fields        PHPDOC
+		 * @param string $help          Optional. PHPDOC
+		 *                              Default: empty string.
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
+		protected function make_section( $section_title, $fields, $help = '' ) { ?>
 			<div class="nelio-sect stuffbox">
-				<h3><label><?php echo $section_title; ?></label></h3>
-				<div class="inside"><?php
+				<h3><label><?php echo $section_title; ?></label><?php
+					if ( strlen( $help ) > 0 ) { ?>
+						<div class="help"><?php echo $help; ?></div>
+					<?php } ?></h3>
+				<div class="inside">
+					<?php
 					foreach ( $fields as $field ) {
 						if ( isset( $field['checkbox'] ) && $field['checkbox'] )
 							$this->make_checkbox_field( $field );
@@ -230,10 +431,35 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			</div><?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $id    PHPDOC
+		 * @param string $title PHPDOC
+		 * @param array|string|boolean $callback PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_beautiful_box( $id, $title, $callback = false ) {
 			$this->print_linked_beautiful_box( $id, $title, false, $callback );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $id       PHPDOC
+		 * @param string         $title    PHPDOC
+		 * @param string|boolean $link     PHPDOC
+		 * @param array|string|boolean $callback PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function print_linked_beautiful_box( $id, $title, $link=false, $callback = false ) { ?>
 			<div id="<?php echo $id; ?>" class="postbox nelio-card">
 				<?php if ( $link ) echo "<a href='$link' target='_blank' class='simple'>"; ?>
@@ -255,6 +481,16 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			</div><?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param array $field PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function make_field( $field ) {
 			$field_name   = $field['label'];
 			$field_id     = $field['id'];
@@ -270,10 +506,10 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 					$can_be_used = false;
 				switch ( $field['min_plan'] ) {
 					case NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN:
-						$explanation = __( 'This option is only available for users registered to our Professional Plan.', 'nelioab' );
+						$explanation = __( 'This option is only available for users subscribed to our Professional Plan.', 'nelioab' );
 						break;
 					case NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN:
-						$explanation = __( 'This option is only available for users registered to our Enterprise Plan.', 'nelioab' );
+						$explanation = __( 'This option is only available for users subscribed to our Enterprise Plan.', 'nelioab' );
 						break;
 				}
 			}
@@ -317,6 +553,16 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		<?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param array $field PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		protected function make_checkbox_field( $field ) {
 			$label   = $field['label'];
 			$id      = $field['id'];
@@ -333,6 +579,19 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			<?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $name          PHPDOC
+		 * @param string $form_name     PHPDOC
+		 * @param string $hidden_action PHPDOC
+		 *                              Default: none.
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		protected function make_submit_button( $name, $form_name, $hidden_action = 'none' ) {
 			return sprintf(
 				'<input type="submit" class="button-primary" ' .
@@ -342,6 +601,19 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			);
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string  $name       PHPDOC
+		 * @param string  $link       PHPDOC
+		 * @param boolean $is_primary PHPDOC
+		 *                            Default: false.
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		protected function make_button( $name, $link, $is_primary=false ) {
 			$primary = 'button';
 			if ( $is_primary )
@@ -352,6 +624,19 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 				$name, $link, $primary );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $name          PHPDOC
+		 * @param string $form_name     PHPDOC
+		 * @param string $hidden_action PHPDOC
+		 *                              Default: none.
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		protected function make_form_button( $name, $form_name, $hidden_action = 'none' ) {
 			return sprintf(
 				'<a class="button" %2$s>%1$s</a>&nbsp;',
@@ -360,6 +645,21 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			);
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string  $name       PHPDOC
+		 * @param string  $js         PHPDOC
+		 * @param boolean $is_enabled PHPDOC
+		 *                            Default: true.
+		 * @param boolean $is_primary PHPDOC
+		 *                            Default: false.
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		protected function make_js_button( $name, $js, $is_enabled = true, $is_primary = false ) {
 			$primary = 'button';
 			if ( $is_primary )
@@ -374,6 +674,16 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 				$name, $js, $primary, $disabled );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $field_id PHPDOC
+		 *
+		 * @return boolean PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		private function is_invalid( $field_id ) {
 			global $nelioab_admin_controller;
 			foreach ( $nelioab_admin_controller->validation_errors as $err )
@@ -382,10 +692,32 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			return false;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $label PHPDOC
+		 * @param string $url   PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function add_title_action( $label, $url ) {
 			$this->title_action = $this->make_action_link( $label, $url );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $label PHPDOC
+		 * @param string $url   PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function make_action_link( $label, $url ){
 			return sprintf(
 				'<a href="%1$s" class="add-new-h2">%2$s</a>',
@@ -394,6 +726,18 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			);
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $label         PHPDOC
+		 * @param string $form_name     PHPDOC
+		 * @param string $hidden_action PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function make_form_action_link( $label, $form_name, $hidden_action ){
 			return sprintf(
 				'<a class="add-new-h2" style="cursor:pointer;" %2$s>%1$s</a>',
@@ -402,6 +746,17 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 			);
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $form_name     PHPDOC
+		 * @param string $hidden_action PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		protected function make_form_javascript( $form_name, $hidden_action ) {
 			return sprintf(
 				' onclick="javascript:' .
@@ -415,4 +770,3 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 
 }
 
-?>

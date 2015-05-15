@@ -92,9 +92,9 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			NelioABArrays::sort_posts( $list_of_posts );
 
 			if ( ( count( $list_of_pages ) + count( $list_of_posts ) ) == 0 ) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
-				$view = new NelioABErrorPage(
-					__( 'There are no posts or posts available.', 'nelioab' ) );
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
+				$view = new NelioABMessagePage(
+					__( 'There are no posts or pages available.', 'nelioab' ) );
 				return $view;
 			}
 
@@ -103,10 +103,12 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			// available
 			// ---------------------------------------------------
 			$themes = wp_get_themes();
+			usort( $themes, array( $this, 'sort_themes_alphabetically' ) );
 			if ( count( $themes ) < 2 ) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
-				$view = new NelioABErrorPage(
-					__( 'There is only one theme available.<br />Please, install one or more themes to create an experiment of this type.', 'nelioab' ) );
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
+				$view = new NelioABMessagePage(
+					__( 'There is only one theme available', 'nelioab' ),
+					__( 'Please, install one or more themes to create an experiment of this type.', 'nelioab' ) );
 				return $view;
 			}
 
@@ -186,6 +188,10 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			}
 
 			return $view;
+		}
+
+		public function sort_themes_alphabetically( $a, $b ) {
+			return strcasecmp( $a['Name'], $b['Name'] );
 		}
 
 		public function create_view() {

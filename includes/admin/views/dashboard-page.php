@@ -23,6 +23,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 		private $graphic_delay;
 		private $experiments;
 		private $quota;
+		private $rss;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -34,6 +35,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				'total' => 7500,
 			);
 			$this->graphic_delay = 500;
+			$this->rss = fetch_feed( 'https://nelioabtesting.com/feed/' );
 		}
 
 		public function set_summary( $summary ) {
@@ -45,17 +47,18 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			echo '<div id="post-body" class="metabox-holder columns-2">';
 			echo '<div id="post-body-content">';
 			if ( count( $this->experiments ) == 0 ) {
-				echo '<center>';
-				echo sprintf( '<img src="%s" alt="%s" />',
-					nelioab_asset_link( '/admin/images/happy.png' ),
-					__( 'Happy smile.', 'nelioab' )
+				echo "<div class='nelio-message'>";
+				echo sprintf( '<img class="animated flipInY" src="%s" alt="%s" />',
+					nelioab_admin_asset_link( '/images/dashboard.png' ),
+					__( 'Dashboard Icon', 'nelioab' )
 				);
 				echo '<h2 style="max-width:750px;">';
-				echo sprintf(
-					__( 'Hi! You\'re now in Nelio\'s Dashboard, where you\'ll find all relevant information about your running experiments. Right now, however, there are none...<br><a href="%s">Create one now!</a>', 'nelioab' ),
+				printf( '%1$s<br><br><a class="button button-primary" href="%3$s">%2$s</a>',
+					__( 'Here you\'ll find relevant information about your running experiments.', 'nelioab' ),
+					__( 'Create One Now!', 'nelioab', 'create-experiment' ),
 					'admin.php?page=nelioab-add-experiment' );
 				echo '</h2>';
-				echo '</center>';
+				echo '</div>';
 			}
 			else {
 				echo '<h2>' . __( 'Running Experiments', 'nelioab' ) . '</h2>';
@@ -80,7 +83,10 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 					</div>
 					<div class="right" style="font-size:32px; text-align:right; float:right; width:30%; padding-right:5%; margin-top:8px; opacity:0.7;">
 						<span><?php
-							$perc = ( $this->quota['used'] / $this->quota['total'] ) * 100;
+							if ( $this->quota['total'] > 0 )
+								$perc = ( $this->quota['used'] / $this->quota['total'] ) * 100;
+							else
+								$perc = 0;
 							$decs = 1;
 							if ( 100 == $perc )
 								$decs = 0;
@@ -94,9 +100,53 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 						echo $cs['primary'];
 					?>;width:<?php echo $perc; ?>%;"></div>
 				</div>
-			</div>
 			<?php
+			$this->print_rss();
 			echo '</div>'; // #post-body
+		}
+
+		public function print_rss() {
+			$maxitems = 0;
+
+			if ( ! is_wp_error( $this->rss ) ) : // Checks that the object is created correctly
+
+				// Figure out how many total items there are, but limit it to 5.
+				$maxitems = $this->rss->get_item_quantity( 5 );
+
+				// Build an array of all the items, starting with element 0 (first element).
+				$rss_items = $this->rss->get_items( 0, $maxitems ); ?>
+
+                <?php if ( $maxitems == 0 ) return; ?>
+
+				<div id="nelio-rss" class="postbox-container" style="overflow:hidden;">
+					<h2><?php _e( 'Latest News', 'nelioab' ); ?></h2>
+				<?php // Loop through each feed item and display each item as a hyperlink.
+				foreach ( $rss_items as $item ) {
+					$title       = $item->get_title();
+					$description = $item->get_description();
+					$permalink   = $item->get_permalink();
+					$description = str_replace( '<p>', '', $description );
+					// Look for the featured image
+					$pos = strpos( $description, '/>' );
+					if ( !$pos ) continue;
+					$featured_img = substr( $description, 0, $pos + 2 );
+				?>
+					<div class='nelio-rss-item'>
+						<div class="nelio-rss-featured-image">
+							<a href='<?php echo $permalink; ?>' target='_blank'>
+								<?php echo $featured_img; ?>
+							</a>
+						</div>
+						<div class='nelio-rss-title'>
+							<a href='<?php echo $permalink; ?>' target='_blank'>
+								<?php echo $title; ?>
+							</a>
+						</div>
+					</div>
+				<?php
+				} ?>
+				</div><?php
+			endif;
 		}
 
 		public function print_cards() {
@@ -195,6 +245,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				case NelioABExperiment::POST_ALT_EXP:
 					$img = sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
 					break;
+				case NelioABExperiment::CPT_ALT_EXP:
+					$img = sprintf( $img, 'cpt', __( 'Post', 'nelioab' ) );
+					break;
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					$img = sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
 					break;
@@ -292,6 +345,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 							break;
 						case NelioABExperiment::POST_ALT_EXP:
 							$color = '#F19C00';
+							break;
+						case NelioABExperiment::CPT_ALT_EXP:
+							$color = '#FF8822';
 							break;
 						case NelioABExperiment::HEADLINE_ALT_EXP:
 							$color = '#79B75D';

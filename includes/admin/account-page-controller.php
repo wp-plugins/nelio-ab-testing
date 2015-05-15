@@ -41,7 +41,7 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 			$max_sites = 1;
 			try {
 				NelioABAccountSettings::validate_email_and_reg_num( $email, $reg_num );
-				NelioABAccountSettings::check_account_status( 'force-check' );
+				NelioABAccountSettings::check_account_status( 'now' );
 			}
 			catch ( Exception $e ) {}
 
@@ -120,11 +120,6 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 					$user_info['status']            = $json->status;
 					$user_info['total_quota']       = intval( $json->quotaPerMonth );
 					$user_info['quota']             = intval( $json->quota + $json->quotaExtra );
-
-					if ( $user_info['quota'] > 0 )
-						NelioABAccountSettings::set_has_quota_left( true );
-					else
-						NelioABAccountSettings::set_has_quota_left( false );
 				}
 
 				// Agency stuff
@@ -219,14 +214,14 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 							if ( isset( $_POST['nelioab_registration_sector'] ) )
 								$sector = $_POST['nelioab_registration_sector'];
 							NelioABAccountSettings::register_this_site( $type, $sector );
-							$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
+							$nelioab_admin_controller->message = __( 'This site has been successfully activated in your account.', 'nelioab' );
 							break;
 						case 'deregister':
 							NelioABAccountSettings::deregister_this_site();
-							$nelioab_admin_controller->message = __( 'This site is no longer registered to your account.', 'nelioab' );
+							$nelioab_admin_controller->message = __( 'This site is no longer active in your account.', 'nelioab' );
 						case 'unlink':
 							NelioABAccountSettings::unlink_this_site();
-							$nelioab_admin_controller->message = __( 'The site is no longer linked to any of your other registered sites, If you have free slots, you may now register it as a completely different and new site.', 'nelioab' );
+							$nelioab_admin_controller->message = __( 'The site is no longer linked to any of your other active sites. If you have free slots, you may now activate it as a completely different and new site.', 'nelioab' );
 					}
 				}
 				catch ( Exception $e ) {
