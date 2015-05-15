@@ -416,7 +416,14 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 					try {
 						$url  = sprintf( NELIOAB_BACKEND_URL . '/site/%s/version',
 							NelioABAccountSettings::get_site_id() );
-						$body = array( 'version' => NELIOAB_PLUGIN_VERSION );
+						try {
+							$php_version = ' (PHP: ' . preg_replace( '/-.*$/', '', phpversion() ) . ')';
+						}
+						catch ( Exception $e ) {
+							$php_version = '';
+						}
+						$version = NELIOAB_PLUGIN_VERSION . $php_version;
+						$body = array( 'version' => $version );
 						NelioABBackend::remote_post( $url, $body );
 						self::update_nelioab_option( 'last_synced_version', NELIOAB_PLUGIN_VERSION );
 					} catch ( Exception $e ) {}

@@ -245,6 +245,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				case NelioABExperiment::POST_ALT_EXP:
 					$img = sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
 					break;
+				case NelioABExperiment::CPT_ALT_EXP:
+					$img = sprintf( $img, 'cpt', __( 'Post', 'nelioab' ) );
+					break;
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					$img = sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
 					break;
@@ -342,6 +345,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 							break;
 						case NelioABExperiment::POST_ALT_EXP:
 							$color = '#F19C00';
+							break;
+						case NelioABExperiment::CPT_ALT_EXP:
+							$color = '#FF8822';
 							break;
 						case NelioABExperiment::HEADLINE_ALT_EXP:
 							$color = '#79B75D';

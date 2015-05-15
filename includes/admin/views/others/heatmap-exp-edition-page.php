@@ -171,7 +171,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 		}
 
 		protected function get_basic_info_elements() {
-			$post_label = __( 'Page/Post', 'nelioab' );
+			$post_label = __( 'Page, Post, or Custom Post', 'nelioab' );
 
 			return array(
 				array (

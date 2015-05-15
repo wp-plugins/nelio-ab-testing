@@ -699,8 +699,8 @@ class NelioABAlternativeExperimentController {
 		/** @var NelioABController $nelioab_controller */
 		global $nelioab_controller;
 		$post_id = $nelioab_controller->get_queried_post_id();
-		remove_filter( 'the_posts', array( &$this, 'the_posts_intercept' ) );
 		if ( $post_id > 0 ) {
+			remove_filter( 'the_posts', array( &$this, 'the_posts_intercept' ) );
 			$alt = NULL;
 			$alt_post_id = $this->get_post_alternative( $post_id );
 			if ( $alt_post_id != $post_id )

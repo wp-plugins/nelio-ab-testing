@@ -94,11 +94,15 @@ NelioAB.checker.assignAlternativesAndCheck = function() {
 	// assignation has to take into account the values of the cookies (which
 	// might overwrite the values she already has).
 	var getParams = [];
-	var aux = document.URL.indexOf( '?' );
+	var url = document.URL;
+	var hash = NelioAB.helpers.extractHashAnchor( url );
+	if ( hash.length > 1 )
+		url = url.replace( hash, '' );
+	var aux = url.indexOf( '?' );
 	if ( -1 != aux )
-		getParams = NelioAB.helpers.extractGetParams( document.URL.substring(aux) );
+		getParams = NelioAB.helpers.extractGetParams( url.substring(aux) );
 
-	var aux = [];
+	aux = [];
 	for ( var i = 0; i < getParams.length; ++i ) {
 		if ( NelioAB.checker.nabMatcher.test( getParams[i][0] ) )
 			aux.push( getParams[i] );
@@ -333,6 +337,13 @@ NelioAB.checker.generateAjaxParams = function() {
 NelioAB.checker.loadAlternative = function() {
 	var url = document.URL;
 
+	// First, we remove the hash tag (if any)
+	var hash = NelioAB.helpers.extractHashAnchor( url );
+	if ( hash.length > 1 ) {
+		url = url.replace( hash, '' );
+	}
+
+	// We then process all GET params
 	var getParams = [];
 	var aux = url.indexOf( '?' );
 	if ( -1 != aux )
@@ -366,6 +377,9 @@ NelioAB.checker.loadAlternative = function() {
 		url = url.substring( 0, aux );
 	url = NelioAB.checker.buildUrl( url, myParams, getParams );
 
+	// We have to make sure that the hash anchor (if any), appears at the end
+	// of the URL (otherwise, it won't work).
+	url += hash;
 	window.location.replace( url );
 };
 
@@ -377,6 +391,10 @@ NelioAB.checker.loadAlternative = function() {
  */
 NelioAB.checker.cleanUrl = function() {
 	var url = document.URL;
+	var hash = NelioAB.helpers.extractHashAnchor( url );
+	if ( hash.length > 1 ) {
+		url = url.replace( hash, '' );
+	}
 	var aux = url.indexOf( '?' );
 	var getParams = [];
 	if ( -1 != aux ) {
@@ -394,6 +412,7 @@ NelioAB.checker.cleanUrl = function() {
 			url += getParams[i][0] + val + '&';
 		}
 		url = url.substring( 0, url.length-1 );
+		url += hash;
 		NelioAB.helpers.updateRefererInformation( url );
 	}
 	else if ( 'context' == NelioABBasic.settings.hideParams ) {
@@ -407,11 +426,13 @@ NelioAB.checker.cleanUrl = function() {
 			url += getParams[i][0] + val + '&';
 		}
 		url = url.substring( 0, url.length-1 );
+		url += hash;
 		NelioAB.helpers.updateRefererInformation( url );
 	}
 	else if ( 'none' == NelioABBasic.settings.hideParams ) {
-		// No params should be removed, but we have to save the actual referer
-		NelioAB.helpers.updateRefererInformation();
+		// We have to use the URL as it is
+		url = document.URL;
+		NelioAB.helpers.updateRefererInformation( url );
 	}
 };
 

@@ -405,15 +405,21 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		 *
 		 * @param string $section_title PHPDOC
 		 * @param array  $fields        PHPDOC
+		 * @param string $help          Optional. PHPDOC
+		 *                              Default: empty string.
 		 *
 		 * @return void
 		 *
 		 * @since PHPDOC
 		 */
-		protected function make_section( $section_title, $fields ) { ?>
+		protected function make_section( $section_title, $fields, $help = '' ) { ?>
 			<div class="nelio-sect stuffbox">
-				<h3><label><?php echo $section_title; ?></label></h3>
-				<div class="inside"><?php
+				<h3><label><?php echo $section_title; ?></label><?php
+					if ( strlen( $help ) > 0 ) { ?>
+						<div class="help"><?php echo $help; ?></div>
+					<?php } ?></h3>
+				<div class="inside">
+					<?php
 					foreach ( $fields as $field ) {
 						if ( isset( $field['checkbox'] ) && $field['checkbox'] )
 							$this->make_checkbox_field( $field );

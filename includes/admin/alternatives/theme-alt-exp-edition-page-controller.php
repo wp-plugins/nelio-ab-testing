@@ -103,6 +103,7 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			// available
 			// ---------------------------------------------------
 			$themes = wp_get_themes();
+			usort( $themes, array( $this, 'sort_themes_alphabetically' ) );
 			if ( count( $themes ) < 2 ) {
 				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
 				$view = new NelioABMessagePage(
@@ -187,6 +188,10 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			}
 
 			return $view;
+		}
+
+		public function sort_themes_alphabetically( $a, $b ) {
+			return strcasecmp( $a['Name'], $b['Name'] );
 		}
 
 		public function create_view() {

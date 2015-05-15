@@ -262,7 +262,9 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 		protected function print_basic_info() {
 			$this->make_section(
 				__( 'Basic Information', 'nelioab' ),
-				$this->get_basic_info_elements() );
+				$this->get_basic_info_elements(),
+				'<label class="mandatory">Required field</label>'
+			);
 		}
 
 		/**

@@ -99,7 +99,7 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 			// HEATMAPS
 			$this->print_beautiful_box(
 				'heatmap',
-				__( 'New Heatmap Experiment for Page or Post', 'nelioab' ),
+				__( 'New Heatmap Experiment for Pages or (Custom) Posts', 'nelioab' ),
 				array( &$this, 'print_new_exp_box',
 					array(
 						'heatmap', $url . NelioABExperiment::HEATMAP_EXP,

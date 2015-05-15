@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.1.1
+Stable tag: 4.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -265,6 +265,17 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.1.2 (May 15, 2015) =
+* **Improvement** When creating a theme experiment, themes are now ordered
+alphabetically.
+* **Improvement** We've tweaked the script that tracks click events. Now,
+it's able to detect nested elements more accurately.
+* **Bug Fix** Alternative loading did not work on some themes that triggered
+a `WP_Query` request before the main query. This is now fixed.
+* **Bug Fix** Hash anchor URLs working properly during alternative loading.
+* **Bug Fix** Icons and colors in Dashboard for Custom Post Type experiments.
+
 
 = 4.1.1 (May 8, 2015) =
 * **New Feature** Experiment Duplication is available to all plans. Don't waste
@@ -901,7 +912,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.1.1 =
+= 4.1.2 =
 **Support for Custom Post Types**. Use Nelio A/B Testing with any
 plugins/themes that defines its own custom post types (such as Products,
 Videos, Reviews, and so on). **Warning** Full WooCommerce support is

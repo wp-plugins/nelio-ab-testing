@@ -113,6 +113,24 @@ NelioAB.helpers.showBody = function() {
 
 
 /**
+ * It removes the hash anchor of the given URL (if any).
+ *
+ * @param url A URL.
+ *
+ * @return The same given URL, without the hash anchor (if any).
+ */
+NelioAB.helpers.extractHashAnchor = function( url ) {
+	var aux = url.indexOf( '#' );
+	if ( -1 === aux )
+		return '';
+	var hash = url.substring( aux, url.length );
+	aux = hash.indexOf( '?' );
+	if ( -1 !== aux )
+		hash = hash.substring( 0, aux-1 );
+	return hash;
+};
+
+/**
  * This function processes a list of GET parameters and returns a list of pairs
  * with those params.
  *
@@ -292,46 +310,50 @@ NelioAB.helpers.prepareOutwardsNavigationTracking = function() {
  * events to AE.
  */
 NelioAB.helpers.prepareClickOnElementTracking = function() {
-	jQuery(document).click(function(e) {
+	jQuery(document).on('click', function(e) {
 		var target = jQuery(e.target);
 
-		var successfulClick = false;
-
-		var DEPTH = 5;
 		for( var i = 0; i < NelioABEnv.goals.clickableElements.length; ++i ) {
 			var ce = NelioABEnv.goals.clickableElements[i];
 			switch ( ce.mode ) {
 
 				case 'id':
-					var aux = target;
-					for ( var j = 0; j < DEPTH; ++j ) {
-						if ( typeof aux == 'undefined' ) break;
-						if ( aux.attr('id') == ce.value ) {
-							successfulClick = true;
-							NelioAB.helpers.sendClickElementEvent(ce);
-							break;
-						}
-						aux = target.parent();
+					var id = '#' + ce.value;
+					if ( target.attr('id') == ce.value || target.closest(id).length > 0 ) {
+						NelioAB.helpers.sendClickElementEvent(ce);
 					}
 					break;
 
 				case 'css-path':
-					var aux = jQuery(ce.value);
+					var elemsInPath = jQuery(ce.value);
 					var found = false;
-					aux.each(function() {
-						if ( jQuery(this)[0] == target[0] )
-							found = true;
+					elemsInPath.each(function() {
+						if ( !found ) {
+							var aux = jQuery(this)[0];
+							if ( aux == target[0] || target.closest(aux).length > 0 ) {
+								found = true;
+							}
+						}
 					});
 					if ( found ) {
-						successfulClick = true;
 						NelioAB.helpers.sendClickElementEvent(ce);
 					}
 					break;
 
 				case 'text-is':
 					var value = ce.value.trim().toLowerCase();
+					var successfulClick = false;
+
+					// Let's see if we have an element whose value is the text we're searching
+					// (for instance, a button)
+					if ( target.attr('value') == value ) {
+						successfulClick = true;
+					}
+
+					// If it isn't, let's look for the current element and/or (some of) its
+					// parents
 					var aux = target;
-					for ( var j = 0; j < DEPTH; ++j ) {
+					for ( var j = 0; j < 5 && !successfulClick; ++j ) {
 						if ( typeof aux == 'undefined' ) break;
 						var auxValue = aux.text()
 							.replace(/\n/g,' ')
@@ -340,10 +362,13 @@ NelioAB.helpers.prepareClickOnElementTracking = function() {
 							.toLowerCase();
 						if ( auxValue == value ) {
 							successfulClick = true;
-							NelioAB.helpers.sendClickElementEvent(ce);
-							break;
 						}
 						aux = target.parent();
+					}
+
+					// If I found the element, let's send the event
+					if ( successfulClick ) {
+						NelioAB.helpers.sendClickElementEvent(ce);
 					}
 					break;
 
@@ -606,6 +631,8 @@ NelioAB.helpers.referer = false;
  * This function returns the last page (ID and actual ID) I set as a possible
  * referer.
  *
+ * @param string url the (current?) URL.
+ *
  * @return the last page (ID and actual ID) I set as a possible referer.
  */
 NelioAB.helpers.updateRefererInformation = function( url ) {
@@ -626,8 +653,6 @@ NelioAB.helpers.updateRefererInformation = function( url ) {
 	else {
 		res = NelioAB.helpers.referer;
 	}
-	if ( typeof url == 'undefined' )
-		url = document.URL;
 	NelioAB.helpers.referer = res;
 	try {
 		window.history.replaceState({referer:res}, '', url);
@@ -723,7 +748,7 @@ NelioAB.helpers.addDocumentHooks = function() {
 	// ***************************************************************************
 	// Adding new event "byebye" when we click on a link and, therefore, we're
 	// about to leave the page.
-	jQuery(document).click(function(e) {
+	jQuery(document).on('click', function(e) {
 		// We make sure that the "referer" cookie is set to the current page, so
 		// that navigations from the current page have the proper referer. In
 		// principle, it should be set using the "onbeforeunload" js hook... but,
