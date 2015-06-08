@@ -168,29 +168,41 @@ Sites](http://www.indexwp.com/conversion-optimization-wordpress-sites/)
 Service](http://wptavern.com/wp-abtesting-split-testing-as-a-service)
 (WPTavern.com)
 
+
 == Installation ==
 
-**Before installing the plugin...**
+**About Nelio's Free Trial**
 
-Sign up at our [Nelio A/B Testing
-service](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org). Once
-you are registered, you will be sent an e-mail with your account information,
-which is necessary for using the plugin.
+Nelio A/B Testing includes an unlimited\* **Free Trial**. During the Free
+Trial, you'll be able to run all the experiments you want and benefit from our
+personalized support. In order to **start the Free Trial**, simply install the
+plugin (as described below) and click on the _Start Free Trial_ button (see the
+Welcome screenshot).
+
+After the Free Trial is over, you'll need an account to continue using Nelio
+A/B Testing. Simply subscribe to [our
+service](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org) and
+we'll send you an e-mail with your account information.
+
+\* The Free Trial includes up to 1,000 [page
+views](http://support.nelioabtesting.com/support/solutions/articles/1000129162).
 
 
-**Installation through WordPress admin from plugin repository:**
+**Installation through the WordPress Dashboard**
 
 1. Login to your WordPress admin.
 2. Click on the plugins tab.
 3. Click the Add New button.
 4. Search for "Nelio AB Testing" or "AB Testing"
 5. Look for our plugin, click "Install Now" and then "Activate".
+6. Once the plugin is installed and active, you can either start a new free
+trial or you can configure your Nelio account.
 
 That's it! You may now head to the new menu item on the left labeled "Nelio A/B
 Testing".
 
 
-**Alternative installation methods:**
+**Alternative installation methods**
 
 1. Download this plugin.
 2. Login to your WordPress admin.
@@ -198,6 +210,8 @@ Testing".
 4. Click the Add New button.
 5. Click the Upload button.
 6. Click "Install Now" and then "Activate".
+7. Once the plugin is installed and active, you can either start a new free
+trial or you can configure your Nelio account.
 
 
 **I successfully installed the plugin. What should I do now?**
@@ -263,6 +277,11 @@ aspects of your WordPress site; just select what you want to test and create
 the experiment!
 10. **Heatmaps.** Our service let's you analyse the hottest areas of any page
 on your site so that you can understand your customers better.
+11. **Free Trial Actions.** During your Free Trial, you can get more quota by
+simply completing the actions we offer you. Tell us a little bit more about
+your and your site, make a tweet, or recommend us to your friends!
+12. **Welcome Message.** After installing the plugin you'll be able to either
+start a new free trial or configure your Nelio account.
 
 
 == Changelog ==
