@@ -94,9 +94,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 				<input type="hidden" name="nelioab_account_form" value="true" />
 
 				<?php
-				$this->make_section(
-					__( 'Nelio AB Testing &ndash; Account Access Details', 'nelioab' ),
-					array(
+				$fields = array(
 						array (
 							'label'     => __( 'E-Mail', 'nelioab' ),
 							'id'        => 'settings_email',
@@ -106,15 +104,23 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 							'label'     => __( 'Registration Number', 'nelioab' ),
 							'id'        => 'settings_reg_num',
 							'callback'  => array( &$this, 'print_reg_num_field' ),
-							'mandatory' => true ),
-						array (
-							'label'     => __( 'I have read and accept the <a href="http://nelioabtesting.com/terms-conditions" target="_blank">Terms and Conditions</a> of this service.', 'nelioab' ),
-							'id'        => 'settings_tac',
-							'mandatory' => true,
-							'checkbox'  => true,
-							'checked'   => $this->tac,
-							'pre'       => '<br />' ),
-					) );
+							'mandatory' => true )
+					);
+
+				if ( !NelioABAccountSettings::is_using_free_trial() ) {
+					array_push( $fields, array (
+						'label'     => __( 'I have read and accept the <a href="https://nelioabtesting.com/terms-and-conditions" target="_blank">Terms and Conditions</a> of this service.', 'nelioab' ),
+						'id'        => 'settings_tac',
+						'mandatory' => true,
+						'checkbox'  => true,
+						'checked'   => $this->tac,
+						'pre'       => '<br />' )
+					);
+				}
+				$this->make_section(
+					__( 'Nelio AB Testing &ndash; Account Access Details', 'nelioab' ),
+					$fields
+				);
 				?>
 
 			</form>
@@ -180,9 +186,10 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 			}
 			else { ?>
 
-				<?php if ( !$this->user_info['agency'] ) { ?>
+				<?php if ( !$this->user_info['agency'] && !empty( $this->user_info['firstname'] ) ) { ?>
 					<p style="margin-top:0em;margin-left:3em;"><?php
-						printf( __( 'Hi, %s!', 'nelioab' ), $this->user_info['firstname'] ); ?></p>
+						printf( __( 'Hi %s!', 'nelioab' ),  $this->user_info['firstname'] );
+					?></p>
 				<?php } ?>
 
 				<p style="margin-top:0em;margin-left:3em;"><?php
@@ -280,7 +287,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 							$this->user_info['agencyname'] );
 				}
 
-				if ( isset( $this->user_info['quota'] ) ) { ?>
+				if ( !NelioABAccountSettings::is_using_free_trial() && isset( $this->user_info['quota'] ) ) { ?>
 					<p style="margin-top:0em;margin-left:3em;max-width:600px;">
 					<b><?php _e( 'Available Quota:', 'nelioab' ); ?></b>
 					<?php
@@ -310,7 +317,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 				} ?>
 
 
-				<?php if ( $this->is_email_valid && $this->is_reg_num_valid && $this->tac ) { ?>
+				<?php if ( !NelioABAccountSettings::is_using_free_trial() && $this->is_email_valid && $this->is_reg_num_valid && $this->tac ) { ?>
 
 					<?php
 					if ( $this->error_retrieving_registered_sites ) { ?>

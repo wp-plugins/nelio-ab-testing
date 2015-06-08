@@ -427,8 +427,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		public static function print_pro_section() {
 			echo '</div>';
 			echo '<div id="nelioab-pro-section" style="display:none;">';
-			if ( NelioABAccountSettings::get_subscription_plan() <
-			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) ) {
 				echo '<p>';
 				printf(
 					__( 'The following settings can only be modified by users subscribed to our <b>Professional</b> or <b>Enterprise Plans</b>.<br>If you want to have a finer control of the plugin\'s settings, <a target="_blank" href="%s">please upgrade your current subscription</a>.', 'nelioab' ),
@@ -469,8 +468,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 
 		private static function get_pro_details( $classes = '' ) {
 			$result = '';
-			if ( NelioABAccountSettings::get_subscription_plan() <
-			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) ) {
 				$result .= 'disabled="disabled" ';
 				$classes .= ' setting-disabled';
 			}
@@ -494,8 +492,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 		}
 
 		private static function prepare_pro_label( $label, $help = true ) {
-			if ( NelioABAccountSettings::get_subscription_plan() <
-			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) ) {
 				$res = '<span class="pro-setting-label setting-disabled">' . $label;
 				if ( $help )
 					$res .= ' ' . self::get_icon( '#AAA' );
@@ -604,8 +601,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 				<option value='-1'><?php _e( 'Unlimited', 'nelioab' ); ?></option>
 			<?php
 			$options = array( 500, 1000, 1500, 2500, 3000 );
-			if ( NelioABAccountSettings::get_subscription_plan() >=
-			     NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN )
+			if ( NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) )
 				array_push( $options, 4000, 5000, 7500, 10000 );
 			foreach ( $options as $v ) {
 				printf( '<option value="%2$s" %3$s>%1$s</option>',

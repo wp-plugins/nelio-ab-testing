@@ -134,10 +134,23 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 		public static function make_credential() {
 			// Creating the credential
 			$result = array();
-			$result['customerId']         = NelioABAccountSettings::get_customer_id();
-			$result['registrationNumber'] = NelioABAccountSettings::get_reg_num();
-			$result['siteId']             = NelioABAccountSettings::get_site_id();
-			$result['siteUrl']            = get_option( 'siteurl' );
+
+			$aux = NelioABAccountSettings::get_customer_id();
+			if ( $aux ) {
+				$result['customerId'] = $aux;
+			}
+
+			$aux = NelioABAccountSettings::get_reg_num();
+			if ( $aux ) {
+				$result['registrationNumber'] = $aux;
+			}
+
+			$aux = NelioABAccountSettings::get_site_id();
+			if ( $aux ) {
+				$result['siteId'] = $aux;
+			}
+
+			$result['siteUrl'] = get_option( 'siteurl' );
 
 			return $result;
 		}

@@ -443,8 +443,8 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		 *
 		 * @since PHPDOC
 		 */
-		protected function print_beautiful_box( $id, $title, $callback = false ) {
-			$this->print_linked_beautiful_box( $id, $title, false, $callback );
+		protected function print_beautiful_box( $id, $title, $callback=false, $classes=array() ) {
+			$this->print_linked_beautiful_box( $id, $title, false, $callback, $classes );
 		}
 
 
@@ -460,8 +460,11 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		 *
 		 * @since PHPDOC
 		 */
-		protected function print_linked_beautiful_box( $id, $title, $link=false, $callback = false ) { ?>
-			<div id="<?php echo $id; ?>" class="postbox nelio-card">
+		protected function print_linked_beautiful_box( $id, $title, $link=false, $callback=false, $classes=array() ) {
+			array_push( $classes, 'postbox', 'nelio-card' );
+			$classes = implode( ' ', $classes );
+			?>
+			<div id="<?php echo $id; ?>" class="<?php echo $classes; ?>">
 				<?php if ( $link ) echo "<a href='$link' target='_blank' class='simple'>"; ?>
 					<h3><span><?php echo $title; ?></span></h3>
 				<?php if ( $link ) echo "</a>"; ?>

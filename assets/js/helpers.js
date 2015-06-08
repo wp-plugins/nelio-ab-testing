@@ -18,6 +18,16 @@ NelioAB.helpers.isOldIE = function() {
 
 
 /**
+ * This function returns whether the current browser is a bot.
+ *
+ * @return whether the current browser is a bot.
+ */
+NelioAB.helpers.isBot = function() {
+	return /bot|googlebot|crawler|spider|robot|crawling/i.test( navigator.userAgent );
+};
+
+
+/**
  * This function is a wrapper to jQuery.ajax interface. It's used to perform a
  * request to Nelio's Cloud Servers. If the browser in which the request is
  * performed is IE8 or IE9 (see NelioAB.helpers.isOldIE), then the request is
@@ -310,71 +320,7 @@ NelioAB.helpers.prepareOutwardsNavigationTracking = function() {
  * events to AE.
  */
 NelioAB.helpers.prepareClickOnElementTracking = function() {
-	jQuery(document).on('click', function(e) {
-		var target = jQuery(e.target);
-
-		for( var i = 0; i < NelioABEnv.goals.clickableElements.length; ++i ) {
-			var ce = NelioABEnv.goals.clickableElements[i];
-			switch ( ce.mode ) {
-
-				case 'id':
-					var id = '#' + ce.value;
-					if ( target.attr('id') == ce.value || target.closest(id).length > 0 ) {
-						NelioAB.helpers.sendClickElementEvent(ce);
-					}
-					break;
-
-				case 'css-path':
-					var elemsInPath = jQuery(ce.value);
-					var found = false;
-					elemsInPath.each(function() {
-						if ( !found ) {
-							var aux = jQuery(this)[0];
-							if ( aux == target[0] || target.closest(aux).length > 0 ) {
-								found = true;
-							}
-						}
-					});
-					if ( found ) {
-						NelioAB.helpers.sendClickElementEvent(ce);
-					}
-					break;
-
-				case 'text-is':
-					var value = ce.value.trim().toLowerCase();
-					var successfulClick = false;
-
-					// Let's see if we have an element whose value is the text we're searching
-					// (for instance, a button)
-					if ( target.attr('value') == value ) {
-						successfulClick = true;
-					}
-
-					// If it isn't, let's look for the current element and/or (some of) its
-					// parents
-					var aux = target;
-					for ( var j = 0; j < 5 && !successfulClick; ++j ) {
-						if ( typeof aux == 'undefined' ) break;
-						var auxValue = aux.text()
-							.replace(/\n/g,' ')
-							.replace(/\s+/g,' ')
-							.trim()
-							.toLowerCase();
-						if ( auxValue == value ) {
-							successfulClick = true;
-						}
-						aux = target.parent();
-					}
-
-					// If I found the element, let's send the event
-					if ( successfulClick ) {
-						NelioAB.helpers.sendClickElementEvent(ce);
-					}
-					break;
-
-			}
-		}
-	});
+	jQuery(document).on( 'click', NelioAB.helpers.clickFunctions.maybeSendClickElementEvent );
 };
 
 
@@ -748,35 +694,7 @@ NelioAB.helpers.addDocumentHooks = function() {
 	// ***************************************************************************
 	// Adding new event "byebye" when we click on a link and, therefore, we're
 	// about to leave the page.
-	jQuery(document).on('click', function(e) {
-		// We make sure that the "referer" cookie is set to the current page, so
-		// that navigations from the current page have the proper referer. In
-		// principle, it should be set using the "onbeforeunload" js hook... but,
-		// in case the listener function is overwritten:
-		NelioAB.helpers.setRefererCookie();
-
-		var target;
-		var dest;
-
-		target = jQuery(e.target).closest('a');
-		dest = undefined;
-		try { dest = target.attr('href'); } catch (e) {}
-		if ( dest != undefined ) {
-			e.type = 'byebye';
-			jQuery(document).trigger( e, [ target, dest ] );
-			return;
-		}
-
-		target = jQuery(e.target).closest('area');
-		dest = undefined;
-		try { dest = target.attr('href'); } catch (e) {}
-		if ( dest != undefined ) {
-			e.type = 'byebye';
-			jQuery(document).trigger( e, [ target, dest ] );
-			return;
-		}
-
-	});
+	jQuery(document).on( 'click', NelioAB.helpers.clickFunctions.byebye );
 
 
 	// ***************************************************************************
@@ -796,4 +714,114 @@ NelioAB.helpers.addDocumentHooks = function() {
 	};
 
 };
+
+
+/**
+ * This object contains a few function that are linked to click events.
+ */
+NelioAB.helpers.clickFunctions = {};
+
+
+/**
+ * This function triggers the byebye event when a click occurs.
+ */
+NelioAB.helpers.clickFunctions.byebye = function(e) {
+	// We make sure that the "referer" cookie is set to the current page, so
+	// that navigations from the current page have the proper referer. In
+	// principle, it should be set using the "onbeforeunload" js hook... but,
+	// in case the listener function is overwritten:
+	NelioAB.helpers.setRefererCookie();
+
+	var target;
+	var dest;
+
+	target = jQuery(e.target).closest('a');
+	dest = undefined;
+	try { dest = target.attr('href'); } catch (e) {}
+	if ( dest != undefined ) {
+		e.type = 'byebye';
+		jQuery(document).trigger( e, [ target, dest ] );
+		return;
+	}
+
+	target = jQuery(e.target).closest('area');
+	dest = undefined;
+	try { dest = target.attr('href'); } catch (e) {}
+	if ( dest != undefined ) {
+		e.type = 'byebye';
+		jQuery(document).trigger( e, [ target, dest ] );
+		return;
+	}
+};
+
+
+/**
+ * This function sends a click element event if required.
+ */
+NelioAB.helpers.clickFunctions.maybeSendClickElementEvent = function(e) {
+	var target = jQuery(e.target);
+
+	for( var i = 0; i < NelioABEnv.goals.clickableElements.length; ++i ) {
+		var ce = NelioABEnv.goals.clickableElements[i];
+		switch ( ce.mode ) {
+
+			case 'id':
+				var id = '#' + ce.value;
+				if ( target.attr('id') == ce.value || target.closest(id).length > 0 ) {
+					NelioAB.helpers.sendClickElementEvent(ce);
+				}
+				break;
+
+			case 'css-path':
+				var elemsInPath = jQuery(ce.value);
+				var found = false;
+				elemsInPath.each(function() {
+					if ( !found ) {
+						var aux = jQuery(this)[0];
+						if ( aux == target[0] || target.closest(aux).length > 0 ) {
+							found = true;
+						}
+					}
+				});
+				if ( found ) {
+					NelioAB.helpers.sendClickElementEvent(ce);
+				}
+				break;
+
+			case 'text-is':
+				var value = ce.value.trim().toLowerCase();
+				var successfulClick = false;
+
+				// Let's see if we have an element whose value is the text we're searching
+				// (for instance, a button)
+				if ( target.attr('value') == value ) {
+					successfulClick = true;
+				}
+
+				// If it isn't, let's look for the current element and/or (some of) its
+				// parents
+				var aux = target;
+				for ( var j = 0; j < 5 && !successfulClick; ++j ) {
+					if ( typeof aux == 'undefined' ) break;
+					var auxValue = aux.text()
+						.replace(/\n/g,' ')
+						.replace(/\s+/g,' ')
+						.trim()
+						.toLowerCase();
+					if ( auxValue == value ) {
+						successfulClick = true;
+					}
+					aux = target.parent();
+				}
+
+				// If I found the element, let's send the event
+				if ( successfulClick ) {
+					NelioAB.helpers.sendClickElementEvent(ce);
+				}
+				break;
+
+		}
+	}
+};
+
 

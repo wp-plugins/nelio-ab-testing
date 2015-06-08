@@ -613,16 +613,25 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 			$result = array(
 				'exps'  => array(),
 				'quota' => array(
-					'used'  => 0,
-					'total' => 7500,
+					'regular' => 5000,
+					'monthly' => 5000,
+					'extra'   => 0,
 				),
 			);
 
-			if ( isset( $json_data->quotaPerMonth ) && isset( $json_data->quotaExtra ) )
-				$result['quota']['total'] = $json_data->quotaPerMonth + $json_data->quotaExtra;
+			if ( isset( $json_data->quota ) ) {
+				$result['quota']['regular'] = $json_data->quota + $json_data->quotaExtra;
+			}
 
-			if ( isset( $json_data->quota ) )
-				$result['quota']['used'] = max( 0, $result['quota']['total'] - $json_data->quota );
+			if ( isset( $json_data->quotaPerMonth ) ) {
+				$result['quota']['monthly'] = $json_data->quotaPerMonth;
+			}
+
+			if ( $result['quota']['regular'] > $result['quota']['monthly'] ) {
+				$diff = $result['quota']['regular'] - $result['quota']['monthly'];
+				$result['quota']['extra'] += $diff;
+				$result['quota']['regular'] = $result['quota']['monthly'];
+			}
 
 			if ( isset( $json_data->items ) ) {
 				foreach ( $json_data->items as $item ) {

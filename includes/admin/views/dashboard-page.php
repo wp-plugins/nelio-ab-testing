@@ -31,8 +31,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			$this->add_title_action( __( 'New Experiment', 'nelioab' ), '?page=nelioab-add-experiment' );
 			$this->experiments = array();
 			$this->quota = array(
-				'used'  => 0,
-				'total' => 7500,
+				'regular' => 5000,
+				'monthly' => 5000,
+				'extra'   => 0,
 			);
 			$this->graphic_delay = 500;
 			$this->rss = fetch_feed( 'https://nelioabtesting.com/feed/' );
@@ -73,33 +74,59 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				?>
 
 				<div class="numbers" style="height:40px;">
-					<div class="left" style="float:left; width:60%;">
-						<span style="font-weight:bold;"><?php _e( 'QUOTA USED', 'nelioab' ); ?></span><br>
+					<div class="left" style="float:left; width:55%;">
+						<span style="font-weight:bold;"><?php _e( 'QUOTA AVAILABLE', 'nelioab' ); ?></span><br>
 						<span style="color:<?php echo $cs['primary']; ?>; font-size:10px;"><?php
-							echo number_format_i18n( $this->quota['used'], 0 );
+							echo number_format_i18n( $this->quota['regular'], 0 );
 						?></span><span style="font-size:10px;"> / <?php
-							echo number_format_i18n( $this->quota['total'], 0 );
+							echo number_format_i18n( $this->quota['monthly'], 0 );
+							if ( $this->quota['extra'] > 0 ) {
+								echo ' <span style="color:#999;">';
+								printf( __( '(+%s extra)', 'nelioab' ),
+									number_format_i18n( $this->quota['extra'], 0 ) );
+								echo '</span>';
+							}
 						?></span>
 					</div>
-					<div class="right" style="font-size:32px; text-align:right; float:right; width:30%; padding-right:5%; margin-top:8px; opacity:0.7;">
+					<div class="right" style="font-size:32px; text-align:right; float:right; width:38%; padding-right:5%; margin-top:8px; opacity:0.7;">
 						<span><?php
-							if ( $this->quota['total'] > 0 )
-								$perc = ( $this->quota['used'] / $this->quota['total'] ) * 100;
-							else
+							// Let's compute the size of the extra quota (if any)
+							if ( $this->quota['extra'] > 0 ) {
+								$extra = $this->quota['extra'];
+								$max_extra = $this->quota['monthly'] / 2;
+								if ( $extra > $max_extra ) {
+									$extra = $max_extra;
+								}
+								$extra_perc = ( $extra / $max_extra  ) * 20;
+							} else {
+								$extra_perc = 0;
+							}
+							$extra_perc = number_format( $extra_perc, 0 );
+
+							// Now let's compute the size of the regular bar
+							if ( $this->quota['regular'] > 0 ) {
+								$perc = ( $this->quota['regular'] / $this->quota['monthly'] ) * 100;
+							} else {
 								$perc = 0;
-							$decs = 1;
-							if ( 100 == $perc )
-								$decs = 0;
-							echo number_format( $perc, $decs );
+							}
+							$num_of_decs = 1;
+							if ( 100 == $perc ) {
+								$num_of_decs = 0;
+							}
+							echo number_format( $perc, $num_of_decs );
 						?>%</span>
 					</div>
 				</div>
 
-				<div class="progress-bar-container" style="background:none;border:2px solid rgba(0,0,0,0.1); width:95%; margin:0px; height:20px;">
-					<div class="progress-bar" style="height:20px;background-color:<?php
-						echo $cs['primary'];
-					?>;width:<?php echo $perc; ?>%;"></div>
-				</div>
+				<div class="progress-bar-container" style="background:none;border:2px solid rgba(0,0,0,0.1); width:95%; margin:0px; height:20px;"><?php
+					$bar = '<div class="progress-bar" style="margin:0;padding:0;display:inline-block;height:20px;background-color:%s;width:%s%%;"></div>';
+					$perc = number_format( $perc, 0 );
+					if ( $perc + $extra_perc > 100 ) {
+						$perc = 100 - $extra_perc;
+					}
+					printf( $bar, $cs['primary'], $perc );
+					printf( $bar, $cs['secondary'], $extra_perc );
+				?></div>
 			<?php
 			$this->print_rss();
 			echo '</div>'; // #post-body

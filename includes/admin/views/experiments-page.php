@@ -166,7 +166,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$this->insert_duplicate_dialog();
 
 			// Code for scheduling experiments.
-			if ( NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN )
+			if ( NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) )
 				$this->insert_schedule_dialog();
 		}
 
@@ -455,12 +455,12 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				$actions['start'] = $label;
 			}
 
-			if ( NelioABAccountSettings::get_subscription_plan() < NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) ) {
 				$expl = __( 'Feature only available in the Professional Plan', 'nelioab' );
 				// No actions available to Professional Plans only
 			}
 
-			if ( NelioABAccountSettings::get_subscription_plan() < NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) ) {
 				$expl = __( 'Feature only available in the Enterprise Plan', 'nelioab' );
 				if ( isset( $actions['schedule'] ) )
 					$actions['schedule'] = sprintf( '<span title="%s">%s</span>', $expl, __( 'Schedule', 'nelioab' ) );

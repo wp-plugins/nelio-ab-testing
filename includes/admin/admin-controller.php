@@ -80,7 +80,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				case 'save-css':
 					update_option( 'nelioab_css_' . $_GET['nelioab_preview_css'], $_POST['content'] );
 					$url = get_option('home');
-					$url = esc_url( add_query_arg( $_GET, $url ) );
+					$url = esc_url_raw( add_query_arg( $_GET, $url ) );
 					header( "Location: $url" );
 					die();
 
@@ -537,13 +537,21 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$page_to_build );
 
 
+			// Either Free Trial or My Account page
+			// ----------------------------------------------------------------------
+			if ( NelioABAccountSettings::is_using_free_trial() ) {
+				$label = __( 'Free Trial', 'nelioab' );
+			} else {
+				$label = __( 'My Account', 'nelioab' );
+			}
 			require_once( NELIOAB_ADMIN_DIR . '/account-page-controller.php' );
 			add_submenu_page( $nelioab_menu,
-				__( 'My Account', 'nelioab' ),
-				__( 'My Account', 'nelioab' ),
+				$label,
+				$label,
 				'manage_options',
 				'nelioab-account',
 				array( 'NelioABAccountPageController', 'build' ) );
+
 
 			// Settings page
 			// ----------------------------------------------------------------------

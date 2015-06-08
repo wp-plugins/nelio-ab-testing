@@ -645,7 +645,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 								<?php
 
 								if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING &&
-								     NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+									NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) ) {
 
 									printf( '<h3>%s</h3>', __( 'Finalization Mode', 'nelioab' ) );
 

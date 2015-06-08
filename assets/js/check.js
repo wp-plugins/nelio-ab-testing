@@ -30,12 +30,15 @@ NelioAB.checker.nabMatcher = /^nab[cmtwe]?$/;
  * current user.
  */
 NelioAB.checker.init = function() {
-	if ( !NelioABBasic.hasExpsRunning )
+	if ( !NelioABBasic.hasExpsRunning ) {
 		return;
-	if ( !NelioAB.user.canInfoBeSaved() )
+	}
+	if ( !NelioAB.user.canInfoBeSaved() ) {
 		return;
-	if ( !NelioAB.user.participates() )
+	}
+	if ( !NelioAB.user.participates() ) {
 		return;
+	}
 	if ( NelioABParams.wasPostRequest ) {
 		console.log( 'Current page is the result of a POST request. Abort!' );
 		return;
@@ -61,7 +64,7 @@ NelioAB.checker.init = function() {
 		else {
 			NelioAB.checker.cleanUrl();
 			NelioAB.helpers.showBody();
-			if ( NelioABBasic.hasQuota ) {
+			if ( !NelioAB.helpers.isBot() && NelioABBasic.hasQuota ) {
 				NelioAB.helpers.addDocumentHooks();
 				NelioAB.helpers.track();
 			}

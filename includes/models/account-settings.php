@@ -18,7 +18,7 @@
  */
 
 
-if( !class_exists( 'NelioABAccountSettings' ) ) {
+if ( !class_exists( 'NelioABAccountSettings' ) ) {
 
 	require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 
@@ -37,6 +37,16 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		 * @var int
 		 */
 		const BETA_SUBSCRIPTION_PLAN = 0;
+
+
+		/**
+		 * Constant for identifying Free Trial Users.
+		 *
+		 * @since 4.1.3
+		 * @var int
+		 */
+		const FREE_TRIAL_SUBSCRIPTION_PLAN = 0;
+
 
 
 		/**
@@ -167,8 +177,10 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		 * @since 2.1.0
 		 */
 		public static function validate_email_and_reg_num( $email, $reg_num ) {
-			self::update_nelioab_option( 'email', $email );
-			self::update_nelioab_option( 'reg_num', $reg_num );
+			if ( !self::is_using_free_trial() ) {
+				self::update_nelioab_option( 'email', $email );
+				self::update_nelioab_option( 'reg_num', $reg_num );
+			}
 
 			$json_data = null;
 			try {
@@ -195,34 +207,69 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			catch ( Exception $e ) {
 				$error = $e->getCode();
 
-				if ( $error == NelioABErrCodes::INVALID_MAIL )
-					self::update_nelioab_option( 'is_email_valid', false );
-
-				if ( $error == NelioABErrCodes::INVALID_PRODUCT_REG_NUM )
-					self::update_nelioab_option( 'is_reg_num_valid', false );
+				if ( !self::is_using_free_trial() ) {
+					if ( $error == NelioABErrCodes::INVALID_MAIL )
+						self::update_nelioab_option( 'is_email_valid', false );
+					if ( $error == NelioABErrCodes::INVALID_PRODUCT_REG_NUM )
+						self::update_nelioab_option( 'is_reg_num_valid', false );
+				}
 
 				throw $e;
 			}
 
-			self::update_nelioab_option( 'is_email_valid', true );
-			self::update_nelioab_option( 'is_reg_num_valid', true );
-			self::update_nelioab_option( 'customer_id', $json_data->key->id );
-
-			// Store the current subscription plan
-
-			// Check if the current site is already registered for this account
-			$registered = false;
-			if ( NelioABAccountSettings::has_a_configured_site() ) {
-				/** @var NelioABSitesInfo $sites_info */
-				$sites_info = NelioABAccountSettings::get_registered_sites_information();
-				$this_id = NelioABAccountSettings::get_site_id();
-				$sites = $sites_info->get_registered_sites();
-				foreach ( $sites as $s ) {
-					/** @var NelioABSite $s **/
-					if ( $s->get_id() == $this_id )
-						$registered = true;
+			$new_customer_id = $json_data->key->id;
+			if ( self::is_using_free_trial() ) {
+				try {
+					// Transfer domain
+					$url = sprintf(
+						NELIOAB_BACKEND_URL . '/customer/%s/site/%s/transfer',
+						$new_customer_id, self::get_site_id()
+					);
+					NelioABBackend::remote_get( $url );
+					$was_site_transferred = true;
+				} catch ( Exception $e ) {
+					// Nothing to be done
+					$was_site_transferred = false;
 				}
+				// Update information
+				self::update_nelioab_option( 'customer_id', $new_customer_id );
+				self::update_nelioab_option( 'email', $email );
+				self::update_nelioab_option( 'reg_num', $reg_num );
+				self::update_nelioab_option( 'is_email_valid', true );
+				self::update_nelioab_option( 'is_reg_num_valid', true );
+				self::check_terms_and_conditions( true );
+				if ( !$was_site_transferred ) {
+					try {
+						self::register_this_site( 'undefined', 'undefined' );
+					} catch ( Exception $e ) {
+						// Site could not be automatically registered
+					}
+				}
+				self::disable_free_trial();
+				$registered = true;
+			} else {
+				// E-mail and Registration number are the first thing that's saved
+				// when we're not in a free trial.
+				self::update_nelioab_option( 'is_email_valid', true );
+				self::update_nelioab_option( 'is_reg_num_valid', true );
+				self::update_nelioab_option( 'customer_id', $new_customer_id );
+
+				// Check if the current site is already registered for this account
+				$registered = false;
+				if ( NelioABAccountSettings::has_a_configured_site() ) {
+					/** @var NelioABSitesInfo $sites_info */
+					$sites_info = NelioABAccountSettings::get_registered_sites_information();
+					$this_id = NelioABAccountSettings::get_site_id();
+					$sites = $sites_info->get_registered_sites();
+					foreach ( $sites as $s ) {
+						/** @var NelioABSite $s **/
+						if ( $s->get_id() == $this_id )
+							$registered = true;
+					}
+				}
+				self::disable_free_trial();
 			}
+
 			self::update_nelioab_option( 'has_a_configured_site', $registered );
 		}
 
@@ -307,7 +354,12 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		 * @since 2.1.0
 		 */
 		public static function get_site_id() {
-			return self::get_nelioab_option( 'site_id', '' );
+			$site_id = self::get_nelioab_option( 'site_id', '0' );
+			if ( false === $site_id ) {
+				self::update_nelioab_option( 'site_id', '0' );
+				$site_id = '0';
+			}
+			return $site_id;
 		}
 
 
@@ -347,7 +399,11 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		 * @since 2.1.0
 		 */
 		public static function are_terms_and_conditions_accepted() {
-			return self::get_nelioab_option( 'are_tac_accepted', false );
+			if ( self::is_using_free_trial() ) {
+				return true;
+			} else {
+				return self::get_nelioab_option( 'are_tac_accepted', false );
+			}
 		}
 
 
@@ -416,19 +472,30 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 					try {
 						$url  = sprintf( NELIOAB_BACKEND_URL . '/site/%s/version',
 							NelioABAccountSettings::get_site_id() );
-						try {
-							$php_version = ' (PHP: ' . preg_replace( '/-.*$/', '', phpversion() ) . ')';
-						}
-						catch ( Exception $e ) {
-							$php_version = '';
-						}
-						$version = NELIOAB_PLUGIN_VERSION . $php_version;
+						$version = self::get_plugin_version_for_sync();
 						$body = array( 'version' => $version );
 						NelioABBackend::remote_post( $url, $body );
 						self::update_nelioab_option( 'last_synced_version', NELIOAB_PLUGIN_VERSION );
 					} catch ( Exception $e ) {}
 				}
 			} catch ( Exception $e ) {}
+		}
+
+
+		/**
+		 * Returns the plugin's version (along with PHP's) for storing it in ApPEngine.
+		 *
+		 * @return string the plugin's version (along with PHP's) for storing it in ApPEngine.
+		 *
+		 * @since 4.1.3
+		 */
+		private static function get_plugin_version_for_sync() {
+			try {
+				$php_version = ' (PHP: ' . preg_replace( '/-.*$/', '', phpversion() ) . ')';
+			} catch ( Exception $e ) {
+				$php_version = '';
+			}
+			return NELIOAB_PLUGIN_VERSION . $php_version;
 		}
 
 
@@ -580,12 +647,11 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		 * case, then we simply use the already-registered site's ID and assume
 		 * this site is the site that we registered some time ago.
 		 *
-		 * @param string      $registered Whether the current site is registered or not.
-		 *                                If `registered`, the site is registered
-		 *                                (and the `$id` will be specified).
-		 *                                Otherwise, `not-registered` should be
-		 *                                used.
-		 * @param boolean|int $id         The ID of the already-registered site.
+		 * @param string $registered Whether the current site is registered or not.
+		 *                           If `registered`, the site is registered (and
+		 *                           the `$id` will be specified). Otherwise,
+		 *                           `not-registered` should be used.
+		 * @param string $id         The ID of the already-registered site.
 		 *
 		 * @return void
 		 *
@@ -593,7 +659,7 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 		 *
 		 * @since 3.2.0
 		 */
-		public static function fix_registration_info( $registered, $id = false ) {
+		public static function fix_registration_info( $registered, $id = '0' ) {
 			self::update_nelioab_option( 'has_a_configured_site', 'registered' === $registered );
 			NelioABAccountSettings::set_site_id( $id );
 		}
@@ -641,7 +707,288 @@ if( !class_exists( 'NelioABAccountSettings' ) ) {
 			self::update_nelioab_option( 'has_a_configured_site', false );
 		}
 
+
+		/**
+		 * Returns whether the current site is configured for using free-trial or not.
+		 *
+		 * @return boolean whether the current site is configured for using free-trial or not.
+		 *
+		 * @since 4.1.3
+		 */
+		public static function is_using_free_trial() {
+			return self::get_nelioab_option( 'uses_free_trial', false );
+		}
+
+
+		/**
+		 * Returns whether the current site can use the free-trial mode or not.
+		 *
+		 * @return boolean whether the current site can use the free-trial mode or not.
+		 *
+		 * @since 4.1.3
+		 */
+		public static function can_free_trial_be_started() {
+			if ( get_option( '__nelio_ab_free_trial', true ) ) {
+				return self::get_nelioab_option( 'is_free_trial_available', true );
+			} else {
+				return false;
+			}
+		}
+
+
+		/**
+		 * This function starts the free trial period.
+		 *
+		 * It's an AJAX callback for the action `nelioab_start_free_trial`.
+		 *
+		 * @return void
+		 *
+		 * @since 4.1.3
+		 */
+		public static function start_free_trial() {
+			if ( self::can_free_trial_be_started() ) {
+				$url = NELIOAB_BACKEND_URL . '/customer/trial/activate';
+				try {
+					$params = array(
+						'body' => array(
+							'url'     => get_option( 'siteurl' ),
+							'version' => self::get_plugin_version_for_sync()
+						)
+					);
+					$json_data = NelioABBackend::remote_post_raw( $url, $params, true );
+					$json_data = json_decode( $json_data['body'] );
+
+					self::update_nelioab_option( 'email', $json_data->mail );
+					self::update_nelioab_option( 'reg_num', $json_data->registrationNumber );
+					self::update_nelioab_option( 'customer_id', $json_data->key->id );
+					self::update_nelioab_option( 'is_email_valid', true );
+					self::update_nelioab_option( 'is_reg_num_valid', true );
+					self::update_nelioab_option( 'uses_free_trial', true );
+					self::update_nelioab_option( 'free_trial_code', $json_data->key->id );
+
+					$site = $json_data->sites[0];
+					self::set_site_id( $site->id );
+					self::update_nelioab_option( 'has_a_configured_site', true );
+
+					echo 'OK';
+				} catch ( Exception $e ) {
+					self::update_nelioab_option( 'customer_id', 'unknown' );
+					self::update_nelioab_option( 'is_email_valid', false );
+					self::update_nelioab_option( 'is_reg_num_valid', false );
+					self::update_nelioab_option( 'has_a_configured_site', false );
+					self::set_site_id( '0' );
+				}
+			}
+			die();
+		}
+
+
+		/**
+		 * This function disables the free trial mode (making it no longer available).
+		 *
+		 * @return void
+		 *
+		 * @since 4.1.3
+		 */
+		public static function disable_free_trial() {
+			update_option( '__nelio_ab_free_trial', false );
+			self::update_nelioab_option( 'is_free_trial_available', false );
+			self::update_nelioab_option( 'uses_free_trial', false );
+		}
+
+
+		/**
+		 * Returns whether the given $plan is, at least, the $min_plan.
+		 *
+		 * @param int         $min_plan The minimum plan required.
+		 * @param int|boolean $plan     Optional. The plan we want to compare to $min_plan.
+		 *                              Default: the current subscription plan.
+		 *
+		 *
+		 * @return boolean whether the given $plan is, at least, the $min_plan.
+		 *
+		 * @since 4.1.3
+		 */
+		public static function is_plan_at_least( $min_plan, $plan = false ) {
+			if ( false === $plan ) {
+				$plan = self::get_subscription_plan();
+			}
+
+			switch ( $min_plan ) {
+				case self::BETA_SUBSCRIPTION_PLAN:
+				case self::BASIC_SUBSCRIPTION_PLAN:
+				case self::FREE_TRIAL_SUBSCRIPTION_PLAN;
+					return true;
+					break;
+
+				case self::PROFESSIONAL_SUBSCRIPTION_PLAN:
+					if ( $plan == self::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+						return true;
+					} else if ( $plan == self::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+						return true;
+					} else {
+						return false;
+					}
+					break;
+
+				case self::ENTERPRISE_SUBSCRIPTION_PLAN:
+					if ( $plan == self::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+						return true;
+					} else {
+						return false;
+					}
+					break;
+
+				default:
+					return false;
+			}
+
+		}
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $name PHPDOC
+		 *
+		 * @since 4.1.3
+		 */
+		public static function complete_promo_action( $name ) {
+			$name = str_replace( '-', '_', $name );
+			return self::update_nelioab_option( "is_{$name}_promo_done", true );
+		}
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $name PHPDOC
+		 *
+		 * @return boolean PHPDOC
+		 *
+		 * @since 4.1.3
+		 */
+		public static function is_promo_completed( $name ) {
+			$name = str_replace( '-', '_', $name );
+			return self::get_nelioab_option( "is_{$name}_promo_done" );
+		}
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since 4.1.3
+		 */
+		public static function process_free_trial_promo() {
+			if ( !isset( $_POST['promo'] ) ) {
+				echo 'NO_PROMO_SPECIFIED';
+				die();
+			}
+
+
+			$url = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/promo',
+				self::get_customer_id() );
+			$data = array( 'promo' => $_POST['promo'] );
+
+			switch ( $_POST['promo'] ) {
+
+				case 'basic-info':
+					if ( !isset( $_POST['name'] ) || !isset( $_POST['email'] ) )
+						break;
+					$value = array(
+						'name' => $_POST['name'],
+						'mail' => $_POST['email']
+					);
+					$data['value'] = json_encode( $value );
+					try {
+						NelioABBackend::remote_post( $url, $data );
+						self::complete_promo_action( 'basic-info' );
+						self::update_nelioab_option( 'free_trial_name', $value['name'] );
+						self::update_nelioab_option( 'free_trial_mail', $value['mail'] );
+						echo 'OK';
+						die();
+					} catch ( Exception $e ) {}
+					break;
+
+				case 'basic-info-check':
+					try {
+						$url = sprintf( NELIOAB_BACKEND_URL . '/customer/%s/check',
+							self::get_customer_id() );
+						$res = NelioABBackend::remote_get( $url );
+						$res = json_decode( $res['body'] );
+						if ( isset( $res->confirmed ) && 1 == $res->confirmed ) {
+							self::complete_promo_action( 'basic-info-check' );
+							echo 'OK';
+							die();
+						}
+					} catch ( Exception $e ) {}
+					break;
+
+				case 'site-info':
+					if ( !isset( $_POST['type'] ) || !isset( $_POST['sector'] ) )
+						break;
+					$data['value'] = $_POST['type'] . ',' . $_POST['sector'];
+					try {
+						NelioABBackend::remote_post( $url, $data );
+						self::complete_promo_action( 'site-info' );
+						echo 'OK';
+						die();
+					} catch ( Exception $e ) {}
+					break;
+
+				case 'goals':
+					if ( !isset( $_POST['goal'] ) || !isset( $_POST['success'] ) )
+						break;
+					$value = array(
+						'goal'    => $_POST['goal'],
+						'success' => $_POST['success']
+					);
+					$data['value'] = json_encode( $value );
+					try {
+						NelioABBackend::remote_post( $url, $data );
+						self::complete_promo_action( 'goals' );
+						echo 'OK';
+						die();
+					} catch ( Exception $e ) {}
+					break;
+
+				case 'connect':
+				case 'tweet':
+					try {
+						NelioABBackend::remote_post( $url, $data );
+						self::complete_promo_action( $_POST['promo'] );
+						echo 'OK';
+						die();
+					} catch ( Exception $e ) {}
+					break;
+
+				case 'recommend':
+					if ( !isset( $_POST['value'] ) )
+						break;
+					$data['value'] = $_POST['value'];
+					try {
+						NelioABBackend::remote_post( $url, $data );
+						self::complete_promo_action( 'recommend' );
+						echo 'OK';
+						die();
+					} catch ( Exception $e ) {}
+					break;
+
+				default:
+					echo 'UNKNOWN_PROMO';
+					die();
+			}
+			echo 'FAIL';
+			die();
+		}
+
+
 	}//NelioABAccountSettings
+
+	add_action( 'wp_ajax_nelioab_free_trial_promo', array( 'NelioABAccountSettings', 'process_free_trial_promo' ) );
+	add_action( 'wp_ajax_nelioab_start_free_trial', array( 'NelioABAccountSettings', 'start_free_trial' ) );
 
 
 	/**

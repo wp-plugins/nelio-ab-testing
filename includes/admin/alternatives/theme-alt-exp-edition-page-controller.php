@@ -81,24 +81,6 @@ if ( !class_exists( 'NelioABThemeAltExpEditionPageController' ) ) {
 			}
 
 
-			// Checking whether there are pages or posts available
-			// ---------------------------------------------------
-
-			$list_of_pages = get_pages();
-			$options_for_posts = array(
-				'posts_per_page' => 1 );
-			$list_of_posts = get_posts( $options_for_posts );
-			require_once( NELIOAB_UTILS_DIR . '/data-manager.php' );
-			NelioABArrays::sort_posts( $list_of_posts );
-
-			if ( ( count( $list_of_pages ) + count( $list_of_posts ) ) == 0 ) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
-				$view = new NelioABMessagePage(
-					__( 'There are no posts or pages available.', 'nelioab' ) );
-				return $view;
-			}
-
-
 			// Checking whether there is more than one theme
 			// available
 			// ---------------------------------------------------

@@ -182,10 +182,10 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 								</div>
 								<?php
 									$url = admin_url( 'admin.php' );
-									$url = esc_url( add_query_arg( array(
+									$url = add_query_arg( array(
 										'nelioab-page' => 'save-css',
 										'preview' => 'true',
-										'nelioab_preview_css' => $_REQUEST['css_id'] ), $url ) );
+										'nelioab_preview_css' => $_REQUEST['css_id'] ), $url );
 								?>
 								<script>
 									jQuery("#preview-button").click(function(e) {

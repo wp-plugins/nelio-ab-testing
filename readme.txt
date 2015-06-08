@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.1.2
+Stable tag: 4.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,10 +37,11 @@ familiar user experience.
 > services guarantee an amazing support, because we have to earn your trust
 > day by day!
 >
-> If you want to benefit from our service, [**subscribe** to one of our
+> **Our plugin comes with an easy-to-setup free-trial**. Just download and
+> enable the plugin, start your _Free Trial_, and discover what Nelio can offer
+> you. Once the free-trial is over, simply [**subscribe** to one of our
 > plans](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org) and
-> get your account! **All subscription plans include a 14-day free trial
-> period**.
+> get an account to keep improving your WordPress site!
 
 [youtube https://www.youtube.com/watch?v=ZDgTkqI4SNk]
 
@@ -265,6 +266,20 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.1.3 (June 8, 2015) =
+* **New Free Trial Process!** You no longer need to subscribe to any of our
+plans for trying Nelio A/B Testing out. Simply download the plugin, select
+_Free Trial_, and see how Nelio works!
+* New quota bar in the Dashboard. It now shows the available quota (instead of
+the more unprecise available quota).
+* **Improvement** Added bot detection in our tracking scripts, to exclude them
+from the analysis and results of your A/B tests.
+* **Improvement** Refactored some functions in our tracking script, so that one
+can easily override click and external page events.
+* **Minor Fixes** Some notices and bug fixes have been resolved in this
+version.
+
 
 = 4.1.2 (May 15, 2015) =
 * **Improvement** When creating a theme experiment, themes are now ordered
@@ -912,9 +927,10 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.1.2 =
-**Support for Custom Post Types**. Use Nelio A/B Testing with any
+= 4.1.3 =
+**Information**. New Free Trial process (for non-subscribed users) and minor
+updates. Plus **Support for Custom Post Types**: use Nelio A/B Testing with any
 plugins/themes that defines its own custom post types (such as Products,
-Videos, Reviews, and so on). **Warning** Full WooCommerce support is
-not covered yet.
+Videos, Reviews, and so on). **Warning** Full WooCommerce support is not
+covered yet.
 

@@ -358,16 +358,8 @@ if ( !class_exists( 'NelioABPageAccessedAction' ) ) {
 				$value = $json->url;
 				switch ( $json->url_mode ) {
 				case 'exact':
-					$value = 'http://' . $value;
-					$value = str_replace( 'http://http://', 'http://', $value );
-					$value = str_replace( 'http://https://', 'https://', $value );
-					$value = str_replace( 'http:////', 'http://', $value );
 					break;
 				case 'starts-with':
-					$value = 'http://' . $value;
-					$value = str_replace( 'http://http://', 'http://', $value );
-					$value = str_replace( 'http://https://', 'https://', $value );
-					$value = str_replace( 'http:////', 'http://', $value );
 					$value = $value . '***';
 					break;
 				case 'ends-with':

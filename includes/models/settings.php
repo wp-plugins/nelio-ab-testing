@@ -479,13 +479,11 @@ if ( !class_exists( 'NelioABSettings' ) ) {
 		 * @since 3.2.0
 		 */
 		public static function is_field_enabled_for_current_plan( $field_name ) {
-			$plan = NelioABAccountSettings::get_subscription_plan();
-
-			if ( $plan < NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) ) {
 				// Nothing here
 			}
 
-			if ( $plan < NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) ) {
 				switch ( $field_name )  {
 					case 'expl_ratio':
 					case 'ori_perc':

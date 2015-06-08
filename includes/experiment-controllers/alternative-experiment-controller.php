@@ -1116,6 +1116,8 @@ class NelioABAlternativeExperimentController {
 	 * @since PHPDOC
 	 */
 	public function preview_css() {
+		if ( !nelioab_can_user_manage_plugin() )
+			return;
 		$css_id = '';
 		if ( isset( $_GET['nelioab_preview_css'] ) )
 			$css_id = $_GET['nelioab_preview_css'];

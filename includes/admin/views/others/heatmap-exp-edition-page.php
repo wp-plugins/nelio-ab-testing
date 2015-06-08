@@ -82,7 +82,9 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 				<?php
 				$this->make_section(
 					__( 'Basic Information', 'nelioab' ),
-					$this->get_basic_info_elements() ); ?>
+					$this->get_basic_info_elements(),
+					'<label class="mandatory">Required field</label>'
+				); ?>
 			</form>
 			<?php
 			$this->print_validator_js();

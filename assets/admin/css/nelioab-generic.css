@@ -78,6 +78,105 @@ label.error-in-field.mandatory:before { background:red; }
 	}
 
 /* ------------------- */
+/*      FREE TRIAL     */
+/* ------------------- */
+
+#free-trial-actions {
+	text-align: center;
+}
+
+span.nelio-ftcode {
+	border-radius: 5px;
+	border: 1px solid grey;
+	font-family: monospace;
+	font-size: 80%;
+	margin-left: 1em;
+	padding: 2px 5px;
+}
+
+.nelio-card.free-trial-action {
+	margin: 10px 6px;
+	text-align: left;
+}
+
+.nelio-card.free-trial-action > h3 {
+	border-bottom: 2px solid #eee;
+	margin: 0;
+}
+
+.nelio-card.free-trial-action > h3 .nelio-freetrial-heading {
+	display: block;
+}
+
+.nelio-card.free-trial-action > h3 .nelio-freetrial-heading > img {
+	border: none;
+	vertical-align: middle;
+}
+
+.nelio-card.free-trial-action > h3 .nelio-freetrial-heading > span {
+	padding-left: 10px;
+	font-size: 14px;
+	vertical-align: middle;
+}
+
+.nelio-card.free-trial-action > h3 .nelio-freetrial-heading.completed {
+	display: none;
+}
+
+.nelio-card.free-trial-action.action-completed > h3 .nelio-freetrial-heading {
+	display: none;
+}
+
+.nelio-card.free-trial-action.action-completed > h3 .nelio-freetrial-heading.completed {
+	display: block;
+}
+
+.nelio-card.free-trial-action .inside {
+	height: 122px;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	position: relative;
+}
+
+.nelio-card.free-trial-action .inside p.cta {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 10px;
+	padding: 0;
+}
+
+.nelio-card.no-link,
+.nelio-card.no-link:hover {
+	cursor: default;
+}
+
+.nelio-card.link,
+.nelio-card.link:hover {
+	cursor: pointer;
+}
+
+.nelio-card.free-trial-action.action-disabled:hover,
+.nelio-card.no-shadow:hover {
+	box-shadow: 0 2px 2px -1px rgba(0,0,0,.3) !important;
+}
+
+/* Completed actions */
+.nelio-card.free-trial-action.action-disabled img {
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
+	opacity: 0.5;
+}
+
+.nelio-card.free-trial-action.action-disabled h3,
+.nelio-card.free-trial-action.action-disabled .inside,
+.nelio-card.free-trial-action.action-completed h3 .nelio-freetrial-heading > span,
+.nelio-card.free-trial-action.action-completed .inside {
+	opacity: 0.5;
+}
+
+
+/* ------------------- */
 /*      DASHBOARD      */
 /* ------------------- */
 
@@ -741,6 +840,8 @@ div.nelio-message {
     animation-duration: 1s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
+    -webkit-animation-delay: 0.4s;
+    animation-delay: 0.4s;
 }
 
 @-webkit-keyframes flipInY {
