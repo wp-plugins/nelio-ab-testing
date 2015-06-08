@@ -424,7 +424,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				foreach ( $this->goals as $goal ) {
 					$name   = $goal->get_name();
 					$params = array( 'goal' => $goal->get_id() );
-					$link   = add_query_arg( $params, $_SERVER['HTTP_REFERER'] );
+					$link   = esc_url( add_query_arg( $params, $_SERVER['HTTP_REFERER'] ) );
 					if ( $goal->get_id() == $this_goal_id )
 						echo "<span href=\"$link\" class=\"nav-tab nav-tab-active\">$name</span>";
 					else
@@ -456,7 +456,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									$conf_label = ' (' . __( 'Confidence', 'nelioab' ) . ')';
 									if ( self::NO_WINNER == $the_winner )
 										$conf_label = '';
-									if ( NelioABExperimentStatus::RUNNING == $exp->get_status() )
+									if ( NelioABExperiment::STATUS_RUNNING == $exp->get_status() )
 										echo __( 'Current Winner', 'nelioab' ) . $conf_label;
 									else
 										echo __( 'Winner', 'nelioab' ) . $conf_label;
@@ -531,7 +531,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 					</div>
 
 					<?php
-					if ( $this->exp->get_status() == NelioABExperimentStatus::RUNNING ) { ?>
+					if ( $this->exp->get_status() == NelioABExperiment::STATUS_RUNNING ) { ?>
 						<div style="margin:0.5em;margin-top:0em;text-align:right;">
 							<script>
 								(function($) {
@@ -644,8 +644,8 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 									<p><?php echo $descr; ?></p>
 								<?php
 
-								if ( $exp->get_status() == NelioABExperimentStatus::RUNNING &&
-								     NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+								if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING &&
+									NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) ) {
 
 									printf( '<h3>%s</h3>', __( 'Finalization Mode', 'nelioab' ) );
 
@@ -705,7 +705,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 								<h3><?php _e( 'Alternatives', 'nelioab' ); ?></h3>
 
 								<?php
-								if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) { ?>
+								if ( $exp->get_status() == NelioABExperiment::STATUS_FINISHED ) { ?>
 									<script>
 									<?php
 									$this->print_js_function_for_post_data_overwriting();
@@ -818,7 +818,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 				<div style="margin-left:2em;">
 
 					<p><?php
-					if ( $exp->get_status() == NelioABExperimentStatus::RUNNING )
+					if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING )
 						_e( 'NelioAB is using the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for computing the results of this experiment. In the following, you may see the details: ', 'nelioab' );
 					else
 						_e( 'NelioAB used the <a href="http://en.wikipedia.org/wiki/G-test">G-test statistic</a> for computing the results of this experiment. In the following, you may see the details: ', 'nelioab' );
@@ -848,7 +848,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 			}
 			// Otherwise, show a message stating that no data is available yet
 			else {
-				if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+				if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 					printf( '<p style="color:#555;font-size:120%%;">%s</p>',
 						__( 'There are no results available yet. Please, be patient until we collect more data. It might take up to half an hour to get your first results.', 'nelioab' ) );
 				}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -21,10 +21,13 @@
 /**
  * This function prints an error on screen.
  *
- * @id  int
- *      the ID parameter.
- * @str string (optional)
- *      an optional string that offers further information about the error.
+ * @param int         $id the ID parameter.
+ * @param string $str an optional string that offers further information about the error.
+ *                    Default: empty string.
+ *
+ * @return void
+ *
+ * @since 3.3.0
  */
 function nelioabe( $id, $str = '' ) {
 	echo '<pre style="text-align:left;font-size:12px;"><b>ERROR #' . $id . '</b> ' . $str . '</pre>' . "\n";
@@ -33,13 +36,17 @@ function nelioabe( $id, $str = '' ) {
 	error_log( 'ERROR #' . $id . $str );
 }
 
+
 /**
  * This function prints a warning on screen.
  *
- * @id  int
- *      the ID parameter.
- * @str string (optional)
- *      an optional string that offers further information about the warning.
+ * @param int         $id the ID parameter.
+ * @param string $str an optional string that offers further information about the warning.
+ *                    Default: empty string.
+ *
+ * @return void
+ *
+ * @since 3.3.0
  */
 function nelioabw( $id, $str = '' ) {
 	echo '<pre style="text-align:left;font-size:12px;"><b>WARNING #' . $id . '</b> ' . $str . '</pre>' . "\n";
@@ -48,13 +55,17 @@ function nelioabw( $id, $str = '' ) {
 	error_log( 'WARNING #' . $id . $str );
 }
 
+
 /**
  * This function prints some info on screen.
  *
- * @id  int
- *      the ID parameter.
- * @str string (optional)
- *      an optional string that offers further information about the info to debug.
+ * @param int         $id the ID parameter.
+ * @param string $str an optional string that offers further information about the debug.
+ *                    Default: empty string.
+ *
+ * @return void
+ *
+ * @since 3.3.0
  */
 function nelioabi( $id, $str = '' ) {
 	echo '<pre style="text-align:left;font-size:12px;"><b>#' . $id . '</b> ' . $str . '</pre>' . "\n";
@@ -63,13 +74,19 @@ function nelioabi( $id, $str = '' ) {
 	error_log( 'INFO #' . $id . $str );
 }
 
+
 /**
  * This function prints some debug info on screen. It is an alias to `nelioabi`.
  *
- * @id  int
- *      the ID parameter.
- * @str string (optional)
- *      an optional string that offers further information about the info to debug.
+ * @param int         $id the ID parameter.
+ * @param string $str an optional string that offers further information about the debug.
+ *                    Default: empty string.
+ *
+ * @return void
+ *
+ * @see nelioabi
+ *
+ * @since 3.3.0
  */
 function nelioabd( $id, $str = '' ) {
 	echo '<pre style="text-align:left;font-size:12px;"><b>#' . $id . '</b> ' . $str . '</pre>' . "\n";

@@ -45,17 +45,19 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		protected function do_render() {
 			// If there are no experiments, tell the user to create one.
 			if ( count( $this->experiments ) == 0 ) {
-				echo '<center>';
-				echo sprintf( '<img src="%s" alt="%s" />',
-					nelioab_asset_link( '/admin/images/happy.png' ),
-					__( 'Happy smile.', 'nelioab' )
+				echo "<div class='nelio-message'>";
+				echo sprintf( '<img class="animated flipInY" src="%s" alt="%s" />',
+					nelioab_admin_asset_link( '/images/message-icon.png' ),
+					__( 'Information Notice', 'nelioab' )
 				);
-				echo '<h2>';
-				echo sprintf(
-					__( 'Hey! It looks like you have not defined any experiment...<br /><a href="%s">Create one now</a>!', 'nelioab' ),
+				echo '<h2 style="max-width:750px;">';
+				printf( '%1$s<br><br><a class="button button-primary" href="%3$s">%2$s</a>',
+					__( 'Find and manage all your experiments from this page.<br>Click the following button and create your first experiment!', 'nelioab' ),
+					__( 'Create Experiment', 'nelioab', 'create-experiment' ),
 					'admin.php?page=nelioab-add-experiment' );
 				echo '</h2>';
-				echo '</center>';
+				echo '</div>';
+
 				return;
 			}
 
@@ -119,12 +121,12 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			</form>
 			<?php
 
-			$status_draft     = NelioABExperimentStatus::DRAFT;
-			$status_ready     = NelioABExperimentStatus::READY;
-			$status_scheduled = NelioABExperimentStatus::SCHEDULED;
-			$status_running   = NelioABExperimentStatus::RUNNING;
-			$status_finished  = NelioABExperimentStatus::FINISHED;
-			$status_trash     = NelioABExperimentStatus::TRASH;
+			$status_draft     = NelioABExperiment::STATUS_DRAFT;
+			$status_ready     = NelioABExperiment::STATUS_READY;
+			$status_scheduled = NelioABExperiment::STATUS_SCHEDULED;
+			$status_running   = NelioABExperiment::STATUS_RUNNING;
+			$status_finished  = NelioABExperiment::STATUS_FINISHED;
+			$status_trash     = NelioABExperiment::STATUS_TRASH;
 			NelioABHtmlGenerator::print_filters(
 				admin_url( 'admin.php?page=nelioab-experiments' ),
 				array (
@@ -132,22 +134,22 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					        'label' => __( 'All' ),
 					        'count' => count( $this->filter_experiments() ) ),
 					array ( 'value' => $status_draft,
-					        'label' => NelioABExperimentStatus::to_string( $status_draft ),
+					        'label' => NelioABExperiment::get_label_for_status( $status_draft ),
 					        'count' => count( $this->filter_experiments( $status_draft ) ) ),
 					array ( 'value' => $status_ready,
-					        'label' => NelioABExperimentStatus::to_string( $status_ready ),
+					        'label' => NelioABExperiment::get_label_for_status( $status_ready ),
 					        'count' => count( $this->filter_experiments( $status_ready ) ) ),
 					array ( 'value' => $status_scheduled,
-					        'label' => NelioABExperimentStatus::to_string( $status_scheduled ),
+					        'label' => NelioABExperiment::get_label_for_status( $status_scheduled ),
 					        'count' => count( $this->filter_experiments( $status_scheduled ) ) ),
 					array ( 'value' => $status_running,
-					        'label' => NelioABExperimentStatus::to_string( $status_running ),
+					        'label' => NelioABExperiment::get_label_for_status( $status_running ),
 					        'count' => count( $this->filter_experiments( $status_running ) ) ),
 					array ( 'value' => $status_finished,
-					        'label' => NelioABExperimentStatus::to_string( $status_finished ),
+					        'label' => NelioABExperiment::get_label_for_status( $status_finished ),
 					        'count' => count( $this->filter_experiments( $status_finished ) ) ),
 					array ( 'value' => $status_trash,
-					        'label' => NelioABExperimentStatus::to_string( $status_trash ),
+					        'label' => NelioABExperiment::get_label_for_status( $status_trash ),
 					        'count' => count( $this->filter_experiments( $status_trash ) ) ),
 				),
 				'status',
@@ -160,16 +162,11 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 			$wp_list_table->display();
 			echo '</div>';
 
-			/**
-			 * Code for duplicating experiments.
-			 */
-			if ( NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN )
-				$this->insert_duplicate_dialog();
+			// Code for duplicating experiments.
+			$this->insert_duplicate_dialog();
 
-			/**
-			 * Code for scheduling experiments.
-			 */
-			if ( NelioABAccountSettings::get_subscription_plan() >= NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN )
+			// Code for scheduling experiments.
+			if ( NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) )
 				$this->insert_schedule_dialog();
 		}
 
@@ -178,14 +175,14 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				$result = array();
 				$filter_finished = NelioABSettings::show_finished_experiments();
 				foreach ( $this->experiments as $exp ) {
-					if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
+					if ( $exp->get_status() == NelioABExperiment::STATUS_FINISHED ) {
 						if ( NelioABSettings::FINISHED_EXPERIMENTS_HIDE_ALL == $filter_finished )
 							continue;
 						if ( NelioABSettings::FINISHED_EXPERIMENTS_SHOW_RECENT == $filter_finished &&
 						     $exp->get_days_since_finalization() > 7 )
 							continue;
 					}
-					if ( $exp->get_status() != NelioABExperimentStatus::TRASH )
+					if ( $exp->get_status() != NelioABExperiment::STATUS_TRASH )
 						array_push( $result, $exp );
 				}
 				return $result;
@@ -405,13 +402,13 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 			$actions = array();
 			switch( $exp->get_status() ) {
-				case NelioABExperimentStatus::DRAFT:
+				case NelioABExperiment::STATUS_DRAFT:
 					$actions = array(
 						'edit'  => sprintf( $url, 'edit', $exp->get_id(), $exp->get_type(), __( 'Edit' ) ),
 						'trash' => sprintf( $url, 'trash', $exp->get_id(), $exp->get_type(), __( 'Trash' ) ),
 					);
 					break;
-				case NelioABExperimentStatus::READY:
+				case NelioABExperiment::STATUS_READY:
 					$actions = array();
 					$actions['edit'] = sprintf( $url, 'edit', $exp->get_id(), $exp->get_type(), __( 'Edit' ) );
 					$actions['start'] = sprintf( $url_dialog, 'start', $exp->get_id(), $exp->get_type(), __( 'Start', 'nelioab' ), 0 );
@@ -419,7 +416,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 					$actions['duplicate'] = sprintf( $url_duplicate, 'duplicate', $exp->get_id(), $exp->get_type(), __( 'Duplicate' ), 'nelioab' );
 					$actions['trash'] = sprintf( $url, 'trash', $exp->get_id(), $exp->get_type(), __( 'Trash' ) );
 					break;
-				case NelioABExperimentStatus::SCHEDULED:
+				case NelioABExperiment::STATUS_SCHEDULED:
 					$actions = array(
 						'start' => sprintf( $url_dialog, 'start', $exp->get_id(), $exp->get_type(), __( 'Start Now', 'nelioab' ), 0 ),
 						'schedule' => sprintf( $url, 'schedule', $exp->get_id(), $exp->get_type(), __( 'Reschedule' ) ),
@@ -427,21 +424,21 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 						'duplicate' => sprintf( $url_duplicate, 'duplicate', $exp->get_id(), $exp->get_type(), __( 'Duplicate', 'nelioab' ) ),
 					);
 					break;
-				case NelioABExperimentStatus::RUNNING:
+				case NelioABExperiment::STATUS_RUNNING:
 					$actions = array(
 						'theprogress' => sprintf( $progress_url, $exp->get_id(), $exp->get_type(), __( 'View' ) ),
 						'stop'        => sprintf( $url_dialog, 'stop', $exp->get_id(), $exp->get_type(), __( 'Stop', 'nelioab' ), 1 ),
 						'duplicate' => sprintf( $url_duplicate, 'duplicate', $exp->get_id(), $exp->get_type(), __( 'Duplicate', 'nelioab' ) ),
 					);
 					break;
-				case NelioABExperimentStatus::FINISHED:
+				case NelioABExperiment::STATUS_FINISHED:
 					$actions = array(
 						'theprogress' => sprintf( $progress_url, $exp->get_id(), $exp->get_type(), __( 'View' ) ),
 						'duplicate' => sprintf( $url_duplicate, 'duplicate', $exp->get_id(), $exp->get_type(), __( 'Duplicate', 'nelioab' ) ),
 						'delete'      => sprintf( $url, 'delete', $exp->get_id(), $exp->get_type(), __( 'Delete Permanently' ) ),
 					);
 					break;
-				case NelioABExperimentStatus::TRASH:
+				case NelioABExperiment::STATUS_TRASH:
 				default:
 					$actions = array(
 						'restore' => sprintf( $url, 'restore', $exp->get_id(), $exp->get_type(), __( 'Restore' ) ),
@@ -458,14 +455,13 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				$actions['start'] = $label;
 			}
 
-			if ( NelioABAccountSettings::get_subscription_plan() < NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::PROFESSIONAL_SUBSCRIPTION_PLAN ) ) {
 				$expl = __( 'Feature only available in the Professional Plan', 'nelioab' );
+				// No actions available to Professional Plans only
 			}
 
-			if ( NelioABAccountSettings::get_subscription_plan() < NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) {
+			if ( !NelioABAccountSettings::is_plan_at_least( NelioABAccountSettings::ENTERPRISE_SUBSCRIPTION_PLAN ) ) {
 				$expl = __( 'Feature only available in the Enterprise Plan', 'nelioab' );
-				if ( isset( $actions['duplicate'] ) )
-					$actions['duplicate'] = sprintf( '<span title="%s">%s</span>', $expl, __( 'Duplicate', 'nelioab' ) );
 				if ( isset( $actions['schedule'] ) )
 					$actions['schedule'] = sprintf( '<span title="%s">%s</span>', $expl, __( 'Schedule', 'nelioab' ) );
 			}
@@ -485,21 +481,21 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 			switch ( $exp->get_status() ) {
 
-				case NelioABExperimentStatus::FINISHED:
+			case NelioABExperiment::STATUS_FINISHED:
 					$res = sprintf( $date,
 						strtotime( $exp->get_end_date() ),
 						__( 'Finalization Date', 'nelioab' ),
 						NelioABFormatter::format_date( $exp->get_end_date() ) );
 					break;
 
-				case NelioABExperimentStatus::RUNNING:
+			case NelioABExperiment::STATUS_RUNNING:
 					$res = sprintf( $date,
 						strtotime( $exp->get_start_date() ),
 						__( 'Start Date', 'nelioab' ),
 						NelioABFormatter::format_date( $exp->get_start_date() ) );
 					break;
 
-				case NelioABExperimentStatus::SCHEDULED:
+			case NelioABExperiment::STATUS_SCHEDULED:
 					$res = sprintf( $date,
 						strtotime( $exp->get_start_date() ),
 						__( 'Scheduled Date', 'nelioab' ),
@@ -519,21 +515,21 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 		}
 
 		public function column_status( $exp ){
-			$str = NelioABExperimentStatus::to_string( $exp->get_status() );
+			$str = NelioABExperiment::get_label_for_status( $exp->get_status() );
 			switch( $exp->get_status() ) {
-				case NelioABExperimentStatus::DRAFT:
+			case NelioABExperiment::STATUS_DRAFT:
 					return $this->make_label( $str, '#999999', '#eeeeee' );
-				case NelioABExperimentStatus::PAUSED:
+				case NelioABExperiment::STATUS_PAUSED:
 					return $this->make_label( $str, '#999999', '#eeeeee' );
-				case NelioABExperimentStatus::READY:
+				case NelioABExperiment::STATUS_READY:
 					return $this->make_label( $str, '#e96500', '#fff6ad' );
-				case NelioABExperimentStatus::SCHEDULED:
+				case NelioABExperiment::STATUS_SCHEDULED:
 					return $this->make_label( $str, '#fff6ad', '#e96500' );
-				case NelioABExperimentStatus::RUNNING:
+				case NelioABExperiment::STATUS_RUNNING:
 					return $this->make_label( $str, '#266529', '#d1ffd3' );
-				case NelioABExperimentStatus::FINISHED:
+				case NelioABExperiment::STATUS_FINISHED:
 					return $this->make_label( $str, '#103269', '#BED6FC' );
-				case NelioABExperimentStatus::TRASH:
+				case NelioABExperiment::STATUS_TRASH:
 					return $this->make_label( $str, '#802a28', '#ffe0df' );
 				default:
 					return $this->make_label( $str, '#999999', '#eeeeee' );
@@ -554,6 +550,9 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 
 				case NelioABExperiment::POST_ALT_EXP:
 					return sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
+
+				case NelioABExperiment::CPT_ALT_EXP:
+					return sprintf( $img, 'cpt', __( 'Custom Post Type', 'nelioab' ) );
 
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					return sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );

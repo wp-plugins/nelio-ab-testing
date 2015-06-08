@@ -99,7 +99,7 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 			// HEATMAPS
 			$this->print_beautiful_box(
 				'heatmap',
-				__( 'New Heatmap Experiment for Page or Post', 'nelioab' ),
+				__( 'New Heatmap Experiment for Pages or (Custom) Posts', 'nelioab' ),
 				array( &$this, 'print_new_exp_box',
 					array(
 						'heatmap', $url . NelioABExperiment::HEATMAP_EXP,
@@ -116,6 +116,18 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 					array(
 						'css', $url . NelioABExperiment::CSS_ALT_EXP,
 						__( 'Do you want to <strong>change the appearence of your WordPress site, but tweaking only small elements here and there</strong>? Then CSS Tests is what you\'re looking for. Create one or more CSS fragments that will be applied to your website and discover which one offers the better results.', 'nelioab' )
+					)
+				)
+			);
+
+			// CUSTOM POST TYPES
+			$this->print_beautiful_box(
+				'cpt',
+				__( 'New Custom Post Type Test', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'cpt', $url . NelioABExperiment::CPT_ALT_EXP,
+						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a custom post type and <strong>change whatever you want</strong>: the title, the text, the custom fields... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
 					)
 				)
 			);

@@ -85,9 +85,9 @@ var NelioABAltTable = {
 	},
 
 	getTable: function() {
-		var table = jQuery('#content-alts table');
+		var table = jQuery('#the-list');
 		if ( table.length > 0 )
-			return jQuery('#content-alts table');
+			return jQuery('#the-list');
 		else
 			return false;
 	},
@@ -133,7 +133,7 @@ var NelioABAltTable = {
 		newRow.removeClass('template');
 		newRow.removeClass('deleted');
 		newRow.data('alt-id', id);
-		table.find('tbody').first().append(newRow);
+		table.append(newRow);
 		return newRow;
 	},
 
@@ -229,7 +229,7 @@ var NelioABAltTable = {
 		name = name.trim();
 		var nameOk = true;
 		if ( name.length <= 0 ) nameOk = false;
-		var oldNames = NelioABAltTable.getTable().find('tbody tr:not(.deleted)');
+		var oldNames = NelioABAltTable.getTable().find('tr:not(.deleted)');
 		for ( var i=1; i<oldNames.length && nameOk; ++i ) {
 			var row = oldNames.eq(i);
 			var otherId = row.data('alt-id');

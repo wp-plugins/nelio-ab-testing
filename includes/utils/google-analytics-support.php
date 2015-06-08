@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -17,82 +17,85 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 if ( !class_exists( 'NelioABGoogleAnalyticsSupport' ) ) {
 
+	/**
+	 * This class helps us make sure that Google Analytics scripts are included after Nelio's.
+	 *
+	 * @since 4.1.0
+	 */
 	abstract class NelioABGoogleAnalyticsSupport {
 
-		private static function is_active( $name ) {
-			return in_array( $name, (array) get_option( 'active_plugins', array() ) );
-		}
-
-		public static function try_to_delay_script_executions() {
-			// Support with WP Google Analytics Events
-			$plugin = 'wp-google-analytics-events/ga-scroll-event.php';
-			if ( self::is_active( $plugin ) )
-				add_action( 'wp', array( 'NelioABGoogleAnalyticsSupport',
-					'wp_google_analytics_events' ) );
-
-			// Support with Google Analytics by Yoast
-			// TODO Implement this in the future
-		}
-
-		public static function delay_execution( $script ) {
-			$open = '<script\1>NelioAB.delay(function(){' . "\n";
-			$close = '})</script>';
-
-			$script = preg_replace( '/<script([^>]*)>/', $open, $script );
-			$script = str_replace( '</script>', $close, $script );
-			return $script;
+		/**
+		 * This function checks whether the given plugin <code>$plugin</code> is
+		 * active or not.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param string $plugin The name of the plugin we want to check.
+		 *                       It usually follows the form
+		 *                       `plugin-dir/main-file.php`.
+		 *
+		 * @return boolean Whether the given plugin is active or not.
+		 *
+		 * @since PHPDOC
+		 */
+		private static function is_plugin_active( $plugin ) {
+			return in_array( $plugin, (array) get_option( 'active_plugins', array() ) );
 		}
 
 
-		// ==========================================================================
-		// ==========================================================================
-		// WP GOOGLE ANALYTICS EVENTS
-		// ==========================================================================
-		// ==========================================================================
+		/**
+		 * This function checks whether there is some Google Analytics plugin enabled.
+		 *
+		 * Supported plugins include:
+		 *
+		 * * Google Analytics by Yoast
+		 *
+		 * @return void
+		 *
+		 * @since 4.1.0
+		 */
+		public static function move_google_analytics_after_nelio() {
+			/** @var string $plugin */
 
-		public static function wp_google_analytics_events() {
-			// Remove the original hooks
-			remove_action( 'wp_head', 'ga_events_header', 100 );
-			remove_action( 'wp_footer', 'ga_events_footer', 100 );
-
-			// Create our own hooks, where the scripts are properly replaced
-			add_action( 'wp_head',
-				array( 'NelioABGoogleAnalyticsSupport', 'ga_events_header' ) );
-			add_action( 'wp_footer',
-				array( 'NelioABGoogleAnalyticsSupport', 'ga_events_footer' ) );
-		}
-
-		public static function ga_events_header() {
-			if ( !function_exists( 'ga_events_header' ) )
-				return;
-			ob_start();
-			ga_events_header();
-			$script = ob_get_contents();
-			ob_end_clean();
-			echo self::delay_execution( $script );
-		}
-
-		public static function ga_events_footer() {
-			if ( !function_exists( 'ga_events_footer' ) )
-				return;
-			ob_start();
-			ga_events_footer();
-			$script = ob_get_contents();
-			ob_end_clean();
-			echo self::delay_execution( $script );
+			// Google Analytics by Yoast
+			$plugin = 'google-analytics-for-wordpress/googleanalytics.php';
+			if ( self::is_plugin_active( $plugin ) ) {
+				add_filter( 'wp_enqueue_scripts', array(
+					'NelioABGoogleAnalyticsSupport',
+					'relocate_google_analytics_by_yoast' ), 99 );
+			}
 		}
 
 
+		/**
+		 * This function moves Google Analytics by Yoast after Nelio scripts.
+		 *
+		 * @return void
+		 *
+		 * @since 4.1.0
+		 */
+		public static function relocate_google_analytics_by_yoast() {
+			global $wp_filter;
+			/** @var array $func */
+			$func = array();
 
-		// ==========================================================================
-		// ==========================================================================
-		// WP GOOGLE ANALYTICS EVENTS
-		// ==========================================================================
-		// ==========================================================================
-		// TODO Add the required functions
+			foreach ( $wp_filter['wp_head'][8] as $key => $value ) {
+				if ( is_array( $value['function'] ) ) {
+					$func = $value['function'];
+					/** @noinspection PhpUndefinedClassInspection */
+					if ( $func[0] instanceof Yoast_GA_Tracking && $func[1] == 'tracking' )
+						break;
+				}
+			}
+
+			// If we found GA by Yoast (we should have), we reduce its priority
+			if ( count( $func ) == 2 ) {
+				remove_action( 'wp_head', $func, 8 );
+				add_action( 'wp_head', $func, 10 );
+			}
+		}
 
 	}//NelioABGoogleAnalyticsSupport
 
