@@ -254,34 +254,34 @@ Troubleshooting, compatibility discussions, and more!
 
 == Screenshots ==
 
-1. **Relevant info with a quick glance.** Running experiments are visible in
-Nelio's Dashboard. There, you'll find a summary of all the relevant information
-you need.
-2. **Progress of your Experiment.** Whilst an experiment is running (or once
-it is finished), you can see how it is performing in the Results of the
-Experiment page.
-3. **Data made easy.** Additional graphics help you understand what is going
-on.
-4. **Experiment Management.** Manage your experiments without leaving
-WordPress: creation, deletion, and monitoring!
-5. **Experiment Creation.** Creating new experiments has never been so easy!
-Just set a name, a description, and the page you want to test!
-6. **Alternatives are Regular Pages.** For each page to test, you can create
-alternatives quickly and easily, from scratch or from already-existing pages!
-7. **Account details.** View your account information and access your directly
-from the plugin.
-8. **Use our plugin in more than one site.** You can use our plugin and service
-on more than one site. Very useful for staging and production environments!
-9. **Different types of experiments.** Our product let's you test different
-aspects of your WordPress site; just select what you want to test and create
-the experiment!
-10. **Heatmaps.** Our service let's you analyse the hottest areas of any page
-on your site so that you can understand your customers better.
-11. **Free Trial Actions.** During your Free Trial, you can get more quota by
+1. **Welcome Message.** After installing the plugin you'll be able to either
+start a new free trial or configure your Nelio account.
+2. **Free Trial Actions.** During your Free Trial, you can get more quota by
 simply completing the actions we offer you. Tell us a little bit more about
 your and your site, make a tweet, or recommend us to your friends!
-12. **Welcome Message.** After installing the plugin you'll be able to either
-start a new free trial or configure your Nelio account.
+3. **Relevant info with a quick glance.** Running experiments are visible in
+Nelio's Dashboard. There, you'll find a summary of all the relevant information
+you need.
+4. **Progress of your Experiment.** Whilst an experiment is running (or once
+it is finished), you can see how it is performing in the Results of the
+Experiment page.
+5. **Data made easy.** Additional graphics help you understand what is going
+on.
+6. **Experiment Management.** Manage your experiments without leaving
+WordPress: creation, deletion, and monitoring!
+7. **Experiment Creation.** Creating new experiments has never been so easy!
+Just set a name, a description, and the page you want to test!
+8. **Alternatives are Regular Pages.** For each page to test, you can create
+alternatives quickly and easily, from scratch or from already-existing pages!
+9. **Account details.** View your account information and access your directly
+from the plugin.
+10. **Use our plugin in more than one site.** You can use our plugin and service
+on more than one site. Very useful for staging and production environments!
+11. **Different types of experiments.** Our product let's you test different
+aspects of your WordPress site; just select what you want to test and create
+the experiment!
+12. **Heatmaps.** Our service let's you analyse the hottest areas of any page
+on your site so that you can understand your customers better.
 
 
 == Changelog ==
