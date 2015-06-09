@@ -429,7 +429,7 @@ NelioABFreeTrial = {
 				modal: true,
 				autoOpen: false,
 				width: 460,
-				height: 200,
+				height: 250,
 				closeOnEscape: true
 			});
 
@@ -533,6 +533,12 @@ NelioABFreeTrial = {
 		var $action = this.$basicInfoAction;
 		var $cta = $action.find( '.cta a.button' );
 		$cta.addClass( 'disabled' );
+
+		var name = jQuery( '#your-name' ).attr( 'value' );
+		name = name.replace( /\s+/g, ' ' );
+		name = name.replace( /^\s+/g, '' );
+		name = name.replace( /\s+$/g, '' );
+
 		jQuery.ajax({
 			url:    ajaxurl,
 			async:  true,
@@ -540,7 +546,7 @@ NelioABFreeTrial = {
 			data: {
 				action: 'nelioab_free_trial_promo',
 				promo:  'basic-info',
-				name:   jQuery( '#your-name' ).attr( 'value' ),
+				name:   name,
 				email:  jQuery( '#your-email' ).attr( 'value' )
 			},
 			success: function( res ) {
@@ -551,6 +557,31 @@ NelioABFreeTrial = {
 						var regularIcon = $action.find( '.nelio-freetrial-heading img' );
 						var completedIcon = $action.find( '.nelio-freetrial-heading.completed img' );
 						completedIcon.attr( 'src', regularIcon.attr( 'src' ) );
+						$dialog = jQuery( '#email-confirmation-dialog' );
+						if ( ! $dialog.hasClass( 'ui-dialog-content' ) ) {
+							$dialog.dialog({
+								title: $dialog.find( '.title' ).text(),
+								dialogClass: 'wp-dialog',
+								modal: true,
+								autoOpen: false,
+								width: 460,
+								height: 250,
+								closeOnEscape: true,
+								buttons: [
+									{
+										text: $dialog.find( '.button' ).text(),
+										click: function() {
+											jQuery(this).dialog( 'close' );
+										}
+									}
+								]
+							});
+						}
+						if ( name.indexOf( ' ' ) > 0 ) {
+							name = name.substring( 0, name.indexOf( ' ' ) );
+						}
+						$dialog.html( $dialog.html().replace( '%s', name ) );
+						$dialog.dialog( 'open' );
 					}
 					NelioABFreeTrial.markAsCompleted( $action );
 					$action.addClass( 'pending-confirmation' );

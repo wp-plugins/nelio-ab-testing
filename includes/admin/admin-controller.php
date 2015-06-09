@@ -421,7 +421,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				$dashboard_link .= '      },';
 				$dashboard_link .= '      {';
 				$dashboard_link .= '        text: "' . __( 'Clean', 'nelioab' ) . '",';
-				$dashboard_link .= '        "class": "button-primary",';
+				$dashboard_link .= '        "class": "button button-primary",';
 				$dashboard_link .= '        click: function() {';
 				$dashboard_link .= '          jQuery(this).dialog("close");';
 				$dashboard_link .= '          window.location.href = jQuery("#nelioab-clean-button").attr("href");';
@@ -659,7 +659,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						<div style="float:right;margin-top:1em;">
 							<input name="original_publish" type="hidden" id="original_publish" value="Update">
 							<input name="save" type="submit"
-								class="button-primary" id="publish"
+								class="button button-primary" id="publish"
 								tabindex="5"
 								value="<?php _e( 'Update' ); ?>" />
 						</div>

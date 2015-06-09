@@ -396,7 +396,7 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 								},
 								{
 									text: "<?php echo esc_html( __( 'Activate', 'nelioab' ) ); ?>",
-									'class': 'button-primary',
+									'class': 'button button-primary',
 									click: function() {
 										if ( $okButton.hasClass('disabled') ) return;
 										$('#nelioab_registration_action').attr('value', 'register');

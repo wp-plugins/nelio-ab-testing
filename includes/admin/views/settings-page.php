@@ -109,7 +109,7 @@ if ( !class_exists( 'NelioABSettingsPage' ) ) {
 									},
 									{
 										text: "<?php echo esc_html( __( 'Reset to Defaults', 'nelioab' ) ); ?>",
-										'class': 'button-primary',
+										'class': 'button button-primary',
 										click: function() {
 											$(this).dialog('close');
 											$('#reset_settings').val('do_reset');

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/nelio-ab-testing\n"
-"POT-Creation-Date: 2015-06-08 07:02:29+00:00\n"
+"POT-Creation-Date: 2015-06-09 07:16:31+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -574,87 +574,88 @@ msgid ""
 msgstr ""
 
 #: includes/admin/views/account-page.php:453
-#: includes/admin/views/free-trial-page.php:252
+#: includes/admin/views/free-trial-page.php:266
 msgid "How would you describe your site?"
 msgstr ""
 
 #: includes/admin/views/account-page.php:459
-#: includes/admin/views/free-trial-page.php:256
+#: includes/admin/views/free-trial-page.php:270
 msgid "Publishing Platform"
 msgstr ""
 
 #: includes/admin/views/account-page.php:460
-#: includes/admin/views/free-trial-page.php:257
+#: includes/admin/views/free-trial-page.php:271
 msgid "Personal Blog"
 msgstr ""
 
 #: includes/admin/views/account-page.php:461
-#: includes/admin/views/free-trial-page.php:258
+#: includes/admin/views/free-trial-page.php:272
 msgid "Business/Corporate Website"
 msgstr ""
 
 #: includes/admin/views/account-page.php:462
-#: includes/admin/views/free-trial-page.php:259
+#: includes/admin/views/free-trial-page.php:273
 msgid "E-Commerce"
 msgstr ""
 
 #: includes/admin/views/account-page.php:470
-#: includes/admin/views/free-trial-page.php:268
+#: includes/admin/views/free-trial-page.php:282
 msgid "What is it focused on?"
 msgstr ""
 
 #: includes/admin/views/account-page.php:476
-#: includes/admin/views/free-trial-page.php:272
+#: includes/admin/views/free-trial-page.php:286
 msgid "Computer Software & Services"
 msgstr ""
 
 #: includes/admin/views/account-page.php:477
-#: includes/admin/views/free-trial-page.php:273
+#: includes/admin/views/free-trial-page.php:287
 msgid "Education"
 msgstr ""
 
 #: includes/admin/views/account-page.php:478
-#: includes/admin/views/free-trial-page.php:274
+#: includes/admin/views/free-trial-page.php:288
 msgid "Financial Services"
 msgstr ""
 
 #: includes/admin/views/account-page.php:479
-#: includes/admin/views/free-trial-page.php:275
+#: includes/admin/views/free-trial-page.php:289
 msgid "Food & Beverage"
 msgstr ""
 
 #: includes/admin/views/account-page.php:480
-#: includes/admin/views/free-trial-page.php:276
+#: includes/admin/views/free-trial-page.php:290
 msgid "Health Services"
 msgstr ""
 
 #: includes/admin/views/account-page.php:481
-#: includes/admin/views/free-trial-page.php:277
+#: includes/admin/views/free-trial-page.php:291
 msgid "Leisure"
 msgstr ""
 
 #: includes/admin/views/account-page.php:482
-#: includes/admin/views/free-trial-page.php:278
+#: includes/admin/views/free-trial-page.php:292
 msgid "Media (Adv & Mkt Ag & Publishing)"
 msgstr ""
 
 #: includes/admin/views/account-page.php:483
-#: includes/admin/views/free-trial-page.php:279
+#: includes/admin/views/free-trial-page.php:293
 msgid "Real Estate"
 msgstr ""
 
 #: includes/admin/views/account-page.php:484
-#: includes/admin/views/free-trial-page.php:280
+#: includes/admin/views/free-trial-page.php:294
 msgid "Retail"
 msgstr ""
 
 #: includes/admin/views/account-page.php:487
-#: includes/admin/views/free-trial-page.php:283
+#: includes/admin/views/free-trial-page.php:297
 msgid "Others"
 msgstr ""
 
 #: includes/admin/views/account-page.php:505
 #: includes/admin/views/experiments-page.php:80
+#: includes/admin/views/free-trial-page.php:199
 #: includes/admin/views/progress/alt-exp-progress-page.php:551
 msgid "OK"
 msgstr ""
@@ -1088,7 +1089,7 @@ msgstr ""
 #: includes/admin/views/alternatives/post-alt-exp-edition-page.php:45
 #: includes/admin/views/alternatives/theme-alt-exp-edition-page.php:50
 #: includes/admin/views/alternatives/widget-alt-exp-edition-page.php:41
-#: includes/admin/views/free-trial-page.php:454
+#: includes/admin/views/free-trial-page.php:468
 msgid "Goals"
 msgstr ""
 
@@ -1921,123 +1922,141 @@ msgstr ""
 msgid "Your e-Mail"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:191
-#: includes/admin/views/free-trial-page.php:290
-#: includes/admin/views/free-trial-page.php:351
-#: includes/admin/views/free-trial-page.php:400
-msgid "Submit"
+#: includes/admin/views/free-trial-page.php:193
+msgid "E-Mail Confirmation"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:207
+#: includes/admin/views/free-trial-page.php:196
+msgid ""
+"Thanks for sharing your basic information with us, %s! <strong>Check your "
+"inbox and confirm your e-mail address</strong> to get the additional quota "
+"and unlock the other actions."
+msgstr ""
+
+#: includes/admin/views/free-trial-page.php:205
+msgid "Send Confirmation E-Mail"
+msgstr ""
+
+#: includes/admin/views/free-trial-page.php:221
 msgid ""
 "Do you have a Twitter account? Then tweet about us and get 200 extra page "
 "views for your free trial!"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:231
+#: includes/admin/views/free-trial-page.php:245
 msgid ""
 "I'm trying out Nelio A/B Testing for #WordPress by @NelioSoft and it rocks! "
 "Check it out at"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:236
+#: includes/admin/views/free-trial-page.php:250
 msgid "Tweet"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:306
+#: includes/admin/views/free-trial-page.php:304
+#: includes/admin/views/free-trial-page.php:365
+#: includes/admin/views/free-trial-page.php:414
+msgid "Submit"
+msgstr ""
+
+#: includes/admin/views/free-trial-page.php:320
 msgid ""
 "If you have a Facebook account, then help us reach more people and like our "
 "Facebook profile."
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:327
+#: includes/admin/views/free-trial-page.php:341
 msgid "Like"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:343
+#: includes/admin/views/free-trial-page.php:357
 msgid ""
 "If you like Nelio A/B Testing, then recommend us to some of your friends or "
 "colleagues! Please, enter a list of comma-separated e-mails:"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:347
+#: includes/admin/views/free-trial-page.php:361
 msgid "List of e-mails"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:367
+#: includes/admin/views/free-trial-page.php:381
 msgid ""
 "Have you exhausted your Free Trial Quota? Do you want to get the most out of "
 "Nelio A/B Testing? Then subscribe to one of our plans and revamp your "
 "WordPress site with our help!"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:373
-#: includes/admin/views/free-trial-page.php:460
+#: includes/admin/views/free-trial-page.php:387
+#: includes/admin/views/free-trial-page.php:474
 msgid "Subscribe"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:376
+#: includes/admin/views/free-trial-page.php:390
 msgid "Use My Nelio Account"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:393
+#: includes/admin/views/free-trial-page.php:407
 msgid "The goal of my website is..."
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:396
+#: includes/admin/views/free-trial-page.php:410
 msgid "Success to me means..."
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:423
+#: includes/admin/views/free-trial-page.php:437
 msgid "Your Basic Information (%s)"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:424
+#: includes/admin/views/free-trial-page.php:438
 msgid "You and Your E-Mail"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:429
+#: includes/admin/views/free-trial-page.php:443
 msgid "Tweet About Us (%s)"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:430
+#: includes/admin/views/free-trial-page.php:444
 msgid "Twitter"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:435
+#: includes/admin/views/free-trial-page.php:449
 msgid "Information About Your Site (%s)"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:436
+#: includes/admin/views/free-trial-page.php:450
 msgid "Tiny form about your site"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:441
+#: includes/admin/views/free-trial-page.php:455
 msgid "Like Our Facebook Profile (%s)"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:442
+#: includes/admin/views/free-trial-page.php:456
 msgid "Facebook"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:447
+#: includes/admin/views/free-trial-page.php:461
 msgid "Recommend Us to Your Friends (%s)"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:448
+#: includes/admin/views/free-trial-page.php:462
 msgid "Friends"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:453
+#: includes/admin/views/free-trial-page.php:467
 msgid "The Goals You Pursue (%s)"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:459
+#: includes/admin/views/free-trial-page.php:473
 msgid "Subscribe to Nelio A/B Testing (%s)"
 msgstr ""
 
-#: includes/admin/views/free-trial-page.php:467
+#: includes/admin/views/free-trial-page.php:481
 msgid "Done!"
+msgstr ""
+
+#: includes/admin/views/free-trial-page.php:492
+msgid "Awaiting Confirmation..."
 msgstr ""
 
 #: includes/admin/views/multisite-settings-page.php:41

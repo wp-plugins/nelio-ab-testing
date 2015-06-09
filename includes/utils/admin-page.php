@@ -597,7 +597,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		 */
 		protected function make_submit_button( $name, $form_name, $hidden_action = 'none' ) {
 			return sprintf(
-				'<input type="submit" class="button-primary" ' .
+				'<input type="submit" class="button button-primary" ' .
 				'value="%1$s" %2$s></input>&nbsp;',
 				$name,
 				$this->make_form_javascript( $form_name, $hidden_action )
@@ -620,7 +620,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		protected function make_button( $name, $link, $is_primary=false ) {
 			$primary = 'button';
 			if ( $is_primary )
-				$primary = 'button-primary';
+				$primary = 'button button-primary';
 
 			return sprintf(
 				'<a class="%3$s" href="%2$s">%1$s</a>&nbsp;',
@@ -666,7 +666,7 @@ if ( !class_exists( 'NelioABAdminPage' ) ) {
 		protected function make_js_button( $name, $js, $is_enabled = true, $is_primary = false ) {
 			$primary = 'button';
 			if ( $is_primary )
-				$primary = 'button-primary';
+				$primary = 'button button-primary';
 
 			$disabled = '';
 			if ( !$is_enabled )

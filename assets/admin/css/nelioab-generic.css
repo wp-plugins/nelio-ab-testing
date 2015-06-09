@@ -175,6 +175,15 @@ span.nelio-ftcode {
 	opacity: 0.5;
 }
 
+@media( max-width:782px ) {
+	.nelio-card.free-trial-action {
+		height: 220px;
+	}
+	.nelio-card.free-trial-action .inside {
+		height: 162px;
+	}
+}
+
 
 /* ------------------- */
 /*      DASHBOARD      */
