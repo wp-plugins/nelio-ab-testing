@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.1.3
+Stable tag: 4.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -258,7 +258,7 @@ Troubleshooting, compatibility discussions, and more!
 start a new free trial or configure your Nelio account.
 2. **Free Trial Actions.** During your Free Trial, you can get more quota by
 simply completing the actions we offer you. Tell us a little bit more about
-your and your site, make a tweet, or recommend us to your friends!
+your and your site, tweet about Nelio, or recommend us to your friends!
 3. **Relevant info with a quick glance.** Running experiments are visible in
 Nelio's Dashboard. There, you'll find a summary of all the relevant information
 you need.
@@ -285,6 +285,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.1.4 (June 9, 2015) =
+* During the Free Trial, the Basic Information action now shows a dialog that
+reminds users to validate their e-mail addresses.
+* Improved visualization of Free Trial actions on mobile (CSS fix).
+* Improved management of Free Trial.
+
 
 = 4.1.3 (June 8, 2015) =
 * **New Free Trial Process!** You no longer need to subscribe to any of our
@@ -946,7 +953,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.1.3 =
+= 4.1.4 =
 **Information**. New Free Trial process (for non-subscribed users) and minor
 updates. Plus **Support for Custom Post Types**: use Nelio A/B Testing with any
 plugins/themes that defines its own custom post types (such as Products,

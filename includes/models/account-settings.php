@@ -728,10 +728,10 @@ if ( !class_exists( 'NelioABAccountSettings' ) ) {
 		 * @since 4.1.3
 		 */
 		public static function can_free_trial_be_started() {
-			if ( get_option( '__nelio_ab_free_trial', true ) ) {
-				return self::get_nelioab_option( 'is_free_trial_available', true );
-			} else {
+			if ( get_option( '__nelio_ab_used_free_trial', false ) ) {
 				return false;
+			} else {
+				return self::get_nelioab_option( 'is_free_trial_available', true );
 			}
 		}
 
@@ -770,6 +770,8 @@ if ( !class_exists( 'NelioABAccountSettings' ) ) {
 					self::set_site_id( $site->id );
 					self::update_nelioab_option( 'has_a_configured_site', true );
 
+					update_option( '__nelio_ab_used_free_trial', true );
+
 					echo 'OK';
 				} catch ( Exception $e ) {
 					self::update_nelioab_option( 'customer_id', 'unknown' );
@@ -791,7 +793,6 @@ if ( !class_exists( 'NelioABAccountSettings' ) ) {
 		 * @since 4.1.3
 		 */
 		public static function disable_free_trial() {
-			update_option( '__nelio_ab_free_trial', false );
 			self::update_nelioab_option( 'is_free_trial_available', false );
 			self::update_nelioab_option( 'uses_free_trial', false );
 		}
