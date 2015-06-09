@@ -127,7 +127,8 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPageController' ) ) {
 			if ( count( $list_of_pages ) + count( $list_of_posts ) == 0) {
 				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
 				$view = new NelioABErrorPage(
-					__( 'There are no pages nor posts available.', 'nelioab' ) );
+					__( 'There are no pages nor posts available.', 'nelioab' ),
+					__( 'Please, create some pages or posts and then try again.', 'nelioab' ));
 				return $view;
 			}
 

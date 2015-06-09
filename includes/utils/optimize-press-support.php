@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -19,13 +19,34 @@
 
 if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 
+	/**
+	 * This class adds support for the custom-permalinks plugin.
+	 *
+	 * @since PHPDOC
+	 * @package \NelioABTesting\Compatibility
+	 */
 	abstract class NelioABOptimizePressSupport {
 
-		public static function is_optimize_press_active() {
+		/**
+		 * This function checks whether the custom-permalinks plugin is active or not.
+		 *
+		 * @return boolean whether the custom-permalinks plugin is active or not.
+		 *
+		 * @since PHPDOC
+		 */
+		public static function is_plugin_active() {
 			$mode = self::get_optimize_press_current_mode();
 			return in_array( $mode, array( 'theme', 'plugin' ) );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		private static function get_optimize_press_current_mode() {
 			$theme = wp_get_theme();
 			$plugin = 'optimizePressPlugin/optimizepress.php';
@@ -37,12 +58,21 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 				return 'none';
 		}
 
+
 		/**
-		 * If src post was created with OptimizePress, make new post compatible with it
+		 * This funtion makes a post originally created with OptimizePress compatible with OP.
+		 *
+		 * @param int $new_post_id PHPDOC
+		 * @param int $old_post_id PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
 		 */
 		public static function make_post_compatible_with_optimizepress(
 				$new_post_id, $old_post_id ) {
 
+			/** @var wpdb $wpdb */
 			global $wpdb;
 
 			$table_name = $wpdb->prefix . 'optimizepress_post_layouts';
@@ -89,6 +119,14 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public static function apply_abtesting_to_optimize_press_pages() {
 			// Remove default hook
 			remove_filter( 'template_include', 'op_template_include' );
@@ -110,13 +148,25 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 				array( 'NelioABOptimizePressSupport', 'fix_the_single_title' ), 10, 2 );
 		}
 
-		public static function op_plugin_template_include($template,$use_template=true){
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string  $template     PHPDOC
+		 * @param boolean $use_template PHPDOC
+		 *                              Default: true.
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public static function op_plugin_template_include( $template, $use_template = true ) {
 			if($use_template){
 				if($id = get_queried_object_id()){
 					$status = get_post_status($id);
-					/* Nelio */ require_once( NELIOAB_MODELS_DIR . '/user.php' );
-					/* Nelio */ $id = NelioABUser::get_alternative_for_post_alt_exp( $id );
-					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative', false ) ) $status = 'publish';
+					/* Nelio */ require_once( NELIOAB_MODELS_DIR . '/visitor.php' );
+					/* Nelio */ $id = NelioABVisitor::get_alternative_for_post_alt_exp( $id );
+					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative' ) ) $status = 'publish';
 					if ( $status == 'publish' || (current_user_can('edit_posts') || current_user_can('edit_pages')) ){
 						if(get_post_meta($id,'_'.OP_SN.'_pagebuilder',true) == 'Y'){
 							op_init_page($id);
@@ -135,7 +185,19 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 			return $template;
 		}
 
-		public static function op_theme_template_include($template,$use_template=true) {
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string  $template     PHPDOC
+		 * @param boolean $use_template PHPDOC
+		 *                              Default: true.
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public static function op_theme_template_include( $template, $use_template = true ) {
 			/*
 			 * Assuring that we don't run this method twice (once on the template_include and once on the index_template hook)
 			 */
@@ -154,9 +216,9 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 			if($use_template){
 				if($id = get_queried_object_id()){
 					$status = get_post_status($id);
-					/* Nelio */ require_once( NELIOAB_MODELS_DIR . '/user.php' );
-					/* Nelio */ $id = NelioABUser::get_alternative_for_post_alt_exp( $id );
-					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative', false ) ) $status = 'publish';
+					/* Nelio */ require_once( NELIOAB_MODELS_DIR . '/visitor.php' );
+					/* Nelio */ $id = NelioABVisitor::get_alternative_for_post_alt_exp( $id );
+					/* Nelio */ if ( get_post_meta( $id, '_is_nelioab_alternative' ) ) $status = 'publish';
 					if ( $status == 'publish' || (current_user_can('edit_posts') || current_user_can('edit_pages')) ){
 						if(get_post_meta($id,'_'.OP_SN.'_pagebuilder',true) == 'Y'){
 							op_init_page($id);
@@ -219,10 +281,21 @@ if ( !class_exists( 'NelioABOptimizePressSupport' ) ) {
 			}
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string          $single_title PHPDOC
+		 * @param WP_Post|boolean $post         PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function fix_the_single_title( $single_title, $post = false) {
-			require_once( NELIOAB_MODELS_DIR . '/user.php' );
+			require_once( NELIOAB_MODELS_DIR . '/visitor.php' );
 			if ( $post ) {
-				$alt_id = NelioABUser::get_alternative_for_post_alt_exp( $post->ID );
+				$alt_id = NelioABVisitor::get_alternative_for_post_alt_exp( $post->ID );
 				$alt_post = get_post( $alt_id );
 				if ( $alt_post )
 					return $alt_post->post_title;

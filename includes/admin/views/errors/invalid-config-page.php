@@ -24,39 +24,111 @@ if ( !class_exists( 'NelioABInvalidConfigPage' ) ) {
 
 	class NelioABInvalidConfigPage extends NelioABAdminAjaxPage {
 
-		public function __construct( $title = false ) {
-			if ( !$title )
-				$title = __( 'Welcome!', 'nelioab' );
-			parent::__construct( $title );
+
+		public function __construct() {
+			parent::__construct( '' );
 			$this->set_icon( 'icon-nelioab' );
 		}
 
+
 		protected function do_render() {
-			$style = 'font-size:130%%;color:#555;max-width:450px;line-height:150%%;';
 
-			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'Thank you very much for installing <b>Nelio A/B Testing</b> by <i>Nelio Software</i>. We are very excited you chose our solution for optimizing your site.', 'nelioab' )
+			echo "<div class='nelio-message'>";
+
+			printf( '<img class="animated flipInY" src="%s" alt="%s" />',
+				nelioab_admin_asset_link( '/images/settings-icon.png' ),
+				__( 'Information Notice', 'nelioab' )
+			);
+
+			$tac_text = '';
+
+			if ( NelioABAccountSettings::can_free_trial_be_started() ) {
+
+				echo '<h2>' . __( 'Welcome!', 'nelioab' ) . '</h2>';
+				printf( "<p class=\"nelio-admin-explanation\">%s</p>\n",
+						__( 'Thank you very much for installing <strong>Nelio A/B Testing</strong> by <em>Nelio Software</em>. You\'re just one step away from optimizing your WordPress site.', 'nelioab' )
+					);
+				printf( "<p class=\"nelio-admin-explanation\"><strong>%s</strong></p>\n",
+						__( 'Let\'s get started!', 'nelioab' )
+					);
+
+				$account_url = admin_url( 'admin.php?page=nelioab-account&nabmode=my-account' );
+				$my_account_button = $this->make_button(
+					__( 'Use Nelio Account', 'nelioab' ), $account_url, false );
+				$free_trial_button = $this->make_button(
+					__( 'Start Free Trial', 'nelioab' ), '#', true );
+
+				$tac_text = sprintf(
+					__( 'By starting the free trial you agree to be legally bound by these <a href="%s" target="_blank">terms</a>.', 'nelioab' ),
+					'https://nelioabtesting.com/terms-and-conditions/'
 				);
 
-			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'In order to use our service, please make sure you have already configured the plugin properly. In order to do so, just click the button below to access the plugin\'s settings page and fill in the required fields. These include your <i>e-mail</i> and your <i>Product Registration Number</i>. Finally, do not forget to register this site to your account!', 'nelioab' )
-				);
+			} else if ( ! NelioABAccountSettings::is_email_valid() ||
+				! NelioABAccountSettings::is_reg_num_valid() ||
+				! NelioABAccountSettings::are_terms_and_conditions_accepted() ) {
 
-			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( 'If, on the other hand, you have not subscribed to any of our plans yet, please <a href="http://nelioabtesting.com/subscription-plans/" target="_blank">check them out and choose the one that best fits you</a>! Keep in mind <b>all our plans come with a 14-day free trial period</b>.', 'nelioab' )
-				);
+				echo '<h2>' . __( 'Welcome!', 'nelioab' ) . '</h2>';
+				printf( "<p class=\"nelio-admin-explanation\">%s</p>\n",
+						__( 'Thank you very much for installing <strong>Nelio A/B Testing</strong> by <em>Nelio Software</em>. You\'re just one step away from optimizing your WordPress site.', 'nelioab' )
+					);
+				printf( "<p class=\"nelio-admin-explanation\"><strong>%s</strong></p>\n",
+						__( 'Let\'s get started!', 'nelioab' )
+					);
 
-			echo sprintf( "<p style=\"$style\">%s</p>\n",
-					__( '<b>Optimize your site based on real data</b>, not opinions!', 'nelioab' )
-				);
+				$account_url = admin_url( 'admin.php?page=nelioab-account&nabmode=my-account' );
+				$my_account_button = $this->make_button(
+					__( 'Use Nelio Account', 'nelioab' ), $account_url, true );
+				$free_trial_button = '';
 
-			echo sprintf( "<br /><div style=\"text-align:center;$style\">%s</div>",
-					$this->make_button(
-						__( 'Configure now', 'nelioab' ),
-						admin_url( 'admin.php?page=nelioab-account' ),
-						true
-					)
-				);
+			} else {
+
+				echo '<h2>' . __( 'Setup', 'nelioab' ) . '</h2>';
+				printf( "<p class=\"nelio-admin-explanation\">%s</p>\n",
+						__( 'You\'re just one step away from optimizing WordPress with <strong style="white-space:nowrap;">Nelio A/B Testing</strong> by <em>Nelio Software</em>. Are you ready?', 'nelioab' )
+					);
+				printf( "<p class=\"nelio-admin-explanation\"><strong>%s</strong></p>\n",
+						__( 'Activate this site in your account.', 'nelioab' )
+					);
+
+				$account_url = admin_url( 'admin.php?page=nelioab-account&nabmode=my-account' );
+				$my_account_button = $this->make_button(
+					__( 'Open My Account', 'nelioab' ), $account_url, true );
+				$free_trial_button = '';
+			}
+
+			printf( "<p id=\"nelio-cta-buttons\" class=\"nelio-admin-explanation\">%s %s</p>\n",
+				$my_account_button, $free_trial_button );
+
+			if ( strlen( $tac_text ) > 0 ) {
+				echo '<p style="padding-top:3em;font-size:95%;color:gray;">' . $tac_text . '</p>';
+			}
+
+			if ( NelioABAccountSettings::can_free_trial_be_started() ) { ?>
+				<script type="text/javascript">
+				(function($) {
+					$('#nelio-cta-buttons .button-primary').click(function() {
+						smoothTransitions();
+						$.ajax({
+							url: ajaxurl,
+							data: {
+								action: 'nelioab_start_free_trial'
+							},
+							type: 'post',
+							success: function(res) {
+								if ( "OK" === res ) {
+									window.location = "<?php echo admin_url( 'admin.php?page=nelioab-account&nabmode=free-trial' ); ?>";
+								} else {
+									window.location.reload();
+								}
+							},
+						});
+					});
+				})(jQuery);
+				</script>
+				<?php
+			}
+
+			echo '</div>';
 		}
 
 	}//NelioABInvalidConfigPage
