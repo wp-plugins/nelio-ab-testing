@@ -158,7 +158,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 							_e( 'Previous', 'nelioab' ); ?></a>
 						<a href="javascript:;" class="button next" style="float:right;"><?php
 							_e( 'Next', 'nelioab' ); ?></a>
-						<a href="javascript:;" class="button-primary save" style="float:right;display:none;"><?php
+						<a href="javascript:;" class="button button-primary save" style="float:right;display:none;"><?php
 							$this->get_save_experiment_name(); ?></a>
 					</div>
 				</div>

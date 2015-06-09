@@ -164,7 +164,7 @@ class NelioABCssEditPage extends NelioABAdminAjaxPage {
 									<div style="float:right;margin-top:1em;">
 										<input name="original_publish" type="hidden" id="original_publish" value="Update">
 										<input name="save" type="submit"
-											class="button-primary" id="publish"
+											class="button button-primary" id="publish"
 											tabindex="5"
 											value="<?php _e( 'Update' ); ?>" />
 										<script type="text/javascript">

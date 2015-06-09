@@ -78,7 +78,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 						},
 						{
 							text: "<?php echo esc_html( __( 'OK', 'nelioab' ) ); ?>",
-							'class': 'button-primary',
+							'class': 'button button-primary',
 							click: function() {
 								$(this).dialog('close');
 								window.location.href = $(this).data( 'href' );
@@ -223,7 +223,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 							},
 							{
 								text: "<?php echo esc_html( __( 'Duplicate', 'nelioab' ) ); ?>",
-								'class': 'button-primary',
+								'class': 'button button-primary',
 								click: function() {
 									if ( $okButton.hasClass('disabled') ) return;
 									window.location = $(this).data('url') + '&name=' + encodeURIComponent( $input.val() );
@@ -302,7 +302,7 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 							},
 							{
 								text: "<?php echo esc_html( __( 'Schedule', 'nelioab' ) ); ?>",
-								'class': 'button-primary',
+								'class': 'button button-primary',
 								click: function() {
 									try {
 										var day   = $('#nelioab-scheduling-dialog input.jj').attr('value');

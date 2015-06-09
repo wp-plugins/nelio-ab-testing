@@ -549,7 +549,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 											},
 											{
 												text: "<?php echo esc_html( __( 'OK', 'nelioab' ) ); ?>",
-												'class': 'button-primary',
+												'class': 'button button-primary',
 												click: function() {
 													$(this).dialog('close');
 													nelioabAcceptDialog($(this));
@@ -727,7 +727,7 @@ if ( !class_exists( 'NelioABAltExpProgressPage' ) ) {
 												},
 												{
 													text: "<?php echo esc_html( __( 'Overwrite', 'nelioab' ) ); ?>",
-													'class': 'button-primary',
+													'class': 'button button-primary',
 													click: function() {
 														$(this).dialog('close');
 														var id = $(this).data('overwrite-with');

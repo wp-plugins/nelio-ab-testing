@@ -187,8 +187,22 @@ if ( !class_exists( 'NelioABFreeTrialPage' ) ) {
 				__( 'Your e-Mail', 'nelioab' ), $mail
 			);
 
+			?>
+			<div id="email-confirmation-dialog" style="display:none;">
+				<p class="title" style="display:none;"><?php
+					_e( 'E-Mail Confirmation', 'nelioab' );
+				?></p>
+				<p class="message"><?php
+					_e( 'Thanks for sharing your basic information with us, %s! <strong>Check your inbox and confirm your e-mail address</strong> to get the additional quota and unlock the other actions.', 'nelioab' );
+				?></p>
+				<p class="button" style="display:none;"><?php
+					_e( 'OK', 'nelioab' );
+				?></p>
+			</div>
+			<?php
+
 			$this->print_cta(
-				__( 'Submit', 'nelioab' ),
+				__( 'Send Confirmation E-Mail', 'nelioab' ),
 				'basic-info'
 			);
 
@@ -475,6 +489,7 @@ if ( !class_exists( 'NelioABFreeTrialPage' ) ) {
 					$completed_icon = nelioab_admin_asset_link( '/images/action-pending.png' );
 				}
 				$type = 'basic-info-check';
+				$completed_title = sprintf( $aux, __( 'Awaiting Confirmation...', 'nelioab' ) );
 			}
 			// End of the workaround
 
