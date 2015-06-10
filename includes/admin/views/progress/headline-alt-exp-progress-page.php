@@ -58,6 +58,11 @@ if ( !class_exists( 'NelioABHeadlineAltExpProgressPage' ) ) {
 			return self::NO_WINNER;
 		}
 
+		public function set_experiment( $exp ) {
+			NelioABAltExpProgressPage::set_experiment( $exp );
+		}
+
+
 		public function do_render() {
 			parent::do_render(); ?>
 			<div id="preview-dialog-modal" title="<?php _e( 'Headline', 'nelioab' ); ?>" style="display:none;">
@@ -139,7 +144,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpProgressPage' ) ) {
 				$name, $excerpt, $image_src,
 				__( 'Preview', 'nelioab' ) );
 
-			if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
+			if ( $exp->get_status() == NelioABExperiment::STATUS_FINISHED ) {
 				$result['apply'] = sprintf(
 					' <a class="apply-link" href="javascript:nelioab_confirm_overwriting(%s, \'%s\', \'%s\', \'%s\' );">%s</a>',
 					$alt_id,

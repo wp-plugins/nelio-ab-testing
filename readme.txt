@@ -1,9 +1,9 @@
 === Nelio AB Testing ===
 Contributors: nelio, davilera, avillegasn
-Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
+Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
-Tested up to: 4.1
-Stable tag: 3.4.4
+Tested up to: 4.2
+Stable tag: 4.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,9 +25,10 @@ familiar user experience.
 > Solution for WordPress**<br>
 > Improve your landing pages, write better posts, create alternative pages, go
 > beyond simple title testing and start testing headlines, try new themes, test
-> different menus, modify your CSS rules, and test alternative widgets!
-> Moreover, Nelio A/B is also compatible with some of your most beloved plugins
-> such as, for instance, OptimizePress, Gravity Forms, or Contact Form 7.
+> different menus, modify your CSS rules, test custom post types, and test
+> alternative widgets! Moreover, we designed Nelio A/B Testing to be compatible
+> with your most beloved WordPress plugins such as, for instance,
+> OptimizePress, Gravity Forms, or Contact Form 7.
 >
 > **Designed as a Service**<br>
 > Our plugin lifts all the processing load from your own server and takes it
@@ -36,10 +37,11 @@ familiar user experience.
 > services guarantee an amazing support, because we have to earn your trust
 > day by day!
 >
-> If you want to benefit from our service, [**subscribe** to one of our
+> **Our plugin comes with an easy-to-setup free-trial**. Just download and
+> enable the plugin, start your _Free Trial_, and discover what Nelio can offer
+> you. Once the free-trial is over, simply [**subscribe** to one of our
 > plans](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org) and
-> get your account! **All subscription plans include a 14-day free trial
-> period**.
+> get an account to keep improving your WordPress site!
 
 [youtube https://www.youtube.com/watch?v=ZDgTkqI4SNk]
 
@@ -60,13 +62,18 @@ interface** that simplifies the process of creating alternatives and applying
 the winning ones.
 
 
-= #2 - Create Alternative Content for your Pages (and Posts) =
+= #2 - Create Alternative Content for your Pages, Posts, and Custom Post Types =
 
 When creating A/B experiments, the first things you'll want to test are the
 pages of your website. Does this button work? Do my visitors go from the
 landing page to my pricing page? What if I change this background image? Nelio
 A/B Testing makes [page (and post) experiments super
 easy](http://nelioabtesting.com/wordpress-splitmultivariate-testing-pages/?fp=wordpress.org)!
+
+Moreover, **version 4.1** includes support for custom post types. Use Nelio A/B
+Testing with any plugin that defines its own custom post types (such as
+_Products_, _Videos_, _Reviews_, and more). **Warning!** Full WooCommerce
+support is not covered yet.
 
 
 = #3 - Go beyond simple title tests&mdash;Test Headlines! =
@@ -90,9 +97,9 @@ modify them with just a few clicks. Discover which combination improves your
 conversion rate!
 
 
-= #5 - Beautiful Heatmaps and Clickmaps =
+= #5 - Beautiful Heatmaps and Click-maps =
 
-**[Heatmaps (and Clickmaps) offer valuable
+**[Heatmaps (and Click-maps) offer valuable
 information](http://nelioabtesting.com/heatmaps-teach-us/?fp=wordpress.org)
 about what your visitors do and don't do** when they land to your website.
 Also, they are a perfect companion of A/B experiments, for they give insights
@@ -161,29 +168,41 @@ Sites](http://www.indexwp.com/conversion-optimization-wordpress-sites/)
 Service](http://wptavern.com/wp-abtesting-split-testing-as-a-service)
 (WPTavern.com)
 
+
 == Installation ==
 
-**Before installing the plugin...**
+**About Nelio's Free Trial**
 
-Sign up at our [Nelio A/B Testing
-service](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org). Once
-you are registered, you will be sent an e-mail with your account information,
-which is necessary for using the plugin.
+Nelio A/B Testing includes an unlimited\* **Free Trial**. During the Free
+Trial, you'll be able to run all the experiments you want and benefit from our
+personalized support. In order to **start the Free Trial**, simply install the
+plugin (as described below) and click on the _Start Free Trial_ button (see the
+Welcome screenshot).
+
+After the Free Trial is over, you'll need an account to continue using Nelio
+A/B Testing. Simply subscribe to [our
+service](http://nelioabtesting.com/subscription-plans/?fp=wordpress.org) and
+we'll send you an e-mail with your account information.
+
+\* The Free Trial includes up to 1,000 [page
+views](http://support.nelioabtesting.com/support/solutions/articles/1000129162).
 
 
-**Installation through WordPress admin from plugin repository:**
+**Installation through the WordPress Dashboard**
 
 1. Login to your WordPress admin.
 2. Click on the plugins tab.
 3. Click the Add New button.
 4. Search for "Nelio AB Testing" or "AB Testing"
 5. Look for our plugin, click "Install Now" and then "Activate".
+6. Once the plugin is installed and active, you can either start a new free
+trial or you can configure your Nelio account.
 
 That's it! You may now head to the new menu item on the left labeled "Nelio A/B
 Testing".
 
 
-**Alternative installation methods:**
+**Alternative installation methods**
 
 1. Download this plugin.
 2. Login to your WordPress admin.
@@ -191,6 +210,8 @@ Testing".
 4. Click the Add New button.
 5. Click the Upload button.
 6. Click "Install Now" and then "Activate".
+7. Once the plugin is installed and active, you can either start a new free
+trial or you can configure your Nelio account.
 
 
 **I successfully installed the plugin. What should I do now?**
@@ -233,32 +254,142 @@ Troubleshooting, compatibility discussions, and more!
 
 == Screenshots ==
 
-1. **Relevant info with a quick glance.** Running experiments are visible in
+1. **Welcome Message.** After installing the plugin you'll be able to either
+start a new free trial or configure your Nelio account.
+2. **Free Trial Actions.** During your Free Trial, you can get more quota by
+simply completing the actions we offer you. Tell us a little bit more about
+your and your site, tweet about Nelio, or recommend us to your friends!
+3. **Relevant info with a quick glance.** Running experiments are visible in
 Nelio's Dashboard. There, you'll find a summary of all the relevant information
 you need.
-2. **Progress of your Experiment.** Whilst an experiment is running (or once
+4. **Progress of your Experiment.** Whilst an experiment is running (or once
 it is finished), you can see how it is performing in the Results of the
 Experiment page.
-3. **Data made easy.** Additional graphics help you understand what is going
+5. **Data made easy.** Additional graphics help you understand what is going
 on.
-4. **Experiment Management.** Manage your experiments without leaving
+6. **Experiment Management.** Manage your experiments without leaving
 WordPress: creation, deletion, and monitoring!
-5. **Experiment Creation.** Creating new experiments has never been so easy!
+7. **Experiment Creation.** Creating new experiments has never been so easy!
 Just set a name, a description, and the page you want to test!
-6. **Alternatives are Regular Pages.** For each page to test, you can create
+8. **Alternatives are Regular Pages.** For each page to test, you can create
 alternatives quickly and easily, from scratch or from already-existing pages!
-7. **Account details.** View your account information and access your directly
+9. **Account details.** View your account information and access your directly
 from the plugin.
-8. **Use our plugin in more than one site.** You can use our plugin and service
+10. **Use our plugin in more than one site.** You can use our plugin and service
 on more than one site. Very useful for staging and production environments!
-9. **Different types of experiments.** Our product let's you test different
+11. **Different types of experiments.** Our product let's you test different
 aspects of your WordPress site; just select what you want to test and create
 the experiment!
-10. **Heatmaps.** Our service let's you analyse the hottest areas of any page
+12. **Heatmaps.** Our service let's you analyse the hottest areas of any page
 on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.1.5 (June 10, 2015) =
+* Bug Fix: Facebook Likes work properly.
+* Improvement: Facebook Like dialog now shows all the information (no
+cropping).
+
+
+= 4.1.4 (June 9, 2015) =
+* During the Free Trial, the Basic Information action now shows a dialog that
+reminds users to validate their e-mail addresses.
+* Improved visualization of Free Trial actions on mobile (CSS fix).
+* Improved management of Free Trial.
+
+
+= 4.1.3 (June 8, 2015) =
+* **New Free Trial Process!** You no longer need to subscribe to any of our
+plans for trying Nelio A/B Testing out. Simply download the plugin, select
+_Free Trial_, and see how Nelio works!
+* New quota bar in the Dashboard. It now shows the available quota (instead of
+the more unprecise available quota).
+* **Improvement** Added bot detection in our tracking scripts, to exclude them
+from the analysis and results of your A/B tests.
+* **Improvement** Refactored some functions in our tracking script, so that one
+can easily override click and external page events.
+* **Minor Fixes** Some notices and bug fixes have been resolved in this
+version.
+
+
+= 4.1.2 (May 15, 2015) =
+* **Improvement** When creating a theme experiment, themes are now ordered
+alphabetically.
+* **Improvement** We've tweaked the script that tracks click events. Now,
+it's able to detect nested elements more accurately.
+* **Bug Fix** Alternative loading did not work on some themes that triggered
+a `WP_Query` request before the main query. This is now fixed.
+* **Bug Fix** Hash anchor URLs working properly during alternative loading.
+* **Bug Fix** Icons and colors in Dashboard for Custom Post Type experiments.
+
+
+= 4.1.1 (May 8, 2015) =
+* **New Feature** Experiment Duplication is available to all plans. Don't waste
+any more time creating experiments from scratch!
+* **Improvement** Now all dates are properly localized to your own timezone.
+* **Bug Fix** Alternative Widgets are properly loaded on a theme experiment.
+
+
+= 4.1.0 (May 5, 2015) =
+* **New Feature** Support for Custom Post Types. Use it with any plugin that
+defines its own types: videos, articles, products, and so on!
+* **Improvement** Improved support for iframes. Nelio A/B Testing will no
+longer load alternative content (or track conversions) for nested, duplicated
+iframes.
+* **Improvement** User interface has been slightly redesigned. Now, it's more
+intuitive and more beautiful than ever!
+* Several additional improvements and some other bug fixes.
+
+
+= 4.0.7 (Apr 22, 2015) =
+* Plugin compatible with version 4.2.
+* Security fix (see [Fixing `add_query_arg()` and `remove_query\_arg()`
+usage](https://make.wordpress.org/plugins/2015/04/20/fixing-add_query_arg-and-remove_query_arg-usage/))
+
+
+= 4.0.5 (Apr 14, 2015) =
+* "Undefined constant" in one of our controllers fixed.
+
+
+= 4.0.4 (Apr 10, 2015) =
+* Improvement: maintain external referrers, so that Google Analytics' reports
+include appropriate sources. This uses Google Analytics' `utm_referrer` GET
+parameter.
+* Improved support for Google Analytics by Yoast. Now, Google Analytics
+tracking scripts are added after Nelio's, so that the results tracked by both
+tools are more accurate.
+* Bug fix on certain installations, in which alternative headlines are not
+properly tracked.
+
+
+= 4.0.3 (Apr 3, 2015) =
+* Improvement: tracking external pages when the user leaves the current page
+clicking on a `map` » `area` element. Before this update, it only tracked
+conversions triggered by the user clicking on an `a` tag or submitting a
+form.
+* Bug fix with old Nelio tracking cookies.
+* Bug fix with direct page/post conversion actions.
+
+
+= 4.0.1 (Apr 1, 2015) =
+* Bug fix tracking visitors on older versions of Internet Explorer. In
+particular, accessing the object <code>window.history</code> is now nested
+in a <code>try-catch</code> block to prevent things from breaking.
+
+
+= 4.0.0 (Mar 30, 2015) =
+* **Efficiency Improvements**. We've redesigned several components of our
+plugin from scratch. Now it's faster and more reliable! We've solved most of
+the compatibility issues our plugin had with some JavaScript libraries and
+Frameworks (such as, for instance, Google Analytics, Google Tag Manager, or
+Angular.js).
+* **New Settings Screen**. This new version gets rid of some legacy settings
+and introduces some new ones. We've also included a small help icon for each
+setting, so that you can easily know what they do.
+* **Deprecated**. The function we introduced in version 3.4.4 (NelioAB.delay)
+has been deprecated. Make sure you no longer use it!
+
 
 = 3.4.4 =
 * Dashboard redesign. Quick access to your quota!
@@ -266,11 +397,11 @@ on your site so that you can understand your customers better.
 testing your Front Page.
 * Support for the plugin [WP Google Analytics
 Events](https://wordpress.org/plugins/wp-google-analytics-events/)
-* Added new JS funtion `NelioAB.delay`. With this function, one can delay the
-execution of some JavaScript code (surrounding that code with
-`NelioAB.delay(function(){` and `}`. This prevents JavaScript code from being
-executed twice (one for the original content and another one for the
-alternative's).
+* Added new JS funtion <code>NelioAB.delay</code>. With this function, one can
+delay the execution of some JavaScript code (surrounding that code
+with <code>NelioAB.delay( function(){</code> and <code>}</code>. This prevents
+JavaScript code from being executed twice (one for the original content and
+another one for the alternative's).
 
 
 = 3.4.3 =
@@ -828,8 +959,10 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 3.4.4 =
-Improved support for Google Analytics and some helper functions. 3.4 series
-includes **Menu Testing**, new conversion actions, and several improvements
-that make the creation and management of experiments much easier.
+= 4.1.5 =
+**Information**. New Free Trial process (for non-subscribed users) and minor
+updates. Plus **Support for Custom Post Types**: use Nelio A/B Testing with any
+plugins/themes that defines its own custom post types (such as Products,
+Videos, Reviews, and so on). **Warning** Full WooCommerce support is not
+covered yet.
 

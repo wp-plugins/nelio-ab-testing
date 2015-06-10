@@ -61,7 +61,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			$the_winner_confidence = $this->get_winning_confidence();
 
 			$exp = $this->exp;
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+			if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 				if ( $the_winner == 0 )
 					echo '<p><b>' . __( 'Right now, no alternative is beating the original theme.', 'nelioab' ) . '</b></p>';
 				if ( $the_winner > 0 )
@@ -113,7 +113,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 				$i++;
 				$action_links = array();
 
-				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
+				if ( $exp->get_status() == NelioABExperiment::STATUS_FINISHED ) {
 					$theme = NULL;
 					foreach ( $the_themes as $t ) {
 						if ( $t['Stylesheet'] == $alt->get_value() ) {

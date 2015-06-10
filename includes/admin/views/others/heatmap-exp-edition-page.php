@@ -82,7 +82,9 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 				<?php
 				$this->make_section(
 					__( 'Basic Information', 'nelioab' ),
-					$this->get_basic_info_elements() ); ?>
+					$this->get_basic_info_elements(),
+					'<label class="mandatory">Required field</label>'
+				); ?>
 			</form>
 			<?php
 			$this->print_validator_js();
@@ -171,7 +173,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 		}
 
 		protected function get_basic_info_elements() {
-			$post_label = __( 'Page/Post', 'nelioab' );
+			$post_label = __( 'Page, Post, or Custom Post', 'nelioab' );
 
 			return array(
 				array (
@@ -227,7 +229,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 				class="regular-text" value="<?php echo $this->basic_info['name']; ?>" />
 			<span class="description" style="display:block;"><?php
 				_e( 'Set a meaningful, descriptive name for the experiment.', 'nelioab' );
-			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129190-why-do-i-need-to-name-an-experiment-" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129190" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
@@ -237,7 +239,7 @@ if ( !class_exists( 'NelioABHeatmapExpEditionPage' ) ) {
 				name="exp_descr" cols="45" rows="3"><?php echo $this->basic_info['description']; ?></textarea>
 			<span class="description" style="display:block;"><?php
 					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
-			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129192-what-is-the-description-of-an-experiment-used-for-" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129192" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}

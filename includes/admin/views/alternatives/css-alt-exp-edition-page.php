@@ -161,7 +161,7 @@ if ( !class_exists( 'NelioABCssAltExpEditionPage' ) ) {
 		}
 
 		protected function print_save_button_for_new_alt_form() { ?>
-			<a class="button-primary save alignleft" <?php
+			<a class="button button-primary save alignleft" <?php
 				echo $this->make_form_javascript( $this->form_name, 'add_alt' );
 				?> style="margin-right:0.4em;"><?php _e( 'Create', 'nelioab' ); ?></a>
 			<?php
