@@ -2,6 +2,11 @@
 /*   GENERIC STUFF     */
 /* ------------------- */
 
+#dialog-content {
+	width: 100%;
+	height: 100%;
+}
+
 .subscription-actions .delete {
 	color: #a00;
 }

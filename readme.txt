@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.1.4
+Stable tag: 4.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -285,6 +285,12 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.1.5 (June 10, 2015) =
+* Bug Fix: Facebook Likes work properly.
+* Improvement: Facebook Like dialog now shows all the information (no
+cropping).
+
 
 = 4.1.4 (June 9, 2015) =
 * During the Free Trial, the Basic Information action now shows a dialog that
@@ -953,7 +959,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.1.4 =
+= 4.1.5 =
 **Information**. New Free Trial process (for non-subscribed users) and minor
 updates. Plus **Support for Custom Post Types**: use Nelio A/B Testing with any
 plugins/themes that defines its own custom post types (such as Products,

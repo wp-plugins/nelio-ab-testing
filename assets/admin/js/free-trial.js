@@ -510,12 +510,6 @@ NelioABFreeTrial = {
 		else if ( 'site-info' === action ) {
 			this.submitSiteInformation();
 		}
-		else if ( 'tweet' === action ) {
-			// This action is managed by Twitter's API
-		}
-		else if ( 'connect' === action ) {
-			this.connect();
-		}
 		else if ( 'recommend' === action ) {
 			this.submitFriendList();
 		}
@@ -557,32 +551,32 @@ NelioABFreeTrial = {
 						var regularIcon = $action.find( '.nelio-freetrial-heading img' );
 						var completedIcon = $action.find( '.nelio-freetrial-heading.completed img' );
 						completedIcon.attr( 'src', regularIcon.attr( 'src' ) );
-						$dialog = jQuery( '#email-confirmation-dialog' );
-						if ( ! $dialog.hasClass( 'ui-dialog-content' ) ) {
-							$dialog.dialog({
-								title: $dialog.find( '.title' ).text(),
-								dialogClass: 'wp-dialog',
-								modal: true,
-								autoOpen: false,
-								width: 460,
-								height: 250,
-								closeOnEscape: true,
-								buttons: [
-									{
-										text: $dialog.find( '.button' ).text(),
-										click: function() {
-											jQuery(this).dialog( 'close' );
-										}
-									}
-								]
-							});
-						}
-						if ( name.indexOf( ' ' ) > 0 ) {
-							name = name.substring( 0, name.indexOf( ' ' ) );
-						}
-						$dialog.html( $dialog.html().replace( '%s', name ) );
-						$dialog.dialog( 'open' );
 					}
+					$dialog = jQuery( '#email-confirmation-dialog' );
+					if ( ! $dialog.hasClass( 'ui-dialog-content' ) ) {
+						$dialog.dialog({
+							title: $dialog.find( '.title' ).text(),
+							dialogClass: 'wp-dialog',
+							modal: true,
+							autoOpen: false,
+							width: 460,
+							height: 250,
+							closeOnEscape: true,
+							buttons: [
+								{
+									text: $dialog.find( '.button' ).text(),
+									click: function() {
+										jQuery(this).dialog( 'close' );
+									}
+								}
+							]
+						});
+					}
+					if ( name.indexOf( ' ' ) > 0 ) {
+						name = name.substring( 0, name.indexOf( ' ' ) );
+					}
+					$dialog.html( $dialog.html().replace( '%s', name ) );
+					$dialog.dialog( 'open' );
 					NelioABFreeTrial.markAsCompleted( $action );
 					$action.addClass( 'pending-confirmation' );
 				}
@@ -706,7 +700,7 @@ NelioABFreeTrial = {
 	 * @since 4.1.3
 	 */
 	connect: function() {
-		var $action = this.$tweetAction;
+		var $action = NelioABFreeTrial.$connectAction;
 		var $cta = $action.find( '.cta a.button' );
 		$cta.addClass( 'disabled' );
 
