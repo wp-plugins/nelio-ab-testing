@@ -6,7 +6,7 @@
 $welcome_message = __( '%s Nelio A/B Testing %s adds support for WooCommerce and looks better than ever before. We hope you enjoy using it.', 'nelioab' );
 
 
-/** @var text|boolean $minor_update */
+/** @var string|boolean $minor_update */
 $minor_update = false;
 
 
@@ -82,7 +82,12 @@ $tweets = array(
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 	</p>
 
-	<h2><?php _e( 'Minor Update Notice', 'nelioab' ); ?></h2>
+	<?php
+	if ( $minor_update ) {
+		echo '<h2>' . __( 'Minor Update Notice', 'nelioab' ). '</h2>';
+		echo '<p>' . $minor_update . '</p>';
+	}
+	?>
 
 	<h2><?php _e( 'What\'s New', 'nelioab' ); ?></h2>
 
