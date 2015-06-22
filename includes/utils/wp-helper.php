@@ -226,6 +226,18 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 			$operator = 'and';
 
 			$post_types = get_post_types( $args, $output, $operator );
+
+			/**
+			 * Filter the list of custom post types.
+			 *
+			 * @since 4.2.0
+			 *
+			 * @see get_post_types() for details. Note that custom post types are objects.
+			 *
+			 * @param array $post_types Array of objects containing all custom post types.
+			 */
+			$post_types = apply_filters( 'nelioab_get_custom_post_types', $post_types );
+
 			uasort( $post_types, array( 'NelioABWpHelper', 'compare_post_types' ) );
 			if ( !$name )
 				return $post_types;
@@ -644,6 +656,7 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 					case 'fresh':
 						$result['primary'] = '#298cba';
 						$result['secondary'] = '#194f68';
+						$result['winner'] = '#e0b446';
 						break;
 					// Greyish/dark theme
 					case 'midnight':
@@ -654,6 +667,9 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 						$result['primary'] = '#705f98';
 						$result['secondary'] = '#302145';
 						break;
+					case 'blue':
+						$result['winner'] = '#e0b446';
+						break;
 				}
 			}
 			else {
@@ -661,7 +677,11 @@ if ( !class_exists( 'NelioABWpHelper' ) ) {
 				$result['focus'] = '#009bd9';
 				$result['primary'] = '#298cba';
 				$result['secondary'] = '#194f68';
+				$result['winner'] = '#e0b446';
 			}
+
+			if ( !isset( $result['winner'] ) )
+				$result['winner'] = $result['focus'];
 
 			return $result;
 		}

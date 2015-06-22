@@ -322,14 +322,14 @@ if ( !class_exists( 'NelioABFreeTrialPage' ) ) {
 
 			if ( ! NelioABAccountSettings::is_promo_completed( 'connect' ) ) { ?>
 				<script>
-        jQuery.getScript('//connect.facebook.net/en_US/sdk.js', function() {
-          FB._https = false;
-          FB.init({
-            appId: '843163782443938',
-            version: 'v2.3',
-            xfbml: true,
-            cookie: false
-          });
+	      jQuery.getScript('//connect.facebook.net/en_US/sdk.js', function() {
+	        FB._https = false;
+	        FB.init({
+	          appId: '843163782443938',
+	          version: 'v2.3',
+	          xfbml: true,
+	          cookie: false
+	        });
 					jQuery( document ).ready(function() {
 						FB.Event.subscribe( 'edge.create', NelioABFreeTrial.connect );
 					});

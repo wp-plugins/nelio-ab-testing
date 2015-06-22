@@ -409,7 +409,6 @@ if ( !class_exists( 'NelioABAccountPage' ) ) {
 						var $okButton = $dialog.closest('.ui-dialog').find('.button-primary');
 						$okButton.addClass('disabled');
 
-						// TODO
 						var $typeSelector = $('#business-type-selector');
 						$typeSelector.on('change', function() {
 							var ts = $typeSelector.attr('value');

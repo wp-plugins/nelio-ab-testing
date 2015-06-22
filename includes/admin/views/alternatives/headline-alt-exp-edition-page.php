@@ -220,7 +220,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 
 		public function extra_tablenav( $which ) {
 			if ( 'top' == $which ){
-				$text = __( 'Please, <b>add one or more</b> title alternatives.',
+				$text = __( 'Please, <b>add one or more</b> headline alternatives.',
 					'nelioab' );
 				echo $text;
 			}

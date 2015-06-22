@@ -497,6 +497,43 @@ if ( !class_exists( 'NelioABGTest' ) ) {
 			return $light;
 		}
 
+		/**
+		 * Returns PHPDOC
+		 *
+		 * @param int $status PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public static function generate_status_message( $status ) {
+
+			$message = '';
+			switch ( $status ) {
+				case NelioABGTest::WINNER_WITH_CONFIDENCE:
+					$message = sprintf(
+							__( 'There is a clear winner, with a confidence greater than %s%%', 'nelioab' ),
+							NelioABSettings::get_min_confidence_for_significance() );
+					break;
+				case NelioABGTest::WINNER:
+					$message = sprintf(
+							__( 'There is a possible winner, but keep in mind the confidence does not reach %s%%', 'nelioab' ),
+							NelioABSettings::get_min_confidence_for_significance() );
+					break;
+				case NelioABGTest::NO_CLEAR_WINNER:
+					$message = __( 'There is not enough data to determine any winner', 'nelioab' );
+					break;
+				case NelioABGTest::NOT_ENOUGH_VISITS:
+					$message = __( 'There are not enough visits', 'nelioab' );
+					break;
+				case NelioABGTest::UNKNOWN:
+				default:
+					$message = __( 'There are not enough visits', 'nelioab' );
+			}
+
+			return $message;
+		}
+
 	}//NelioABGTest
 
 }

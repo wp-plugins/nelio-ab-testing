@@ -275,23 +275,37 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 		 * Each kind of possible goal (the form for adding it) is also printed
 		 * by this function.
 		 */
-		protected function print_goals() { ?>
+		protected function print_goals() {
+			$handler = '<i class="handler dashicons-before dashicons-menu"><br></i>';
+			?>
 			<div id="new-action-templates">
 				<?php require_once( NELIOAB_UTILS_DIR . '/html-generator.php' ); ?>
 				<div class="action page" style="display:none;">
 					<?php
+						echo $handler;
 						$options = NelioABHtmlGenerator::get_page_searcher( 'new-action-page-searcher', false, 'no-drafts', array(), false );
 						$this->print_post_or_form_action( 'page', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action post" style="display:none;">
 					<?php
+						echo $handler;
 						$options = NelioABHtmlGenerator::get_post_searcher( 'new-action-post-searcher', false, 'no-drafts', array(), false );
 						$this->print_post_or_form_action( 'post', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
+				<div class="action wc-order-completed" style="display:none;">
+					<?php
+						echo $handler;
+						$options = NelioABHtmlGenerator::get_post_searcher_based_on_type( 'new-wc-order-completed-searcher', false, 'no-drafts', array(), false, array( 'product' ) );
+						$text = __( 'An order containing the product %1$s is completed.', 'nelioab' );
+						printf( $text, $options );
+					?>
+					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
+				</div>
 				<div class="action external-page" style="display:none;">
 					<?php
+						echo $handler;
 						$name = sprintf(
 							'<input type="text" class="name" placeholder="%s" style="max-width:120px;">',
 							__( 'Name', 'nelioab' ) );
@@ -335,33 +349,36 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action form-submit cf7" style="display:none;"><?php
+					echo $handler;
 					$options = NelioABHtmlGenerator::get_form_searcher( 'new-cf7-form-searcher', false, array(), false );
 					$this->print_post_or_form_action( 'cf7-submit', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action form-submit gf" style="display:none;"><?php
+					echo $handler;
 					$options = NelioABHtmlGenerator::get_form_searcher( 'new-gf-form-searcher', false, array(), false );
 					$this->print_post_or_form_action( 'gf-submit', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action click-element" style="display:none;"><?php
-						$name = sprintf(
-							'<input type="text" class="value" placeholder="%s" style="max-width:200px;">',
-							__( 'Matcher', 'nelioab' ) );
+					echo $handler;
+					$name = sprintf(
+						'<input type="text" class="value" placeholder="%s" style="max-width:200px;">',
+						__( 'Matcher', 'nelioab' ) );
 
-						require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
-						$options = '<select class="mode">';
-						$options .= sprintf( '<option value="%s">%s</option>',
-							NelioABClickElementAction::ID_MODE, __( 'whose ID is', 'nelioab' ) );
-						$options .= sprintf( '<option value="%s">%s</option>',
-							NelioABClickElementAction::CSS_MODE, __( 'that matches the CSS Selector rule', 'nelioab' ) );
-						$options .= sprintf( '<option value="%s">%s</option>',
-							NelioABClickElementAction::TEXT_MODE, __( 'that contains the text', 'nelioab' ) );
+					require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
+					$options = '<select class="mode">';
+					$options .= sprintf( '<option value="%s">%s</option>',
+						NelioABClickElementAction::ID_MODE, __( 'whose ID is', 'nelioab' ) );
+					$options .= sprintf( '<option value="%s">%s</option>',
+						NelioABClickElementAction::CSS_MODE, __( 'that matches the CSS Selector rule', 'nelioab' ) );
+					$options .= sprintf( '<option value="%s">%s</option>',
+						NelioABClickElementAction::TEXT_MODE, __( 'that contains the text', 'nelioab' ) );
 						$options .= '</select>';
 
 						printf(
-							__( 'A visitor clicks on an element %1$s %2$s', 'nelioab' ),
-							$options, $name );
+						__( 'A visitor clicks on an element %1$s %2$s', 'nelioab' ),
+						$options, $name );
 					?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
@@ -503,35 +520,35 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				_e( 'A conversion is counted for this goal whenever any of the following actions occur:', 'nelioab' );
 			?></p>
 			<div class="empty">
-				<em><?php _e( '<strong>Add one or more conversion actions</strong> using the links below.', 'nelioab' ); ?></em>
+				<em><?php _e( '<strong>Add one or more conversion actions</strong> using the following buttons.', 'nelioab' ); ?></em>
 			</div>
-			<div class="actions" style="display:none;">
+			<div class="actions sortable" style="display:none;">
 			</div>
 			<div class="new-actions">
 				<div class="wrapper">
 					<strong><?php _e( 'Available Conversion Actions', 'nelioab' ); ?></strong><br>
 					<small><?php _e( '(Hover over each action for help)', 'nelioab' ); ?></small><br>
 					<?php
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'post', __( 'Post', 'nelioab' ),
-							esc_html( __( 'A visitor accesses a post in your WordPress site', 'nelioab' ) )
-						);
+					$pattern = '<a class="%1$s action" title="%2$s - %3$s" href="javascript:;"></a>';
+					if ( NelioABWooCommerceSupport::is_plugin_active() ) {
+						printf( $pattern, 'wc-order-completed', esc_html( __( 'WooCommerce Order', 'nelioab' ) ),
+								esc_html( __( 'A WooCommerce order that contains a certain product is completed', 'nelioab' ) )
+							);
+					}
 
-					echo ' | ';
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'page', __( 'Page', 'nelioab' ),
+					printf( $pattern, 'page', esc_html( __( 'Page', 'nelioab' ) ),
 							esc_html( __( 'A visitor accesses a page in your WordPress site', 'nelioab' ) )
 						);
 
-					echo ' | ';
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'external-page', __( 'External Page', 'nelioab' ),
+					printf( $pattern, 'post', esc_html( __( 'Post', 'nelioab' ) ),
+							esc_html( __( 'A visitor accesses a post in your WordPress site', 'nelioab' ) )
+						);
+
+					printf( $pattern, 'external-page', esc_html( __( 'External Page', 'nelioab' ) ),
 							esc_html( __( 'A visitor tries to access an external page (either by clicking a link or by sutbmitting a form) specified using its URL', 'nelioab' ) )
 						);
 
-					echo ' | ';
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'click-element', __( 'Click', 'nelioab' ),
+					printf( $pattern, 'click-element', esc_html( __( 'Click', 'nelioab' ) ),
 							esc_html( __( 'A visitor clicks on an element in your site (for instance, a button, a link, or an image)', 'nelioab' ) )
 						);
 
@@ -540,20 +557,16 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 					$cf7_action_lbl = __( 'Form Submit', 'nelioab' );
 					$gf_action_lbl = __( 'Form Submit', 'nelioab' );
 					if ( $cf7 && $gf ) {
-						$cf7_action_lbl = __( 'Contact Form 7', 'nelioab' );
-						$gf_action_lbl = __( 'Gravity Form', 'nelioab' );
+						$cf7_action_lbl = esc_html( __( 'Contact Form 7', 'nelioab' ) );
+						$gf_action_lbl = esc_html( __( 'Gravity Form', 'nelioab' ) );
 					}
 					if ( $cf7 ) {
-						echo ' | ';
-						printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-								'form-submit cf7', $cf7_action_lbl,
+						printf( $pattern, 'form-submit cf7', $cf7_action_lbl,
 								esc_html( __( 'A visitor successfully submits a «Contact Form 7» form', 'nelioab' ) )
 							);
 					}
 					if ( $gf ) {
-						echo ' | ';
-						printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-								'form-submit gf', $gf_action_lbl,
+						printf( $pattern, 'form-submit gf', $gf_action_lbl,
 								esc_html( __( 'A visitor successfully submits a «Gravity Forms» form', 'nelioab' ) )
 							);
 					}

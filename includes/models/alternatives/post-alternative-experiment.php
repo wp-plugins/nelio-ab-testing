@@ -631,8 +631,10 @@ if ( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			foreach ( $this->get_alternatives() as $alt ) {
 				/** @var NelioABAlternative $alt */
 				$value = $this->get_id() . ',' . $this->get_status();
-				update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
-				update_post_meta( $alt->get_value(), "_nelioab_original_id", $this->get_originals_id() );
+				if ( $alt->get_value() > 0 ) {
+					update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
+					update_post_meta( $alt->get_value(), "_nelioab_original_id", $this->get_originals_id() );
+				}
 			}
 		}
 
@@ -691,6 +693,10 @@ if ( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			$exp->track_heatmaps( false );
 			if ( isset( $json_data->showHeatmap ) && $json_data->showHeatmap  )
 				$exp->track_heatmaps( $json_data->showHeatmap );
+			if ( isset( $json_data->start ) )
+				$exp->set_start_date( $json_data->start );
+			if ( isset( $json_data->finalization ) )
+				$exp->set_end_date( $json_data->finalization );
 
 			if ( isset( $json_data->goals ) )
 				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );

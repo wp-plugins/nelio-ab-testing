@@ -179,8 +179,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 			if ( NelioABWpHelper::is_at_least_version( 3.8 ) ) {
 				wp_register_style( 'nelioab_new_icons_css',
 					nelioab_admin_asset_link( '/css/nelioab-new-icons.min.css', false ),
-					array(),
-					NELIOAB_PLUGIN_VERSION
+					array(), NELIOAB_PLUGIN_VERSION
 				);
 				wp_enqueue_style( 'nelioab_new_icons_css' );
 			}
@@ -337,7 +336,6 @@ if ( !class_exists( 'NelioABController' ) ) {
 		 * @since 4.1.0
 		 */
 		public function save_main_query( $query ) {
-			/** @var WP_Query $query */
 			if ( $query->is_main_query() ) {
 				remove_action( 'pre_get_posts', array( &$this, 'save_main_query' ) );
 				$this->main_query = $query;
@@ -365,6 +363,8 @@ if ( !class_exists( 'NelioABController' ) ) {
 		public function obtain_queried_post_id( $posts ) {
 			remove_filter( 'posts_results', array( &$this, 'obtain_queried_post_id' ) );
 
+			$exists_wc = function_exists( 'wc_get_page_id' );
+
 			// If we're on a search...
 			if ( isset( $this->main_query->query['s'] ) ) {
 				$this->queried_post_id = self::SEARCH_RESULTS_PAGE_ID;
@@ -388,6 +388,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 			// If we only found one post...
 			else if ( count( $posts ) == 1 ) {
 				$this->queried_post_id = $posts[0]->ID;
+			}
+
+			// If WooCommerce, check if it's the Shop page...
+			else if ( $exists_wc && function_exists( 'is_shop' ) && is_shop() ) {
+				$this->queried_post_id = wc_get_page_id( 'shop' );
 			}
 
 			// If none of the previous rules works...
@@ -479,13 +484,11 @@ if ( !class_exists( 'NelioABController' ) ) {
 		public function register_tracking_script() {
 			wp_register_script( 'nelioab_appengine_script',
 				'//storage.googleapis.com/' . NELIOAB_BACKEND_NAME . '/' . NelioABAccountSettings::get_site_id() . '.js',
-				array(),
-				NELIOAB_PLUGIN_VERSION
+				array(), NELIOAB_PLUGIN_VERSION
 			);
 			wp_register_script( 'nelioab_tracking_script',
 				nelioab_asset_link( '/js/tracking.min.js', false ),
-				array( 'jquery', 'nelioab_appengine_script' ),
-				NELIOAB_PLUGIN_VERSION
+				array( 'jquery', 'nelioab_appengine_script' ), NELIOAB_PLUGIN_VERSION
 			);
 
 			// Prepare some information for our tracking script (such as the page we're in)
@@ -514,6 +517,7 @@ if ( !class_exists( 'NelioABController' ) ) {
 			$misc['useOutwardsNavigationsBlank'] = NelioABSettings::use_outwards_navigations_blank();
 
 			$this->tracking_script_params = array(
+
 					'ajaxurl'        => admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ),
 					'version'        => NELIOAB_PLUGIN_VERSION,
 					'customer'       => NelioABAccountSettings::get_customer_id(),

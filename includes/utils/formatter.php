@@ -92,6 +92,54 @@ if ( !class_exists( 'NelioABFormatter' ) ) {
 
 		}
 
+		/**
+		 * Returns a string with the timelapse between two dates.
+		 *
+		 * @param int            $timestamp_start a unix timestamp.
+		 * @param int            $timestamp_end a unix timestamp.
+		 *
+		 * @return string the timelapse between the two timestamps.
+		 *
+		 * @since 1.0.10
+		 */
+		public static function get_timelapse( $timestamp_start, $timestamp_end ) {
+			$d1 = new DateTime( $timestamp_start );
+			$d2 = new DateTime( $timestamp_end );
+			$since_start = $d1->diff( $d2 );
+
+			$hours = $since_start->h;
+			$days = $since_start->d;
+			$months = $since_start->m;
+
+			if ( $months > 0 ) {
+				$result = sprintf(
+					_n( '1 month', '%d months', $months, 'nelioab' ),
+					$months );
+				if ( $days > 0 ) {
+					$result .= ' ' . sprintf(
+						_n( 'and 1 day', 'and %d days', $days, 'nelioab' ),
+						$days );
+				}
+			} else if ( $days > 0 ) {
+				$result = sprintf(
+					_n( '1 day', '%d days', $days, 'nelioab' ),
+					$days );
+				if ( $hours > 0 ) {
+					$result .= ' ' . sprintf(
+						_n( 'and 1 hour', 'and %d hours', $hours, 'nelioab' ),
+						$hours );
+				}
+
+			} else if ( $hours > 0 ) {
+				$result = sprintf(
+					_n( '1 hour', '%d hours', $hours, 'nelioab' ), $hours );
+			} else {
+				$result = __( 'Less than 1 hour', 'nelioab' );
+			}
+
+			return $result;
+		}
+
 
 
 		/**

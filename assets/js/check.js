@@ -41,6 +41,12 @@ NelioAB.checker.init = function() {
 	}
 	if ( NelioABParams.wasPostRequest ) {
 		console.log( 'Current page is the result of a POST request. Abort!' );
+		try {
+			if ( !NelioAB.helpers.isBot() && NelioABBasic.hasQuota ) {
+				NelioAB.helpers.addDocumentHooks();
+				NelioAB.helpers.track();
+			}
+		} catch(e) {}
 		return;
 	}
 	if ( NelioAB.helpers.isDuplicatedFrame() ) {

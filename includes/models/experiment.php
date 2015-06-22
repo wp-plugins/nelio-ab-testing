@@ -141,6 +141,15 @@ if ( !class_exists( 'NelioABExperiment' ) ) {
 
 
 		/**
+		 * It specifies a WooCommerce Product Summary alternative experiment.
+		 *
+		 * @since 4.2.0
+		 * @var int
+		 */
+		const WC_PRODUCT_SUMMARY_ALT_EXP = 201;
+
+
+		/**
 		 * It specifies a Title alternative experiment, as required by Nelio's Cloud.
 		 *
 		 * @since 1.4.0
@@ -228,6 +237,15 @@ if ( !class_exists( 'NelioABExperiment' ) ) {
 		 * @var string
 		 */
 		const HEATMAP_EXP_STR = 'HeatmapExperiment';
+
+
+		/**
+		 * It specifies a WooCommerce Product Summary alternative experiment, as required by Nelio's Cloud.
+		 *
+		 * @since 4.2.0
+		 * @var string
+		 */
+		const WC_PRODUCT_SUMMARY_ALT_EXP_STR = 'WC_ProductSummaryAlternativeExperiment';
 
 
 		/**
@@ -659,6 +677,8 @@ if ( !class_exists( 'NelioABExperiment' ) ) {
 					return NelioABExperiment::MENU_ALT_EXP;
 				case NelioABExperiment::HEATMAP_EXP_STR:
 					return NelioABExperiment::HEATMAP_EXP;
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP_STR:
+					return NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP;
 				default:
 					// This should never happen...
 					return NelioABExperiment::UNKNOWN_TYPE;
@@ -700,6 +720,8 @@ if ( !class_exists( 'NelioABExperiment' ) ) {
 					return NelioABExperiment::MENU_ALT_EXP_STR;
 				case NelioABExperiment::HEATMAP_EXP:
 					return NelioABExperiment::HEATMAP_EXP_STR;
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					return NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP_STR;
 				default:
 					// This should not happen...
 					return NelioABExperiment::UNKNOWN_TYPE_STR;

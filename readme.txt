@@ -1,9 +1,9 @@
 === Nelio AB Testing ===
 Contributors: nelio, davilera, avillegasn
-Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns
+Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns, woocommerce testing, track purchases, ab product, split product, order tracking, woocommerce
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.1.5
+Stable tag: 4.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,9 +16,13 @@ designed for WordPress.
 [Nelio A/B Testing](http://nelioabtesting.com/?fp=wordpress.org) is the most
 powerful and versatile conversion optimization service for WordPress. It helps
 you define, manage, and keep track of **A/B-testing experiments**, combined
-with powerful and beautiful **Heatmaps**. Get everything you need from within
-your WordPress dashboard, where you'll benefit from a lovely, integrated, and
-familiar user experience.
+with powerful and beautiful **Heatmaps**. Nelio's also compatible with
+**WooCommerce**. In particular, you can test alternative names, featured
+images, and descriptions for your products, and use your orders as conversion
+actions (so that you can make sure that a certain product has been purchased).
+
+**Get everything you need from within your WordPress dashboard**, where you'll
+benefit from a lovely, integrated, and familiar user experience.
 
 > **The Most [Powerful A/B
 > Testing](http://nelioabtesting.com/why-use-nelio-ab-testing/?fp=wordpress.org)
@@ -72,8 +76,7 @@ easy](http://nelioabtesting.com/wordpress-splitmultivariate-testing-pages/?fp=wo
 
 Moreover, **version 4.1** includes support for custom post types. Use Nelio A/B
 Testing with any plugin that defines its own custom post types (such as
-_Products_, _Videos_, _Reviews_, and more). **Warning!** Full WooCommerce
-support is not covered yet.
+_Products_, _Videos_, _Reviews_, and more).
 
 
 = #3 - Go beyond simple title tests&mdash;Test Headlines! =
@@ -286,6 +289,23 @@ on your site so that you can understand your customers better.
 
 == Changelog ==
 
+= 4.2.0 (June 22, 2015) =
+* **Support for WooCommerce**. We're very proud to announce that Nelio A/B
+Testing is now compatible with WooCommerce. In particular, you can **test
+alternative names, featured images, and descriptions for your products**.
+Moreover, we included a **new conversion action: monitor when purchases are
+completed and make sure that a certain product has been purchased!**
+* **Results Page Redesigned**. We've completely redesigned our results page.
+Now, the results page is organized into three different sections: (a) _General_
+information about your experiment and its progress, (b) details about your
+_Alternatives_, with all the relevant actions available (preview, edit,
+apply...), and (c) a list of _Conversion Actions_ beautifully presented.
+* **More Visual**. We've added new icons in the Creation/Edition user
+interface. From now on, conversion actions are easier to identify and insert.
+* **Conversion Action Sorting**. You can now sort your conversion actions
+easily just by drag-and-dropping them.
+
+
 = 4.1.5 (June 10, 2015) =
 * Bug Fix: Facebook Likes work properly.
 * Improvement: Facebook Like dialog now shows all the information (no
@@ -304,7 +324,7 @@ reminds users to validate their e-mail addresses.
 plans for trying Nelio A/B Testing out. Simply download the plugin, select
 _Free Trial_, and see how Nelio works!
 * New quota bar in the Dashboard. It now shows the available quota (instead of
-the more unprecise available quota).
+the remaining quota).
 * **Improvement** Added bot detection in our tracking scripts, to exclude them
 from the analysis and results of your A/B tests.
 * **Improvement** Refactored some functions in our tracking script, so that one
@@ -397,7 +417,7 @@ has been deprecated. Make sure you no longer use it!
 testing your Front Page.
 * Support for the plugin [WP Google Analytics
 Events](https://wordpress.org/plugins/wp-google-analytics-events/)
-* Added new JS funtion <code>NelioAB.delay</code>. With this function, one can
+* Added new JS function <code>NelioAB.delay</code>. With this function, one can
 delay the execution of some JavaScript code (surrounding that code
 with <code>NelioAB.delay( function(){</code> and <code>}</code>. This prevents
 JavaScript code from being executed twice (one for the original content and
@@ -442,7 +462,7 @@ from any page.
 
 = 3.3.6 =
 * Bug fix with form submission tracking code.
-* Bug fix with older versions of IE, where trailing commas in JavaScrip fails
+* Bug fix with older versions of IE, where trailing commas in JavaScript fails
 throw an exception.
 
 
@@ -520,7 +540,7 @@ a question mark) are now properly tracked.
 
 
 = 3.2.8 =
-* Buf fix: compatibility issuse with JetPack and IE10 are now fixed
+* Bug fix: compatibility issue with JetPack and IE10 are now fixed
 
 
 = 3.2.7 =
@@ -642,7 +662,7 @@ subscription details and everything is OK, the error page is removed and he can
 use the plugin again.
 
 = 3.0.9 =
-* Bug fix: viewing the details of a title experiment throwed (sometimes) an
+* Bug fix: viewing the details of a title experiment threw (sometimes) an
 exception.
 
 = 3.0.8 =
@@ -679,7 +699,7 @@ previous version of the plugin have useful names (instead of "Undefined").
 * Bug fix: Fatal error when no results available.
 
 = 3.0.1 =
-* Improvement. Making sure that body remains insivible during experiment load.
+* Improvement. Making sure that body remains invisible during experiment load.
 
 = 3.0.0 =
 * **New User Interface** The User Interface in the Dashboard has been
@@ -755,7 +775,7 @@ possible actions visible at all times
 * Some minor improvements and bug fixes
 
 = 2.0.10 =
-* **New Features for Basic Subscriptors!** Use professional features from a
+* **New Features for Basic Subscribers!** Use professional features from a
 basic account
 * Improved management of account status
 
@@ -814,7 +834,7 @@ few parameters" does no longer appear
 the plugin!
 
 = 1.5.4 =
-* Buf fix: compatibility issuse with JetPack and IE10 are now fixed
+* Bug fix: compatibility issue with JetPack and IE10 are now fixed
 
 = 1.5.3 =
 * Compatibility with WordPress 3.8
@@ -873,7 +893,7 @@ method using a variable; error T_PAAMAYIM_NEKUDOTAYIM)
 page of an experiment is now working
 
 = 1.2 =
-* **New Feature!** You can now test different worpdress themes!
+* **New Feature!** You can now test different WordPress themes!
 * Improved page for listing experiments. On the one hand, each experiment has
 an icon to quickly identify its type. On the other hand, statuses are now
 colorized.
@@ -959,10 +979,8 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.1.5 =
-**Information**. New Free Trial process (for non-subscribed users) and minor
-updates. Plus **Support for Custom Post Types**: use Nelio A/B Testing with any
-plugins/themes that defines its own custom post types (such as Products,
-Videos, Reviews, and so on). **Warning** Full WooCommerce support is not
-covered yet.
+= 4.2.0 =
+WooCommerce Support. First version that includes support for WooCommerce. You
+can now test your products (change their name, featured image, and description),
+and use the Purchase conversion action for monitoring actual purchases.
 

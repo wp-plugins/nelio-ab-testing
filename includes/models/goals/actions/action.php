@@ -64,7 +64,7 @@ if ( !class_exists( 'NelioABAction' ) ) {
 		 * @since PHPDOC
 		 * @var string
 		 */
-		const FORM_SUBMIT         = 'form-submit';
+		const FORM_SUBMIT = 'form-submit';
 
 
 		/**
@@ -73,7 +73,7 @@ if ( !class_exists( 'NelioABAction' ) ) {
 		 * @since PHPDOC
 		 * @var string
 		 */
-		const SUBMIT_CF7_FORM     = 'cf7-submit';
+		const SUBMIT_CF7_FORM = 'cf7-submit';
 
 
 		/**
@@ -92,6 +92,15 @@ if ( !class_exists( 'NelioABAction' ) ) {
 		 * @var string
 		 */
 		const CLICK_ELEMENT = 'click-element';
+
+
+		/**
+		 * Constant PHPDOC
+		 *
+		 * @since 4.2.0
+		 * @var string
+		 */
+		const WC_ORDER_COMPLETED = 'wc-order-completed';
 
 
 		/**
@@ -201,6 +210,7 @@ if ( !class_exists( 'NelioABAction' ) ) {
 			require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 			require_once( NELIOAB_MODELS_DIR . '/goals/actions/form-submission-action.php' );
 			require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
+			require_once( NELIOAB_MODELS_DIR . '/goals/actions/wc-order-completed-action.php' );
 			switch( $json->type ) {
 				case self::PAGE_ACCESSED:
 				case self::POST_ACCESSED:
@@ -210,6 +220,8 @@ if ( !class_exists( 'NelioABAction' ) ) {
 					return NelioABFormSubmissionAction::build_action_using_json4js( $json );
 				case self::CLICK_ELEMENT:
 					return NelioABClickElementAction::build_action_using_json4js( $json );
+				case self::WC_ORDER_COMPLETED:
+					return NelioABWooCommerceOrderCompletedAction::build_action_using_json4js( $json );
 				default:
 					return false;
 			}

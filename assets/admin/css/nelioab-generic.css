@@ -539,10 +539,14 @@ body #exp-tabs .nav-tab-active:hover {
 }
 
 body #goal-list .nelio-card {
-	overflow: auto;
+	overflow: hidden;
 	width: 100%;
 	height: auto;
 	min-height: 180px;
+}
+
+body #goal-list .actions .action .select2-container .select2-choice>.select2-chosen {
+	padding-left: 12px;
 }
 
 body #goal-list .nelio-card:hover {
@@ -575,10 +579,13 @@ body #goal-list .nelio-card .new-actions .wrapper {
 }
 
 body #goal-list .nelio-card .actions .action {
-	padding: 1em;
+	background: white;
 	border-top: 1px solid #f3f3f3;
-	position:relative;
 	margin-right: 3.2em;
+	padding: 1em;
+  padding-left: 38px;
+	position:relative;
+  text-indent: -12px;
 }
 
 body #goal-list .nelio-card .actions .action:last-child {
@@ -589,9 +596,9 @@ body #goal-list .nelio-card .actions .action a.delete {
 	color: #a00;
 	font-size:80%;
 	position:absolute;
-	top:2px;
 	right:10px;
 	text-decoration:none;
+	top:2px;
 	visibility:hidden;
 }
 
@@ -607,6 +614,84 @@ body #goal-list .nelio-card .actions .action select,
 body #goal-list .nelio-card .actions .action input {
 	font-size:100%;
 }
+
+body #goal-list .nelio-card .actions .action.ui-sortable-helper {
+	border: none;
+	box-shadow: 0 17px 50px 0 rgba(0,0,0,.19);
+	transition: box-shadow .28s cubic-bezier(.4,0,.2,1);
+}
+
+body #goal-list .nelio-card .actions .action .handler {
+	display: inline-block;
+	margin-right: 5px;
+	cursor: pointer;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+}
+
+body #goal-list .nelio-card .actions .action.ui-sortable-helper .handler {
+	display: inline-block;
+	margin-right: 5px;
+	cursor: move;
+	cursor: -moz-grabbing;
+	cursor: -webkit-grabbing;
+}
+
+
+
+/* ------------------- */
+/*   CONV ACTIONS      */
+/* ------------------- */
+
+body #goal-list .nelio-card .new-actions a.action {
+	background-size: 64px 32px;
+	border-radius: 4px;
+	display: inline-block;
+	height: 32px;
+	margin: 2px;
+	transition: none;
+	width: 32px;
+	-webkit-transition: none;
+}
+
+body #goal-list .nelio-card .new-actions a.action:hover {
+	background-position: 32px 0px;
+}
+
+body #goal-list .nelio-card .new-actions a.action.wc-order-completed {
+	background-image: url( '../images/action-wc-order-completed.png' );
+}
+
+
+body #goal-list .nelio-card .new-actions a.action.post {
+	background-image: url( '../images/action-post.png' );
+}
+
+
+body #goal-list .nelio-card .new-actions a.action.page {
+	background-image: url( '../images/action-page.png' );
+}
+
+
+body #goal-list .nelio-card .new-actions a.action.external-page {
+	background-image: url( '../images/action-external-page.png' );
+}
+
+
+body #goal-list .nelio-card .new-actions a.action.click-element {
+	background-image: url( '../images/action-click.png' );
+}
+
+
+body #goal-list .nelio-card .new-actions a.action.form-submit {
+	background-image: url( '../images/action-form.png' );
+}
+
+
+body #goal-list .nelio-card .new-actions a.action.form-submit.gf {
+	background-image: url( '../images/action-gravity-form.png' );
+}
+
 
 /* -------------------- */
 /* EDITING ALTERNATIVES */

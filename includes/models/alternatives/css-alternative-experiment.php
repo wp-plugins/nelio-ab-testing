@@ -272,6 +272,10 @@ if ( !class_exists( 'NelioABCssAlternativeExperiment' ) ) {
 			$exp->set_finalization_mode( $json_data->finalizationMode );
 			if ( isset( $json_data->finalizationModeValue ) )
 				$exp->set_finalization_value( $json_data->finalizationModeValue );
+			if ( isset( $json_data->start ) )
+				$exp->set_start_date( $json_data->start );
+			if ( isset( $json_data->finalization ) )
+				$exp->set_end_date( $json_data->finalization );
 
 			if ( isset( $json_data->goals ) )
 				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );

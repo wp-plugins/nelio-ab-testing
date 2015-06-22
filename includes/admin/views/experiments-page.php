@@ -557,6 +557,9 @@ if ( !class_exists( 'NelioABExperimentsPage' ) ) {
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					return sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
 
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					return sprintf( $img, 'wc-product-summary', __( 'WooCommerce Product Summary', 'nelioab' ) );
+
 				case NelioABExperiment::THEME_ALT_EXP:
 					return sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
 

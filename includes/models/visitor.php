@@ -106,6 +106,17 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 
 
 		/**
+		 * Hashmap of woocommerce product summary experiments (key) and the alternatives (value) this visitor is supposed to see.
+		 *
+		 * TODO: this should be refactored and extensible...
+		 *
+		 * @since 4.2.0
+		 * @var array
+		 */
+		private static $wc_product_summary_exps = array();
+
+
+		/**
 		 * Specifies whether the environment of this visitor has been fully loaded or not.
 		 *
 		 * @since 4.0.0
@@ -283,6 +294,7 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 
 			self::$exps = array();
 			self::$headline_exps = array();
+			self::$wc_product_summary_exps = array();
 
 			foreach ( $env as $exp_id => $alt ) {
 				/** @var NelioABExperiment $aux */
@@ -302,6 +314,11 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 						case NelioABExperiment::HEADLINE_ALT_EXP:
 							/** @var NelioABHeadlineAlternativeExperiment $exp */
 							self::add_headline_exp( $exp, $alt );
+							array_push( self::$ids, $exp->get_id() );
+							break;
+						case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+							/** @var NelioABHeadlineAlternativeExperiment $exp */
+							self::add_wc_product_summary_exp( $exp, $alt );
 							array_push( self::$ids, $exp->get_id() );
 							break;
 						case NelioABExperiment::CSS_ALT_EXP:
@@ -337,6 +354,11 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					/** @var NelioABHeadlineAlternativeExperiment $exp */
 					self::add_headline_exp( $exp, $alt_index );
+					array_push( self::$ids, $exp->get_id() );
+					break;
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					/** @var NelioABHeadlineAlternativeExperiment $exp */
+					self::add_wc_product_summary_exp( $exp, $alt_index );
 					array_push( self::$ids, $exp->get_id() );
 					break;
 			}
@@ -440,6 +462,27 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 
 
 		/**
+		 * Adds a woocommerce product summary alternative experiment in self::$wc_product_summary_exps.
+		 *
+		 * @param NelioABProductSummaryAlternativeExperiment $exp The Headline Alternative Experiment to be added.
+		 * @param int $alt_index The index of the alternative that this visitor is supposed to see.
+		 *
+		 * @since 4.0.0
+		 */
+		private static function add_wc_product_summary_exp( $exp, $alt_index ) {
+			$alt = $exp->get_original();
+			if ( $alt_index > 0 ) {
+				--$alt_index;
+				$alts = $exp->get_alternatives();
+				if ( $alt_index < count( $alts ) )
+					$alt = $alts[$alt_index];
+			}
+			self::$wc_product_summary_exps[$exp->get_originals_id()] = array(
+				'exp' => $exp, 'alt' => $alt );
+		}
+
+
+		/**
 		 * Returns the headline alternative (if any) this visitor is supposed to see.
 		 *
 		 * @param int $post_id A post ID for which we have to return the headline alternative.
@@ -454,6 +497,26 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 		public static function get_alternative_for_headline_alt_exp( $post_id ) {
 			if ( isset( self::$headline_exps[$post_id] ) )
 				return self::$headline_exps[$post_id];
+			else
+				return false;
+		}
+
+
+		/**
+		 * Returns the woocommerce product summary alternative (if any) this visitor is supposed to see.
+		 *
+		 * @param int $post_id A post ID for which we have to return the woocommerce product summary alternative.
+		 *
+		 * @return boolean|NelioABAlternative the woocommerce product summary alternative (if any) this visitor is supposed to see.
+		 *                 If `$post_id` is under test and it's relevant for this
+		 *                 visitor, it returns the alternative object she's
+		 *                 supposed to see. False otherwise.
+		 *
+		 * @since 4.0.0
+		 */
+		public static function get_alternative_for_wc_product_summary_alt_exp( $post_id ) {
+			if ( isset( self::$wc_product_summary_exps[$post_id] ) )
+				return self::$wc_product_summary_exps[$post_id];
 			else
 				return false;
 		}

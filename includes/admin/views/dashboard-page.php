@@ -66,8 +66,8 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				$this->print_cards();
 			}
 			echo '</div>'; ?>
-			<div id="postbox-container-1" class="postbox-container" style="overflow:hidden;"><?php // TODO remove the style ?>
-				<h2><?php _e( 'Account Usage', 'nelioab' ); ?></h2>
+			<div id="postbox-container-1" class="postbox-container" style="overflow:hidden;">
+				<h2>&nbsp;</h2>
 				<?php
 				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 				$cs = NelioABWpHelper::get_current_colorscheme();
@@ -75,7 +75,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 
 				<div class="numbers" style="height:40px;">
 					<div class="left" style="float:left; width:55%;">
-						<span style="font-weight:bold;"><?php _e( 'QUOTA AVAILABLE', 'nelioab' ); ?></span><br>
+						<span style="font-weight:bold;"><?php _e( 'AVAILABLE QUOTA', 'nelioab' ); ?></span><br>
 						<span style="color:<?php echo $cs['primary']; ?>; font-size:10px;"><?php
 							echo number_format_i18n( $this->quota['regular'], 0 );
 						?></span><span style="font-size:10px;"> / <?php
@@ -143,7 +143,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				// Build an array of all the items, starting with element 0 (first element).
 				$rss_items = $this->rss->get_items( 0, $maxitems ); ?>
 
-                <?php if ( $maxitems == 0 ) return; ?>
+				<?php if ( $maxitems == 0 ) return; ?>
 
 				<div id="nelio-rss" class="postbox-container" style="overflow:hidden;">
 					<h2><?php _e( 'Latest News', 'nelioab' ); ?></h2>
@@ -177,54 +177,6 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 		}
 
 		public function print_cards() {
-			// The following function is used by ALT_EXP cards ?>
-			<script>
-				function drawGraphic( id, data, label, baseColor ) {
-					if ( baseColor == undefined )
-						baseColor = '#CCCCCC';
-					var $ = jQuery;
-					Highcharts.getOptions().plotOptions.pie.colors = (function () {
-					var divider = 25;
-					var numOfAlts = data.length;
-					if ( numOfAlts < 10 ) divider = 20
-					if ( numOfAlts < 8 ) divider = 15
-					if ( numOfAlts < 4 ) divider = 6
-					var colors = [],
-						base = baseColor,
-						i
-						for (i = 0; i < 10; i++)
-							colors.push(Highcharts.Color(base).brighten(i / divider).get());
-						return colors;
-					}());
-
-					// Build the chart
-					var chart = $('#' + id).highcharts({
-						chart: {
-							plotBackgroundColor: null,
-							plotBorderWidth: null,
-							plotShadow: false,
-							margin: [0, 0, 0, 0],
-						},
-						title: { text:'' },
-						exporting: { enabled: false },
-						tooltip: {
-							pointFormat: '{series.name}: <b>{point.y:.0f}</b>'
-						},
-						plotOptions: {
-							pie: {
-								allowPointSelect: false,
-								cursor: 'pointer',
-								dataLabels: { enabled: false },
-							}
-						},
-						series: [{
-							type: 'pie',
-							name: label,
-							data: data
-						}],
-					});
-				}
-			</script><?php
 
 			include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			foreach ( $this->experiments as $exp ) {
@@ -277,6 +229,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 					break;
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					$img = sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
+					break;
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					$img = sprintf( $img, 'wc-product-summary', __( 'WooCommerce Product Summary', 'nelioab' ) );
 					break;
 				case NelioABExperiment::THEME_ALT_EXP:
 					$img = sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
@@ -354,7 +309,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 					if ( $exp->get_total_conversions() > 0 )
 						$fix = '';
 					else
-							$fix = '.1';
+						$fix = '.1';
 					$alt_infos = $exp->get_alternative_info();
 					$values = '';
 					for ( $i = 0; $i < count( $alt_infos ); ++$i ) {
@@ -391,6 +346,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 						case NelioABExperiment::MENU_ALT_EXP:
 							$color = '#8bb846';
 							break;
+						case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+							$color = '#2A508D';
+							break;
 						default:
 							$color = '#CCCCCC';
 					}
@@ -408,6 +366,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 		}
 
 		public function print_heatmap_exp_card( $exp ) {
+			/** @var NelioABHeatmapExpSummary $exp */
 			$hm = $exp->get_heatmap_info();
 			?>
 			<div class="row padding-top">
@@ -434,8 +393,5 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			</div>
 			<?php
 		}
-
 	}//NelioABDashboardPage
-
 }
-

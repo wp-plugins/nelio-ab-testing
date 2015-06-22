@@ -110,12 +110,16 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			if ( !nelioab_can_user_manage_plugin() )
 				return;
 
+			require_once( NELIOAB_ADMIN_DIR . '/about.php' );
+			NelioABAboutPage::get_instance();
+
 			$this->process_special_pages();
 
 			// Iconography
 			add_action( 'admin_head', array( $this, 'add_custom_styles' ) );
 
 			// Some hooks
+			add_action( 'wp_count_posts', array( $this, 'exclude_alternatives_from_post_count' ), 10, 2 );
 			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 			add_filter( 'plugin_action_links',  array( $this, 'add_plugin_action_links') , 10, 2);
 
@@ -140,7 +144,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			add_action( 'wp_ajax_nelioab_form_searcher',
 				array( 'NelioABWpHelper', 'search_forms' ) );
 
-			// TODO: this hook has to be placed inside the proper controller (don't know how, yet)
 			add_action( 'admin_enqueue_scripts', array( &$this, 'load_custom_style_and_scripts' ) );
 
 			// Footer Message
@@ -183,24 +186,28 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 		public function add_css_for_creation_page() {
 			wp_register_style( 'nelioab_new_exp_selection_css',
-				nelioab_admin_asset_link( '/css/nelioab-new-exp-selection.min.css' ) );
+				nelioab_admin_asset_link( '/css/nelioab-new-exp-selection.min.css' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_new_exp_selection_css' );
 		}
 
 		public function add_css_for_themes() {
 			wp_register_style( 'nelioab_theme_exp_css',
-				nelioab_admin_asset_link( '/css/nelioab-theme-exp.min.css' ) );
+				nelioab_admin_asset_link( '/css/nelioab-theme-exp.min.css' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_theme_exp_css' );
 		}
 
 		public function add_custom_styles() {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			wp_register_style( 'nelioab_generic_css',
-				nelioab_admin_asset_link( '/css/nelioab-generic.min.css' ) );
+				nelioab_admin_asset_link( '/css/nelioab-generic.min.css' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_generic_css' );
 			if ( NelioABWpHelper::is_at_least_version( 3.8 ) ) {
 				wp_register_style( 'nelioab_new_icons_css',
-					nelioab_admin_asset_link( '/css/nelioab-new-icons.min.css' ) );
+					nelioab_admin_asset_link( '/css/nelioab-new-icons.min.css' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_style( 'nelioab_new_icons_css' );
 			}
 		}
@@ -215,19 +222,32 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			if ( $this->is_page( array( 'add-headline-exp', 'edit-headline-exp' ) ) )
 					wp_enqueue_media();
 
+			// TODO: this should be moved to WooCommerce controller
+			if ( $this->is_page( array( 'add-product-summary-exp', 'edit-product-summary-exp' ) ) )
+					wp_enqueue_media();
+
 			// We make sure jQuery is loaded:
 			wp_enqueue_script( 'jquery' );
 
 			// Custom CSS for GRAPHICS and RESULTS (experiment progress)
 			if ( $this->is_page( array( 'exp-progress', 'nelioab-dashboard' ) ) ) {
 				wp_register_style( 'nelioab_progress_css',
-					nelioab_admin_asset_link( '/css/progress.min.css' ) );
+					nelioab_admin_asset_link( '/css/progress.min.css' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_style( 'nelioab_progress_css' );
+				wp_enqueue_script( 'jquery-masonry' );
 			}
 
 			wp_register_style( 'nelioab_tab_type_css',
-				nelioab_admin_asset_link( '/css/nelioab-tab-type.min.css' ) );
+				nelioab_admin_asset_link( '/css/nelioab-tab-type.min.css' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'nelioab_tab_type_css' );
+
+			// Animated Font Awesome Icons
+			wp_register_style( 'nelioab_animated_fontawesome_css',
+				nelioab_admin_asset_link( '/css/font-awesome-animation.min.css' ),
+				array(), NELIOAB_PLUGIN_VERSION );
+			wp_enqueue_style( 'nelioab_animated_fontawesome_css' );
 
 			// Custom JS for GRAPHICS (conversion experiment progress)
 			wp_enqueue_script( 'nelioab_highcharts',
@@ -238,7 +258,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ) );
 
 			wp_register_style( 'font_awesome_css',
-				nelioab_admin_asset_link( '/css/font-awesome.min.css' ) );
+				nelioab_admin_asset_link( '/css/font-awesome.min.css' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_style( 'font_awesome_css' );
 
 			wp_enqueue_script( 'd3',
@@ -246,7 +267,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			if ( $this->is_page( 'nelioab-dashboard' ) ) {
 				wp_register_style( 'cal_heatmap_css',
-					nelioab_admin_asset_link( '/css/cal-heatmap.min.css' ) );
+					nelioab_admin_asset_link( '/css/cal-heatmap.min.css' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_style( 'cal_heatmap_css' );
 				wp_enqueue_script( 'cal_heatmap',
 					nelioab_admin_asset_link( '/js/cal-heatmap.min.js' ) );
@@ -270,6 +292,7 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			global $pagenow;
 			if ( isset( $_GET['page'] ) && strpos( 'nelioab-', $_GET['page'] ) == 0 ) {
 				wp_enqueue_script( 'jquery-ui-dialog' );
+				wp_enqueue_script( 'jquery-ui-sortable' );
 				wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			}
 			else if ( 'plugins.php' == $pagenow ) {
@@ -326,10 +349,47 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 						return true;
 					break;
 
+				// TODO: this should be moved somewhere else (WooCommerce)
+				case 'add-product-summary-exp':
+					if ( 'nelioab-add-experiment' == $_GET['page'] &&
+						isset( $_GET['experiment-type'] ) &&
+						NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP == $_GET['experiment-type'] )
+						return true;
+					break;
+
+				// TODO: this should be moved somewhere else (WooCommerce)
+				case 'edit-product-summary-exp':
+					if ( 'nelioab-experiments' == $_GET['page'] &&
+						isset( $_GET['action'] ) && 'edit' == $_GET['action'] &&
+						isset( $_GET['exp_type'] ) && NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP == $_GET['exp_type'] )
+						return true;
+					break;
+
 			}
 
 			return false;
 		}
+
+
+		public function exclude_alternatives_from_post_count( $counts, $type ) {
+			if ( isset( $counts->draft ) ) {
+				global $wpdb;
+				$sql = $wpdb->prepare(
+					"SELECT COUNT( posts.ID ) " .
+					"  FROM {$wpdb->postmeta} meta " .
+					"       JOIN {$wpdb->posts} posts " .
+					"  ON meta.post_id = posts.ID " .
+					"  WHERE " .
+					"        meta.meta_key = %s AND " .
+					"        posts.post_type = %s ",
+					'_is_nelioab_alternative', $type
+				);
+				$aux = $wpdb->get_var( $sql );
+				$counts->draft = max( $counts->draft - $aux, 0 );
+			}
+			return $counts;
+		}
+
 
 		public function exclude_alternative_posts_and_pages( $query ) {
 

@@ -24,6 +24,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/form-submission-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/actions/wc-order-completed-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goal-results/alternative-experiment-goal-result.php' );
 
 	require_once( NELIOAB_MODELS_DIR . '/goals/goal.php' );
@@ -189,7 +190,6 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			$result->set_name( $json->name );
 			$result->set_benefit( $json->benefit );
 			$result->set_as_main_goal( $json->isMainGoal );
-			require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 			$ae_actions = array();
 
 			if ( isset( $json->pageAccessedActions ) ) {
@@ -219,6 +219,15 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 				}
 			}
 
+			if ( isset( $json->orderCompletedActions ) ) {
+				foreach ( $json->orderCompletedActions as $action ) {
+					$action = (array)$action;
+					$action['_type'] = 'order-completed-action';
+					$action = (object)$action;
+					array_push( $ae_actions, $action );
+				}
+			}
+
 			usort( $ae_actions, array( 'NelioABAltExpGoal', 'sort_goals' ) );
 			foreach ( $ae_actions as $action ) {
 				/** @var object $action */
@@ -231,6 +240,9 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 						break;
 					case 'click-element-action':
 						$result->add_action( NelioABClickElementAction::decode_from_appengine( $action ) );
+						break;
+					case 'order-completed-action':
+						$result->add_action( NelioABWooCommerceOrderCompletedAction::decode_from_appengine( $action ) );
 						break;
 				}
 			}
@@ -256,6 +268,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			$page_accessed_actions = array();
 			$form_actions = array();
 			$click_actions = array();
+			$order_completed_actions = array();
 			$order = 0;
 			foreach ( $this->get_actions() as $action ) {
 				/** @var NelioABAction $action */
@@ -283,12 +296,19 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 						array_push( $click_actions, $encoded_action );
 						break;
 
+					case NelioABAction::WC_ORDER_COMPLETED:
+						$order++;
+						$encoded_action['order'] = $order;
+						array_push( $order_completed_actions, $encoded_action );
+						break;
+
 				}
 			}
 
 			$res['pageAccessedActions'] = $page_accessed_actions;
 			$res['formActions'] = $form_actions;
 			$res['clickActions'] = $click_actions;
+			$res['orderCompletedActions'] = $order_completed_actions;
 			$res['benefit'] = $this->get_benefit();
 			$res['benefitUnit'] = '$';
 

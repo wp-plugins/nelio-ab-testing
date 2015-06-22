@@ -120,8 +120,22 @@ function nelioab_activate_plugin() {
 	require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 	NelioABExperimentsManager::update_running_experiments_cache( 'now' );
 
-	// Save the latest version we use for "(re)activating" the plugin
+	// Save the latest version we use for "(re)activating" the plugin and
+	// show the welcome message
+	$version = get_option( 'nelioab_last_version_installed', false );
 	update_option( 'nelioab_last_version_installed', NELIOAB_PLUGIN_VERSION );
+
+	// Prepare the code for showing the welcome message
+	if ( ! is_network_admin() && ! isset( $_GET['activate-multi'] ) ) {
+		if ( NELIOAB_PLUGIN_VERSION === $version ) {
+			set_transient( '_nelioab_welcome_user', 'nelioab-reactivated', 30 );
+		} else if ( NELIOAB_PLUGIN_VERSION !== $version ) {
+			set_transient( '_nelioab_welcome_user', 'nelioab-updated', 30 );
+		} else {
+			set_transient( '_nelioab_welcome_user', 'nelioab-installed', 30 );
+		}
+	}
+
 }
 
 /**
@@ -402,4 +416,5 @@ function nelioab_get_page_on_front() {
 		add_filter( 'option_page_on_front', array( $nelioab_controller, 'fix_page_on_front' ) );
 	return $res;
 }
+
 

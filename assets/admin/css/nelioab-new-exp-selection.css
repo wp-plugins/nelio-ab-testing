@@ -123,8 +123,19 @@
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-    .nelioab-image-widget {
+    .nelioab-image-cpt {
         background-image: url( '../images/2x/new-exp-cpt.png?version=3.4.4' );
+        background-size: 240px 120px;
+    } }
+
+.nelioab-image-wc-product-summary {
+    background: url( '../images/new-exp-wc-product-summary.png?version=3.4.4' );
+    background-image: url( '../images/new-exp-wc-product-summary.png?version=3.4.4' );
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
+    .nelioab-image-wc-product-summary {
+        background-image: url( '../images/2x/new-exp-wc-product-summary.png?version=3.4.4' );
         background-size: 240px 120px;
     } }
 

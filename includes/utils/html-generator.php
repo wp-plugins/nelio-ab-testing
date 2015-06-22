@@ -75,9 +75,9 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		/**
 		 * PHPDOC
 		 *
-		 * @param int           $mode        PHPDOC
-		 * @param mixed         $value       PHPDOC
-		 * @param array|boolean $valid_modes PHPDOC
+		 * @param int   $mode        PHPDOC
+		 * @param mixed $value       PHPDOC
+		 * @param array $valid_modes PHPDOC
 		 *
 		 * @return void
 		 *
@@ -88,10 +88,9 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		 *
 		 * @since PHPDOC
 		 */
-		public static function print_finalization_mode_field( $mode, $value, $valid_modes = false ) {
+		public static function print_finalization_mode_field( $mode, $value, $valid_modes = array() ) {
 			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
-			// TODO: canviar-ho per empty array
-			if ( !$valid_modes ) {
+			if ( count( $valid_modes ) == 0 ) {
 				$valid_modes = array(
 					NelioABExperiment::FINALIZATION_MANUAL,
 					NelioABExperiment::FINALIZATION_AFTER_DATE,
@@ -382,7 +381,7 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		 *
 		 * @return string The searcher HTML element.
 		 *
-		 * @see self::print_TODO()
+		 * @see self::print_page_searcher()
 		 *
 		 * @since PHPDOC
 		 */
@@ -408,7 +407,7 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		 *
 		 * @return string The searcher HTML element.
 		 *
-		 * @see self::print_TODO()
+		 * @see self::print_post_searcher()
 		 *
 		 * @since PHPDOC
 		 */
@@ -567,7 +566,7 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 		 *
 		 * @return string The searcher HTML element.
 		 *
-		 * @see self::print_TODO()
+		 * @see self::print_form_searcher()
 		 *
 		 * @since PHPDOC
 		 */
@@ -602,6 +601,29 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 				$field_id, $value, 'no-drafts', $classes, $autoconvert, array( 'form' ) );
 		}
 
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 * @param array          $types       PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
+		public static function get_post_searcher_based_on_type(
+				$field_id, $value, $drafts, $classes, $autoconvert, $types ) {
+			ob_start();
+			self::print_post_searcher_based_on_type(
+				$field_id, $value, $drafts, $classes, $autoconvert, $types );
+			$value = ob_get_contents();
+			ob_end_clean();
+			return $value;
+		}
 
 		/**
 		 * PHPDOC

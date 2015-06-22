@@ -26,6 +26,7 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/theme-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/widget-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/menu-alternative-experiment.php' );
+	require_once( NELIOAB_MODELS_DIR . '/woocommerce/product-summary-alternative-experiment.php' );
 	require_once( NELIOAB_MODELS_DIR . '/heatmap-experiment.php' );
 
 	/**
@@ -149,6 +150,14 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 						case NelioABExperiment::HEADLINE_ALT_EXP:
 							/** @var NelioABHeadlineAlternativeExperiment $aux */
 							$aux = new NelioABHeadlineAlternativeExperiment( $id );
+							if ( isset( $json_exp->originalPost ) )
+								$aux->set_original( $json_exp->originalPost );
+							$exp = $aux;
+							break;
+
+						case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+							/** @var NelioABHeadlineAlternativeExperiment $aux */
+							$aux = new NelioABProductSummaryAlternativeExperiment( $id );
 							if ( isset( $json_exp->originalPost ) )
 								$aux->set_original( $json_exp->originalPost );
 							$exp = $aux;
@@ -306,6 +315,10 @@ if ( !class_exists( 'NelioABExperimentsManager' ) ) {
 
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					$exp = NelioABHeadlineAlternativeExperiment::load( $id );
+					break;
+
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					$exp = NelioABProductSummaryAlternativeExperiment::load( $id );
 					break;
 
 				case NelioABExperiment::THEME_ALT_EXP:

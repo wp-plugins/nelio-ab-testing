@@ -20,6 +20,8 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
+
+
 	class NelioABSelectExpCreationPage extends NelioABAdminPage {
 
 		public function __construct( $title ) {
@@ -68,6 +70,20 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 					)
 				)
 			);
+
+			// WOOCOMMERCE PRODUCT SUMMARY
+			if ( NelioABWooCommerceSupport::is_plugin_active() ) {
+				$this->print_beautiful_box(
+					'wc-product-summary',
+					__( 'WooCommerce Product Summary', 'nelioab' ),
+					array( &$this, 'print_new_exp_box',
+						array(
+							'wc-product-summary', $url . NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP,
+							__( '<strong>Change the name, short description, and featured image of your product, and discover which combination leads to more sales</strong>. Every time the product appears in your website, it is counted as a visit. Once a purchase containing that product is completed, you have a new conversion. Easy, right?', 'nelioab' )
+						)
+					)
+				);
+			}
 
 			// HEADLINE ONLY
 			$this->print_beautiful_box(

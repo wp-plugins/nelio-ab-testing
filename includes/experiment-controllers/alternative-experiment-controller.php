@@ -661,10 +661,15 @@ class NelioABAlternativeExperimentController {
 			return $all_widgets;
 
 		$aux = get_option( 'theme_mods_' . $actual_theme_id, array() );
-		$sidebars_widgets = $aux['sidebars_widgets']['data'];
-		if ( is_array( $sidebars_widgets ) && isset( $sidebars_widgets['array_version'] ) )
-			unset( $sidebars_widgets['array_version'] );
-		return $sidebars_widgets;
+		if ( isset( $aux['sidebars_widgets'] ) ) {
+			$sidebars_widgets = $aux['sidebars_widgets']['data'];
+			if ( is_array( $sidebars_widgets ) && isset( $sidebars_widgets['array_version'] ) ) {
+				unset( $sidebars_widgets['array_version'] );
+			}
+			return $sidebars_widgets;
+		}
+
+		return array();
 	}
 
 
@@ -893,8 +898,13 @@ class NelioABAlternativeExperimentController {
 	 */
 	public function add_list_of_applied_headlines( $ajax = false ) {
 		$res = array( 'nelioab' => array() );
-		if ( $ajax )
-			$res['result'] = $ajax;
+		if ( $ajax ) {
+			if ( isset( $ajax['nelioab'] ) ) {
+				$res = $ajax;
+			} else {
+				$res['result'] = $ajax;
+			}
+		}
 
 		if ( NelioABSettings::get_headlines_quota_mode() == NelioABSettings::HEADLINES_QUOTA_MODE_ON_FRONT_PAGE ) {
 			/** @var NelioABController $nelioab_controller */
@@ -1450,7 +1460,7 @@ class NelioABAlternativeExperimentController {
 		$data = NelioABBackend::build_json_object_with_credentials( $ev );
 		$data['timeout'] = 50;
 
-		for ( $attemp=0; $attemp < 5; ++$attemp ) {
+		for ( $attemp = 0; $attemp < 5; ++$attemp ) {
 			try {
 				NelioABBackend::remote_post_raw( $url, $data );
 				break;

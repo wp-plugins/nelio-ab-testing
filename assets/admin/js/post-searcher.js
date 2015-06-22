@@ -4,7 +4,7 @@ var NelioABPostSearcher = {
 		var markup=[];
 		window.Select2.util.markMatch(item.title, query.term, markup, escapeMarkup);
 		var title = markup.join("");
-		return  '<div class="result-content">'+
+		return '<div class="result-content">'+
 					'<div class="result-image">'+item.thumbnail+"</div>"+
 					'<div class="result-item">'+
 						'<div class="result-title">'+title+"</div>"+
@@ -23,7 +23,7 @@ var NelioABPostSearcher = {
 	},
 
 	buildSearcher: function(elem, type, drafts, filter) {
-        elem.data('current-type', type);
+		elem.data('current-type', type);
 		elem.select2({
 			ajax: {
 				url: ajaxurl,
@@ -83,11 +83,11 @@ var NelioABPostSearcher = {
 			});
 	},
 
-    changeType: function(elem, newType) {
-        elem.attr('value', -1);
-        elem.data('current-type', newType);
-        NelioABPostSearcher.setDefault(elem, newType, 'no-drafts');
-    },
+	changeType: function(elem, newType) {
+		elem.attr('value', -1);
+		elem.data('current-type', newType);
+		NelioABPostSearcher.setDefault(elem, newType, 'no-drafts');
+	},
 
 	doSetDefault: function( elem, item ) {
 		elem.attr('value', item.id);

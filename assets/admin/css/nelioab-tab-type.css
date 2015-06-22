@@ -1,129 +1,131 @@
 /* DEFAULT TAB TYPE */
 
 .tab-type {
-	width: 32px;
-	height: 32px;
+    width: 32px;
+    height: 32px;
 }
 
 .tab-type-title {
-	background:       url( '../images/tab-type-headline.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-headline.png?version=3.4.4' );
+    background: url('../images/tab-type-headline.png?version=3.4.4');
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-title {
-	background:       url( '../images/2x/tab-type-headline.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-headline.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-title {
+        background: url('../images/2x/tab-type-headline.png?version=3.4.4');
+        background-size: 32px 32px;
+    } }
 
 .tab-type-landing-page {
-	background:       url( '../images/tab-type-landing-page.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-landing-page.png?version=3.4.4' );
+    background: url('../images/tab-type-landing-page.png?version=3.4.4');
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-landing-page {
-	background:       url( '../images/2x/tab-type-landing-page.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-landing-page.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-landing-page {
+        background: url('../images/2x/tab-type-landing-page.png?version=3.4.4');
+        background-size: 32px 32px;
+    } }
 
 .tab-type-page {
-	background:       url( '../images/tab-type-page.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-page.png?version=3.4.4' );
+    background: url( '../images/tab-type-page.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-page {
-	background:       url( '../images/2x/tab-type-page.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-page.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-page {
+        background: url( '../images/2x/tab-type-page.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
 
 .tab-type-post {
-	background:       url( '../images/tab-type-post.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-post.png?version=3.4.4' );
+    background: url( '../images/tab-type-post.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-post {
-	background:       url( '../images/2x/tab-type-post.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-post.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-post {
+        background: url( '../images/2x/tab-type-post.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
 
 .tab-type-cpt {
-    background:       url( '../images/tab-type-cpt.png?version=3.4.4' );
-    background-image: url( '../images/tab-type-cpt.png?version=3.4.4' );
+    background: url( '../images/tab-type-cpt.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
     .tab-type-cpt {
-        background:       url( '../images/2x/tab-type-cpt.png?version=3.4.4' );
-        background-image: url( '../images/2x/tab-type-cpt.png?version=3.4.4' );
+        background: url( '../images/2x/tab-type-cpt.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
+
+.tab-type-wc-product-summary {
+    background:       url( '../images/tab-type-wc-product-summary.png?version=3.4.4' );
+    background-image: url( '../images/tab-type-wc-product-summary.png?version=3.4.4' );
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
+    .tab-type-wc-product-summary {
+        background:       url( '../images/2x/tab-type-wc-product-summary.png?version=3.4.4' );
+        background-image: url( '../images/2x/tab-type-wc-product-summary.png?version=3.4.4' );
         background-size: 32px 32px;
     } }
 
 .tab-type-theme {
-	background:       url( '../images/tab-type-theme.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-theme.png?version=3.4.4' );
+    background: url( '../images/tab-type-theme.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-theme {
-	background:       url( '../images/2x/tab-type-theme.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-theme.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-theme {
+        background: url( '../images/2x/tab-type-theme.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
 
 .tab-type-css {
-	background:       url( '../images/tab-type-css.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-css.png?version=3.4.4' );
+    background: url( '../images/tab-type-css.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-css {
-	background:       url( '../images/2x/tab-type-css.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-css.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-css {
+        background: url( '../images/2x/tab-type-css.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
 
 .tab-type-menu {
-	background:       url( '../images/tab-type-menu.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-menu.png?version=3.4.4' );
+    background: url( '../images/tab-type-menu.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-menu {
-	background:       url( '../images/2x/tab-type-menu.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-menu.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-menu {
+        background: url( '../images/2x/tab-type-menu.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
 
 .tab-type-widget {
-	background:       url( '../images/tab-type-widget.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-widget.png?version=3.4.4' );
+    background: url( '../images/tab-type-widget.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-widget {
-	background:       url( '../images/2x/tab-type-widget.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-widget.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-widget {
+        background: url( '../images/2x/tab-type-widget.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
 
 .tab-type-heatmap {
-	background:       url( '../images/tab-type-heatmap.png?version=3.4.4' );
-	background-image: url( '../images/tab-type-heatmap.png?version=3.4.4' );
+    background: url( '../images/tab-type-heatmap.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-.tab-type-heatmap {
-	background:       url( '../images/2x/tab-type-heatmap.png?version=3.4.4' );
-	background-image: url( '../images/2x/tab-type-heatmap.png?version=3.4.4' );
-	background-size: 32px 32px;
-} }
+    .tab-type-heatmap {
+        background: url( '../images/2x/tab-type-heatmap.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
+
+.tab-type-winner {
+    background: url( '../images/tab-type-winner.png?version=3.4.4' );
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
+    .tab-type-winner {
+        background: url( '../images/2x/tab-type-winner.png?version=3.4.4' );
+        background-size: 32px 32px;
+    } }
 
 
 
@@ -132,115 +134,107 @@
 /* DASHBOARD TAB TYPE */
 
 body.toplevel_page_nelioab-dashboard .tab-type {
-	width: 24px;
-	height: 24px;
+    width: 24px;
+    height: 24px;
 }
 
 body.toplevel_page_nelioab-dashboard .tab-type-title {
-	background:       url( '../images/dashboard-type-headline.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-headline.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-headline.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-title {
-	background:       url( '../images/2x/dashboard-type-headline.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-headline.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-title {
+        background: url( '../images/2x/dashboard-type-headline.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-landing-page {
-	background:       url( '../images/dashboard-type-landing-page.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-landing-page.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-landing-page.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-landing-page {
-	background:       url( '../images/2x/dashboard-type-landing-page.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-landing-page.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-landing-page {
+        background: url( '../images/2x/dashboard-type-landing-page.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-page {
-	background:       url( '../images/dashboard-type-page.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-page.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-page.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-page {
-	background:       url( '../images/2x/dashboard-type-page.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-page.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-page {
+        background: url( '../images/2x/dashboard-type-page.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-post {
-	background:       url( '../images/dashboard-type-post.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-post.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-post.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-post {
-	background:       url( '../images/2x/dashboard-type-post.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-post.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-post {
+        background: url( '../images/2x/dashboard-type-post.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-theme {
-	background:       url( '../images/dashboard-type-theme.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-theme.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-theme.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-theme {
-	background:       url( '../images/2x/dashboard-type-theme.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-theme.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-theme {
+        background: url( '../images/2x/dashboard-type-theme.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-css {
-	background:       url( '../images/dashboard-type-css.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-css.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-css.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-css {
-	background:       url( '../images/2x/dashboard-type-css.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-css.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-css {
+        background: url( '../images/2x/dashboard-type-css.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-menu {
-	background:       url( '../images/dashboard-type-menu.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-menu.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-menu.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-menu {
-	background:       url( '../images/2x/dashboard-type-menu.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-menu.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-menu {
+        background: url( '../images/2x/dashboard-type-menu.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-widget {
-	background:       url( '../images/dashboard-type-widget.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-widget.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-widget.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
-body.toplevel_page_nelioab-dashboard .tab-type-widget {
-	background:       url( '../images/2x/dashboard-type-widget.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-widget.png?version=3.4.4' );
-	background-size: 24px 24px;
-} }
+    body.toplevel_page_nelioab-dashboard .tab-type-widget {
+        background: url( '../images/2x/dashboard-type-widget.png?version=3.4.4' );
+        background-size: 24px 24px;
+    } }
 
 body.toplevel_page_nelioab-dashboard .tab-type-heatmap {
-	background:       url( '../images/dashboard-type-heatmap.png?version=3.4.4' );
-	background-image: url( '../images/dashboard-type-heatmap.png?version=3.4.4' );
+    background: url( '../images/dashboard-type-heatmap.png?version=3.4.4' );
 }
 
 @media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
 body.toplevel_page_nelioab-dashboard .tab-type-heatmap {
 	background:       url( '../images/2x/dashboard-type-heatmap.png?version=3.4.4' );
-	background-image: url( '../images/2x/dashboard-type-heatmap.png?version=3.4.4' );
+	background-size: 24px 24px;
+} }
+
+body.toplevel_page_nelioab-dashboard .tab-type-wc-product-summary {
+	background:       url( '../images/dashboard-type-wc-product-summary.png?version=3.4.4' );
+}
+
+@media print,(-o-min-device-pixel-ratio:5/4),(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dppx) {
+body.toplevel_page_nelioab-dashboard .tab-type-wc-product-summary {
+	background:       url( '../images/2x/dashboard-type-wc-product-summary.png?version=3.4.4' );
 	background-size: 24px 24px;
 } }
 

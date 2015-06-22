@@ -188,7 +188,6 @@ if ( !class_exists( 'NelioABAlternative' ) ) {
 		 * @since PHPDOC
 		 */
 		public function get_identifiable_value() {
-			// TODO What?
 			return $this->value;
 		}
 

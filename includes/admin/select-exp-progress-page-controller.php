@@ -120,6 +120,10 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 					require_once( NELIOAB_ADMIN_DIR . '/progress/menu-alt-exp-progress-page-controller.php' );
 					return 'NelioABMenuAltExpProgressPageController';
 
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/progress/headline-alt-exp-progress-page-controller.php' );
+					return 'NelioABHeadlineAltExpProgressPageController';
+
 				case NelioABExperiment::HEATMAP_EXP:
 					// Nothing to be done in here...
 
@@ -136,5 +140,3 @@ if ( !class_exists( 'NelioABSelectExpProgressPageController' ) ) {
 }
 
 $aux = NelioABSelectExpProgressPageController::attempt_to_load_proper_controller();
-
-?>

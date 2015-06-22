@@ -20,7 +20,7 @@
 /**
  * Plugin Name: Nelio A/B Testing
  * Description: Optimize your site based on data, not opinions. With this plugin, you will be able to perform A/B testing (and more) on your WordPress site.
- * Version: 4.1.5
+ * Version: 4.2.0
  * Author: Nelio Software
  * Author URI: http://neliosoftware.com
  * Plugin URI: http://nelioabtesting.com
@@ -28,7 +28,7 @@
  */
 
 // PLUGIN VERSION
-define( 'NELIOAB_PLUGIN_VERSION', '4.1.5' );
+define( 'NELIOAB_PLUGIN_VERSION', '4.2.0' );
 
 // Plugin dir name...
 define( 'NELIOAB_PLUGIN_NAME', 'Nelio A/B Testing' );
@@ -65,6 +65,7 @@ require_once( NELIOAB_UTILS_DIR . '/essentials.php' );
 // Including base controllers
 require_once( NELIOAB_DIR . '/controller.php' );
 require_once( NELIOAB_ADMIN_DIR . '/admin-controller.php' );
+require_once( NELIOAB_ADMIN_DIR . '/woocommerce/woocommerce-support.php' );
 
 // Making sure all alternatives are hidden when the plugin is deactivated
 register_activation_hook( __FILE__, 'nelioab_activate_plugin' );

@@ -311,10 +311,12 @@ if ( !class_exists( 'NelioABAltExpSummary' ) ) {
 			$this->set_total_conversions( $json->conversions );
 
 			$confidence = 0;
-			if ( isset( $json->confidenceInResultStatus ) )
+			if ( isset( $json->confidenceInResultStatus ) ) {
 				$confidence = $json->confidenceInResultStatus;
-			if ( isset( $json->resultStatus ) )
+			}
+			if ( isset( $json->resultStatus ) ) {
 				$this->set_result_status( $json->resultStatus, $confidence );
+			}
 
 			if ( isset( $json->altVisitors ) ) {
 				for ( $i = 0; $i < count( $json->altVisitors ); ++$i ) {
@@ -323,8 +325,7 @@ if ( !class_exists( 'NelioABAltExpSummary' ) ) {
 					$c = $json->altConversions[$i]->second;
 					$this->add_alternative_info( $id, $v, $c );
 				}
-			}
-			else {
+			} else {
 				for ( $id = 0; $id < $json->alternatives; ++$id )
 					$this->add_alternative_info( -$id, 0, 0 );
 			}

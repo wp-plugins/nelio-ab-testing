@@ -429,6 +429,38 @@ NelioAB.helpers.sendHeadlineViews = function() {
 
 
 /**
+ * This function is called if Product Summaries where added using an AJAX call.
+ * It sends these new summaries to AE.
+ */
+NelioAB.helpers.sendNewProductSummaryViews = function() {
+	if ( NelioABParams.sync.productSummaries.length > 0 )
+		NelioAB.helpers.sendProductSummaryViews();
+};
+
+
+/**
+ * This function sends to AE which product summaries where A/B tested in the
+ * current page.
+ */
+NelioAB.helpers.sendProductSummaryViews = function() {
+	var data = {
+			siteId: NelioABParams.site,
+			customerId: NelioABParams.customer,
+			user: NelioAB.user.id(),
+			productViews: NelioABParams.sync.productSummaries,
+			envHash: NelioABBasic.settings.envHash
+		};
+
+	NelioAB.helpers.remotePost({
+		async: true,
+		url:   NelioAB.backend.url + '/pv',
+		data:  data
+	});
+
+};
+
+
+/**
  * This function sends information about the element that has been clicked.
  *
  * @param ce
@@ -477,6 +509,10 @@ NelioAB.helpers.track = function() {
 		// Send all headline views
 		if ( NelioABParams.sync.headlines.length > 0 )
 			NelioAB.helpers.sendHeadlineViews();
+
+		// Prepare to track form submissions
+		if ( NelioABParams.sync.productSummaries.length > 0 )
+			NelioAB.helpers.sendProductSummaryViews();
 
 		// Prepare to track outwards navigations
 		NelioAB.helpers.prepareOutwardsNavigationTracking();
@@ -624,6 +660,12 @@ NelioAB.helpers.processAjaxResult = function(json) {
 	if ( typeof json.nelioab.headlines != 'undefined' )
 		NelioABParams.sync.headlines = json.nelioab.headlines;
 	NelioAB.helpers.sendNewHeadlineViews();
+
+	// Sync new product summaries
+	if ( typeof json.nelioab.productSummaries != 'undefined' )
+		NelioABParams.sync.productSummaries = json.nelioab.productSummaries;
+	NelioAB.helpers.sendNewProductSummaryViews();
+
 };
 
 

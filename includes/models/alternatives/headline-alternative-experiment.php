@@ -419,6 +419,10 @@ if ( !class_exists( 'NelioABHeadlineAlternativeExperiment' ) ) {
 			$exp->track_heatmaps( false );
 			if ( isset( $json_data->showHeatmap ) && $json_data->showHeatmap  )
 				$exp->track_heatmaps( $json_data->showHeatmap );
+			if ( isset( $json_data->start ) )
+				$exp->set_start_date( $json_data->start );
+			if ( isset( $json_data->finalization ) )
+				$exp->set_end_date( $json_data->finalization );
 
 			if ( isset( $json_data->goals ) )
 				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );
