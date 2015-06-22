@@ -251,11 +251,14 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// Custom JS for GRAPHICS (conversion experiment progress)
 			wp_enqueue_script( 'nelioab_highcharts',
-				nelioab_admin_asset_link( '/js/highcharts.min.js' ) );
+				nelioab_admin_asset_link( '/js/highcharts.min.js' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_script( 'nelioab_exporting',
-				nelioab_admin_asset_link( '/js/exporting.min.js' ) );
+				nelioab_admin_asset_link( '/js/exporting.min.js' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 			wp_enqueue_script( 'nelioab_graphic_functions',
-				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ) );
+				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 
 			wp_register_style( 'font_awesome_css',
 				nelioab_admin_asset_link( '/css/font-awesome.min.css' ),
@@ -263,7 +266,8 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			wp_enqueue_style( 'font_awesome_css' );
 
 			wp_enqueue_script( 'd3',
-				nelioab_admin_asset_link( '/js/d3.v3.min.js' ) );
+				nelioab_admin_asset_link( '/js/d3.v3.min.js' ),
+				array(), NELIOAB_PLUGIN_VERSION );
 
 			if ( $this->is_page( 'nelioab-dashboard' ) ) {
 				wp_register_style( 'cal_heatmap_css',
@@ -271,21 +275,27 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_style( 'cal_heatmap_css' );
 				wp_enqueue_script( 'cal_heatmap',
-					nelioab_admin_asset_link( '/js/cal-heatmap.min.js' ) );
+					nelioab_admin_asset_link( '/js/cal-heatmap.min.js' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 			}
 
 			// Post Searcher
 			if ( $this->is_page( array( 'nelioab-add-experiment', 'edit-exp', 'nelioab-css-edit' ) ) ) {
 				wp_enqueue_style( 'nelioab_select2_css',
-					nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.css' ) );
+					nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.css' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_script( 'nelioab_select2',
-					nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.js' ) );
+					nelioab_admin_asset_link( '/lib/select2-3.5.0/select2.min.js' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_style( 'nelioab_post_searcher_css',
-					nelioab_admin_asset_link( '/css/post-searcher.css' ) );
+					nelioab_admin_asset_link( '/css/post-searcher.css' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_script( 'nelioab_post_searcher',
-					nelioab_admin_asset_link( '/js/post-searcher.min.js' ) );
+					nelioab_admin_asset_link( '/js/post-searcher.min.js' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 				wp_enqueue_script( 'nelioab_form_searcher',
-					nelioab_admin_asset_link( '/js/form-searcher.min.js' ) );
+					nelioab_admin_asset_link( '/js/form-searcher.min.js' ),
+					array(), NELIOAB_PLUGIN_VERSION );
 			}
 
 			// Dialog for all nelio pages
