@@ -52,7 +52,9 @@ class NelioABHeatmapController {
 	 * @since PHPDOC
 	 */
 	public function add_heatmap_script() {
-		wp_enqueue_script( 'nelio-heatmap', nelioab_admin_asset_link( '/js/heatmap.min.js' ) );
+		wp_enqueue_script( 'nelio-heatmap',
+			nelioab_admin_asset_link( '/js/heatmap.min.js' ),
+			array(), NELIOAB_PLUGIN_VERSION );
 	}
 
 }//NelioABHeatmapController
