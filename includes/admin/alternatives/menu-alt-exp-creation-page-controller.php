@@ -38,8 +38,8 @@ if ( !class_exists( 'NelioABMenuAltExpCreationPageController' ) ) {
 			// Checking whether there are menus available
 			$menus = wp_get_nav_menus();
 			if ( count( $menus ) == 0 ) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
-				$view = new NelioABErrorPage(
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
+				$view = new NelioABMessagePage(
 					sprintf(
 						__( 'There are no menus available.<br><a href="%s">Create one now.</a>', 'nelioab' ),
 						admin_url( '/nav-menus.php' )

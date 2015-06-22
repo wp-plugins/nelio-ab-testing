@@ -1,16 +1,56 @@
+/**
+ * This object contains some relevant functions for loading alternative
+ * content.
+ */
 NelioAB.checker = {};
 
+
+/**
+ * This variable contains a style node (for CSS experiments).
+ */
 NelioAB.checker.styleNode;
 
+
+/**
+ * This variable holds the prefix of Nelio A/B Testing GET params.
+ */
+NelioAB.checker.nabPrefix = 'nab';
+
+
+/**
+ * This variable holds a regular expression for detecting whether a GET param
+ * is related to Nelio A/B Testing or not.
+ */
+NelioAB.checker.nabMatcher = /^nab[cmtwe]?$/;
+
+
+/**
+ * Magic starts here. This function will check if there are any experiments
+ * running and, if there are, if we should track some information about the
+ * current user.
+ */
 NelioAB.checker.init = function() {
-	// Check if the user accepts cookies...
-	if ( !NelioAB.cookies.areEnabled() ) {
-		NelioAB.delayed.release();
+	if ( !NelioABBasic.hasExpsRunning ) {
 		return;
 	}
-
-	if ( NelioAB.cookies.get( 'nelioab_is_in' ) == 'no' ) {
-		NelioAB.delayed.release();
+	if ( !NelioAB.user.canInfoBeSaved() ) {
+		return;
+	}
+	if ( !NelioAB.user.participates() ) {
+		return;
+	}
+	if ( NelioABParams.wasPostRequest ) {
+		console.log( 'Current page is the result of a POST request. Abort!' );
+		try {
+			if ( !NelioAB.helpers.isBot() && NelioABBasic.hasQuota ) {
+				NelioAB.helpers.addDocumentHooks();
+				NelioAB.helpers.track();
+			}
+		} catch(e) {}
+		return;
+	}
+	if ( NelioAB.helpers.isDuplicatedFrame() ) {
+		console.log( 'Duplicated iFrame (`' + document.URL + '\') detected. Abort!' );
 		return;
 	}
 
@@ -18,196 +58,395 @@ NelioAB.checker.init = function() {
 	// (when calling show_body, we'll release the holding)
 	jQuery.holdReady( true );
 
-	// Synchronize cookies and load an alt if it's required
+	// Make sure she has all the alternatives assigned and check if we need to
+	// load one
 	try {
-		var res = NelioAB.checker.syncCookiesAndCheck();
-		if ( 'DO_NOT_LOAD_ANYTHING' != res.action )
-			NelioAB.checker.loadAlternative( res.mode, res.action, false );
+		console.log( 'Checking `' + window.document.URL + '\'...' );
+		var isAltLoadingRequired = NelioAB.checker.assignAlternativesAndCheck();
+		if ( isAltLoadingRequired ) {
+			console.log( 'Loading `' + window.document.URL + '\'...' );
+			NelioAB.checker.loadAlternative();
+		}
+		else {
+			NelioAB.checker.cleanUrl();
+			NelioAB.helpers.showBody();
+			if ( !NelioAB.helpers.isBot() && NelioABBasic.hasQuota ) {
+				NelioAB.helpers.addDocumentHooks();
+				NelioAB.helpers.track();
+			}
+			console.log( 'Done!' );
+		}
 	}
 	catch(e) {
 		NelioAB.helpers.showBody();
+		console.warn( 'Oops! ' + e.stack );
 	}
 };
 
-NelioAB.checker.q = function() {
-	jQuery.ajax({
-		type:  'POST',
-		async: true,
-		url:   NelioABParams.ajaxurl,
-		data: { action:'nelioab_qc' }
-	});
-};
 
-NelioAB.checker.syncCookiesAndCheck = function() {
-	var result = { action:'DO_NOT_LOAD_ANYTHING', mode:'' };
+/**
+ * For each running experiment, this function assigns an alternative to the
+ * user. It will also check whether the current page is under test and requires
+ * to load an alternative.
+ *
+ * @return whether alternative content has to be loaded or not.
+ */
+NelioAB.checker.assignAlternativesAndCheck = function() {
+	var isAltLoadingRequired = false;
 
 	// Make the body invisible
 	NelioAB.helpers.hideBody();
 
-	jQuery.ajax({
-		type:  'POST',
-		async: false,
-		url:   NelioABParams.ajaxurl,
-		data: {
-			action: 'nelioab_sync_cookies_and_check',
-			nelioab_current_url: document.URL,
-			nelioab_referer_url: document.referrer,
-			nelioab_cookies: NelioAB.cookies.list()
-		},
-		success: function(data) {
-			try {
-				json = JSON.parse(data);
-				NelioABParams.sync = json.sync;
-				cookies = json.cookies;
-				if ( cookies['__nelioab_new_version'] != undefined )
-					NelioAB.cookies.clean();
-				jQuery.each(cookies, function(name, value) {
-					if (NelioAB.cookies.get(name) == undefined) {
-						document.cookie = name + '=' + value + ';path=/';
-					}
-					else if (name == 'nelioab_was_in') {
-						NelioAB.cookies.remove(name);
-						document.cookie = name + '=' + value + ';path=/';
-					}
-					if ( value == '__delete_cookie' ) {
-						NelioAB.cookies.remove(name);
-					}
-				});
-				NelioAB.cookies.remove('__nelioab_new_version');
+	// ****************************************************************************
+	// First, we load the appropriate environment and make sure the user has an
+	// alternative for each running experiment. Obviously, alternative
+	// assignation has to take into account the values of the cookies (which
+	// might overwrite the values she already has).
+	var getParams = [];
+	var url = document.URL;
+	var hash = NelioAB.helpers.extractHashAnchor( url );
+	if ( hash.length > 1 )
+		url = url.replace( hash, '' );
+	var aux = url.indexOf( '?' );
+	if ( -1 != aux )
+		getParams = NelioAB.helpers.extractGetParams( url.substring(aux) );
 
-				if ( NelioAB.cookies.get('nelioab_session') == undefined )
-					document.cookie = 'nelioab_session=' +
-						NelioAB.cookies.get('nelioab_userid') + '-' +
-						new Date().getTime()  +
-						';path=/';
+	aux = [];
+	for ( var i = 0; i < getParams.length; ++i ) {
+		if ( NelioAB.checker.nabMatcher.test( getParams[i][0] ) )
+			aux.push( getParams[i] );
+	}
+	NelioAB.user.loadEnvironmentAndSetAlternatives(aux);
 
-				// If the user is not in the test, leave
-				if ( NelioAB.cookies.get( 'nelioab_is_in' ) == 'no' ) {
-					NelioAB.helpers.showBody();
-					return result;
-				}
+	// ****************************************************************************
+	// Next, we check if we're supposed to load an alternative
+	isAltLoadingRequired = NelioAB.helpers.isAltLoadingRequired();
 
-				// If we should load an alternative...
-				if ( 'LOAD_ALTERNATIVE' == json.action || 'LOAD_CONSISTENT_VERSION' == json.action ) {
-					result.action = json.action;
-					result.mode = json.mode;
-				}
-				else {
-					NelioAB.helpers.showBody();
-					NelioAB.helpers.track();
-				}
+
+	// ****************************************************************************
+	// Finally, it is possible that we're already seeing the alternative content
+	// (all versions use the same tracking script). Therefore, we have to make
+	// sure we aren't, or we might end up in an infinite loop.
+
+	// These are the params the script generated for me
+	var myParams = NelioAB.checker.generateParamsForAltLoading();
+
+	// Let's check if we need to load an alternative (that is, rewrite the
+	// URL). This will only occur if:
+	// a) not all the relevant params are included
+	var allParamsIncluded = true;
+	for ( var i = 0; i < myParams.length && allParamsIncluded; ++i ) {
+		var found = false;
+		for ( var j = 0; j < getParams.length && !found; ++j ) {
+			var myName = myParams[i][0];
+			var myValue = myParams[i][1];
+			if ( NelioAB.checker.nabPrefix + 'e' == myName ) {
+				myValue = '';
+				var aux = myParams[i][1];
+				for ( var k = 0; k < aux.length; ++k )
+					myValue += aux[k][0] + ':' + aux[k][1] + ',';
+				if ( myValue.length > 0 )
+					myValue = myValue.substring(0, myValue.length - 1);
 			}
-			catch(e) {
-				NelioAB.helpers.showBody();
-			}
-		},
-		error: function() {
-			NelioAB.helpers.showBody();
+			if ( myName == getParams[j][0] && myValue == getParams[j][1])
+				found = true;
 		}
-	});
+		if ( !found )
+			allParamsIncluded = false;
+	}
+
+	// b) there are params that make no longer sense
+	var areThereTooManyParams = false;
+	for ( var i = 0; i < getParams.length && !areThereTooManyParams; ++i ) {
+		var found = false;
+		if ( !NelioAB.checker.nabMatcher.test( getParams[i][0] ) )
+			continue;
+		for ( var j = 0; j < myParams.length && !found; ++j )
+			if ( getParams[i][0] == myParams[j][0] )
+				found = true;
+		if ( !found )
+			areThereTooManyParams = true;
+	}
+
+	// As we said, if, and only if, all the required params are already in the
+	// URL, we don't need to load alternative content (for we're already seeing
+	// it).
+	if ( allParamsIncluded && !areThereTooManyParams )
+		isAltLoadingRequired = false;
+
+	return isAltLoadingRequired;
+};
+
+
+/**
+ * This function builds a new URL using the address url, adding all
+ * myParams list and completing it with the getParams.
+ *
+ * @param url
+ *              a URL without get params.
+ * @param myParams
+ *              a list of params relevant for AB experiments.
+ * @param getParams
+ *              any other params the original URL could have had (including
+ *              AB-related params too, which will be ignored).
+ *
+ * @return the new URL with a list of GET params obtained from the
+ *          arrays myParams and getParams.
+ */
+NelioAB.checker.buildUrl = function( url, myParams, getParams ) {
+	url += '?';
+
+	// First of all, we add all the relevant AB params
+	for ( var i = 0; i < myParams.length; ++i ) {
+		var name = myParams[i][0];
+		var vals = myParams[i][1];
+		if ( NelioAB.checker.nabPrefix + 'e' == name ) {
+			var aux = '';
+			for ( var j = 0; j < vals.length; ++j )
+				aux += vals[j][0] + ':' + vals[j][1] + ',';
+			aux = aux.substring( 0, aux.length - 1);
+			url += NelioAB.checker.nabPrefix + 'e=' + encodeURIComponent( aux ) + '&';
+		}
+		else {
+			var val = '' + myParams[i][1];
+			if ( val.length > 0 )
+				val = '=' + val;
+			url += myParams[i][0] + val + '&';
+		}
+	}
+
+	// Then, we add the remaining, non-AB-relevant params
+	for ( var i = 0; i < getParams.length; ++i ) {
+		var name = getParams[i][0];
+		if ( !NelioAB.checker.nabMatcher.test( name ) ) {
+			var val = '' + getParams[i][1];
+			if ( val.length > 0 )
+				val = '=' + val;
+			url += name + val + '&';
+		}
+	}
+	url = url.substring( 0, url.length - 1);
+
+	return url;
+};
+
+
+/**
+ * This function prepares all the GET params for loading alternative content.
+ *
+ * @return a list with GET params.
+ */
+NelioAB.checker.generateParamsForAltLoading = function() {
+	// First, we create the result object
+	var result = [];
+
+	// Then, we need to see if the current page is under a non-global AB
+	// experiment
+	var abForThisPage = false;
+	for ( var i = 0; i < NelioABEnv.ab.length && !exp; ++i ) {
+		var pid = NelioABEnv.ab[i].alts[0];
+		if ( typeof NelioABEnv.ab[i].pid != 'undefined' )
+			pid = NelioABEnv.ab[i].pid;
+		if ( NelioABParams.info.currentId == pid )
+			abForThisPage = NelioABEnv.ab[i];
+	}
+	if ( abForThisPage ) {
+		result.push( [NelioAB.checker.nabPrefix, NelioAB.user.getAlt( abForThisPage.name )] );
+		abForThisPage = abForThisPage.name;
+	}
+
+	// Next, we get all the global AB experiments alphabetically
+	var aux;
+	aux = NelioAB.user.getGlobalAlt( 'css' );
+	if ( aux.length > 0 )
+		result.push( [NelioAB.checker.nabPrefix + 'c', aux] );
+	aux = NelioAB.user.getGlobalAlt( 'menu' );
+	if ( aux.length > 0 )
+		result.push( [NelioAB.checker.nabPrefix + 'm', aux] );
+	aux = NelioAB.user.getGlobalAlt( 'theme' );
+	if ( aux.length > 0 )
+		result.push( [NelioAB.checker.nabPrefix + 't', aux] );
+	aux = NelioAB.user.getGlobalAlt( 'widget' );
+	if ( aux.length > 0 )
+		result.push( [NelioAB.checker.nabPrefix + 'w', aux] );
+
+	// Finally, we need to add all the remaining experiments. These experiments
+	// make the site "consistent", so that alternative content is displayed
+	// consistently, regardless of where it's seen.
+	// Obviously, we'll only load alternative data if:
+	//  a) Site consistency is enabled (all page have to trigger an alternative
+	//     loading request, to ensure consistency).
+	//  b) There's at least one headline experiment running (all pages will
+	//     load alternative content, just to make sure that alternative
+	//     headlines--if any--are properly replaced).
+	//  c) We already need to load an alternative (because there's an AB
+	//     experiment for the current page or a global experiment).
+	if ( NelioABBasic.settings.consistency ||
+	     '*' == NelioABEnv.tids[0] ||
+	     result.length > 0 ) {
+		// Since they sorted alphabetically in AE, we simply need to iterate over
+		// all AB exps, excluding the one that affects this page (if any) and the
+		// global ones.
+		var otherExps = [];
+		for ( var i = 0; i < NelioABEnv.ab.length; ++i ) {
+			var exp = NelioABEnv.ab[i];
+			if ( abForThisPage == exp.name )
+				continue;
+			if ( exp.name.indexOf( NelioAB.helpers.getRegularCookiePrefix() ) == -1 )
+				continue;
+			var id = exp.name.replace( NelioAB.helpers.getRegularCookiePrefix(), '' );
+			otherExps.push( [id, NelioAB.user.getAlt( id )] );
+		}
+		if ( otherExps.length > 0 )
+			result.push( [NelioAB.checker.nabPrefix + 'e', otherExps] );
+	}
 
 	return result;
 };
 
-NelioAB.checker.loadAlternative = function( mode, action, isLastTry ) {
-	var data = {
-		'nelioab_cookies': NelioAB.cookies.listForAltLoading(),
-		'nelioab_current_url': document.URL,
-		'nelioab_referer_url': document.referrer
-	};
 
-	if ( 'LOAD_ALTERNATIVE' == action )
-		data['nelioab_load_alt'] = 'true';
-	else if ( 'LOAD_CONSISTENT_VERSION' == action )
-		data['nelioab_load_consistent_version'] = 'true';
-	else
-		return;
-
-	var permalink = NelioAB.helpers.mergeUrlParams( NelioABParams.permalink, document.URL );
-
-	console.log("Loading content...");
-	jQuery.ajax({
-		type:  mode,
-		async: false,
-		url:   permalink,
-		data: data,
-		success: function(data) {
-			if ( data.indexOf( '\"nelioabScriptAction\":\"track\"' ) == -1 ) {
-				console.error("Something went wrong when loading the alternative content");
-				NelioAB.helpers.showBody();
-				return;
-			}
-			// Removing jetpack stats scripts from the alternative
-			data = data
-				.replace(
-					/<.cript src="https?:\/\/stats.(wordpress|wp).com\/e-([^\n]*)\n/g,
-					'<!-- <scr'+'ipt src="http://stats.$1.com/e-$2 -->\n' +
-					'\t<scr'+'ipt>function st_go(a){} function linktracker_init(a,b){}</scr'+'ipt>\n'
-				);
-			// Removing apple ad the second time
-			data = data
-				.replace(
-					/meta name=['"]apple-itunes-app['"]/,
-					'meta name="nelio-itunes-app"'
-				);
-			var docIsReady = function() {
-				var aux = window.setTimeout(function() {}, 0);
-				while (aux--) window.clearTimeout(aux);
-				var aux = window.setInterval(function() {}, 20000) + 1;
-				while (aux--) window.clearInterval(aux);
-				window.onbeforeunload = window.onunload = false;
-				console.log("Showing content...");
-				if ( typeof document.open() === 'undefined' ) {
-					var doc = document.implementation.createHTMLDocument('');
-					document.open = doc.open;
-					document.write = doc.write;
-					document.close = doc.close;
-					document.open();
-				}
-				document.write(data);
-				document.close();
-			};
-			if (document.addEventListener) {
-				// For all major browsers, except IE 8 and earlier
-				document.addEventListener('DOMContentLoaded',docIsReady);
-			} else if (document.attachEvent) {
-				// For IE 8 and earlier versions
-				document.attachEvent('DOMContentLoaded',docIsReady);
-			}
-			else {
-				NelioAB.helpers.showBody();
-			}
-
-			// Manually calling `docIsReady` if the event DOMContentLoaded was already triggered
-			if ( 'complete' == document.readyState || 'loaded' == document.readyState ) {
-				docIsReady();
-			}
-		},
-		error: function(data) {
-			if ( !isLastTry ) {
-				var p = NelioABParams.permalink;
-				p = p.replace(/^(https?:\/\/)/, '$1www.');
-				p = p.replace(/^(https?:\/\/)www\.www\./, '$1');
-				NelioABParams.permalink = p
-				NelioAB.checker.loadAlternative( mode, action, true );
-			}
-			else {
-				NelioAB.helpers.showBody();
+/**
+ * Returns the same params as generateParamsForAltLoading with one difference:
+ * the param "nab" does not exist; instead, its value is specified in "nabe".
+ *
+ * @return the same params as generateParamsForAltLoading with one difference:
+ *         the param "nab" does not exist; instead, its value is specified in
+ *         "nabe".
+ */
+NelioAB.checker.generateAjaxParams = function() {
+	var types = [ 'css', 'menu', 'theme', 'widget' ];
+	var result = { 'nelioab_env' : {} };
+	for ( var i = 0; i < NelioABEnv.ab.length; ++i ) {
+		var exp  = NelioABEnv.ab[i];
+		var name = exp.name;
+		var val  = false;
+		var id = false;
+		if ( name.indexOf( NelioAB.helpers.getRegularCookiePrefix() ) == 0 ) {
+			id = name.replace( NelioAB.helpers.getRegularCookiePrefix(), '' );
+			val = NelioAB.user.getAlt(id);
+		}
+		for ( var j = 0; j < types.length && !val; ++j ) {
+			var type = types[j];
+			if ( name.indexOf( NelioAB.helpers.getGlobalCookiePrefix( type ) ) == 0 ) {
+				val = NelioAB.user.getGlobalAlt( type );
+				id = name.replace( NelioAB.helpers.getGlobalCookiePrefix( type ), '' );
 			}
 		}
-	});
-}
+		if ( val !== false )
+			result.nelioab_env[id] = parseInt(val);
+	}
+	return result;
+};
 
-switch ( NelioABParams.nelioabScriptAction ) {
-	case 'sync-and-check':
-		NelioAB.checker.init();
-		break;
-	case 'track':
-		NelioAB.helpers.track();
-		NelioAB.delayed.release();
-		break;
-	case 'skip':
-		NelioAB.delayed.release();
-		break;
-}
 
+/**
+ * This function loads the appropriate alternative overwriding the current URL
+ * with a new URL that contains a list of AB Testing GET params.
+ */
+NelioAB.checker.loadAlternative = function() {
+	var url = document.URL;
+
+	// First, we remove the hash tag (if any)
+	var hash = NelioAB.helpers.extractHashAnchor( url );
+	if ( hash.length > 1 ) {
+		url = url.replace( hash, '' );
+	}
+
+	// We then process all GET params
+	var getParams = [];
+	var aux = url.indexOf( '?' );
+	if ( -1 != aux )
+		getParams = NelioAB.helpers.extractGetParams( url.substring(aux) );
+	var myParams = NelioAB.checker.generateParamsForAltLoading();
+
+	try {
+		var utm_referrer = '';
+		for ( var i = 0; i < getParams.length && utm_referrer.length == 0; ++i )
+			if ( getParams[i][0] == 'utm_referrer' )
+				utm_referrer = getParams[i][1];
+		if ( utm_referrer.length == 0 && document.referrer.length > 0 ) {
+			var refDomain = document.referrer;
+			var thisDomain = document.URL;
+
+			refDomain = refDomain.replace( /^https?:\/\//, '' );
+			refDomain = refDomain.replace( /\/.*$/, '' );
+
+			thisDomain = thisDomain.replace( /^https?:\/\//, '' );
+			thisDomain = thisDomain.replace( /\/.*$/, '' );
+
+			if ( thisDomain != refDomain )
+				getParams.push( ['utm_referrer', encodeURIComponent( document.referrer )] );
+		}
+	}
+	catch ( e ) {
+	}
+
+	var aux = document.URL.indexOf( '?' );
+	if ( aux != -1 )
+		url = url.substring( 0, aux );
+	url = NelioAB.checker.buildUrl( url, myParams, getParams );
+
+	// We have to make sure that the hash anchor (if any), appears at the end
+	// of the URL (otherwise, it won't work).
+	url += hash;
+	window.location.replace( url );
+};
+
+
+/**
+ * This function cleans the URL, removing (if necessary) some A/B-Testing GET
+ * params. They are removed depending on the value of hideParms, which can
+ * either be [all|context|none].
+ */
+NelioAB.checker.cleanUrl = function() {
+	var url = document.URL;
+	var hash = NelioAB.helpers.extractHashAnchor( url );
+	if ( hash.length > 1 ) {
+		url = url.replace( hash, '' );
+	}
+	var aux = url.indexOf( '?' );
+	var getParams = [];
+	if ( -1 != aux ) {
+		getParams = NelioAB.helpers.extractGetParams( url.substring(aux) );
+		url = url.substring( 0, aux ) ;
+	}
+	if ( 'all' == NelioABBasic.settings.hideParams ) {
+		url += '?';
+		for ( var i = 0; i < getParams.length; ++i ) {
+			if ( NelioAB.checker.nabMatcher.test( getParams[i][0] ) )
+				continue;
+			var val = '' + getParams[i][1];
+			if ( val.length > 0 )
+				val = '=' + val;
+			url += getParams[i][0] + val + '&';
+		}
+		url = url.substring( 0, url.length-1 );
+		url += hash;
+		NelioAB.helpers.updateRefererInformation( url );
+	}
+	else if ( 'context' == NelioABBasic.settings.hideParams ) {
+		url += '?';
+		for ( var i = 0; i < getParams.length; ++i ) {
+			if ( NelioAB.checker.nabPrefix + 'e' == getParams[i][0] )
+				continue;
+			var val = '' + getParams[i][1];
+			if ( val.length > 0 )
+				val = '=' + val;
+			url += getParams[i][0] + val + '&';
+		}
+		url = url.substring( 0, url.length-1 );
+		url += hash;
+		NelioAB.helpers.updateRefererInformation( url );
+	}
+	else if ( 'none' == NelioABBasic.settings.hideParams ) {
+		// We have to use the URL as it is
+		url = document.URL;
+		NelioAB.helpers.updateRefererInformation( url );
+	}
+};
+
+
+/**
+ * Let's start!
+ */
+NelioAB.checker.init();

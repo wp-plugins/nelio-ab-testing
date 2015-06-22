@@ -20,6 +20,8 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
 	require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 	require_once( NELIOAB_UTILS_DIR . '/admin-page.php' );
+
+
 	class NelioABSelectExpCreationPage extends NelioABAdminPage {
 
 		public function __construct( $title ) {
@@ -69,6 +71,20 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 				)
 			);
 
+			// WOOCOMMERCE PRODUCT SUMMARY
+			if ( NelioABWooCommerceSupport::is_plugin_active() ) {
+				$this->print_beautiful_box(
+					'wc-product-summary',
+					__( 'WooCommerce Product Summary', 'nelioab' ),
+					array( &$this, 'print_new_exp_box',
+						array(
+							'wc-product-summary', $url . NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP,
+							__( '<strong>Change the name, short description, and featured image of your product, and discover which combination leads to more sales</strong>. Every time the product appears in your website, it is counted as a visit. Once a purchase containing that product is completed, you have a new conversion. Easy, right?', 'nelioab' )
+						)
+					)
+				);
+			}
+
 			// HEADLINE ONLY
 			$this->print_beautiful_box(
 				'title',
@@ -99,7 +115,7 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 			// HEATMAPS
 			$this->print_beautiful_box(
 				'heatmap',
-				__( 'New Heatmap Experiment for Page or Post', 'nelioab' ),
+				__( 'New Heatmap Experiment for Pages or (Custom) Posts', 'nelioab' ),
 				array( &$this, 'print_new_exp_box',
 					array(
 						'heatmap', $url . NelioABExperiment::HEATMAP_EXP,
@@ -116,6 +132,18 @@ if ( !class_exists( 'NelioABSelectExpCreationPage' ) ) {
 					array(
 						'css', $url . NelioABExperiment::CSS_ALT_EXP,
 						__( 'Do you want to <strong>change the appearence of your WordPress site, but tweaking only small elements here and there</strong>? Then CSS Tests is what you\'re looking for. Create one or more CSS fragments that will be applied to your website and discover which one offers the better results.', 'nelioab' )
+					)
+				)
+			);
+
+			// CUSTOM POST TYPES
+			$this->print_beautiful_box(
+				'cpt',
+				__( 'New Custom Post Type Test', 'nelioab' ),
+				array( &$this, 'print_new_exp_box',
+					array(
+						'cpt', $url . NelioABExperiment::CPT_ALT_EXP,
+						__( '<strong>Pure A/B Testing!</strong> Create one or more alternatives of a custom post type and <strong>change whatever you want</strong>: the title, the text, the custom fields... and do it using your default WordPress editor! Then define the goals and you\'re ready!', 'nelioab' )
 					)
 				)
 			);
