@@ -374,8 +374,23 @@ NelioAB.checker.loadAlternative = function() {
 			thisDomain = thisDomain.replace( /^https?:\/\//, '' );
 			thisDomain = thisDomain.replace( /\/.*$/, '' );
 
-			if ( thisDomain != refDomain )
-				getParams.push( ['utm_referrer', encodeURIComponent( document.referrer )] );
+			if ( thisDomain != refDomain ) {
+				var id = -1;
+				for ( var i = 10; i < 20; ++i ) {
+					var aux = NelioAB.cookies.get( 'nabr' + i );
+					if ( typeof aux == 'undefined' ) {
+						id = i;
+						break;
+					}
+				}
+				if ( -1 == id ) {
+					id = Math.floor( Math.random() * 10 ) + 10;
+				}
+				var cookieDetails = ';expires=' + NelioAB.cookies.EXPIRES_IN_TWO_MINUTES + ';path=/';
+				var val = document.referrer;
+				document.cookie = 'nabr' + id + '=' + encodeURIComponent( val ) + cookieDetails;
+				getParams.push( ['nabr', id] );
+			}
 		}
 	}
 	catch ( e ) {
@@ -410,14 +425,31 @@ NelioAB.checker.cleanUrl = function() {
 		getParams = NelioAB.helpers.extractGetParams( url.substring(aux) );
 		url = url.substring( 0, aux ) ;
 	}
+	// Rewrite the "nabr" param to "utm_referrer"
+	for ( var i = 0; i < getParams.length; ++i ) {
+		if ( 'nabr' == getParams[i][0] ) {
+			var cookieName = 'nabr' + getParams[i][1];
+			var value = NelioAB.cookies.get( cookieName );
+			NelioAB.cookies.remove( cookieName );
+			if ( typeof value == 'string' && value.length > 0 ) {
+				getParams[i][0] = 'utm_referrer';
+				getParams[i][1] = value;
+			} else if ( typeof getParams.splice == 'function' ) {
+				getParams.splice(i,1);
+			}
+			break;
+		}
+	}
 	if ( 'all' == NelioABBasic.settings.hideParams ) {
 		url += '?';
 		for ( var i = 0; i < getParams.length; ++i ) {
-			if ( NelioAB.checker.nabMatcher.test( getParams[i][0] ) )
+			if ( NelioAB.checker.nabMatcher.test( getParams[i][0] ) ) {
 				continue;
+			}
 			var val = '' + getParams[i][1];
-			if ( val.length > 0 )
+			if ( val.length > 0 ) {
 				val = '=' + val;
+			}
 			url += getParams[i][0] + val + '&';
 		}
 		url = url.substring( 0, url.length-1 );
@@ -427,11 +459,13 @@ NelioAB.checker.cleanUrl = function() {
 	else if ( 'context' == NelioABBasic.settings.hideParams ) {
 		url += '?';
 		for ( var i = 0; i < getParams.length; ++i ) {
-			if ( NelioAB.checker.nabPrefix + 'e' == getParams[i][0] )
+			if ( NelioAB.checker.nabPrefix + 'e' == getParams[i][0] ) {
 				continue;
+			}
 			var val = '' + getParams[i][1];
-			if ( val.length > 0 )
+			if ( val.length > 0 ) {
 				val = '=' + val;
+			}
 			url += getParams[i][0] + val + '&';
 		}
 		url = url.substring( 0, url.length-1 );
@@ -439,8 +473,16 @@ NelioAB.checker.cleanUrl = function() {
 		NelioAB.helpers.updateRefererInformation( url );
 	}
 	else if ( 'none' == NelioABBasic.settings.hideParams ) {
-		// We have to use the URL as it is
-		url = document.URL;
+		url += '?';
+		for ( var i = 0; i < getParams.length; ++i ) {
+			var val = '' + getParams[i][1];
+			if ( val.length > 0 ) {
+				val = '=' + val;
+			}
+			url += getParams[i][0] + val + '&';
+		}
+		url = url.substring( 0, url.length-1 );
+		url += hash;
 		NelioAB.helpers.updateRefererInformation( url );
 	}
 };

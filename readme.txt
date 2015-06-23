@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns, woocommerce testing, track purchases, ab product, split product, order tracking, woocommerce
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.2.0
+Stable tag: 4.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -288,6 +288,18 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.2.1 (June 23, 2015) =
+* **Bug fix**. JavaScript error when WooCommerce is not installed (a variable
+named `NelioABParams.sync.productSummaries` was undefined and triggered the
+error).
+* **Issue resolved**. Some servers return a "414 Request-URI Too Long" status
+code when adding a too long `utm_referrer` GET parameter. Now the parameter is
+only included before syncing to Google Analytics (which is the one who needs
+it).
+* **Improvement**. In the results page, we now only call a "Winner!" when the
+confidence is high enough; otherwise, we call a "Possible Winner"
+
 
 = 4.2.0 (June 22, 2015) =
 * **Support for WooCommerce**. We're very proud to announce that Nelio A/B
@@ -979,7 +991,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.2.0 =
+= 4.2.1 =
 WooCommerce Support. First version that includes support for WooCommerce. You
 can now test your products (change their name, featured image, and description),
 and use the Purchase conversion action for monitoring actual purchases.

@@ -1127,27 +1127,33 @@ HTML;
 					$status_message = __( 'No alternative was better than the rest', 'nelioab' );
 			}
 			else {
-				$main_message = __( '¡Winner!', 'nelioab' );
 				if ( $the_winner == 0 ) {
-					if ( $the_winner_confidence >= NelioABSettings::get_min_confidence_for_significance() )
-						$status_message = sprintf( __( 'Original wins with a %1$s%% confidence', 'nelioab' ),
+					if ( $the_winner_confidence >= NelioABSettings::get_min_confidence_for_significance() ) {
+						$status_message = sprintf( __( 'Original wins with a <strong>%1$s%%</strong> confidence', 'nelioab' ),
 							$the_winner_confidence );
-					else
-						$status_message = sprintf( __( 'Original wins with just a %1$s%% confidence', 'nelioab' ),
+						$main_message = __( 'Winner!', 'nelioab' );
+					} else {
+						$status_message = sprintf( __( 'Original wins with just a <strong>%1$s%%</strong> confidence', 'nelioab' ),
 							$the_winner_confidence );
+						$main_message = __( 'Possible Winner', 'nelioab' );
+					}
 				} else {
-					if ( $the_winner_confidence >= NelioABSettings::get_min_confidence_for_significance() )
-						$status_message = sprintf( __( 'Alternative %1$s wins with a %2$s%% confidence', 'nelioab' ),
+					if ( $the_winner_confidence >= NelioABSettings::get_min_confidence_for_significance() ) {
+						$status_message = sprintf( __( 'Alternative %1$s wins with a <strong>%2$s%%</strong> confidence', 'nelioab' ),
 							$the_winner, $the_winner_confidence );
-					else
-						$status_message = sprintf( __( 'Alternative %1$s wins with just a %2$s%% confidence', 'nelioab' ),
+						$main_message = __( 'Winner!', 'nelioab' );
+					} else {
+						$status_message = sprintf( __( 'Alternative %1$s wins with just a <strong>%2$s%%</strong> confidence', 'nelioab' ),
 							$the_winner, $the_winner_confidence );
+						$main_message = __( 'Possible Winner', 'nelioab' );
+					}
 				}
 
-				if ( $the_winner_confidence >= NelioABSettings::get_min_confidence_for_significance() )
+				if ( $the_winner_confidence >= NelioABSettings::get_min_confidence_for_significance() ) {
 					$src = nelioab_admin_asset_link( '/images/progress-yes.png' );
-				else
+				} else {
 					$src = nelioab_admin_asset_link( '/images/progress-yes-no.png' );
+				}
 			}
 
 			$print_improvement = false;

@@ -363,6 +363,4 @@ NelioAB.user.loadEnvironmentAndSetAlternatives = function( params ) {
  */
 NelioAB.user.overwriteAlternatives = function( params ) {
 	var cookieDetails = ';expires=' + NelioAB.cookies.EXPIRES_IN_THREE_MONTHS + ';path=/';
-
-
 };

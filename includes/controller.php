@@ -525,10 +525,13 @@ if ( !class_exists( 'NelioABController' ) ) {
 					'backend'        => array( 'domain'  => NELIOAB_BACKEND_DOMAIN,
 					                           'version' => NELIOAB_BACKEND_VERSION ),
 					'misc'           => $misc,
-					'sync'           => array( 'headlines' => array() ),
 					'info'           => $current_page_ids,
 					'ieUrl'          => preg_replace( '/^https?:/', '', NELIOAB_URL . '/ajax/iesupport.php' ),
-					'wasPostRequest' => ( 'POST' === $_SERVER['REQUEST_METHOD'] )
+					'wasPostRequest' => ( 'POST' === $_SERVER['REQUEST_METHOD'] ),
+					'sync' => array(
+							'headlines'        => array(),
+							'productSummaries' => array()
+						),
 				);
 
 		}
