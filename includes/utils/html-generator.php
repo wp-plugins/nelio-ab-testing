@@ -1,26 +1,44 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 
+	/**
+	 * PHPDOC
+	 *
+	 * @since PHPDOC
+	 * @package \NelioABTesting\Utils
+	 */
 	abstract class NelioABHtmlGenerator extends WP_List_Table {
 
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $filter_url  PHPDOC
+		 * @param array          $filters     PHPDOC
+		 * @param string         $filter_name PHPDOC
+		 * @param string|boolean $current     PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_filters( $filter_url, $filters, $filter_name, $current = false ) { ?>
 			<ul class='subsubsub'><?php
 				// Default filter
@@ -53,9 +71,26 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			</ul><?php
 		}
 
-		public static function print_finalization_mode_field( $mode, $value, $valid_modes = false ) {
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param int   $mode        PHPDOC
+		 * @param mixed $value       PHPDOC
+		 * @param array $valid_modes PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @see NelioABExperiment::FINALIZATION_MANUAL,
+		 * @see NelioABExperiment::FINALIZATION_AFTER_DATE,
+		 * @see NelioABExperiment::FINALIZATION_AFTER_VIEWS,
+		 * @see NelioABExperiment::FINALIZATION_AFTER_CONFIDENCE,
+		 *
+		 * @since PHPDOC
+		 */
+		public static function print_finalization_mode_field( $mode, $value, $valid_modes = array() ) {
 			require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
-			if ( !$valid_modes ) {
+			if ( count( $valid_modes ) == 0 ) {
 				$valid_modes = array(
 					NelioABExperiment::FINALIZATION_MANUAL,
 					NelioABExperiment::FINALIZATION_AFTER_DATE,
@@ -224,8 +259,19 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			</script><?php
 		}
 
-		private static function select_confidence( $max, $min = false ) {
-			if ( $min === false ) {
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param int $max PHPDOC
+		 * @param int $min PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		private static function select_confidence( $max, $min = -1 ) {
+			if ( $min === -1 ) {
 				$min = $max;
 				++$max;
 			}
@@ -236,7 +282,18 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 				return ' ';
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param int|boolean $id PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_scheduling_picker( $id = false ) {
+			/** @var WP_Locale $wp_locale */
 			global $wp_locale;
 			$style = ' style="vertical-align:top;height:28px;max-width:';
 
@@ -256,14 +313,25 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 				'<input type="text" name="aa" ' . $style . '6em;" size="4" maxlength="4" autocomplete="off" ' .
 				'placeholder="' . __( 'Year', 'nelioab' ) . '" class="aa" />';
 
-			$id = '';
 			if ( $id )
 				$id = 'id="' . $id . '"';
+			else
+				$id = '';
 			echo '<div ' . $id . ' class="timestamp-wrap" style="vertical-align:bottom;">';
 			printf( __( '%1$s %2$s, %3$s', 'nelioab' ), $month, $day, $year );
 			echo '</div>';
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $jquery_bypass_elems PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_unsaved_changes_control( $jquery_bypass_elems ) { ?>
 			<script type="text/javascript">
 			(function($) {
@@ -300,6 +368,23 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			<?php
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 *
+		 * @return string The searcher HTML element.
+		 *
+		 * @see self::print_page_searcher()
+		 *
+		 * @since PHPDOC
+		 */
 		public static function get_page_searcher(
 				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			ob_start();
@@ -309,6 +394,23 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			return $value;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 *
+		 * @return string The searcher HTML element.
+		 *
+		 * @see self::print_post_searcher()
+		 *
+		 * @since PHPDOC
+		 */
 		public static function get_post_searcher(
 				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			ob_start();
@@ -318,6 +420,22 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			return $value;
 		}
 
+
+		/**
+		 * This function prints a searcher that searches for pages, posts, and custom elements, and includes the latest posts and the landing page.
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @see self::print_post_searcher_based_on_type
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_full_searcher(
 				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
@@ -325,30 +443,133 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 				array( 'nelioab-all-post-types', 'nelioab-latest-posts', 'nelioab-theme-landing-page' ) );
 		}
 
+
+		/**
+		 * This function prints a page, post, or custom element searcher.
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @see self::print_post_searcher_based_on_type
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_any_post_type_searcher(
 				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
 				$field_id, $value, $drafts, $classes, $autoconvert, array( 'nelioab-all-post-types' ) );
 		}
 
+
+		/**
+		 * This function prints a page/post searcher.
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @see self::print_post_searcher_based_on_type
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_page_or_post_searcher(
 				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
 				$field_id, $value, $drafts, $classes, $autoconvert, array( 'page', 'post' ) );
 		}
 
+
+		/**
+		 * This function prints a page searcher.
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @see self::print_post_searcher_based_on_type
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_page_searcher(
 				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
 				$field_id, $value, $drafts, $classes, $autoconvert, array( 'page' ) );
 		}
 
+
+		/**
+		 * This function prints a post searcher.
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @see self::print_post_searcher_based_on_type
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_post_searcher(
 				$field_id, $value = false, $drafts = 'no-drafts', $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
 				$field_id, $value, $drafts, $classes, $autoconvert, array( 'post' ) );
 		}
 
+
+		/**
+		 * This function prints a post type searcher.
+		 *
+		 * @param string         $field_id       PHPDOC
+		 * @param string|boolean $value          PHPDOC
+		 * @param string         $drafts         PHPDOC
+		 * @param string         $post_type_name PHPDOC
+		 * @param array          $classes        PHPDOC
+		 * @param boolean        $autoconvert    PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @see self::print_post_searcher_based_on_type
+		 *
+		 * @since PHPDOC
+		 */
+		public static function print_post_type_searcher(
+			$field_id, $value = false, $drafts = 'no-drafts', $post_type_name, $classes = array(), $autoconvert = true ) {
+			self::print_post_searcher_based_on_type(
+				$field_id, $value, $drafts, $classes, $autoconvert, array( $post_type_name ) );
+		}
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 *
+		 * @return string The searcher HTML element.
+		 *
+		 * @see self::print_form_searcher()
+		 *
+		 * @since PHPDOC
+		 */
 		public static function get_form_searcher(
 				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
 			ob_start();
@@ -359,12 +580,65 @@ if ( !class_exists( 'NelioABHtmlGenerator' ) ) {
 			return $value;
 		}
 
+
+		/**
+		 * This function prints a form searcher.
+		 *
+		 * PHPDOC
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_form_searcher(
 				$field_id, $value = false, $classes = array(), $autoconvert = true ) {
 			self::print_post_searcher_based_on_type(
 				$field_id, $value, 'no-drafts', $classes, $autoconvert, array( 'form' ) );
 		}
 
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 * @param array          $types       PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
+		public static function get_post_searcher_based_on_type(
+				$field_id, $value, $drafts, $classes, $autoconvert, $types ) {
+			ob_start();
+			self::print_post_searcher_based_on_type(
+				$field_id, $value, $drafts, $classes, $autoconvert, $types );
+			$value = ob_get_contents();
+			ob_end_clean();
+			return $value;
+		}
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string         $field_id    PHPDOC
+		 * @param string|boolean $value       PHPDOC
+		 * @param string         $drafts      PHPDOC
+		 * @param array          $classes     PHPDOC
+		 * @param boolean        $autoconvert PHPDOC
+		 * @param array          $types       PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public static function print_post_searcher_based_on_type(
 				$field_id, $value, $drafts, $classes, $autoconvert, $types ) {
 			$placeholder = __( 'Select an option...', 'nelioab' );

@@ -112,34 +112,40 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 			$wp_list_table->display();
 		}
 
-		protected function print_alt_table_script() { ?>
-			<!-- Including the "Super Class" -->
-			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/alt-table.min.js' ); ?>"></script>
-			<!-- Redefining it -->
-			<script type="text/javascript">
-			NelioABAltTable.NO_IMAGE = '<?php echo nelioab_admin_asset_link( '/images/feat-image-placeholder.png' ); ?>';
-			</script>
-			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/alt-table-for-headlines.min.js' ); ?>"></script>
-			<script type="text/javascript">
-			(function($) {
-				// PRINTING THE LIST OF ALTERNATIVES
-				var alts = JSON.parse( decodeURIComponent(
-						jQuery('#nelioab_alternatives').attr('value')
-					) );
-				var altsTable = NelioABAltTable.getTable();
-				if ( altsTable ) {
-					NelioABAltTable.init(alts);
-					for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
-						var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
-						newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
-						newRow.find('img.feat-image').css('background-image','url(\''+NelioABAltTable.alts[i].imageSrc+'\')');
-						newRow.show();
-						altsTable.append(newRow);
-					}
-					NelioABAdminTable.repaint( NelioABAltTable.getTable() );
+		protected function print_params_for_required_scripts() { ?>
+			NelioABAltTableParams = { noImageSrc: '<?php
+				echo nelioab_admin_asset_link( '/images/feat-image-placeholder.png' )
+			?>' };
+			<?php
+		}
+
+		protected function get_required_scripts() {
+			return array(
+				nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ),
+				nelioab_admin_asset_link( '/js/admin-table.min.js' ),
+				nelioab_admin_asset_link( '/js/alt-table.min.js' ),
+				nelioab_admin_asset_link( '/js/alt-table-for-headlines.min.js' )
+			);
+		}
+
+		protected function print_code_for_setup_alternative_table() { ?>
+			// PRINTING THE LIST OF ALTERNATIVES
+			var alts = JSON.parse( decodeURIComponent(
+					jQuery('#nelioab_alternatives').attr('value')
+				) );
+			var altsTable = NelioABAltTable.getTable();
+			if ( altsTable ) {
+				NelioABAltTable.init(alts);
+				for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
+					var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
+					newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
+					newRow.find('img.feat-image').css('background-image','url(\''+NelioABAltTable.alts[i].imageSrc+'\')');
+					newRow.show();
+					altsTable.append(newRow);
 				}
-			})(jQuery);
-			</script>
+				jQuery('#exp_original').trigger('change');
+				NelioABAdminTable.repaint( NelioABAltTable.getTable() );
+			}
 			<?php
 		}
 
@@ -178,7 +184,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 			}
 
 			$html = sprintf(
-				'<img class="feat-image" ' . 
+				'<img class="feat-image" ' .
 					'src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" ' .
 					'style="background:url(\'%s\') no-repeat center center;' .
 					'-webkit-background-size:cover;' .
@@ -214,7 +220,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 
 		public function extra_tablenav( $which ) {
 			if ( 'top' == $which ){
-				$text = __( 'Please, <b>add one or more</b> title alternatives.',
+				$text = __( 'Please, <b>add one or more</b> headline alternatives.',
 					'nelioab' );
 				echo $text;
 			}
@@ -301,7 +307,7 @@ if ( !class_exists( 'NelioABHeadlineAltExpEditionPage' ) ) {
 				<div>
 					<div class="headline_image_holder">
 						<img class="headline_image"
-							src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" 
+							src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 							style="background:url('<?php echo nelioab_admin_asset_link( '/images/feat-image-placeholder.png' ); ?>') no-repeat center center;
 								-webkit-background-size:cover;
 								-moz-background-size:cover;
