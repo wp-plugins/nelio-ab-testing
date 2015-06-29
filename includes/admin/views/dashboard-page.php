@@ -23,6 +23,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 		private $graphic_delay;
 		private $experiments;
 		private $quota;
+		private $rss;
 
 		public function __construct( $title ) {
 			parent::__construct( $title );
@@ -30,10 +31,12 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			$this->add_title_action( __( 'New Experiment', 'nelioab' ), '?page=nelioab-add-experiment' );
 			$this->experiments = array();
 			$this->quota = array(
-				'used'  => 0,
-				'total' => 7500,
+				'regular' => 5000,
+				'monthly' => 5000,
+				'extra'   => 0,
 			);
 			$this->graphic_delay = 500;
+			$this->rss = fetch_feed( 'https://nelioabtesting.com/feed/' );
 		}
 
 		public function set_summary( $summary ) {
@@ -45,109 +48,135 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			echo '<div id="post-body" class="metabox-holder columns-2">';
 			echo '<div id="post-body-content">';
 			if ( count( $this->experiments ) == 0 ) {
-				echo '<center>';
-				echo sprintf( '<img src="%s" alt="%s" />',
-					nelioab_asset_link( '/admin/images/happy.png' ),
-					__( 'Happy smile.', 'nelioab' )
+				echo "<div class='nelio-message'>";
+				echo sprintf( '<img class="animated flipInY" src="%s" alt="%s" />',
+					nelioab_admin_asset_link( '/images/dashboard.png' ),
+					__( 'Dashboard Icon', 'nelioab' )
 				);
 				echo '<h2 style="max-width:750px;">';
-				echo sprintf(
-					__( 'Hi! You\'re now in Nelio\'s Dashboard, where you\'ll find all relevant information about your running experiments. Right now, however, there are none...<br><a href="%s">Create one now!</a>', 'nelioab' ),
+				printf( '%1$s<br><br><a class="button button-primary" href="%3$s">%2$s</a>',
+					__( 'Here you\'ll find relevant information about your running experiments.', 'nelioab' ),
+					__( 'Create One Now!', 'nelioab', 'create-experiment' ),
 					'admin.php?page=nelioab-add-experiment' );
 				echo '</h2>';
-				echo '</center>';
+				echo '</div>';
 			}
 			else {
 				echo '<h2>' . __( 'Running Experiments', 'nelioab' ) . '</h2>';
 				$this->print_cards();
 			}
 			echo '</div>'; ?>
-			<div id="postbox-container-1" class="postbox-container" style="overflow:hidden;"><?php // TODO remove the style ?>
-				<h2><?php _e( 'Account Usage', 'nelioab' ); ?></h2>
+			<div id="postbox-container-1" class="postbox-container" style="overflow:hidden;">
+				<h2>&nbsp;</h2>
 				<?php
 				require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 				$cs = NelioABWpHelper::get_current_colorscheme();
 				?>
 
 				<div class="numbers" style="height:40px;">
-					<div class="left" style="float:left; width:60%;">
-						<span style="font-weight:bold;"><?php _e( 'QUOTA USED', 'nelioab' ); ?></span><br>
+					<div class="left" style="float:left; width:55%;">
+						<span style="font-weight:bold;"><?php _e( 'AVAILABLE QUOTA', 'nelioab' ); ?></span><br>
 						<span style="color:<?php echo $cs['primary']; ?>; font-size:10px;"><?php
-							echo number_format_i18n( $this->quota['used'], 0 );
+							echo number_format_i18n( $this->quota['regular'], 0 );
 						?></span><span style="font-size:10px;"> / <?php
-							echo number_format_i18n( $this->quota['total'], 0 );
+							echo number_format_i18n( $this->quota['monthly'], 0 );
+							if ( $this->quota['extra'] > 0 ) {
+								echo ' <span style="color:#999;">';
+								printf( __( '(+%s extra)', 'nelioab' ),
+									number_format_i18n( $this->quota['extra'], 0 ) );
+								echo '</span>';
+							}
 						?></span>
 					</div>
-					<div class="right" style="font-size:32px; text-align:right; float:right; width:30%; padding-right:5%; margin-top:8px; opacity:0.7;">
+					<div class="right" style="font-size:32px; text-align:right; float:right; width:38%; padding-right:5%; margin-top:8px; opacity:0.7;">
 						<span><?php
-							$perc = ( $this->quota['used'] / $this->quota['total'] ) * 100;
-							$decs = 1;
-							if ( 100 == $perc )
-								$decs = 0;
-							echo number_format( $perc, $decs );
+							// Let's compute the size of the extra quota (if any)
+							if ( $this->quota['extra'] > 0 ) {
+								$extra = $this->quota['extra'];
+								$max_extra = $this->quota['monthly'] / 2;
+								if ( $extra > $max_extra ) {
+									$extra = $max_extra;
+								}
+								$extra_perc = ( $extra / $max_extra  ) * 20;
+							} else {
+								$extra_perc = 0;
+							}
+							$extra_perc = number_format( $extra_perc, 0 );
+
+							// Now let's compute the size of the regular bar
+							if ( $this->quota['regular'] > 0 ) {
+								$perc = ( $this->quota['regular'] / $this->quota['monthly'] ) * 100;
+							} else {
+								$perc = 0;
+							}
+							$num_of_decs = 1;
+							if ( 100 == $perc ) {
+								$num_of_decs = 0;
+							}
+							echo number_format( $perc, $num_of_decs );
 						?>%</span>
 					</div>
 				</div>
 
-				<div class="progress-bar-container" style="background:none;border:2px solid rgba(0,0,0,0.1); width:95%; margin:0px; height:20px;">
-					<div class="progress-bar" style="height:20px;background-color:<?php
-						echo $cs['primary'];
-					?>;width:<?php echo $perc; ?>%;"></div>
-				</div>
-			</div>
+				<div class="progress-bar-container" style="background:none;border:2px solid rgba(0,0,0,0.1); width:95%; margin:0px; height:20px;"><?php
+					$bar = '<div class="progress-bar" style="margin:0;padding:0;display:inline-block;height:20px;background-color:%s;width:%s%%;"></div>';
+					$perc = number_format( $perc, 0 );
+					if ( $perc + $extra_perc > 100 ) {
+						$perc = 100 - $extra_perc;
+					}
+					printf( $bar, $cs['primary'], $perc );
+					printf( $bar, $cs['secondary'], $extra_perc );
+				?></div>
 			<?php
+			$this->print_rss();
 			echo '</div>'; // #post-body
 		}
 
-		public function print_cards() {
-			// The following function is used by ALT_EXP cards ?>
-			<script>
-				function drawGraphic( id, data, label, baseColor ) {
-					if ( baseColor == undefined )
-						baseColor = '#CCCCCC';
-					var $ = jQuery;
-					Highcharts.getOptions().plotOptions.pie.colors = (function () {
-					var divider = 25;
-					var numOfAlts = data.length;
-					if ( numOfAlts < 10 ) divider = 20
-					if ( numOfAlts < 8 ) divider = 15
-					if ( numOfAlts < 4 ) divider = 6
-					var colors = [],
-						base = baseColor,
-						i
-						for (i = 0; i < 10; i++)
-							colors.push(Highcharts.Color(base).brighten(i / divider).get());
-						return colors;
-					}());
+		public function print_rss() {
+			$maxitems = 0;
 
-					// Build the chart
-					var chart = $('#' + id).highcharts({
-						chart: {
-							plotBackgroundColor: null,
-							plotBorderWidth: null,
-							plotShadow: false,
-							margin: [0, 0, 0, 0],
-						},
-						title: { text:'' },
-						exporting: { enabled: false },
-						tooltip: {
-							pointFormat: '{series.name}: <b>{point.y:.0f}</b>'
-						},
-						plotOptions: {
-							pie: {
-								allowPointSelect: false,
-								cursor: 'pointer',
-								dataLabels: { enabled: false },
-							}
-						},
-						series: [{
-							type: 'pie',
-							name: label,
-							data: data
-						}],
-					});
-				}
-			</script><?php
+			if ( ! is_wp_error( $this->rss ) ) : // Checks that the object is created correctly
+
+				// Figure out how many total items there are, but limit it to 5.
+				$maxitems = $this->rss->get_item_quantity( 5 );
+
+				// Build an array of all the items, starting with element 0 (first element).
+				$rss_items = $this->rss->get_items( 0, $maxitems ); ?>
+
+				<?php if ( $maxitems == 0 ) return; ?>
+
+				<div id="nelio-rss" class="postbox-container" style="overflow:hidden;">
+					<h2><?php _e( 'Latest News', 'nelioab' ); ?></h2>
+				<?php // Loop through each feed item and display each item as a hyperlink.
+				foreach ( $rss_items as $item ) {
+					$title       = $item->get_title();
+					$description = $item->get_description();
+					$permalink   = $item->get_permalink();
+					$description = str_replace( '<p>', '', $description );
+					// Look for the featured image
+					$pos = strpos( $description, '/>' );
+					if ( !$pos ) continue;
+					$featured_img = substr( $description, 0, $pos + 2 );
+				?>
+					<div class='nelio-rss-item'>
+						<div class="nelio-rss-featured-image">
+							<a href='<?php echo $permalink; ?>' target='_blank'>
+								<?php echo $featured_img; ?>
+							</a>
+						</div>
+						<div class='nelio-rss-title'>
+							<a href='<?php echo $permalink; ?>' target='_blank'>
+								<?php echo $title; ?>
+							</a>
+						</div>
+					</div>
+				<?php
+				} ?>
+				</div><?php
+			endif;
+		}
+
+		public function print_cards() {
 
 			include_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 			foreach ( $this->experiments as $exp ) {
@@ -195,8 +224,14 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				case NelioABExperiment::POST_ALT_EXP:
 					$img = sprintf( $img, 'post', __( 'Post', 'nelioab' ) );
 					break;
+				case NelioABExperiment::CPT_ALT_EXP:
+					$img = sprintf( $img, 'cpt', __( 'Post', 'nelioab' ) );
+					break;
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					$img = sprintf( $img, 'title', __( 'Headline', 'nelioab' ) );
+					break;
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					$img = sprintf( $img, 'wc-product-summary', __( 'WooCommerce Product Summary', 'nelioab' ) );
 					break;
 				case NelioABExperiment::THEME_ALT_EXP:
 					$img = sprintf( $img, 'theme', __( 'Theme', 'nelioab' ) );
@@ -274,7 +309,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 					if ( $exp->get_total_conversions() > 0 )
 						$fix = '';
 					else
-							$fix = '.1';
+						$fix = '.1';
 					$alt_infos = $exp->get_alternative_info();
 					$values = '';
 					for ( $i = 0; $i < count( $alt_infos ); ++$i ) {
@@ -293,6 +328,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 						case NelioABExperiment::POST_ALT_EXP:
 							$color = '#F19C00';
 							break;
+						case NelioABExperiment::CPT_ALT_EXP:
+							$color = '#FF8822';
+							break;
 						case NelioABExperiment::HEADLINE_ALT_EXP:
 							$color = '#79B75D';
 							break;
@@ -307,6 +345,9 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 							break;
 						case NelioABExperiment::MENU_ALT_EXP:
 							$color = '#8bb846';
+							break;
+						case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+							$color = '#2A508D';
 							break;
 						default:
 							$color = '#CCCCCC';
@@ -325,6 +366,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 		}
 
 		public function print_heatmap_exp_card( $exp ) {
+			/** @var NelioABHeatmapExpSummary $exp */
 			$hm = $exp->get_heatmap_info();
 			?>
 			<div class="row padding-top">
@@ -351,8 +393,5 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 			</div>
 			<?php
 		}
-
 	}//NelioABDashboardPage
-
 }
-
