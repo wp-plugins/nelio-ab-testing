@@ -107,15 +107,13 @@ if ( !class_exists( 'NelioABWooCommerceSupport' ) ) {
 			add_action( 'woocommerce_order_status_completed',
 				array( &$this, 'sync_order_completed' ), 10, 1 );
 
-			add_action( 'wp_enqueue_scripts', array( &$this, 'aux' ), 10 );
+			// add_action( 'wp_enqueue_scripts', array( &$this, 'aux' ), 10 );
 		}
 
 
 		public function aux() {
-			if ( is_order_received_page() ) { ?>
-				<script>
-				alert("HOLA");
-				</script><?php
+			if ( is_order_received_page() ) {
+				// TODO: Implement this function
 			}
 		}
 
