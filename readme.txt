@@ -1005,7 +1005,7 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.2.2 =
+= 4.2.3 =
 WooCommerce Support. First version that includes support for WooCommerce. You
 can now test your products (change their name, featured image, and description),
 and use the Purchase conversion action for monitoring actual purchases.
