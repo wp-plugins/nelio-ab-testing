@@ -158,7 +158,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 							_e( 'Previous', 'nelioab' ); ?></a>
 						<a href="javascript:;" class="button next" style="float:right;"><?php
 							_e( 'Next', 'nelioab' ); ?></a>
-						<a href="javascript:;" class="button-primary save" style="float:right;display:none;"><?php
+						<a href="javascript:;" class="button button-primary save" style="float:right;display:none;"><?php
 							$this->get_save_experiment_name(); ?></a>
 					</div>
 				</div>
@@ -166,36 +166,69 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				require_once( NELIOAB_UTILS_DIR . '/html-generator.php' );
 				NelioABHtmlGenerator::print_unsaved_changes_control( '#controllers .button-primary.save, .row-actions .edit-content' );
 				?>
-				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ); ?>"></script>
-				<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/admin-table.min.js' ); ?>"></script>
-				<?php $this->print_alt_table_script(); ?>
-				<script type="text/javascript">NelioABEditExperiment.useTab(jQuery('#exp-tabs .nav-tab-active').attr('id'));</script>
+				<script type="text/javascript">
+					<?php $this->print_params_for_required_scripts(); ?>
+					(function() {
+						// Prepare the scripts
+						var scripts = [];
+						<?php foreach ( $this->get_required_scripts() as $script ) { ?>
+							scripts.push('<?php echo $script; ?>');
+						<?php } ?>
+
+						// Prepare a function for setting up the alternatives table
+						var setupAlternativesTable = function() {
+							<?php $this->print_code_for_setup_alternative_table(); ?>
+							NelioABEditExperiment.useTab(jQuery('#exp-tabs .nav-tab-active').attr('id'));
+						};
+
+						// Load scripts one by one and, once they're ready, prepare the table
+						var loadScript = function( current ) {
+							if ( current == scripts.length ) {
+								setupAlternativesTable();
+							}
+							else {
+								jQuery.getScript(scripts[current], function() {
+									++current;
+									loadScript( current );
+								});
+							}
+						};
+						loadScript( 0 );
+					})();
+				</script>
 			</form>
 
 			<?php
 		}
 
-		protected function print_alt_table_script() { ?>
-			<script type="text/javascript" src="<?php echo nelioab_admin_asset_link( '/js/alt-table.min.js' ); ?>"></script>
-			<script type="text/javascript">
-			(function($) {
-				// PRINTING THE LIST OF ALTERNATIVES
-				var alts = JSON.parse( decodeURIComponent(
-						jQuery('#nelioab_alternatives').attr('value')
-					) );
-				var altsTable = NelioABAltTable.getTable();
-				if ( altsTable ) {
-					NelioABAltTable.init(alts);
-					for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
-						var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
-						newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
-						newRow.show();
-						altsTable.append(newRow);
-					}
-					NelioABAdminTable.repaint( NelioABAltTable.getTable() );
+		protected function print_params_for_required_scripts() {
+			// Nothing to print here
+		}
+
+		protected function get_required_scripts() {
+			return array(
+				nelioab_admin_asset_link( '/js/tabbed-experiment-setup.min.js' ),
+				nelioab_admin_asset_link( '/js/admin-table.min.js' ),
+				nelioab_admin_asset_link( '/js/alt-table.min.js' )
+			);
+		}
+
+		protected function print_code_for_setup_alternative_table() { ?>
+			// PRINTING THE LIST OF ALTERNATIVES
+			var alts = JSON.parse( decodeURIComponent(
+					jQuery('#nelioab_alternatives').attr('value')
+				) );
+			var altsTable = NelioABAltTable.getTable();
+			if ( altsTable ) {
+				NelioABAltTable.init(alts);
+				for ( var i = 0; i < NelioABAltTable.alts.length; ++i ) {
+					var newRow = NelioABAltTable.createRow(NelioABAltTable.alts[i].id)
+					newRow.find('.row-title').first().text(NelioABAltTable.alts[i].name);
+					newRow.show();
+					altsTable.append(newRow);
 				}
-			})(jQuery);
-			</script>
+				NelioABAdminTable.repaint( NelioABAltTable.getTable() );
+			}
 			<?php
 		}
 
@@ -204,7 +237,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				class="regular-text" />
 			<span class="description" style="display:block;"><?php
 				_e( 'Set a meaningful, descriptive name for the experiment.', 'nelioab' );
-			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129190-why-do-i-need-to-name-an-experiment-" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129190" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
@@ -214,7 +247,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				name="exp_descr" cols="45" rows="3"></textarea>
 			<span class="description" style="display:block;"><?php
 					_e( 'In a few words, describe what this experiment aims to test.', 'nelioab' );
-			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129192-what-is-the-description-of-an-experiment-used-for-" target="_blank"><?php
+			?> <small><a href="http://support.nelioabtesting.com/support/solutions/articles/1000129192" target="_blank"><?php
 				_e( 'Help', 'nelioab' );
 			?></a></small></span><?php
 		}
@@ -229,7 +262,9 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 		protected function print_basic_info() {
 			$this->make_section(
 				__( 'Basic Information', 'nelioab' ),
-				$this->get_basic_info_elements() );
+				$this->get_basic_info_elements(),
+				'<label class="mandatory">Required field</label>'
+			);
 		}
 
 		/**
@@ -240,27 +275,37 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 		 * Each kind of possible goal (the form for adding it) is also printed
 		 * by this function.
 		 */
-		protected function print_goals() { ?>
-			<h2><a class="add-new-h2" href="javascript:;" onClick="javascript:NelioABGoalCards.create();"><?php
-				_e( 'Add Additional Goal', 'nelioab' );
-			?></a></h2>
-
+		protected function print_goals() {
+			$handler = '<i class="handler dashicons-before dashicons-menu"><br></i>';
+			?>
 			<div id="new-action-templates">
 				<?php require_once( NELIOAB_UTILS_DIR . '/html-generator.php' ); ?>
 				<div class="action page" style="display:none;">
 					<?php
+						echo $handler;
 						$options = NelioABHtmlGenerator::get_page_searcher( 'new-action-page-searcher', false, 'no-drafts', array(), false );
 						$this->print_post_or_form_action( 'page', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action post" style="display:none;">
 					<?php
+						echo $handler;
 						$options = NelioABHtmlGenerator::get_post_searcher( 'new-action-post-searcher', false, 'no-drafts', array(), false );
 						$this->print_post_or_form_action( 'post', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
+				<div class="action wc-order-completed" style="display:none;">
+					<?php
+						echo $handler;
+						$options = NelioABHtmlGenerator::get_post_searcher_based_on_type( 'new-wc-order-completed-searcher', false, 'no-drafts', array(), false, array( 'product' ) );
+						$text = __( 'An order containing the product %1$s is completed.', 'nelioab' );
+						printf( $text, $options );
+					?>
+					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
+				</div>
 				<div class="action external-page" style="display:none;">
 					<?php
+						echo $handler;
 						$name = sprintf(
 							'<input type="text" class="name" placeholder="%s" style="max-width:120px;">',
 							__( 'Name', 'nelioab' ) );
@@ -304,33 +349,36 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action form-submit cf7" style="display:none;"><?php
+					echo $handler;
 					$options = NelioABHtmlGenerator::get_form_searcher( 'new-cf7-form-searcher', false, array(), false );
 					$this->print_post_or_form_action( 'cf7-submit', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action form-submit gf" style="display:none;"><?php
+					echo $handler;
 					$options = NelioABHtmlGenerator::get_form_searcher( 'new-gf-form-searcher', false, array(), false );
 					$this->print_post_or_form_action( 'gf-submit', $options, !$this->is_global ); ?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
 				<div class="action click-element" style="display:none;"><?php
-						$name = sprintf(
-							'<input type="text" class="value" placeholder="%s" style="max-width:200px;">',
-							__( 'Matcher', 'nelioab' ) );
+					echo $handler;
+					$name = sprintf(
+						'<input type="text" class="value" placeholder="%s" style="max-width:200px;">',
+						__( 'Matcher', 'nelioab' ) );
 
-						require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
-						$options = '<select class="mode">';
-						$options .= sprintf( '<option value="%s">%s</option>',
-							NelioABClickElementAction::ID_MODE, __( 'whose ID is', 'nelioab' ) );
-						$options .= sprintf( '<option value="%s">%s</option>',
-							NelioABClickElementAction::CSS_MODE, __( 'whose CSS path is', 'nelioab' ) );
-						$options .= sprintf( '<option value="%s">%s</option>',
-							NelioABClickElementAction::TEXT_MODE, __( 'that contains the text', 'nelioab' ) );
+					require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
+					$options = '<select class="mode">';
+					$options .= sprintf( '<option value="%s">%s</option>',
+						NelioABClickElementAction::ID_MODE, __( 'whose ID is', 'nelioab' ) );
+					$options .= sprintf( '<option value="%s">%s</option>',
+						NelioABClickElementAction::CSS_MODE, __( 'that matches the CSS Selector rule', 'nelioab' ) );
+					$options .= sprintf( '<option value="%s">%s</option>',
+						NelioABClickElementAction::TEXT_MODE, __( 'that contains the text', 'nelioab' ) );
 						$options .= '</select>';
 
 						printf(
-							__( 'A visitor clicks on an element %1$s %2$s', 'nelioab' ),
-							$options, $name );
+						__( 'A visitor clicks on an element %1$s %2$s', 'nelioab' ),
+						$options, $name );
 					?>
 					<a href="javascript:;" class="delete"><?php _e( 'Delete' ); ?></a>
 				</div>
@@ -354,7 +402,7 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 								NelioABSettings::get_def_conv_value()
 							) . '" />' .
 							'  </span>' .
-							'  <span class="value">' . __( 'New Goal', 'nelioab' ) . '</span>' .
+							'  <span class="value">' . __( 'Unnamed Goal', 'nelioab' ) . '</span>' .
 							'  <small class="isMain" style="display:none;font-weight:normal;">' . __( '[Main Goal]', 'nelioab' ) . '</small><br>' .
 							'  <div class="row-actions">' .
 							'    <span class="rename"><a href="javascript:;">' . __( 'Rename' ) . '</a></span>' .
@@ -367,6 +415,9 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				?>
 			</div>
 			<div id="goal-list"></div>
+			<h2 style="text-align:center;margin-top:-10px;"><a class="add-new-h2" href="javascript:;" onClick="javascript:NelioABGoalCards.create();"><?php
+				_e( 'Add Additional Goal', 'nelioab' );
+			?></a></h2>
 			<?php
 		}
 
@@ -469,35 +520,35 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 				_e( 'A conversion is counted for this goal whenever any of the following actions occur:', 'nelioab' );
 			?></p>
 			<div class="empty">
-				<em><?php _e( 'You may add one or more actions using the links below.', 'nelioab' ); ?></em>
+				<em><?php _e( '<strong>Add one or more conversion actions</strong> using the following buttons.', 'nelioab' ); ?></em>
 			</div>
-			<div class="actions" style="display:none;">
+			<div class="actions sortable" style="display:none;">
 			</div>
 			<div class="new-actions">
 				<div class="wrapper">
-					<strong><?php _e( 'New Actions', 'nelioab' ); ?></strong><br>
+					<strong><?php _e( 'Available Conversion Actions', 'nelioab' ); ?></strong><br>
 					<small><?php _e( '(Hover over each action for help)', 'nelioab' ); ?></small><br>
 					<?php
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'post', __( 'Post', 'nelioab' ),
-							esc_html( __( 'A visitor accesses a post in your WordPress site', 'nelioab' ) )
-						);
+					$pattern = '<a class="%1$s action" title="%2$s - %3$s" href="javascript:;"></a>';
+					if ( NelioABWooCommerceSupport::is_plugin_active() ) {
+						printf( $pattern, 'wc-order-completed', esc_html( __( 'WooCommerce Order', 'nelioab' ) ),
+								esc_html( __( 'A WooCommerce order that contains a certain product is completed', 'nelioab' ) )
+							);
+					}
 
-					echo ' | ';
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'page', __( 'Page', 'nelioab' ),
+					printf( $pattern, 'page', esc_html( __( 'Page', 'nelioab' ) ),
 							esc_html( __( 'A visitor accesses a page in your WordPress site', 'nelioab' ) )
 						);
 
-					echo ' | ';
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'external-page', __( 'External Page', 'nelioab' ),
+					printf( $pattern, 'post', esc_html( __( 'Post', 'nelioab' ) ),
+							esc_html( __( 'A visitor accesses a post in your WordPress site', 'nelioab' ) )
+						);
+
+					printf( $pattern, 'external-page', esc_html( __( 'External Page', 'nelioab' ) ),
 							esc_html( __( 'A visitor tries to access an external page (either by clicking a link or by sutbmitting a form) specified using its URL', 'nelioab' ) )
 						);
 
-					echo ' | ';
-					printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-							'click-element', __( 'Click', 'nelioab' ),
+					printf( $pattern, 'click-element', esc_html( __( 'Click', 'nelioab' ) ),
 							esc_html( __( 'A visitor clicks on an element in your site (for instance, a button, a link, or an image)', 'nelioab' ) )
 						);
 
@@ -506,20 +557,16 @@ if ( !class_exists( 'NelioABPostAltExpCreationPage' ) ) {
 					$cf7_action_lbl = __( 'Form Submit', 'nelioab' );
 					$gf_action_lbl = __( 'Form Submit', 'nelioab' );
 					if ( $cf7 && $gf ) {
-						$cf7_action_lbl = __( 'Contact Form 7', 'nelioab' );
-						$gf_action_lbl = __( 'Gravity Form', 'nelioab' );
+						$cf7_action_lbl = esc_html( __( 'Contact Form 7', 'nelioab' ) );
+						$gf_action_lbl = esc_html( __( 'Gravity Form', 'nelioab' ) );
 					}
 					if ( $cf7 ) {
-						echo ' | ';
-						printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-								'form-submit cf7', $cf7_action_lbl,
+						printf( $pattern, 'form-submit cf7', $cf7_action_lbl,
 								esc_html( __( 'A visitor successfully submits a «Contact Form 7» form', 'nelioab' ) )
 							);
 					}
 					if ( $gf ) {
-						echo ' | ';
-						printf( '<a class="%1$s" title="%3$s" href="javascript:;">%2$s</a>',
-								'form-submit gf', $gf_action_lbl,
+						printf( $pattern, 'form-submit gf', $gf_action_lbl,
 								esc_html( __( 'A visitor successfully submits a «Gravity Forms» form', 'nelioab' ) )
 							);
 					}

@@ -22,12 +22,22 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 	class NelioABAccountPageController {
 
 		public static function build() {
-			require_once( NELIOAB_ADMIN_DIR . '/views/account-page.php' );
 
-			$title = __( 'My Account', 'nelioab' );
+			$load_free_trial = NelioABAccountSettings::is_using_free_trial();
+			if ( isset( $_GET['nabmode'] ) && 'my-account' === $_GET['nabmode'] ) {
+				$load_free_trial = false;
+			}
 
-			$view = new NelioABAccountPage( $title );
-			$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
+			if ( $load_free_trial ) {
+				require_once( NELIOAB_ADMIN_DIR . '/views/free-trial-page.php' );
+				$view = new NelioABFreeTrialPage();
+				$view->render();
+			} else {
+				require_once( NELIOAB_ADMIN_DIR . '/views/account-page.php' );
+				$view = new NelioABAccountPage( __( 'My Account', 'nelioab' ) );
+				$view->get_content_with_ajax_and_render( __FILE__, __CLASS__ );
+			}
+
 		}
 
 		public static function generate_html_content() {
@@ -37,13 +47,17 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 			$email   = NelioABAccountSettings::get_email();
 			$reg_num = NelioABAccountSettings::get_reg_num();
 
+			if ( NelioABAccountSettings::is_using_free_trial() ) {
+				$email = '';
+				$reg_num = '';
+			}
+
 			$sites = array();
 			$max_sites = 1;
 			try {
-				NelioABAccountSettings::validate_email_and_reg_num( $email, $reg_num );
-				NelioABAccountSettings::check_account_status( 'force-check' );
+				NelioABAccountSettings::check_account_status( 'now' );
+			} catch ( Exception $e ) {
 			}
-			catch ( Exception $e ) {}
 
 			$current_site_status = NelioABSite::NOT_REGISTERED;
 			$error_retrieving_registered_sites = false;
@@ -103,8 +117,6 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 
 			// Querying account information
 			$user_info = array();
-			$user_info['firstname']    = '&ndash;';
-			$user_info['lastname']     = '&ndash;';
 			try {
 				$customer_id = NelioABAccountSettings::get_customer_id();
 				if ( strlen( $customer_id ) > 0 ) {
@@ -113,18 +125,16 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 
 					$json = json_decode( $json['body'] );
 
-					$user_info['firstname']         = $json->firstname;
-					$user_info['lastname']          = $json->lastname;
+					if ( isset( $user_info['firstname'] ) ) {
+						$user_info['firstname'] = $json->firstname;
+					} else {
+						$user_info['firstname'] = '';
+					}
 					$user_info['subscription_url']  = $json->subscriptionUrl;
 					$user_info['subscription_plan'] = $json->subscriptionPlan;
 					$user_info['status']            = $json->status;
 					$user_info['total_quota']       = intval( $json->quotaPerMonth );
 					$user_info['quota']             = intval( $json->quota + $json->quotaExtra );
-
-					if ( $user_info['quota'] > 0 )
-						NelioABAccountSettings::set_has_quota_left( true );
-					else
-						NelioABAccountSettings::set_has_quota_left( false );
 				}
 
 				// Agency stuff
@@ -194,7 +204,7 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 
 			}
 
-			$settings_tac = false;
+			$settings_tac = NelioABAccountSettings::are_terms_and_conditions_accepted();
 			if ( isset( $_POST['settings_tac'] ) )
 				$settings_tac = $_POST['settings_tac'];
 			NelioABAccountSettings::check_terms_and_conditions( $settings_tac );
@@ -219,14 +229,14 @@ if ( !class_exists( 'NelioABAccountPageController' ) ) {
 							if ( isset( $_POST['nelioab_registration_sector'] ) )
 								$sector = $_POST['nelioab_registration_sector'];
 							NelioABAccountSettings::register_this_site( $type, $sector );
-							$nelioab_admin_controller->message = __( 'This site has been successfully registered to your account.', 'nelioab' );
+							$nelioab_admin_controller->message = __( 'This site has been successfully activated in your account.', 'nelioab' );
 							break;
 						case 'deregister':
 							NelioABAccountSettings::deregister_this_site();
-							$nelioab_admin_controller->message = __( 'This site is no longer registered to your account.', 'nelioab' );
+							$nelioab_admin_controller->message = __( 'This site is no longer active in your account.', 'nelioab' );
 						case 'unlink':
 							NelioABAccountSettings::unlink_this_site();
-							$nelioab_admin_controller->message = __( 'The site is no longer linked to any of your other registered sites, If you have free slots, you may now register it as a completely different and new site.', 'nelioab' );
+							$nelioab_admin_controller->message = __( 'The site is no longer linked to any of your other active sites. If you have free slots, you may now activate it as a completely different and new site.', 'nelioab' );
 					}
 				}
 				catch ( Exception $e ) {

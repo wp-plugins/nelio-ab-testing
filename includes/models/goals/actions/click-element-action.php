@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -18,54 +18,115 @@
  */
 
 
-if( !class_exists( 'NelioABClickElementAction' ) ) {
+if ( !class_exists( 'NelioABClickElementAction' ) ) {
 
+	/**
+	 * Class representing a "click" conversion action.
+	 *
+	 * @package \NelioABTesting\Models\Goals\Actions
+	 * @since PHPDOC
+	 */
 	class NelioABClickElementAction extends NelioABAction {
 
-		const ID_MODE   = 'id';
-		const CSS_MODE  = 'css-path';
-		const TEXT_MODE = 'text-is';
+		/**
+		 * Constant PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
+		const ID_MODE = 'id';
 
-		private $mode;
-		private $value;
 
 		/**
-		 * Constructor of this class.
+		 * Constant PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
+		const CSS_MODE = 'css-path';
+
+
+		/**
+		 * Constant PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
+		const TEXT_MODE = 'text-is';
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		private $mode;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
+		private $value;
+
+
+		/**
+		 * Creates a new instance of this class.
+		 *
+		 * @param string $mode  PHPDOC
+		 * @param string $value PHPDOC
+		 *
+		 * @return NelioABClickElementAction a new instance of this class.
+		 *
+		 * @since PHPDOC
 		 */
 		public function __construct( $mode, $value ) {
-			parent::__construct( 'click-element' );
+			parent::__construct( self::CLICK_ELEMENT );
 			$this->mode  = $mode;
 			$this->value = $value;
 		}
 
+
 		/**
+		 * Returns PHPDOC
 		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
 		 */
 		public function get_mode() {
 			return $this->mode;
 		}
 
+
 		/**
+		 * Returns PHPDOC
 		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
 		 */
 		public function get_value() {
 			return $this->value;
 		}
 
+
 		/**
-		 * Returns whether clicking the element is tracked in any page or
-		 * only in the tested page.
+		 * Returns whether clicking the element is tracked in any page or only in the tested page.
+		 *
+		 * @return boolean whether clicking the element is tracked in any page or only in the tested page.
+		 *
+		 * @since PHPDOC
 		 */
 		public function is_click_tracked_in_any_page() {
 			return false;
 		}
 
-		/**
-		 * Returns an array of values, ready to be JSON-codified and
-		 * prepared for AppEngine
-		 *
-		 * @return the JSON array for AppEngine
-		 */
+
+		// @Implements
 		public function encode_for_appengine() {
 			$action = array(
 				'kind'    => $this->get_mode(),
@@ -75,14 +136,16 @@ if( !class_exists( 'NelioABClickElementAction' ) ) {
 			return $action;
 		}
 
+
 		/**
-		 * Creates a Form Submission Action using the information obtained
-		 * from the JSON parameter.
+		 * Returns a new action object built using the information described in $action.
 		 *
-		 * @param json the JSON array from AppEngine
+		 * @param object $json a JSON action returned by AppEngine.
 		 *
-		 * @return a Form Submission Action with the values obtained from
-		 *         the json
+		 * @return NelioABClickElementAction the new action containing all the information in `$action`.
+		 *
+		 * @since PHPDOC
+		 * @Override
 		 */
 		public static function decode_from_appengine( $json ) {
 			$action = new NelioABClickElementAction( $json->kind, $json->value );
@@ -91,9 +154,8 @@ if( !class_exists( 'NelioABClickElementAction' ) ) {
 			return $action;
 		}
 
-		/**
-		 * @implements NelioABAction::json4js();
-		 */
+
+		// @Implements
 		public function json4js() {
 			$action = array(
 					'type'  => 'click-element',
@@ -103,8 +165,16 @@ if( !class_exists( 'NelioABClickElementAction' ) ) {
 			return $action;
 		}
 
+
 		/**
+		 * Returns a new action object built using the information described in $action.
 		 *
+		 * @param object $json a JSON action as used in the admin pages of our plugin.
+		 *
+		 * @return NelioABClickElementAction the new action containing all the information in `$action`.
+		 *
+		 * @since PHPDOC
+		 * @Override
 		 */
 		public static function build_action_using_json4js( $json ) {
 			$action = new NelioABClickElementAction( $json->mode, $json->value );

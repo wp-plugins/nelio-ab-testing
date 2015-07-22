@@ -1,47 +1,81 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
- * This script is distributed under the terms of the GNU General Public License.
+ * Copyright 2015 Nelio Software S.L.
+ * This script is distributed under the terms of the GNU General Public
+ * License.
  *
  * This script is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License.
+ *
  * This script is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
+if ( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-experiment.php' );
 
+	/**
+	 * PHPDOC
+	 *
+	 * @package \NelioABTesting\Models\Experiments\AB
+	 * @since PHPDOC
+	 */
 	class NelioABPostAlternativeExperiment extends NelioABAlternativeExperiment {
 
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
 		private $ori;
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var boolean|string
+		 */
+		private $post_type = false;
+
+
+		// @Override
 		public function __construct( $id ) {
 			parent::__construct( $id );
 			$this->set_type( NelioABExperiment::NO_TYPE_SET );
+			$this->set_post_type();
 		}
 
+
+		// @Override
 		public function clear() {
 			parent::clear();
 			$this->ori = new NelioABAlternative();
 			$this->track_heatmaps( true );
 		}
 
+
+		// @Override
 		public function set_type( $type ) {
 			parent::set_type( $type );
-			if ( $type == NelioABExperiment::HEADLINE_ALT_EXP )
+			if ( $type == NelioABExperiment::HEADLINE_ALT_EXP ||
+				 $type == NelioABExperiment::CPT_ALT_EXP )
 				$this->track_heatmaps( false );
 			else
 				$this->track_heatmaps( true );
 		}
 
+
+		// @Override
 		public function get_original() {
 			if ( !is_object( $this->ori ) ) {
 				$aux = new NelioABAlternative();
@@ -51,32 +85,93 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			return $this->ori;
 		}
 
+
+		// @Implements
 		public function get_originals_id() {
 			$ori_alt = $this->get_original();
 			return $ori_alt->get_value();
 		}
 
+
+		// @Override
 		public function get_related_post_id() {
 			$this->get_originals_id();
 		}
 
+
+		/**
+		 * Returns PHPDOC
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public function get_post_type() {
+			if ( empty( $this->post_type ) || !$this->post_type )
+				$this->determine_post_type();
+			return $this->post_type;
+		}
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param int $ori PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function set_original( $ori ) {
+			/** @var NelioABAlternative $ori_alt */
 			$ori_alt = $this->ori;
 			$ori_alt->set_value( $ori );
+			$this->determine_post_type();
+		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since 4.1.0
+		 */
+		private function determine_post_type() {
 			// Setting type
-			$post = get_post( $ori, ARRAY_A );
-			if ( isset( $post ) &&
-			     ( $this->get_type() == NelioABExperiment::NO_TYPE_SET ||
-			       $this->get_type() == NelioABExperiment::UNKNOWN_TYPE )
-			   ) {
-				if ( $post['post_type'] == 'page' )
+			$post = get_post( $this->get_originals_id(), ARRAY_A );
+			if ( isset( $post ) ) {
+				if ( $post['post_type'] == 'page' ) {
 					$this->set_type( NelioABExperiment::PAGE_ALT_EXP );
-				else
+					$this->set_post_type( 'page' );
+				}
+				else if ( $post['post_type'] == 'post' ) {
 					$this->set_type( NelioABExperiment::POST_ALT_EXP );
+					$this->set_post_type( 'post' );
+				}
+				else {
+					$this->set_type( NelioABExperiment::CPT_ALT_EXP );
+					$this->set_post_type( $post['post_type'] );
+				}
 			}
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param boolean|string $post_type PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
+		public function set_post_type( $post_type = false ) {
+			$this->post_type = $post_type;
+		}
+
+
+		// @Implements
 		public function set_winning_alternative_using_id( $id ) {
 			$winning_alt = false;
 			if ( $this->get_originals_id() == $id ) {
@@ -84,20 +179,37 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			}
 			else {
 				$alts = $this->get_alternatives();
-				foreach ( $alts as $aux )
+				foreach ( $alts as $aux ) {
+					/** @var NelioABAlternative $aux */
 					if ( $aux->get_value() == $id )
 						$winning_alt = $aux;
+				}
 			}
 			$this->set_winning_alternative( $winning_alt );
 		}
 
-		public function create_empty_alternative( $name, $post_type ) {
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $name         PHPDOC
+		 * @param string $post_type    PHPDOC
+		 * @param string $current_type PHPDOC
+		 *
+		 * @return boolean|int PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public function create_empty_alternative( $name, $post_type, $current_type = 'post' ) {
 			switch ( $post_type ) {
 				case NelioABExperiment::PAGE_ALT_EXP:
 					$post_type = 'page';
 					break;
 				case NelioABExperiment::POST_ALT_EXP:
 					$post_type = 'post';
+					break;
+				case NelioABExperiment::CPT_ALT_EXP:
+					$post_type = $current_type;
 					break;
 				default:
 					return false;
@@ -109,7 +221,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				'post_content' => '',
 				'post_excerpt' => '',
 				'post_status'  => 'draft',
-				'post_name'    => 'nelioab_' . rand(1, 10),
+				'post_name'    => 'nelioab_' . rand( 1, 10 ),
 			);
 
 			// Retrieve original post
@@ -133,13 +245,39 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			return $post_id;
 		}
 
-		public function create_alternative_copying_content( $name, $src_post_id ) {
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string        $name        PHPDOC
+		 * @param int           $src_post_id PHPDOC
+		 * @param boolean|array $ori_post    PHPDOC
+		 *
+		 * @return boolean|int PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public function create_alternative_copying_content( $name, $src_post_id, $ori_post = false ) {
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
 
 			// Retrieve original post
 			$src_post = get_post( $src_post_id, ARRAY_A );
 			if ( !$src_post )
 				return false;
+
+			if ( $ori_post && $src_post['post_type'] != $ori_post['post_type'] ) {
+				switch ( $ori_post['post_type'] ) {
+					case 'page':
+						$aux = NelioABExperiment::PAGE_ALT_EXP;
+						break;
+					case 'post':
+						$aux = NelioABExperiment::POST_ALT_EXP;
+						break;
+					default:
+						$aux = NelioABExperiment::CPT_ALT_EXP;
+				}
+				return $this->create_empty_alternative( $name, $aux, $ori_post['post_type'] );
+			}
 
 			// Create new empty post
 			$post_data = array(
@@ -149,7 +287,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				'post_content' => $src_post['post_content'],
 				'post_excerpt' => $src_post['post_excerpt'],
 				'post_status'  => 'draft',
-				'post_name'    => 'nelioab_' . rand(1, 10),
+				'post_name'    => 'nelioab_' . rand( 1, 10 ),
 			);
 			$new_post_id = wp_insert_post( $post_data, true );
 			if ( is_wp_error( $new_post_id ) )
@@ -174,39 +312,48 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			return $new_post_id;
 		}
 
+
+		// @Implements
 		protected function determine_proper_status() {
 			if ( count( $this->get_alternatives() ) <= 0 )
-				return NelioABExperimentStatus::DRAFT;
+				return NelioABExperiment::STATUS_DRAFT;
 
 			if ( $this->get_originals_id() < 0 )
-				return NelioABExperimentStatus::DRAFT;
+				return NelioABExperiment::STATUS_DRAFT;
 
 			if ( $this->get_type() != NelioABExperiment::HEADLINE_ALT_EXP ) {
 				if ( count( $this->get_goals() ) == 0 )
-					return NelioABExperimentStatus::DRAFT;
-				foreach ( $this->get_goals() as $goal )
+					return NelioABExperiment::STATUS_DRAFT;
+				foreach ( $this->get_goals() as $goal ) {
+					/** @var NelioABGoal $goal */
 					if ( !$goal->is_ready() )
-						return NelioABExperimentStatus::DRAFT;
+						return NelioABExperiment::STATUS_DRAFT;
+				}
 			}
 
-			return NelioABExperimentStatus::READY;
+			return NelioABExperiment::STATUS_READY;
 		}
 
+
+		// @Override
 		public function add_local_alternative( $alt ) {
 			if ( $this->get_type() == NelioABExperiment::HEADLINE_ALT_EXP ) {
 				$fake_post_id = -1;
-				foreach ( $this->get_alternatives() as $aux )
+				foreach ( $this->get_alternatives() as $aux ) {
+					/** @var NelioABAlternative $aux */
 					if ( $aux->get_value() <= $fake_post_id )
 						$fake_post_id = $aux->get_value() - 1;
+				}
 				$alt->set_value( $fake_post_id );
 			}
 			parent::add_local_alternative( $alt );
 		}
 
+
+		// @Implements
 		public function save() {
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
-			$url = '';
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/exp/post',
@@ -220,16 +367,17 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				);
 			}
 
-			if ( $this->get_status() != NelioABExperimentStatus::PAUSED &&
-			     $this->get_status() != NelioABExperimentStatus::RUNNING &&
-			     $this->get_status() != NelioABExperimentStatus::FINISHED &&
-			     $this->get_status() != NelioABExperimentStatus::TRASH )
+			if ( $this->get_status() != NelioABExperiment::STATUS_PAUSED &&
+			     $this->get_status() != NelioABExperiment::STATUS_RUNNING &&
+			     $this->get_status() != NelioABExperiment::STATUS_FINISHED &&
+			     $this->get_status() != NelioABExperiment::STATUS_TRASH )
 				$this->set_status( $this->determine_proper_status() );
 
 			$body = array(
 				'name'                  => $this->get_name(),
 				'description'           => $this->get_description(),
 				'originalPost'          => $this->get_originals_id(),
+				'postType'              => $this->get_post_type(),
 				'status'                => $this->get_status(),
 				'kind'                  => $this->get_textual_type(),
 				'showHeatmap'           => $this->are_heatmaps_tracked(),
@@ -258,6 +406,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 
 			// 2.1. UPDATE CHANGES ON ALREADY EXISTING APPSPOT ALTERNATIVES
 			foreach ( $this->get_appspot_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				if ( $alt->was_removed() || !$alt->is_dirty() )
 					continue;
 
@@ -265,7 +414,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					'name'  => $alt->get_name(),
 					'value' => $alt->get_value(),
 				);
-				$result = NelioABBackend::remote_post(
+				NelioABBackend::remote_post(
 					sprintf( NELIOAB_BACKEND_URL . '/alternative/%s/update', $alt->get_id() ),
 					$body );
 			}
@@ -280,25 +429,27 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					$alt->get_id()
 				);
 
-				$result = NelioABBackend::remote_post( $url );
+				NelioABBackend::remote_post( $url );
 			}
 
 
 			// 2.3. CREATE LOCAL ALTERNATIVES IN APPSPOT
+			/** @var array $ori_post */
+			$ori_post = get_post( $this->get_originals_id(), ARRAY_A );
 			foreach ( $this->get_local_alternatives() as $alt ) {
 				if ( $alt->was_removed() )
 					continue;
 
 				if ( $this->get_type() != NelioABExperiment::HEADLINE_ALT_EXP ) {
 					if ( $alt->is_based_on_another_element() ) {
-						$new_id = $this->create_alternative_copying_content( $alt->get_name(), $alt->get_base_element() );
+						$new_id = $this->create_alternative_copying_content( $alt->get_name(), $alt->get_base_element(), $ori_post );
 						if ( $new_id )
 							$alt->set_value( $new_id );
 						else
 							continue;
 					}
 					else {
-						$new_id = $this->create_empty_alternative( $alt->get_name(), $this->get_type() );
+						$new_id = $this->create_empty_alternative( $alt->get_name(), $this->get_type(), $this->get_post_type() );
 						if ( $new_id )
 							$alt->set_value( $new_id );
 						else
@@ -313,6 +464,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				);
 
 				try {
+					/** @var int $result */
 					$result = NelioABBackend::remote_post(
 						sprintf( NELIOAB_BACKEND_URL . '/exp/post/%s/alternative', $exp_id ),
 						$body );
@@ -352,14 +504,20 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			NelioABExperimentsManager::update_experiment( $this );
 		}
 
+
+		// @Implements
 		public function get_exp_kind_url_fragment() {
 			return 'post';
 		}
 
+
+		// @Implements
 		public function remove() {
 			// 1. For each alternative, we first remove its associated page
-			foreach ( $this->get_alternatives() as $alt )
+			foreach ( $this->get_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				wp_delete_post( $alt->get_value(), true );
+			}
 
 			// 2. We remove the experiment itself
 			$url = sprintf(
@@ -367,29 +525,45 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				$this->get_id()
 			);
 
-			$result = NelioABBackend::remote_post( $url );
+			NelioABBackend::remote_post( $url );
 		}
 
+
+		// @Implements
 		public function discard_changes() {
 			foreach ( $this->get_local_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				// Delete permanently (skipping Trash)
 				wp_delete_post( $alt->get_value(), true );
 			}
 		}
 
+
+		// @Implements
 		public function start() {
 			// If the experiment is already running, quit
-			if ( $this->get_status() == NelioABExperimentStatus::RUNNING )
+			if ( $this->get_status() == NelioABExperiment::STATUS_RUNNING )
 				return;
+
+			if ( get_post_status( $this->get_originals_id() ) == 'draft' ) {
+				if ( get_post_type( $this->get_originals_id() ) == 'page' ) {
+					$err_str = __( 'The experiment cannot be started, because the tested page is a draft.', 'nelioab' );
+				} else {
+					$err_str = __( 'The experiment cannot be started, because the tested post is a draft.', 'nelioab' );
+				}
+				throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+			}
 
 			// Checking whether the experiment can be started or not...
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			foreach ( $running_exps as $running_exp ) {
+				/** @var NelioABExperiment $running_exp */
 
 				if ( $running_exp->get_type() != NelioABExperiment::PAGE_ALT_EXP &&
 				     $running_exp->get_type() != NelioABExperiment::POST_ALT_EXP &&
+				     $running_exp->get_type() != NelioABExperiment::CPT_ALT_EXP  &&
 				     $running_exp->get_type() != NelioABExperiment::HEADLINE_ALT_EXP )
 					continue;
 
@@ -402,6 +576,11 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					else if ( $running_exp->get_type() == NelioABExperiment::POST_ALT_EXP ) {
 						$err_str = sprintf(
 							__( 'The experiment cannot be started, because there is another experiment running that is testing the same post. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
+							$running_exp->get_name() );
+					}
+					else if ( $running_exp->get_type() == NelioABExperiment::CPT_ALT_EXP ) {
+						$err_str = sprintf(
+							__( 'The experiment cannot be started, because there is another experiment running that is testing the same custom post. Please, stop the experiment named «%s» before starting the new one.', 'nelioab' ),
 							$running_exp->get_name() );
 					}
 					else /* if ( $running_exp->get_type() == NelioABExperiment::HEADLINE_ALT_EXP ) */ {
@@ -421,6 +600,7 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			$ori_post = get_post( $this->get_originals_id() );
 			if ( $ori_post && $this->get_type() != NelioABExperiment::HEADLINE_ALT_EXP ) {
 				foreach ( $this->get_alternatives() as $alt ) {
+					/** @var NelioABAlternative $alt */
 					$alt_post = get_post( $alt->get_value() );
 					if ( $alt_post ) {
 						$alt_post->comment_status = $ori_post->comment_status;
@@ -433,54 +613,54 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 					$this->get_id()
 				);
 			try {
-				$result = NelioABBackend::remote_post( $url );
-				$this->set_status( NelioABExperimentStatus::RUNNING );
+				NelioABBackend::remote_post( $url );
+				$this->set_status( NelioABExperiment::STATUS_RUNNING );
 			}
 			catch ( Exception $e ) {
 				throw $e;
 			}
 		}
 
+
+		// @Implements
 		public function stop() {
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$url = sprintf(
 					NELIOAB_BACKEND_URL . '/exp/post/%s/stop',
 					$this->get_id()
 				);
-			$result = NelioABBackend::remote_post( $url );
-			$this->set_status( NelioABExperimentStatus::FINISHED );
+			NelioABBackend::remote_post( $url );
+			$this->set_status( NelioABExperiment::STATUS_FINISHED );
 		}
 
+
+		// @Implements
 		public function set_status( $status ) {
 			parent::set_status( $status );
 			foreach ( $this->get_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				$value = $this->get_id() . ',' . $this->get_status();
-				update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
-				update_post_meta( $alt->get_value(), "_nelioab_original_id", $this->get_originals_id() );
+				if ( $alt->get_value() > 0 ) {
+					update_post_meta( $alt->get_value(), "_is_nelioab_alternative", $value );
+					update_post_meta( $alt->get_value(), "_nelioab_original_id", $this->get_originals_id() );
+				}
 			}
 		}
 
-		/**
-		 * This function duplicates the current experiment in AE. It returns
-		 * the new experiment ID. The experiment is READY to be started.
-		 *
-		 * Moreover, it duplicates the local copies of the alternative pages
-		 * and posts.
-		 *
-		 * @param $new_name the new name of the duplicated experiment.
-		 * @return the ID of the new experiment (if successfully duplicated)
-		 *         or -1 otherwise.
-		 */
+
+		// @Override
 		public function duplicate( $new_name ) {
 			$id = parent::duplicate( $new_name );
 			if ( -1 == $id )
 				return $id;
 
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
+			/** @var NelioABPostAlternativeExperiment $exp */
 			$exp = NelioABExperimentsManager::get_experiment_by_id( $id, $this->get_type() );
 
 			$alts = 0;
 			foreach ( $exp->get_alternatives() as $alt ) {
+				/** @var NelioABAlternative $alt */
 				$new_id = $exp->create_alternative_copying_content( $alt->get_name(), $alt->get_value() );
 				if ( $new_id ) {
 					$alt->set_value( $new_id );
@@ -494,11 +674,15 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			}
 
 			if ( 0 == $alts )
-				$exp->set_status( NelioABExperimentStatus::DRAFT );
+				$exp->set_status( NelioABExperiment::STATUS_DRAFT );
 
 			$exp->save();
+
+			return $exp->get_id();
 		}
 
+
+		// @Implements
 		public static function load( $id ) {
 			$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/post/' . $id );
 			$json_data = json_decode( $json_data['body'] );
@@ -509,6 +693,8 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 				$exp->set_description( $json_data->description );
 			$exp->set_type_using_text( $json_data->kind );
 			$exp->set_original( $json_data->originalPost );
+			if ( isset( $json_data->postType ) )
+				$exp->set_post_type( $json_data->postType );
 			$exp->set_status( $json_data->status );
 			$exp->set_finalization_mode( $json_data->finalizationMode );
 			if ( isset( $json_data->finalizationModeValue ) )
@@ -516,6 +702,10 @@ if( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			$exp->track_heatmaps( false );
 			if ( isset( $json_data->showHeatmap ) && $json_data->showHeatmap  )
 				$exp->track_heatmaps( $json_data->showHeatmap );
+			if ( isset( $json_data->start ) )
+				$exp->set_start_date( $json_data->start );
+			if ( isset( $json_data->finalization ) )
+				$exp->set_end_date( $json_data->finalization );
 
 			if ( isset( $json_data->goals ) )
 				NelioABExperiment::load_goals_from_json( $exp, $json_data->goals );

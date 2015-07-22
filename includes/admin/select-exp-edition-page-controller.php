@@ -112,6 +112,14 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 					require_once( NELIOAB_ADMIN_DIR . '/others/heatmap-exp-edition-page-controller.php' );
 					return 'NelioABHeatmapExpEditionPageController';
 
+				case NelioABExperiment::CPT_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/alternatives/cpt-alt-exp-edition-page-controller.php' );
+					return 'NelioABCptAltExpEditionPageController';
+
+				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
+					require_once( NELIOAB_ADMIN_DIR . '/woocommerce/product-summary-alt-exp-edition-page-controller.php' );
+					return 'NelioABProductSummaryAltExpEditionPageController';
+
 				default:
 					require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 					require_once( NELIOAB_ADMIN_DIR . '/error-controller.php' );
@@ -128,4 +136,3 @@ if ( !class_exists( 'NelioABSelectExpEditionPageController' ) ) {
 
 $aux = NelioABSelectExpEditionPageController::attempt_to_load_proper_controller();
 
-?>

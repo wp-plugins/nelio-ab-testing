@@ -113,9 +113,13 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			// ...pages...
 			$list_of_pages = get_pages();
 			if ( $alt_type == NelioABExperiment::PAGE_ALT_EXP && count( $list_of_pages ) == 0 ) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
-				$view = new NelioABErrorPage(
-					__( 'There are no pages available.', 'nelioab' ) );
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
+				$view = new NelioABMessagePage(
+					sprintf(
+						__( 'There are no pages available.<br/><br/><a class="button button-primary" href="%s">Create one now.</a>', 'nelioab' ),
+						admin_url( '/post-new.php?post_type=page' )
+					)
+				);
 				return $view;
 			}
 
@@ -127,9 +131,13 @@ if ( !class_exists( 'NelioABPostAltExpEditionPageController' ) ) {
 			NelioABArrays::sort_posts( $list_of_posts );
 
 			if ( $alt_type == NelioABExperiment::POST_ALT_EXP && count( $list_of_posts ) == 0 ) {
-				require_once( NELIOAB_ADMIN_DIR . '/views/errors/error-page.php' );
-				$view = new NelioABErrorPage(
-					__( 'There are no posts available.', 'nelioab' ) );
+				require_once( NELIOAB_ADMIN_DIR . '/views/errors/message-page.php' );
+				$view = new NelioABMessagePage(
+					sprintf(
+						__( 'There are no posts available.<br/><br/><a class="button button-primary" href="%s">Create one now</a>', 'nelioab' ),
+						admin_url( '/post-new.php' )
+					)
+				);
 				return $view;
 			}
 

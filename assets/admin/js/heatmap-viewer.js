@@ -226,9 +226,9 @@ function maxAcceptableValue( src ) {
 
 	var maxValue = maxAcceptableValue * 2;
 	if ( maxs.length > 0 && maxValue > maxs[0] )
-		maxsValue = maxs[0];
+		maxValue = maxs[0];
 
-	return {maxAcceptableValue: maxAcceptableValue, maxValue: maxsValue};
+	return {maxAcceptableValue: maxAcceptableValue, maxValue: maxValue};
 }
 
 function buildHeatmap( src, dest ) {

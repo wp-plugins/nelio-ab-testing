@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -19,13 +19,34 @@
 
 if ( !class_exists( 'NelioABBackend' ) ) {
 
+	/**
+	 * Simple class for accessing Nelio's cloud servers and processing the results.
+	 *
+	 * @since PHPDOC
+	 * @package \NelioABTesting\Utils
+	 */
 	abstract class NelioABBackend {
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string  $url               PHPDOC
+		 * @param array   $params            PHPDOC
+		 * @param boolean $skip_status_check PHPDOC
+		 *                                   Default: false.
+		 *
+		 * @return WP_Error|array The response or WP_Error on failure.
+		 *
+		 * @throws Exception with the appropriate error code.
+		 *
+		 * @since PHPDOC
+		 */
 		public static function remote_post_raw( $url, $params, $skip_status_check = false ) {
 			if ( !$skip_status_check ) {
-				require_once( NELIOAB_MODELS_DIR . '/user.php' );
+				require_once( NELIOAB_MODELS_DIR . '/visitor.php' );
 				try {
-					$aux = NelioABAccountSettings::check_user_settings();
+					NelioABAccountSettings::check_user_settings();
 				}
 				catch ( Exception $e ) {
 					throw $e;
@@ -39,11 +60,35 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			return $result;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string  $url               PHPDOC
+		 * @param array   $params            PHPDOC
+		 * @param boolean $skip_status_check PHPDOC
+		 *
+		 * @return WP_Error|array The response or WP_Error on failure.
+		 *
+		 * @throws Exception with the appropriate error code.
+		 *
+		 * @since PHPDOC
+		 */
 		public static function remote_post( $url, $params = array(), $skip_status_check = false ) {
 			$json_params = NelioABBackend::build_json_object_with_credentials( $params );
 			return NelioABBackend::remote_post_raw( $url, $json_params, $skip_status_check );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param array $params PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function build_json_object_with_credentials( $params = array() ) {
 			$wrapped_params = array();
 			$credential     = NelioABBackend::make_credential();
@@ -61,21 +106,69 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 			return $json_params;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string  $url               PHPDOC
+		 * @param boolean $skip_status_check PHPDOC
+		 *
+		 * @return WP_Error|array The response or WP_Error on failure.
+		 *
+		 * @throws Exception with the appropriate error code.
+		 *
+		 * @since PHPDOC
+		 */
 		public static function remote_get( $url, $skip_status_check = false ) {
 			return NelioABBackend::remote_post( $url, array(), $skip_status_check );
 		}
 
-		public static function make_credential( $skip_check = false ) {
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
+		public static function make_credential() {
 			// Creating the credential
 			$result = array();
-			$result['customerId']         = NelioABAccountSettings::get_customer_id();
-			$result['registrationNumber'] = NelioABAccountSettings::get_reg_num();
-			$result['siteId']             = NelioABAccountSettings::get_site_id();
-			$result['siteUrl']            = get_option( 'siteurl' );
+
+			$aux = NelioABAccountSettings::get_customer_id();
+			if ( $aux ) {
+				$result['customerId'] = $aux;
+			}
+
+			$aux = NelioABAccountSettings::get_reg_num();
+			if ( $aux ) {
+				$result['registrationNumber'] = $aux;
+			}
+
+			$aux = NelioABAccountSettings::get_site_id();
+			if ( $aux ) {
+				$result['siteId'] = $aux;
+			}
+
+			$result['siteUrl'] = get_option( 'siteurl' );
 
 			return $result;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param WP_Error|array $result The response to a call to Nelio's servers.
+		 *
+		 * @return void
+		 *
+		 * @throws Exception with the appropriate error code.
+		 *
+		 * @see NelioABErrCodes
+		 *
+		 * @since PHPDOC
+		 */
 		private static function throw_exceptions_if_any( $result ) {
 
 			if ( is_wp_error( $result ) ) {
@@ -104,50 +197,396 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 
 	}//NelioABBackend
 
+
+	/**
+	 * This class contains all the error codes returned by Nelio's cloud servers.
+	 *
+	 * @since PHPDOC
+	 * @package \NelioABTesting\Utils
+	 */
 	abstract class NelioABErrCodes {
-		// These are Error codes returned by the backend
-		const NO_ERROR                           = 0;
-		const INVALID_PRODUCT_REG_NUM            = 1;
-		const INVALID_SITE                       = 2;
-		const SITE_IS_NOT_ACTIVE                 = 3;
-		const MAX_SITES                          = 4;
-		const NO_MORE_QUOTA                      = 5;
-		const UNPAID_SUBSCRIPTION                = 6;
-		const INVALID_MAIL                       = 7;
-		const SEVERAL_CUSTOMERS_WITH_SAME_MAIL   = 8;
-		const TOO_FEW_PARAMETERS                 = 9;
-		const INVALID_SITE_URL                   = 10;
-		const INVALID_PARAMETERS                 = 11;
-		const INVALID_EXPERIMENT                 = 12;
-		const INVALID_ALTERNATIVE                = 13;
-		const RESULTS_NOT_AVAILABLE_YET          = 14;
-		const DEACTIVATED_USER                   = 15;
-		const EXPERIMENT_ID_NOT_FOUND            = 16;
-		const INVALID_GOAL                       = 17;
-		const INVALID_MODIFICATION               = 18;
-		const EXPERIMENT_NOT_RUNNING             = 19;
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const NO_ERROR = 0;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_PRODUCT_REG_NUM = 1;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_SITE = 2;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const SITE_IS_NOT_ACTIVE = 3;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const MAX_SITES = 4;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const NO_MORE_QUOTA = 5;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const UNPAID_SUBSCRIPTION = 6;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_MAIL = 7;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const SEVERAL_CUSTOMERS_WITH_SAME_MAIL = 8;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const TOO_FEW_PARAMETERS = 9;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_SITE_URL = 10;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_PARAMETERS = 11;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_EXPERIMENT = 12;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_ALTERNATIVE = 13;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const RESULTS_NOT_AVAILABLE_YET = 14;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const DEACTIVATED_USER = 15;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const EXPERIMENT_ID_NOT_FOUND = 16;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_GOAL = 17;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_MODIFICATION = 18;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const EXPERIMENT_NOT_RUNNING = 19;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
 		const FEATURE_NOT_AVAILABLE_FOR_CUSTOMER = 20;
-		const INVALID_SCHEDULE_DATE              = 21;
-		const EXPERIMENT_CANNOT_BE_DUPLICATED    = 22;
-		const INCOMPLETE_EXPERIMENT              = 23;
 
-		// Error codes corresponding to package details
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_SCHEDULE_DATE = 21;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const EXPERIMENT_CANNOT_BE_DUPLICATED = 22;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INCOMPLETE_EXPERIMENT = 23;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend and corresponds to package
+		 * details.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
 		const MULTI_PAGE_GOAL_NOT_ALLOWED_IN_BASIC = 100;
-		const HEATMAP_NOT_ALLOWED_IN_BASIC         = 101;
 
-		// These are "private" error codes
-		const BACKEND_NOT_AVAILABLE                        = -1;
-		const BACKEND_NO_SITE_CONFIGURED                   = -2;
-		const BACKEND_UNKNOWN_ERROR                        = -3;
-		const ERROR_404                                    = -4;
-		const NON_ACCEPTED_TAC                             = -5;
-		const STATUS_204                                   = -6;
-		const UNKNOWN_ERROR                                = -7;
-		const NO_HEATMAPS_AVAILABLE                        = -8;
+
+		/**
+		 * PHPDOC
+		 * This error code is returned by the backend and corresponds to package
+		 * details.
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const HEATMAP_NOT_ALLOWED_IN_BASIC = 101;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const BACKEND_NOT_AVAILABLE = -1;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const BACKEND_NO_SITE_CONFIGURED = -2;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const BACKEND_UNKNOWN_ERROR = -3;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const ERROR_404 = -4;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const NON_ACCEPTED_TAC = -5;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const STATUS_204 = -6;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const UNKNOWN_ERROR = -7;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const NO_HEATMAPS_AVAILABLE = -8;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
 		const NO_HEATMAPS_AVAILABLE_FOR_NON_RUNNING_EXPERIMENT = -9;
-		const EXPERIMENT_CANNOT_BE_STARTED                 = -10;
-		const INVALID_NONCE                                = -11;
 
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const EXPERIMENT_CANNOT_BE_STARTED = -10;
+
+
+		/**
+		 * PHPDOC
+		 * This error code is private (it only appears in the plugin).
+		 *
+		 * @since PHPDOC
+		 * @var int
+		 */
+		const INVALID_NONCE = -11;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @var int $err The error code.
+		 *
+		 * @return string PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function to_string( $err ) {
 			switch( $err ) {
 				// Backend errors
@@ -158,7 +597,7 @@ if ( !class_exists( 'NelioABBackend' ) ) {
 				case NelioABErrCodes::SITE_IS_NOT_ACTIVE:
 					return __( 'This site is not active.', 'nelioab' );
 				case NelioABErrCodes::MAX_SITES:
-					return __( 'This account has reached the maximum allowed number of registered sites.', 'nelioab' );
+					return __( 'This account has reached the maximum allowed number of active sites.', 'nelioab' );
 				case NelioABErrCodes::NO_MORE_QUOTA:
 					return __( 'There is no more quota available.', 'nelioab' );
 				case NelioABErrCodes::UNPAID_SUBSCRIPTION:
