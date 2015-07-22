@@ -545,6 +545,15 @@ if ( !class_exists( 'NelioABPostAlternativeExperiment' ) ) {
 			if ( $this->get_status() == NelioABExperiment::STATUS_RUNNING )
 				return;
 
+			if ( get_post_status( $this->get_originals_id() ) == 'draft' ) {
+				if ( get_post_type( $this->get_originals_id() ) == 'page' ) {
+					$err_str = __( 'The experiment cannot be started, because the tested page is a draft.', 'nelioab' );
+				} else {
+					$err_str = __( 'The experiment cannot be started, because the tested post is a draft.', 'nelioab' );
+				}
+				throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+			}
+
 			// Checking whether the experiment can be started or not...
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );

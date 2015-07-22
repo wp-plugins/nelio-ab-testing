@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns, woocommerce testing, track purchases, ab product, split product, order tracking, woocommerce
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.2.2
+Stable tag: 4.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -288,6 +288,16 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.2.3 (July 22, 2015) =
+* **Bug fix**. Experiments whose tested page/post is a draft cannot be started
+until the page/post is published.
+* **Bug fix**. The excerpts of some headline experiments were not properly
+escaped and, as a result, the progress of the experiment page did not work
+properly. This has now been fixed.
+* Minor fixes. We fixed a few more issues, such as the quota visualization in
+the dashboard page.
+
 
 = 4.2.2 (June 29, 2015) =
 * **Bug fix**. Removed unnecessary JavaScript alert.

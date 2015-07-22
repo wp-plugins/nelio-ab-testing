@@ -233,9 +233,9 @@ if ( !class_exists( 'NelioABHeadlineAltExpProgressPage' ) ) {
 			$action_links = $this->get_action_links( $exp, $exp->get_originals_id(), $winner );
 			$buttons = implode( ' ', $action_links );
 
-			$json_name = json_encode( $json_name );
-			$json_excerpt = json_encode( $json_excerpt );
-			$json_image_src = json_encode( $json_image_src );
+			$json_name = json_encode( $name );
+			$json_excerpt = json_encode( $excerpt );
+			$json_image_src = json_encode( $image_src );
 
 			$result = <<<HTML
 				<div class="nelio-alternative original-alternative postbox nelio-card">
@@ -350,22 +350,22 @@ HTML;
 
 				$the_value = $alt->get_value();
 				$name = $alt->get_name();
-				$name = str_replace( "\\", "\\\\", $name );
-				$name = str_replace( "'", "\\'", $name );
 				$excerpt = $the_value['excerpt'];
-				$excerpt = str_replace( "\\", "\\\\", $excerpt );
-				$excerpt = str_replace( "'", "\\'", $excerpt );
 				$image_id = $the_value['image_id'];
 				$aux = wp_get_attachment_image_src( $image_id );
 				$image_src = ( count( $aux ) > 0 ) ? $aux[0] : '';
+
+				$json_name = json_encode( $name );
+				$json_excerpt = json_encode( $excerpt );
+				$json_image_src = json_encode( $image_src );
 
 				$aux = ( $ori_conversions * $this->goal->get_benefit() * $improvement_factor )/100;
 
 				$print_improvement = true;
 				// format improvement factor
 				if ( $improvement_factor < 0 ) {
-					$arrow                       = 'fa-arrow-down';
-					$stats_color                 = 'red';
+					$arrow       = 'fa-arrow-down';
+					$stats_color = 'red';
 					$improvement_factor = $improvement_factor * - 1;
 				} else if ( $improvement_factor > 0 ) {
 					$arrow       = 'fa-arrow-up';
@@ -461,7 +461,7 @@ HTML;
 						'$pageviews_label');
 
 					jQuery('#$id').click(function() {
-						nelioabPreviewLink('$name', '$excerpt', '$image_src' );
+						nelioabPreviewLink($json_name, $json_excerpt, $json_image_src);
 					});
 				});
 				</script>

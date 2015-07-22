@@ -74,7 +74,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 				?>
 
 				<div class="numbers" style="height:40px;">
-					<div class="left" style="float:left; width:55%;">
+					<div class="left" style="float:left; width:58%;">
 						<span style="font-weight:bold;"><?php _e( 'AVAILABLE QUOTA', 'nelioab' ); ?></span><br>
 						<span style="color:<?php echo $cs['primary']; ?>; font-size:10px;"><?php
 							echo number_format_i18n( $this->quota['regular'], 0 );
@@ -88,7 +88,7 @@ if ( !class_exists( 'NelioABDashboardPage' ) ) {
 							}
 						?></span>
 					</div>
-					<div class="right" style="font-size:32px; text-align:right; float:right; width:38%; padding-right:5%; margin-top:8px; opacity:0.7;">
+					<div class="right" style="font-size:32px; text-align:right; float:right; width:35%; padding-right:5%; margin-top:8px; opacity:0.7;">
 						<span><?php
 							// Let's compute the size of the extra quota (if any)
 							if ( $this->quota['extra'] > 0 ) {
