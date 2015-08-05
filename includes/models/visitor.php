@@ -31,6 +31,15 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 	class NelioABVisitor {
 
 		/**
+		 * List of all the experiment IDs and alternatives that will be used for generate query strings.
+		 *
+		 * @since 4.2.4
+		 * @var array
+		 */
+		private static $links_info;
+
+
+		/**
 		 * List of experiment IDs for which this visitor has an alternative.
 		 *
 		 * @since 4.0.0
@@ -165,6 +174,14 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			$exp_and_alt_list = array();
 
+			self::$links_info = array(
+				'nabc'   => false,
+				'nabm'   => false,
+				'nabt'   => false,
+				'nabw'   => false,
+				'others' => array()
+			);
+
 			if ( isset( $_POST['nelioab_env'] ) ) {
 				$exp_and_alt_list = $_POST['nelioab_env'];
 			}
@@ -218,7 +235,7 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 					}
 				}
 			}
-			NelioABVisitor::prepareEnvironment( $exp_and_alt_list );
+			NelioABVisitor::prepare_environment( $exp_and_alt_list );
 		}
 
 
@@ -258,7 +275,7 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 						$exp = $aux;
 				}
 				if ( $exp )
-					NelioABVisitor::completeEnvironment( $exp, $val );
+					NelioABVisitor::complete_environment( $exp, $val );
 			}
 			self::$is_fully_loaded = true;
 			remove_action( 'the_posts',   array( 'NelioABVisitor', 'do_late_load' ) );
@@ -281,7 +298,7 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 		 *
 		 * @since 4.0.0
 		 */
-		private static function prepareEnvironment( $env ) {
+		private static function prepare_environment( $env ) {
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 
@@ -310,28 +327,55 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 							/** @var NelioABPostAlternativeExperiment $exp */
 							self::add_regular_exp( $exp, $alt );
 							array_push( self::$ids, $exp->get_id() );
+							self::$links_info['others'][$exp->get_id()] = array(
+								'ori' => $exp->get_originals_id(),
+								'alt' => $alt );
 							break;
 						case NelioABExperiment::HEADLINE_ALT_EXP:
 							/** @var NelioABHeadlineAlternativeExperiment $exp */
 							self::add_headline_exp( $exp, $alt );
 							array_push( self::$ids, $exp->get_id() );
+							self::$links_info['others'][$exp->get_id()] = array(
+								'ori' => $exp->get_originals_id(),
+								'alt' => $alt );
 							break;
 						case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
 							/** @var NelioABHeadlineAlternativeExperiment $exp */
 							self::add_wc_product_summary_exp( $exp, $alt );
 							array_push( self::$ids, $exp->get_id() );
+							self::$links_info['others'][$exp->get_id()] = array(
+								'ori' => $exp->get_originals_id(),
+								'alt' => $alt );
 							break;
 						case NelioABExperiment::CSS_ALT_EXP:
+							/** @var NelioABGlobalAlternativeExperiment $exp */
+							self::add_global_exp( $exp, $alt );
+							array_push( self::$ids, $exp->get_id() );
+							self::$links_info['nabc'] = $alt;
+							break;
 						case NelioABExperiment::MENU_ALT_EXP:
+							/** @var NelioABGlobalAlternativeExperiment $exp */
+							self::add_global_exp( $exp, $alt );
+							array_push( self::$ids, $exp->get_id() );
+							self::$links_info['nabm'] = $alt;
+							break;
 						case NelioABExperiment::THEME_ALT_EXP:
+							/** @var NelioABGlobalAlternativeExperiment $exp */
+							self::add_global_exp( $exp, $alt );
+							array_push( self::$ids, $exp->get_id() );
+							self::$links_info['nabt'] = $alt;
+							break;
 						case NelioABExperiment::WIDGET_ALT_EXP:
 							/** @var NelioABGlobalAlternativeExperiment $exp */
 							self::add_global_exp( $exp, $alt );
 							array_push( self::$ids, $exp->get_id() );
+							self::$links_info['nabw'] = $alt;
 							break;
 					}
 				}
 			}
+
+			ksort( self::$links_info['others'] );
 		}
 
 
@@ -343,25 +387,35 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 		 *
 		 * @since 4.0.0
 		 */
-		private static function completeEnvironment( $exp, $alt_index ) {
+		private static function complete_environment( $exp, $alt_index ) {
 			switch ( $exp->get_type() ) {
 				case NelioABExperiment::PAGE_ALT_EXP:
 				case NelioABExperiment::POST_ALT_EXP:
 				case NelioABExperiment::CPT_ALT_EXP:
 					self::add_regular_exp( $exp, $alt_index );
 					array_push( self::$ids, $exp->get_id() );
+					self::$links_info['others'][$exp->get_id()] = array(
+						'ori' => $exp->get_originals_id(),
+						'alt' => $alt_index );
 					break;
 				case NelioABExperiment::HEADLINE_ALT_EXP:
 					/** @var NelioABHeadlineAlternativeExperiment $exp */
 					self::add_headline_exp( $exp, $alt_index );
 					array_push( self::$ids, $exp->get_id() );
+					self::$links_info['others'][$exp->get_id()] = array(
+						'ori' => $exp->get_originals_id(),
+						'alt' => $alt_index );
 					break;
 				case NelioABExperiment::WC_PRODUCT_SUMMARY_ALT_EXP:
 					/** @var NelioABHeadlineAlternativeExperiment $exp */
 					self::add_wc_product_summary_exp( $exp, $alt_index );
 					array_push( self::$ids, $exp->get_id() );
+					self::$links_info['others'][$exp->get_id()] = array(
+						'ori' => $exp->get_originals_id(),
+						'alt' => $alt_index );
 					break;
 			}
+			ksort( self::$links_info['others'] );
 		}
 
 
@@ -391,6 +445,18 @@ if ( !class_exists( 'NelioABVisitor' ) ) {
 		 */
 		public static function get_experiment_ids_in_request() {
 			return self::$ids;
+		}
+
+
+		/**
+		 * Returns the list of all the experiment IDs and alternatives that will be used for generate query strings.
+		 *
+		 * @return array  the list of all the experiment IDs and alternatives that will be used for generate query strings.
+		 *
+		 * @since 4.0.0
+		 */
+		public static function get_experiment_information_for_query_string() {
+			return self::$links_info;
 		}
 
 

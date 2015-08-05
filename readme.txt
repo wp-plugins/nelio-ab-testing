@@ -3,7 +3,7 @@ Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns, woocommerce testing, track purchases, ab product, split product, order tracking, woocommerce
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 4.2.3
+Stable tag: 4.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -288,6 +288,16 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.2.4 (August 5, 2015) =
+* **Improved support for WPML**. Now, language switcher works for alternative
+content.
+* **Improved Navigation**. When browsing from one page to the other, A/B
+Testing parameters are now added at the server. This way, we reduce the amount
+of JavaScript redirections and things go faster and smoother.
+* **Bug fix**. Highcharts JS is only included in Nelio's Dashboard and Progress
+of the Experiment pages (that is, where it's required).
+
 
 = 4.2.3 (July 22, 2015) =
 * **Bug fix**. Experiments whose tested page/post is a draft cannot be started
@@ -1005,8 +1015,8 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.2.3 =
-WooCommerce Support. First version that includes support for WooCommerce. You
-can now test your products (change their name, featured image, and description),
-and use the Purchase conversion action for monitoring actual purchases.
+= 4.2.4 =
+4.2.4 improves WPML support. Series 4.2 supports WooCommerce. You can now test
+your products (change their name, featured image, and description), and use the
+Purchase conversion action for monitoring actual purchases.
 

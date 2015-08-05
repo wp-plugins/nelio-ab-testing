@@ -102,9 +102,9 @@ class NelioABAlternativeExperimentController {
 		add_filter( 'comments_array',      array( &$this, 'prepare_comments_form' ) );
 		add_filter( 'get_comments_number', array( &$this, 'load_comments_number_from_original' ) );
 
-		add_filter( 'post_link',      array( &$this, 'use_originals_post_link' ) );
-		add_filter( 'page_link',      array( &$this, 'use_originals_post_link' ) );
-		add_filter( 'post_type_link', array( &$this, 'use_originals_post_link' ) );
+		add_filter( 'post_link',      array( &$this, 'fix_link_with_experiments' ) );
+		add_filter( 'page_link',      array( &$this, 'fix_link_with_experiments' ) );
+		add_filter( 'post_type_link', array( &$this, 'fix_link_with_experiments' ) );
 		add_filter( 'get_shortlink',  array( &$this, 'use_originals_shortlink' ), 10, 2 );
 
 		add_action( 'wp_get_nav_menu_items', array( &$this, 'show_the_appropriate_menu' ), 10, 3 );
@@ -763,20 +763,65 @@ class NelioABAlternativeExperimentController {
 
 
 	/**
-	 * PHPDOC
+	 * Adds Nelio variables to all links, so that browsing from one page to the other is instantaneous.
+	 *
+	 * If the given permalink corresponds to the current page (or one of its
+	 * alternatives), then we will use the regular permalink, no parameters
+	 * added. This way, we'll make sure that the URL is the canonical clean
+	 * version.
 	 *
 	 * @param string $permalink PHPDOC
 	 *
 	 * @return string PHPDOC
 	 *
-	 * @since PHPDOC
+	 * @since 4.2.4
 	 */
-	public function use_originals_post_link( $permalink ) {
-		$perm_id = url_to_postid( $permalink );
-		if ( $this->is_post_alternative( $perm_id ) ) {
-			$ori_id = $this->get_original_related_to( $perm_id );
+	public function fix_link_with_experiments( $permalink ) {
+		global $nelioab_controller;
+		$current_id = $nelioab_controller->get_queried_post_id();
+
+		$post_id = url_to_postid( $permalink );
+		if ( $post_id == $current_id ) {
+
+			// Nothing to do here
+
+		} else if ( $this->is_post_alternative( $post_id ) ) {
+
+			$ori_id = $this->get_original_related_to( $post_id );
 			$permalink = get_permalink( $ori_id );
+
+		} else {
+
+			$links_info = NelioABVisitor::get_experiment_information_for_query_string();
+
+			// Prepare NAB
+			foreach ( $links_info['others'] as $exp_id => $info ) {
+				if ( $info['ori'] == $post_id ) {
+					$permalink = add_query_arg( 'nab', $info['alt'], $permalink );
+					unset( $links_info['others'][$exp_id] );
+					break;
+				}
+			}
+
+			// Prepare NABC, NABM, NABT, and NABW
+			foreach ( array( 'nabc', 'nabm', 'nabt', 'nabw' ) as $type ) {
+				if ( $links_info[$type] ) {
+					$permalink = add_query_arg( 'nabe', $links_info[$type], $permalink );
+				}
+			}
+
+			// Prepare NABE
+			$nabe = '';
+			foreach ( $links_info['others'] as $exp_id => $info ) {
+				$nabe .= $exp_id . '%3A' . $info['alt'] . ',';
+			}
+			if ( strlen( $nabe ) > 0 ) {
+				$nabe = substr( $nabe, 0, strlen( $nabe ) - 1 );
+				$permalink = add_query_arg( 'nabe', $nabe, $permalink );
+			}
+
 		}
+
 		return $permalink;
 	}
 

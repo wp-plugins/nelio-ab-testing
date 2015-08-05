@@ -250,15 +250,17 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			wp_enqueue_style( 'nelioab_animated_fontawesome_css' );
 
 			// Custom JS for GRAPHICS (conversion experiment progress)
-			wp_enqueue_script( 'nelioab_highcharts',
-				nelioab_admin_asset_link( '/js/highcharts.min.js' ),
-				array(), NELIOAB_PLUGIN_VERSION );
-			wp_enqueue_script( 'nelioab_exporting',
-				nelioab_admin_asset_link( '/js/exporting.min.js' ),
-				array(), NELIOAB_PLUGIN_VERSION );
-			wp_enqueue_script( 'nelioab_graphic_functions',
-				nelioab_admin_asset_link( '/js/graphic-functions.min.js' ),
-				array(), NELIOAB_PLUGIN_VERSION );
+			if ( $this->is_page( array( 'exp-progress', 'nelioab-dashboard' ) ) ) {
+				wp_enqueue_script( 'nelioab_highcharts',
+					nelioab_admin_asset_link( '/js/highcharts.min.js' ),
+					array(), NELIOAB_PLUGIN_VERSION );
+				wp_enqueue_script( 'nelioab_exporting',
+					nelioab_admin_asset_link( '/js/exporting.min.js' ),
+					array(), NELIOAB_PLUGIN_VERSION );
+				wp_enqueue_script( 'nelioab_graphic_functions',
+					nelioab_admin_asset_link( '/js/graphic-functions.min.js' ),
+					array(), NELIOAB_PLUGIN_VERSION );
+			}
 
 			wp_register_style( 'font_awesome_css',
 				nelioab_admin_asset_link( '/css/font-awesome.min.css' ),

@@ -298,6 +298,10 @@ if ( !class_exists( 'NelioABController' ) ) {
 			if ( NelioABCustomPermalinksSupport::is_plugin_active() )
 				NelioABCustomPermalinksSupport::prevent_template_redirect();
 
+			// WPML Support: making sure that the language selector works as expected
+			require_once( NELIOAB_UTILS_DIR . '/wpml-support.php' );
+			NelioABWpmlSupport::hook_to_wordpress();
+
 			// If we're previewing a page alternative, it may be the case that it's an
 			// alternative of the landing page. Let's make sure the "page_on_front"
 			// option is properly updated:
@@ -744,6 +748,19 @@ if ( !class_exists( 'NelioABController' ) ) {
 			// Controller for viewing heatmaps
 			require_once( NELIOAB_EXP_CONTROLLERS_DIR . '/heatmap-controller.php' );
 			new NelioABHeatmapController();
+		}
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $name PHPDOC
+		 *
+		 * @return object PHPDOC
+		 *
+		 * @since 4.2.4
+		 */
+		public function get_controller( $name ) {
+			return $this->controllers[$name];
 		}
 
 
