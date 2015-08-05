@@ -39,6 +39,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			// Original title
 			$exp = $this->exp;
 			$this->ori = $exp->get_original()->get_name();
+			return $this->ori;
 		}
 
 		protected function get_original_value() {
@@ -61,7 +62,7 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 			$the_winner_confidence = $this->get_winning_confidence();
 
 			$exp = $this->exp;
-			if ( $exp->get_status() == NelioABExperimentStatus::RUNNING ) {
+			if ( $exp->get_status() == NelioABExperiment::STATUS_RUNNING ) {
 				if ( $the_winner == 0 )
 					echo '<p><b>' . __( 'Right now, no alternative is beating the original theme.', 'nelioab' ) . '</b></p>';
 				if ( $the_winner > 0 )
@@ -86,76 +87,333 @@ if ( !class_exists( 'NelioABThemeAltExpProgressPage' ) ) {
 		protected function print_the_original_alternative() {
 			// THE ORIGINAL
 			// -----------------------------------------
-			$exp       = $this->exp;
-			$ori_label = __( 'Original', 'nelioab' );
 
-			if ( $this->is_winner( $this->get_original_value() ) )
-				$set_as_winner = $this->winner_label;
-			else
-				$set_as_winner = '';
+			if( $this->results == null ) {
+				$pageviews       = 0;
+				$conversions     = 0;
+				$conversion_rate = 0.0;
+			} else {
+				$alt_results     = $this->results->get_alternative_results();
+				$ori_result      = $alt_results[0];
+				$pageviews       = $ori_result->get_num_of_visitors();
+				$conversions     = $ori_result->get_num_of_conversions();
+				$conversion_rate = $ori_result->get_conversion_rate();
+			}
 
-			echo sprintf( '<tr>' .
-				'<td><span class="alt-type add-new-h2 %s">%s</span></td>' .
-				'<td><strong>%s</strong><br />' .
-				'<small>&nbsp;</small></td>' .
-				'</tr>',
-				$set_as_winner, $ori_label, $this->trunk( $this->ori ) );
+			$exp             = $this->exp;
+			$the_themes      = wp_get_themes();
+			$ori             = $exp->get_original();
+			$ori_label       = __( 'Original Version', 'nelioab' );
+			$ori_name        = __( 'Original', 'nelioab' );
+
+			$conversions_label      = __( 'Conversions', 'nelioab' );
+			$pageviews_label        = __( 'Pageviews', 'nelioab' );
+			$conversion_views_label = __( 'Conversions / Views', 'nelioab' );
+			$conversion_rate_label  = __( 'Conversion Rate', 'nelioab' );
+
+			$name = $this->trunk( $this->get_original_name() );
+
+			$original = __( 'This is the original version', 'nelioab' );
+			$icon = $this->get_experiment_icon( $exp );
+
+			$id = $ori->get_id();
+			$graphic_id = 'graphic-' . $id;
+
+			$colorscheme = NelioABWpHelper::get_current_colorscheme();
+			$color = $colorscheme['primary'];
+
+			$ori_conversion_rate  = number_format_i18n( floatval( $conversion_rate ), 2 ) . ' %';
+			$ori_conversion_views = $conversions . ' / ' . $pageviews;
+
+			$winner_color = '';
+
+			if ( $this->is_winner( $this->exp->get_originals_id() ) ) {
+				$icon         = $this->get_winner_icon( $exp );
+				$color        = $colorscheme['winner'];
+				$winner_color = 'style="background-color:' . $colorscheme['primary'] . ';color:' . $colorscheme['foreground'] . ';"';
+			}
+
+			$theme_image = '#';
+			foreach ( $the_themes as $t ) {
+				if ( $t['Stylesheet'] == $ori->get_value() ) {
+					$theme_image = $t->get_screenshot();
+					break;
+				}
+			}
+
+			$result = <<<HTML
+				<div class="nelio-alternative original-alternative postbox nelio-card">
+					<div class="alt-info-header masterTooltip" $winner_color title="$original">
+						$icon
+						<span class="alt-title">$name</span>
+					</div>
+					<div class="alt-info-body">
+						<div class="alt-screen hover-img-fade" id="$id" style="color:$color;">
+							<img class="alt-theme-img" src="$theme_image" width="320" height="240">
+							<div class="alt-name">
+									$ori_name
+								</div>
+						</div>
+						<div class="alt-stats">
+							<div class="alt-stats-graphic" id="$graphic_id"></div>
+							<div class="alt-status">
+								<div class="alt-cv">
+									<span class="alt-cv-title">$conversion_views_label</span>
+									<span class="alt-cv">$ori_conversion_views</span>
+								</div>
+								<div class="alt-cr">
+									<span class="alt-cr-title">$conversion_rate_label</span>
+									<span class="alt-cr">$ori_conversion_rate</span>
+								</div>
+								<div class="alt-stats">
+									<span>$ori_label</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="alt-info-footer">
+						<div class="alt-info-footer-content">
+						</div>
+					</div>
+				</div>
+				<script>
+				jQuery(document).ready(function() {
+					drawAlternativeGraphic('$graphic_id',
+						$conversions,
+						'$conversions_label',
+						'$color',
+						$pageviews,
+						'$pageviews_label');
+				});
+				</script>
+HTML;
+
+			echo $result;
 		}
 
 
 		protected function print_the_real_alternatives() {
 			// REAL ALTERNATIVES
 			// -----------------------------------------
-			$exp        = $this->exp;
-			$i          = 0;
+			$exp = $this->exp;
 			$the_themes = wp_get_themes();
+
+			if( $this->results == null ) {
+				$alt_results     = null;
+				$ori_conversions = 0;
+			} else {
+				$alt_results     = $this->results->get_alternative_results();
+				$ori_conversions = $alt_results[0]->get_num_of_conversions();
+				// in this function, the original alternative is NOT used
+				$alt_results = array_slice( $alt_results, 1 );
+			}
+
+			$conversions_label      = __( 'Conversions', 'nelioab' );
+			$pageviews_label        = __( 'Pageviews', 'nelioab' );
+			$conversion_views_label = __( 'Conversions / Views', 'nelioab' );
+			$conversion_rate_label  = __( 'Conversion Rate', 'nelioab' );
+			$alternative_label      = __( 'Alternative', 'nelioab' );
+
+			$colorscheme = NelioABWpHelper::get_current_colorscheme();
+			$color = $colorscheme['primary'];
+
+			$base_color = $color;
+
+			$i   = 0;
 			foreach ( $exp->get_alternatives() as $alt ) {
 				$i++;
 				$action_links = array();
 
-				if ( $exp->get_status() == NelioABExperimentStatus::FINISHED ) {
-					$theme = NULL;
-					foreach ( $the_themes as $t ) {
-						if ( $t['Stylesheet'] == $alt->get_value() ) {
-							$theme = $t;
-							break;
-						}
-					}
+				$name = $this->trunk( $alt->get_name() );
 
-					$winner_button = '';
-					if ( $this->is_winner( $alt->get_value() ) )
-						$winner_button = '-primary';
+				$icon = $this->get_experiment_icon( $exp );
+				$id = $alt->get_id();
+				$graphic_id = 'graphic-' . $id;
 
-					if ( $theme != NULL ) {
-						$action_links['apply'] = sprintf(
-							' <a class="apply-link" href="javascript:nelioab_confirm_overwriting(\'%1$s\', \'%2$s\', \'%3$s\');">%4$s</a>',
-							$alt->get_value(), $theme['Stylesheet'], $theme['Template'],
-							__( 'Apply', 'nelioab' ) );
+				if ( $alt_results != null ) {
+					$alt_result         = $alt_results[ $i - 1 ];
+					$pageviews          = $alt_result->get_num_of_visitors();
+					$conversions        = $alt_result->get_num_of_conversions();
+					$conversion_rate    = $alt_result->get_conversion_rate();
+					$improvement_factor = $alt_result->get_improvement_factor();
+				} else {
+					$pageviews          = 0;
+					$conversions        = 0;
+					$conversion_rate    = 0.0;
+					$improvement_factor = 0.0;
+				}
+
+				$alt_conversion_views = $conversions . ' / ' . $pageviews;
+
+				$aux = ( $ori_conversions * $this->goal->get_benefit() * $improvement_factor )/100;
+
+				$print_improvement = true;
+				// format improvement factor
+				if ( $improvement_factor < 0 ) {
+					$arrow                       = 'fa-arrow-down';
+					$stats_color                 = 'red';
+					$improvement_factor = $improvement_factor * - 1;
+				} else if ( $improvement_factor > 0 ) {
+					$arrow       = 'fa-arrow-up';
+					$stats_color = 'green';
+				} else { // $improvement_factor = 0.0
+					$arrow       = 'fa-none';
+					$stats_color = 'black';
+					$print_improvement = false;
+				}
+
+				if ( $aux > 0 ) {
+					$gain = sprintf( __( '%1$s%2$s', 'nelioab', 'money' ),
+						NelioABSettings::get_conv_unit(),
+						number_format_i18n( $aux, 2 )
+					);
+				} else {
+					$gain = sprintf( __( '%1$s%2$s', 'nelioab', 'money' ),
+						NelioABSettings::get_conv_unit(),
+						number_format_i18n( $aux * -1, 2 )
+					);
+				}
+
+				$alt_conversion_rate = number_format_i18n( floatval( $conversion_rate ), 2 ) . ' %';
+				$alt_improvement_factor = number_format_i18n( floatval( $improvement_factor ), 2 ) . ' %';
+				$alternative_number = $i;
+
+				$winner_color = '';
+				if ( $this->is_winner( $alt->get_id() ) ) {
+					$icon  = $this->get_winner_icon( $exp );
+					$color = $colorscheme['winner'];
+					$winner_color = 'style="background-color:' . $colorscheme['primary'] . ';color:' . $colorscheme['foreground'] . ';"';
+				} else {
+					$color = $base_color;
+				}
+
+				$theme = null;
+				$theme_image = '#';
+				foreach ( $the_themes as $t ) {
+					if ( $t['Stylesheet'] == $alt->get_value() ) {
+						$theme = $t;
+						$theme_image = $t->get_screenshot();
+						break;
 					}
 				}
 
-				if ( $this->is_winner( $alt->get_value() ) )
-					$set_as_winner = $this->winner_label;
-				else
-					$set_as_winner = '';
+				if ( $theme != NULL && $exp->get_status() == NelioABExperiment::STATUS_FINISHED ) {
+					$img = '<span id="loading-' . $alt->get_value() . '" class="dashicons dashicons-update fa-spin animated nelio-apply"></span>';
 
-				$alt_label = sprintf( __( 'Alternative %s', 'nelioab' ), $i );
-				echo sprintf( '<tr>' .
-					'<td><span class="alt-type add-new-h2 %1$s">%2$s</span></td>' .
-					'<td><strong>%3$s</strong> ' .
-					'<img id="loading-%4$s" style="display:none;width:1em;margin-top:-1em;" src="%5$s" />' .
-					'<strong><small id="success-%4$s" style="display:none;">%6$s</small></strong><br />' .
-					'<small>%7$s&nbsp;</small></td>' .
-					'</tr>',
-					$set_as_winner, $alt_label,
-					$this->trunk( $alt->get_name() ),
-					$alt->get_value(),
-					nelioab_asset_link( '/images/loading-small.gif' ),
-					__( '(Done!)', 'nelioab' ),
-					implode( ' | ', $action_links ) );
+					$aux = sprintf(
+						' <a class="apply-link button" href="javascript:nelioab_confirm_overwriting(\'%1$s\', \'%2$s\', \'%3$s\');">%4$s %5$s</a>',
+						$alt->get_value(), $theme['Stylesheet'], $theme['Template'],
+						$img,
+						__( 'Apply', 'nelioab' ) );
+					array_push( $action_links, $aux );
+				}
 
+				$buttons = implode( ' ', $action_links );
+
+				if ( !$print_improvement ) {
+					$gain = '';
+					$alt_improvement_factor = '';
+				}
+
+				$result = <<<HTML
+				<div class="nelio-alternative alternative-$i postbox nelio-card">
+					<div class="alt-info-header" $winner_color>
+						$icon
+						<span class="alt-title">$name</span>
+					</div>
+					<div class="alt-info-body">
+						<div class="alt-screen hover-img-fade" id="$id" style="color:$color;">
+							<img class="alt-theme-img" src="$theme_image" width="320" height="240">
+								<div class="alt-name">
+									$alternative_label
+								</div>
+								<div class="alt-number">
+									$alternative_number
+								</div>
+						</div>
+						<div class="alt-stats">
+							<div class="alt-stats-graphic" id="$graphic_id"></div>
+							<div class="alt-status">
+								<div class="alt-cv">
+									<span class="alt-cv-title">$conversion_views_label</span>
+									<span class="alt-cv">$alt_conversion_views</span>
+								</div>
+								<div class="alt-cr">
+									<span class="alt-cr-title">$conversion_rate_label</span>
+									<span class="alt-cr">$alt_conversion_rate</span>
+								</div>
+								<div class="alt-stats" style="color:$stats_color;">
+									<span class="alt-if"><i class="fa $arrow" style="vertical-align: top;"></i>$alt_improvement_factor</span>
+									<span class="alt-ii"><i class="fa $arrow" style="vertical-align: top;"></i>$gain</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="alt-info-footer">
+						<div class="alt-info-footer-content">
+							$buttons
+						</div>
+					</div>
+				</div>
+				<script>
+				jQuery(document).ready(function() {
+					drawAlternativeGraphic('$graphic_id',
+						$conversions,
+						'$conversions_label',
+						'$color',
+						$pageviews,
+						'$pageviews_label');
+				});
+				</script>
+HTML;
+
+				echo $result;
+			}
+		}
+
+		protected function who_wins() {
+			$exp = $this->exp;
+			$winner_id = $this->who_wins_real_id();
+			if ( $winner_id == $exp->get_originals_id() )
+				return 0;
+			$i = 1;
+			foreach ( $exp->get_alternatives() as $alt ) {
+				if ( $winner_id == $alt->get_id() )
+					return $i;
+				$i++;
+			}
+			return self::NO_WINNER;
+		}
+
+		protected function get_winning_gtest() {
+			$res = $this->results;
+			if ( $res == null )
+				return false;
+
+			$gtests = $res->get_gtests();
+
+			if ( count( $gtests ) == 0 )
+				return false;
+
+			/** @var NelioABGTest $bestg */
+			$bestg = $gtests[count( $gtests ) - 1];
+
+			if ( $bestg->is_original_the_best() ) {
+				if ( $bestg->get_type() == NelioABGTest::WINNER )
+					return $bestg;
+			}
+			else {
+				$aux = null;
+				foreach ( $gtests as $gtest )
+					if ( $gtest->get_min() == $this->exp->get_originals_id() )
+						$aux = $gtest;
+				if ( $aux )
+					if ( $aux->get_type() == NelioABGTest::WINNER ||
+					     $aux->get_type() == NelioABGTest::DROP_VERSION )
+						return $aux;
 			}
 
+			return false;
 		}
 
 		protected function print_dialog_content() {

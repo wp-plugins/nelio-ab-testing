@@ -372,6 +372,9 @@ var NelioABGoalCards = {
 		newCard.find('.new-actions .external-page').click(function() {
 			NelioABGoalCards.addAction( { isNew:true, type:'external-page' }, newCard );
 		});
+		newCard.find('.new-actions .wc-order-completed').click(function() {
+			NelioABGoalCards.addAction( { isNew:true, type:'wc-order-completed' }, newCard );
+		});
 		newCard.find('.new-actions .click-element').click(function() {
 			NelioABGoalCards.addAction( { isNew:true, type:'click-element' }, newCard );
 		});
@@ -384,6 +387,11 @@ var NelioABGoalCards = {
 
 		var list = NelioABGoalCards.getList();
 		list.append(newCard);
+
+		try {
+			newCard.find('.sortable').sortable( {handle:'.handler'} );
+		} catch ( e ) {}
+
 		return newCard;
 	},
 
@@ -443,6 +451,23 @@ var NelioABGoalCards = {
 				card.find( '.actions' ).append( result );
 				card.find( '.empty' ).hide();
 				card.find( '.actions' ).show();
+				result.show();
+				break;
+
+			case 'wc-order-completed':
+				result = jQuery('#new-action-templates').find( '.action.wc-order-completed' ).clone();
+				var searcher = result.find( 'input.post-searcher.product' );
+				if ( action.isNew !== true ) {
+					searcher.attr('value', action.value);
+					NelioABPostSearcher.setDefault( searcher, 'product' );
+				}
+				card.find( '.actions' ).append( result );
+				card.find( '.empty' ).hide();
+				card.find( '.actions' ).show();
+				searcher.on( 'change', function() { NelioABGoalCards.validateProduct( result ); } );
+				searcher.removeAttr('id');
+				searcher.removeAttr('name');
+				NelioABPostSearcher.buildSearcher( searcher, 'product', 'show-drafts', NelioABGoalCards.filterProducts );
 				result.show();
 				break;
 
@@ -507,11 +532,36 @@ var NelioABGoalCards = {
 	 * experiment id do not appear as a selectable option in elem.
 	 */
 	filterPosts: function( elem, data ) {
-
 		var idsToIgnore = [];
 		var aux = jQuery( '#exp_original' ).attr( 'value' );
 		if ( aux != undefined && aux.length > 0 )
 			idsToIgnore.push( parseInt( aux ) );
+		var card = elem.closest( '.nelio-card' );
+		card.find( 'input.post-searcher' ).each(function() {
+			if ( jQuery( this )[0] == elem[0] ) return;
+			idsToIgnore.push( parseInt( jQuery( this ).attr( 'value' ) ) );
+		});
+		var result = [];
+		for ( var i = 0; i < data.length; ++i ) {
+			var item = data[i];
+			var add = true;
+			for ( var j = 0; j < idsToIgnore.length && add; ++j ) {
+				if ( item.id == idsToIgnore[j] )
+					add = false;
+			}
+			if ( add )
+				result.push( item );
+		}
+		return result;
+	},
+
+	/**
+	 * This function is used as a callback by the buildSearcher function. Its goal
+	 * is to make sure that the page/post of other actions in a goal or the original
+	 * experiment id do not appear as a selectable option in elem.
+	 */
+	filterProducts: function( elem, data ) {
+		var idsToIgnore = [];
 		var card = elem.closest( '.nelio-card' );
 		card.find( 'input.post-searcher' ).each(function() {
 			if ( jQuery( this )[0] == elem[0] ) return;
@@ -599,6 +649,11 @@ var NelioABGoalCards = {
 				nextOk = NelioABGoalCards.validateExternalPage(action, 'url') && nextOk;
 		});
 
+		jQuery('#goal-list .actions > .action.wc-order-completed input').each(function() {
+			var action = jQuery(this).closest('.action');
+			nextOk = NelioABGoalCards.validateProduct( action ) && nextOk;
+		});
+
 		jQuery('#goal-list .actions > .action.click-element .value').each(function() {
 			var action = jQuery(this).closest('.action');
 			nextOk = NelioABGoalCards.validateClickElement(action) && nextOk;
@@ -640,6 +695,21 @@ var NelioABGoalCards = {
 	},
 
 	validatePageOrPost: function(action) {
+		var ok = true;
+		if ( action.find('input.post-searcher').attr('value') == '' )
+			ok = false;
+		if ( ok ) {
+			action.find('.select2-container > a.select2-choice').removeClass('error');
+			NelioABEditExperiment.manageProgress(true, true);
+		}
+		else {
+			action.find('.select2-container > a.select2-choice').addClass('error');
+			NelioABEditExperiment.manageProgress(true, false);
+		}
+		return ok;
+	},
+
+	validateProduct: function(action) {
 		var ok = true;
 		if ( action.find('input.post-searcher').attr('value') == '' )
 			ok = false;
@@ -786,6 +856,13 @@ var NelioABGoalCards = {
 						a.url_mode = action.find( '.url_mode' ).attr('value');
 						a.is_indirect = action.find( '.direct' ).attr('value') == '0';
 						if ( a.name == '' || a.url == '' )
+							break;
+						g.actions.push(a);
+						break;
+
+					case 'wc-order-completed':
+						a.value = action.find( 'input.post-searcher.product' ).attr('value');
+						if ( a.value == '' )
 							break;
 						g.actions.push(a);
 						break;

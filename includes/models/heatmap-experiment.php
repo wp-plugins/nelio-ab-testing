@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -17,6 +17,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 
 	require_once( NELIOAB_MODELS_DIR . '/experiment.php' );
@@ -26,10 +27,32 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/alternative-statistics.php' );
 	require_once( NELIOAB_MODELS_DIR . '/alternatives/gtest.php' );
 
+	/**
+	 * Abstract class representing a Heatmap Experiment.
+	 *
+	 * @package \NelioABTesting\Models\Experiments
+	 * @since 2.0.10
+	 */
 	class NelioABHeatmapExperiment extends NelioABExperiment {
 
+		/**
+		 * The ID of the post whose Heatmaps (and Clickmaps) have to be tracked.
+		 *
+		 * @since 2.0.10
+		 * @var int
+		 */
 		private $post_id;
 
+
+		/**
+		 * Creates a new instance of this class.
+		 *
+		 * @param int $id the ID of this experiment, as defined in AppEngine.
+		 *
+		 * @return NelioABHeatmapExperiment a new instance of this class.
+		 *
+		 * @since 2.0.10
+		 */
 		public function __construct( $id ) {
 			parent::__construct();
 			$this->id = $id;
@@ -37,14 +60,53 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			$this->set_type( NelioABExperiment::HEATMAP_EXP );
 		}
 
+
+		/**
+		 * Returns the ID of the post for which Heatmaps are to be tracked.
+		 *
+		 * @return int the ID of the post for which Heatmaps are to be tracked.
+		 *
+		 * @since 2.0.10
+		 */
 		public function get_post_id() {
 			return $this->post_id;
 		}
 
+		// @Override
 		public function get_related_post_id() {
 			return $this->get_post_id();
 		}
 
+
+		/**
+		 * Returns the ID of the post for which Heatmaps are to be tracked.
+		 *
+		 * @return int the ID of the post for which Heatmaps are to be tracked.
+		 *
+		 * @since 4.0.0
+		 * @Implements
+		 */
+		public function get_originals_id() {
+			return $this->get_post_id();
+		}
+
+
+		/**
+		 * Sets the ID of the post for which Heatmaps have to be tracked to the given ID.
+		 *
+		 * IDs have to be valid, which means they must be positive integers. The
+		 * only negative integers allowed are those defined in the
+		 * `NelioABController`:
+		 *
+		 * * `FRONT_PAGE__YOUR_LATEST_POSTS`
+		 * * `FRONT_PAGE__THEME_BASED_LANDING`
+		 *
+		 * @param int $id the new post ID to be used.
+		 *
+		 * @return void
+		 *
+		 * @since 2.0.10
+		 */
 		public function set_post_id( $id ) {
 			if ( $id > 0 )
 				$this->post_id = $id;
@@ -56,10 +118,32 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 				$this->post_id = false;
 		}
 
+
+		/**
+		 * Recovers the experiment from the trash and makes it available again.
+		 *
+		 * The status in which the experiment will appear depends on the
+		 * information it contains.
+		 * @see self::determine_proper_status.
+		 *
+		 * @return void
+		 *
+		 * @since 2.0.10
+		 */
 		public function untrash() {
 			$this->update_status_and_save( $this->determine_proper_status() );
 		}
 
+
+		/**
+		 * Sets the status of this experiment to the given status and saves it to AppEngine.
+		 *
+		 * @param int $status the new status of this experiment.
+		 *
+		 * @return void
+		 *
+		 * @since 2.0.10
+		 */
 		public function update_status_and_save( $status ) {
 			if ( $this->get_id() < 0 )
 				$this->save();
@@ -68,18 +152,28 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			$this->save();
 		}
 
+
+		/**
+		 * Determines the proper status of this experiment, depending on its information.
+		 *
+		 * @return int the status of this experiment. If it has no post related, then it's _DRAFT_. Otherwise, it's _READY_.
+		 *
+		 * @since 2.0.10
+		 */
 		protected function determine_proper_status() {
 			if ( !$this->post_id )
-				return NelioABExperimentStatus::DRAFT;
+				return NelioABExperiment::STATUS_DRAFT;
 
-			return NelioABExperimentStatus::READY;
+			return NelioABExperiment::STATUS_READY;
 		}
 
+
+		// @Implements
 		public function save() {
 			// 1. UPDATE OR CREATE THE EXPERIMENT
 			// -------------------------------------------------------------------------
 
-			$url = '';
+			/** @var string $url */
 			if ( $this->get_id() < 0 ) {
 				$url = sprintf(
 					NELIOAB_BACKEND_URL . '/site/%s/exp/hm',
@@ -93,10 +187,10 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 				);
 			}
 
-			if ( $this->get_status() != NelioABExperimentStatus::PAUSED &&
-			     $this->get_status() != NelioABExperimentStatus::RUNNING &&
-			     $this->get_status() != NelioABExperimentStatus::FINISHED &&
-			     $this->get_status() != NelioABExperimentStatus::TRASH )
+			if ( $this->get_status() != NelioABExperiment::STATUS_PAUSED &&
+			     $this->get_status() != NelioABExperiment::STATUS_RUNNING &&
+			     $this->get_status() != NelioABExperiment::STATUS_FINISHED &&
+			     $this->get_status() != NelioABExperiment::STATUS_TRASH )
 				$this->set_status( $this->determine_proper_status() );
 
 			$body = array(
@@ -124,21 +218,37 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			NelioABExperimentsManager::update_experiment( $this );
 		}
 
+
+		// @Implements
 		public function remove() {
 			$url = sprintf(
 				NELIOAB_BACKEND_URL . '/exp/hm/%s/delete',
 				$this->get_id()
 			);
-			$result = NelioABBackend::remote_post( $url );
+			NelioABBackend::remote_post( $url );
 		}
 
+
+		// @Implements
 		public function start() {
+
+			if ( get_post_status( $this->get_originals_id() ) == 'draft' ) {
+				if ( get_post_type( $this->get_originals_id() ) == 'page' ) {
+					$err_str = __( 'The experiment cannot be started, because the tested page is a draft.', 'nelioab' );
+				} else {
+					$err_str = __( 'The experiment cannot be started, because the tested post is a draft.', 'nelioab' );
+				}
+				throw new Exception( $err_str, NelioABErrCodes::EXPERIMENT_CANNOT_BE_STARTED );
+			}
 
 			// Checking whether the experiment can be started or not...
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			require_once( NELIOAB_MODELS_DIR . '/experiments-manager.php' );
 			$running_exps = NelioABExperimentsManager::get_running_experiments_from_cache();
 			foreach ( $running_exps as $running_exp ) {
+				/** @var NelioABGlobalAlternativeExperiment $running_exp */
+				// $running_exp can actually be anything, but we're focusing
+				// on Global Alternative Experiments only.
 				switch ( $running_exp->get_type() ) {
 					case NelioABExperiment::THEME_ALT_EXP:
 						$err_str = sprintf(
@@ -158,7 +268,7 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 			// If everything is OK, we can start it!
 
 			// If the experiment is already running, quit
-			if ( $this->get_status() == NelioABExperimentStatus::RUNNING )
+			if ( $this->get_status() == NelioABExperiment::STATUS_RUNNING )
 				return;
 
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
@@ -166,24 +276,30 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 				NELIOAB_BACKEND_URL . '/exp/hm/%s/start',
 				$this->get_id()
 			);
-			$result = NelioABBackend::remote_post( $url );
-			$this->set_status( NelioABExperimentStatus::RUNNING );
+			NelioABBackend::remote_post( $url );
+			$this->set_status( NelioABExperiment::STATUS_RUNNING );
 		}
 
+
+		// @Implements
 		public function stop() {
 			require_once( NELIOAB_UTILS_DIR . '/backend.php' );
 			$url = sprintf(
 				NELIOAB_BACKEND_URL . '/exp/hm/%s/stop',
 				$this->get_id()
 			);
-			$result = NelioABBackend::remote_post( $url );
-			$this->set_status( NelioABExperimentStatus::FINISHED );
+			NelioABBackend::remote_post( $url );
+			$this->set_status( NelioABExperiment::STATUS_FINISHED );
 		}
 
+
+		// @Implements
 		public function get_exp_kind_url_fragment() {
 			return 'hm';
 		}
 
+
+		// @Implements
 		public static function load( $id ) {
 			$json_data = NelioABBackend::remote_get( NELIOAB_BACKEND_URL . '/exp/hm/' . $id );
 			$json_data = json_decode( $json_data['body'] );
@@ -204,6 +320,7 @@ if ( !class_exists( 'NelioABHeatmapExperiment' ) ) {
 
 			return $exp;
 		}
+
 	}//NelioABHeatmapExperiment
 
 }
