@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -24,37 +24,101 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/form-submission-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goals/actions/click-element-action.php' );
+	require_once( NELIOAB_MODELS_DIR . '/goals/actions/wc-order-completed-action.php' );
 	require_once( NELIOAB_MODELS_DIR . '/goal-results/alternative-experiment-goal-result.php' );
 
 	require_once( NELIOAB_MODELS_DIR . '/goals/goal.php' );
+
+
+	/**
+	 * PHPDOC
+	 *
+	 * @package \NelioABTesting\Models\Goals
+	 * @since PHPDOC
+	 */
 	class NelioABAltExpGoal extends NelioABGoal {
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var array
+		 */
 		private $actions;
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param NelioABExperiment $exp PHPDOC
+		 *
+		 * @return NelioABAltExpGoal PHPDOC
+		 *
+		 * @sine PHPDOC
+		 */
 		public function __construct( $exp ) {
 			parent::__construct( $exp );
 			$this->set_kind( NelioABGoal::ALTERNATIVE_EXPERIMENT_GOAL );
 			$this->actions = array();
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function clear_actions() {
 			$this->actions = array();
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function get_actions() {
 			return $this->actions;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param NelioABAction $action PHPDOC
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
+		 */
 		public function add_action( $action ) {
 			array_push( $this->actions, $action );
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param int $post_id PHPDOC
+		 *
+		 * @return boolean PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function includes_internal_page( $post_id ) {
 			foreach( $this->actions as $action ) {
+				/** @var NelioABAction $action */
 				switch( $action->get_type() ) {
 					case NelioABAction::PAGE_ACCESSED:
 					case NelioABAction::POST_ACCESSED:
 					case NelioABAction::EXTERNAL_PAGE_ACCESSED:
+						/** @var NelioABPageAccessedAction $action */
 						if ( !$action->is_internal() )
 							continue;
 						if ( $action->get_reference() == $post_id )
@@ -66,12 +130,24 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			return false;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param string $url PHPDOC
+		 *
+		 * @return boolean PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function includes_external_page( $url ) {
 			foreach( $this->actions as $action ) {
+				/** @var NelioABAction $action */
 				switch( $action->get_type() ) {
 					case NelioABAction::PAGE_ACCESSED:
 					case NelioABAction::POST_ACCESSED:
 					case NelioABAction::EXTERNAL_PAGE_ACCESSED:
+						/** @var NelioABPageAccessedAction $action */
 						if ( !$action->is_external() )
 							continue;
 						if ( $action->get_reference() == $url )
@@ -83,19 +159,37 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			return false;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return boolean PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function is_ready() {
 			if ( $this->has_to_be_deleted() )
 				return true;
 			return count( $this->get_actions() ) > 0;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param NelioABExperiment $exp  PHPDOC
+		 * @param object            $json PHPDOC
+		 *
+		 * @return NelioABAltExpGoal PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function decode_from_appengine( $exp, $json ) {
 			$result = new NelioABAltExpGoal( $exp );
 			$result->set_id( $json->key->id );
 			$result->set_name( $json->name );
 			$result->set_benefit( $json->benefit );
 			$result->set_as_main_goal( $json->isMainGoal );
-			require_once( NELIOAB_MODELS_DIR . '/goals/actions/page-accessed-action.php' );
 			$ae_actions = array();
 
 			if ( isset( $json->pageAccessedActions ) ) {
@@ -125,8 +219,18 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 				}
 			}
 
+			if ( isset( $json->orderCompletedActions ) ) {
+				foreach ( $json->orderCompletedActions as $action ) {
+					$action = (array)$action;
+					$action['_type'] = 'order-completed-action';
+					$action = (object)$action;
+					array_push( $ae_actions, $action );
+				}
+			}
+
 			usort( $ae_actions, array( 'NelioABAltExpGoal', 'sort_goals' ) );
 			foreach ( $ae_actions as $action ) {
+				/** @var object $action */
 				switch( $action->_type ) {
 					case 'page-accessed-action':
 						$result->add_action( NelioABPageAccessedAction::decode_from_appengine( $action ) );
@@ -137,11 +241,22 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 					case 'click-element-action':
 						$result->add_action( NelioABClickElementAction::decode_from_appengine( $action ) );
 						break;
+					case 'order-completed-action':
+						$result->add_action( NelioABWooCommerceOrderCompletedAction::decode_from_appengine( $action ) );
+						break;
 				}
 			}
 			return $result;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function encode_for_appengine() {
 			$res = array(
 				'name'       => $this->get_name(),
@@ -153,8 +268,10 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			$page_accessed_actions = array();
 			$form_actions = array();
 			$click_actions = array();
+			$order_completed_actions = array();
 			$order = 0;
 			foreach ( $this->get_actions() as $action ) {
+				/** @var NelioABAction $action */
 				$encoded_action = $action->encode_for_appengine();
 				switch( $action->get_type() ) {
 
@@ -179,18 +296,36 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 						array_push( $click_actions, $encoded_action );
 						break;
 
+					case NelioABAction::WC_ORDER_COMPLETED:
+						$order++;
+						$encoded_action['order'] = $order;
+						array_push( $order_completed_actions, $encoded_action );
+						break;
+
 				}
 			}
 
 			$res['pageAccessedActions'] = $page_accessed_actions;
 			$res['formActions'] = $form_actions;
 			$res['clickActions'] = $click_actions;
+			$res['orderCompletedActions'] = $order_completed_actions;
 			$res['benefit'] = $this->get_benefit();
 			$res['benefitUnit'] = '$';
 
 			return $res;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param object $a PHPDOC
+		 * @param object $b PHPDOC
+		 *
+		 * @return int PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function sort_goals( $a, $b ) {
 			if ( isset( $a->order ) && isset( $b->order ) )
 				return $a->order - $b->order;
@@ -201,8 +336,17 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			return 0;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return NelioABAltExpGoalResult PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function get_results() {
 			$results    = new NelioABAltExpGoalResult();
+			/** @var NelioABAlternativeExperiment $experiment */
 			$experiment = $this->get_experiment();
 
 			$url = sprintf(
@@ -247,6 +391,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 
 					$alternative = null;
 					foreach ( $experiment->get_alternatives() as $alt ) {
+						/** @var NelioABAlternative $alt */
 						if ( $alt->get_id() == $json_alt['altId'] )
 							$alternative = $alt;
 					}
@@ -300,7 +445,6 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 
 					$g->set_min_name( __( 'Unknown', 'nelioab' ) );
 					$g->set_max_name( __( 'Unknown', 'nelioab' ) );
-					$i = 1;
 					$alts = $experiment->get_alternatives();
 					for( $i = 0; $i < count( $alts ); ++$i ) {
 						$alt = $alts[$i];
@@ -322,6 +466,14 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			return $results;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @return array PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public function json4js() {
 			$benefit = $this->get_benefit();
 			if ( NelioABSettings::get_def_conv_value() == $benefit )
@@ -334,6 +486,7 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 				);
 
 			foreach ( $this->get_actions() as $action ) {
+				/** @var NelioABAction $action */
 				$json_action = $action->json4js();
 				if ( $json_action )
 					array_push( $result['actions'], $json_action );
@@ -342,6 +495,17 @@ if( !class_exists( 'NelioABAltExpGoal' ) ) {
 			return $result;
 		}
 
+
+		/**
+		 * PHPDOC
+		 *
+		 * @param object            $json_goal PHPDOC
+		 * @param NelioABExperiment $exp       PHPDOC
+		 *
+		 * @return NelioABAltExpGoal PHPDOC
+		 *
+		 * @since PHPDOC
+		 */
 		public static function build_goal_using_json4js( $json_goal, $exp ) {
 			$goal = new NelioABAltExpGoal( $exp );
 

@@ -340,9 +340,8 @@ if ( !class_exists( 'NelioABMenuExpAdminController' ) ) {
 				array_push( $alt_menus, $menu );
 			$aux->rollback();
 
-			if ( count( $alt_menus > 0 ) ) {
+			if ( count( $alt_menus ) > 0 ) {
 				global $wpdb;
-				print_r( $alt_menus );
 				$query = 'UPDATE ' . $wpdb->term_taxonomy .
 					' SET taxonomy = \'nelioab_nav_menu\' ' .
 					' WHERE term_id IN (' . implode( ',', $alt_menus ) . ')';

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 Nelio Software S.L.
+ * Copyright 2015 Nelio Software S.L.
  * This script is distributed under the terms of the GNU General Public
  * License.
  *
@@ -18,23 +18,62 @@
  */
 
 
-if( !class_exists( 'NelioABPageAccessedAction' ) ) {
+if ( !class_exists( 'NelioABPageAccessedAction' ) ) {
 
+	/**
+	 * Class representing a "page accessed" conversion action.
+	 *
+	 * @package \NelioABTesting\Models\Goals\Actions
+	 * @since PHPDOC
+	 */
 	class NelioABPageAccessedAction extends NelioABAction {
 
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var string
+		 */
 		private $reference;
-		private $title;
-		private $indirect;
-		private $internal;
+
 
 		/**
-		 * Constructor of this class. By default, a Page does not accept
-		 * indirect navigations, is internal to WordPress, and its ID is -1.
+		 * PHPDOC
 		 *
-		 * @param reference the POST_ID or the PAGE_URL that uniquely
-		 *        identifies a page.
-		 * @param internal (default=true) whether this page is internal to
-		 *        WordPress or external
+		 * @since PHPDOC
+		 * @var string
+		 */
+		private $title;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var boolean
+		 */
+		private $indirect;
+
+
+		/**
+		 * PHPDOC
+		 *
+		 * @since PHPDOC
+		 * @var boolean
+		 */
+		private $internal;
+
+
+		/**
+		 * Creates a new instance of this class.
+		 *
+		 * @param int     $reference the `post_id` or a page URL that uniquely identifies a page.
+		 * @param boolean $internal  whether this page is internal to WordPress or external.
+		 *                           Default: `true`.
+		 *
+		 * @return NelioABPageAccessedAction a new instance of this class.
+		 *
+		 * @since PHPDOC
 		 */
 		public function __construct( $reference, $internal = true ) {
 			if ( !$internal )
@@ -42,7 +81,7 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			else
 				parent::__construct( NelioABAction::POST_ACCESSED );
 			$this->reference = $reference;
-			$this->title     = __( 'Undefined', 'neliob' );
+			$this->title     = __( 'Undefined', 'nelioab' );
 			$this->indirect  = false;
 			$this->internal  = $internal;
 
@@ -58,21 +97,29 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			}
 		}
 
+
 		/**
-		 * @returns this page reference
+		 * Returns this page reference.
+		 *
+		 * @return string this page reference
+		 *
+		 * @since PHPDOC
 		 */
 		public function get_reference() {
 			return $this->reference;
 		}
 
+
 		/**
+		 * Returns a RegEx string to match an external page or false if internal.
+		 *
 		 * If the page is external, it returns its reference as a JavaScript
-		 * RegEx string, ready to be uses as a parameter for the RegExp class
+		 * RegEx string, ready to be used as a parameter for the RegExp class
 		 * constructor. Otherwise, it returns false.
 		 *
-		 * @returns if the page is external, it returns its reference as a
-		 *          JavaScript RegEx string, ready to be used in the client
-		 *          side. Otherwise, it returns false.
+		 * @return boolean|string a RegEx string to match an external page or false if internal.
+		 *
+		 * @since
 		 */
 		public function get_regex_reference4js() {
 			if ( !$this->is_external() )
@@ -102,14 +149,17 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			return $url;
 		}
 
+
 		/**
+		 * If the page is external, it returns a clean version of the URL. Otherwise, it returns false.
+		 *
 		 * If the page is external, it returns a clean version of the URL, which
 		 * does not include the "metachar sequence" ***. Otherwise, it returns
 		 * false.
 		 *
-		 * @returns if the page is external, it returns a clean version of
-		 *          the URL, which does not include the "metachar sequence"
-		 *          ***. Otherwise, it returns false.
+		 * @return boolean|string if the page is external, it returns a clean version of the URL. Otherwise, it returns false.
+		 *
+		 * @since PHPDOC
 		 */
 		public function get_clean_reference() {
 			if ( !$this->is_external() )
@@ -117,15 +167,20 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			return str_replace( '***', '', $this->get_reference() );
 		}
 
+
 		/**
-		 * If the page is external, it returns the regex matching mode that has
-		 * to be used for its URL. Otherwise, it returns false.
+		 * If the page is external, it returns the regex matching mode for its URL.
 		 *
-		 * @returns if the page is external, it returns the regex matching
-		 *          mode that has to be used for its URL. Otherwise, it
-		 *          returns false.
+		 * If the page is external, it returns the regex matching mode that has to
+		 * be used for its URL. Otherwise, it returns false.
+		 *
+		 * @return boolean|string if the page is external, it returns the regex matching mode for its URL.
+		 *
+		 * @since PHPDOC
 		 */
 		public function get_regex_mode() {
+			if ( !$this->is_external() )
+				return false;
 			$url = $this->get_reference();
 			$uses_starts_with = strpos( $url, '***', 1 ) !== false;
 			$uses_ends_with = strpos( $url, '***' ) === 0;
@@ -139,74 +194,85 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			return $url_mode;
 		}
 
+
 		/**
 		 * Returns the title (or name) of this page
 		 *
-		 * @return the title (or name) of this page
+		 * @return string the title (or name) of this page
+		 *
+		 * @since PHPDOC
 		 */
 		public function get_title() {
 			return $this->title;
 		}
 
+
 		/**
-		 * Sets the title (or name) of this page to $title
+		 * Sets the title (or name) of this page to $title.
 		 *
-		 * @param title the new title of this page
+		 * @param string $title the new title of this page
+		 *
+		 * @return void
+		 *
+		 * @since PHPDOC
 		 */
 		public function set_title( $title ) {
 			$this->title = $title;
 		}
 
+
 		/**
-		 * Returns whether this page is to be counted as a conversion
-		 * when not accessed directly from the experiment that is being
-		 * tested
+		 * Returns whether accessing this page is a conversion from any referrer or only if the referrer is the tested element.
 		 *
-		 * @return whether this page is to be counted as a conversion
-		 *         when not accessed directly from the experiment that
-		 *         is being tested
+		 * @return boolean whether accessing this page is a conversion from any referrer or only if the referrer is the tested element.
+		 *
+		 * @since PHPDOC
 		 */
 		public function accepts_indirect_navigations() {
 			return $this->indirect;
 		}
 
+
 		/**
-		 * This function is used to enable or disable whether an
-		 * indirect access to this page has to be counted as a conversion
-		 * or not
+		 * Enables or disables whether conversions should be counted when the page is accessed from any referrer or only if the referrer is the tested element.
 		 *
-		 * @param indirect if false, then indirect navigations are not counted
-		 *        as conversions. Otherwise, indirect navigations are counted
-		 *        as conversions.
+		 * @param boolean $indirect It specifies whether conversion should be counted with any referrer.
+		 *                If true, conversions are counted whichever the
+		 *                referrer of accessing this page is. If false,
+		 *                conversions only occur if the referrer is the
+		 *                tested page.
+		 *
+		 * @since PHPDOC
 		 */
 		public function set_indirect_navigations_enabled( $indirect = true ) {
 			$this->indirect = $indirect;
 		}
 
+
 		/**
-		 * Returns whether this page is internal to WordPress or not
+		 * Returns whether this page is internal to WordPress or not.
 		 *
-		 * @return whether this page is internal to WordPress or not
+		 * @return boolean whether this page is internal to WordPress or not.
+		 *
+		 * @since PHPDOC
 		 */
 		public function is_internal() {
 			return $this->internal;
 		}
 
+
 		/**
-		 * Returns whether this page is external to WordPress or not
+		 * Returns whether this page is external to WordPress or not.
 		 *
-		 * @return whether this page is external to WordPress or not
+		 * @return boolean whether this page is external to WordPress or not.
+		 *
+		 * @since PHPDOC
 		 */
 		public function is_external() {
 			return !$this->internal;
 		}
 
-		/**
-		 * Returns an array of values, ready to be JSON-codified and
-		 * prepared for AppEngine
-		 *
-		 * @return the JSON array for AppEngine
-		 */
+
 		public function encode_for_appengine() {
 			$page = array(
 				'reference' => $this->get_reference(),
@@ -217,14 +283,16 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			return $page;
 		}
 
+
 		/**
-		 * Creates a Page Description using the information obtained from
-		 * the JSON parameter.
+		 * Returns a new action object built using the information described in $action.
 		 *
-		 * @param json the JSON array from AppEngine
+		 * @param object $json a JSON action returned by AppEngine.
 		 *
-		 * @return a Page Description with the values obtained from the
-		 *         json
+		 * @return NelioABPageAccessedAction the new action containing all the information in `$action`.
+		 *
+		 * @since PHPDOC
+		 * @Override
 		 */
 		public static function decode_from_appengine( $json ) {
 			$internal = isset( $json->internal ) && $json->internal;
@@ -244,9 +312,8 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			return $action;
 		}
 
-		/**
-		 * @implements NelioABAction::json4js();
-		 */
+
+		// @Implements
 		public function json4js() {
 			$action = array(
 					'is_indirect' => $this->accepts_indirect_navigations(),
@@ -275,24 +342,24 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 			return $action;
 		}
 
+
 		/**
+		 * Returns a new action object built using the information described in $action.
 		 *
+		 * @param object $json a JSON action as used in the admin pages of our plugin.
+		 *
+		 * @return NelioABPageAccessedAction the new action containing all the information in `$action`.
+		 *
+		 * @since PHPDOC
+		 * @Override
 		 */
 		public static function build_action_using_json4js( $json ) {
 			if ( $json->type == NelioABAction::EXTERNAL_PAGE_ACCESSED ) {
 				$value = $json->url;
 				switch ( $json->url_mode ) {
 				case 'exact':
-					$value = 'http://' . $value;
-					$value = str_replace( 'http://http://', 'http://', $value );
-					$value = str_replace( 'http://https://', 'https://', $value );
-					$value = str_replace( 'http:////', 'http://', $value );
 					break;
 				case 'starts-with':
-					$value = 'http://' . $value;
-					$value = str_replace( 'http://http://', 'http://', $value );
-					$value = str_replace( 'http://https://', 'https://', $value );
-					$value = str_replace( 'http:////', 'http://', $value );
 					$value = $value . '***';
 					break;
 				case 'ends-with':
@@ -317,6 +384,7 @@ if( !class_exists( 'NelioABPageAccessedAction' ) ) {
 
 			return $action;
 		}
+
 	}//NelioABPageAccessedAction
 
 }
