@@ -2,8 +2,8 @@
 Contributors: nelio, davilera, avillegasn
 Tags: ab testing, ab test, a/b testing, a/b test, a b testing, a b test, split testing, conversion optimization, optimization, conversion, heatmap, split testing, split test, click-map, clickmap, greedy algorithm, conversion rate optimization, conversion rate, cro, landing page, landing pages, conversion goals, goal tracking, visitor tracking, tracking, call to action, analytics, statistics, campaign, campaigns, woocommerce testing, track purchases, ab product, split product, order tracking, woocommerce
 Requires at least: 3.3
-Tested up to: 4.2
-Stable tag: 4.2.4
+Tested up to: 4.3
+Stable tag: 4.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -288,6 +288,13 @@ on your site so that you can understand your customers better.
 
 
 == Changelog ==
+
+= 4.2.5 (August 14, 2015) =
+* **Tested with WordPress 4.3**. This version has been tested with WordPress
+4.3 and works smoothly.
+* **Bug fix**. Alternative pages and posts are no longer shown to non-admin
+users (like, for instance, Editors).
+
 
 = 4.2.4 (August 5, 2015) =
 * **Improved support for WPML**. Now, language switcher works for alternative
@@ -1015,8 +1022,5 @@ replaceText function
 
 == Upgrade Notice ==
 
-= 4.2.4 =
-4.2.4 improves WPML support. Series 4.2 supports WooCommerce. You can now test
-your products (change their name, featured image, and description), and use the
-Purchase conversion action for monitoring actual purchases.
-
+= 4.2.5 =
+4.2.5 hides alternative content for non-administrator users.

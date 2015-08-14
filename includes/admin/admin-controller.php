@@ -93,6 +93,11 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 		}
 
 		public function init() {
+
+			// Hide alternative content from the User Interface
+			add_action( 'wp_count_posts', array( $this, 'exclude_alternatives_from_post_count' ), 10, 2 );
+			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
+
 			// If the user has been disabled... get out of here
 			try {
 				$aux = NelioABAccountSettings::check_user_settings();
@@ -119,8 +124,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 			add_action( 'admin_head', array( $this, 'add_custom_styles' ) );
 
 			// Some hooks
-			add_action( 'wp_count_posts', array( $this, 'exclude_alternatives_from_post_count' ), 10, 2 );
-			add_action( 'pre_get_posts', array( $this, 'exclude_alternative_posts_and_pages' ) );
 			add_filter( 'plugin_action_links',  array( $this, 'add_plugin_action_links') , 10, 2);
 
 			// (Super)Settings for multisite
@@ -135,7 +138,6 @@ if ( !class_exists( 'NelioABAdminController' ) ) {
 
 			// AJAX functions
 			add_action( 'wp_ajax_nelioab_get_html_content', array( $this, 'generate_html_content' ) ) ;
-
 			add_action( 'wp_ajax_nelioab_rated', array( $this, 'mark_as_rated' ) ) ;
 
 			require_once( NELIOAB_UTILS_DIR . '/wp-helper.php' );
